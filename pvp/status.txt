@@ -1,0 +1,680 @@
+PVP System status report
+Driver version: 0x0430
+PVCam version:  0x0277
+Camera count:   2
+Camera name #0: PM1394Cam00
+Camera name #1: PM1394Cam01
+End of PVP System status report
+
+Status report for camera PM1394Cam00
+Camera handle: 0x0000
+Class 0 parameters:
+DdInfoLength access: ReadOnly
+  current value: 256
+  min value: 256
+  max value: 256
+  default value: 256
+  count: 1
+DdVersion access: ReadOnly
+  current value: 512
+  min value: 512
+  max value: 512
+  default value: 512
+  count: 1
+DdRetries access: ReadWrite
+  current value: 1000
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+DdTimeout access: ReadWrite
+  current value: 1000
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+DdInfo access: ReadOnly
+  current value: 
+Roper Scientfic 1394 Device Driver Version 2.0
+     Copyright (c) 2004, Roper Scientific, Inc.
+
+  min value: 
+  max value: 
+  default value: 
+Roper Scientfic 1394 Device Driver Version 2.0
+     Copyright (c) 2004, Roper Scientific, Inc.
+
+  count: 257
+Class 2 parameters:
+MinBlock is not available.
+NumMinBlock is not available.
+SkipAtOnceBlk is not available.
+NumOfStripsPerClr is not available.
+ContClears is not available.
+AntiBlooming is not available.
+LogicOutput is not available.
+EdgeTrigger is not available.
+IntensifierGain is not available.
+ShtrGateMode is not available.
+AdcOffset access: ReadWrite
+  current value: 1000
+  min value: -32768
+  max value: 32767
+  default value: 0
+  count: 0
+ChipName access: ReadOnly
+  current value: QUANTEM:512SC
+  min value: 
+  max value: 
+  default value:                 
+  count: 17
+CoolingMode access: ReadOnly
+  current value: NormalCool
+  min value: NormalCool
+  max value: CryoCool
+  default value: NormalCool
+  count: 2
+PreampDelay access: ReadOnly
+  current value: 1
+  min value: 1
+  max value: 1
+  default value: 1
+  count: 1
+Preflash access: ReadOnly
+  current value: 0
+  min value: 0
+  max value: 0
+  default value: 0
+  count: 1
+ColorMode access: ReadOnly
+  current value: None
+  min value: None
+  max value: Rggb
+  default value: None
+  count: 2
+MppCapable is not available.
+PreampOffControl access: ReadWrite
+  current value: 10000
+  min value: 0
+  max value: 4294967295
+  default value: 0
+  count: 0
+SerialNum access: ReadOnly
+  current value: 0
+  min value: 0
+  max value: 0
+  default value: 0
+  count: 1
+Premask access: ReadWrite
+  current value: 535
+  min value: 535
+  max value: 535
+  default value: 535
+  count: 1
+Prescan access: ReadWrite
+  current value: 28
+  min value: 28
+  max value: 28
+  default value: 28
+  count: 1
+Postmask access: ReadWrite
+  current value: 8
+  min value: 8
+  max value: 8
+  default value: 8
+  count: 1
+Postscan access: ReadWrite
+  current value: 12
+  min value: 12
+  max value: 12
+  default value: 12
+  count: 1
+PixParDist access: ReadOnly
+  current value: 16000
+  min value: 16000
+  max value: 16000
+  default value: 16000
+  count: 1
+PixParSize access: ReadOnly
+  current value: 16000
+  min value: 16000
+  max value: 16000
+  default value: 16000
+  count: 1
+PixSerDist access: ReadOnly
+  current value: 16000
+  min value: 16000
+  max value: 16000
+  default value: 16000
+  count: 1
+PixSerSize access: ReadOnly
+  current value: 16000
+  min value: 16000
+  max value: 16000
+  default value: 16000
+  count: 1
+SummingWell is not available.
+FwellCapacity access: ReadOnly
+  current value: 240000
+  min value: 240000
+  max value: 240000
+  default value: 240000
+  count: 1
+ParSize access: ReadWrite
+  current value: 512
+  min value: 512
+  max value: 512
+  default value: 512
+  count: 1
+SerSize access: ReadWrite
+  current value: 512
+  min value: 512
+  max value: 512
+  default value: 512
+  count: 1
+AccumCapable is not available.
+FlashDwnldCapable access: ReadOnly
+  current value: 1
+  min value: 0
+  max value: 1
+  default value: 0
+  count: 1
+ControllerAlive is not available.
+ReadoutTime is not available.
+ClearCycles access: ReadWrite
+  current value: 2
+  min value: 0
+  max value: 65535
+  default value: 2
+  count: 0
+ClearMode access: ReadWrite
+  current value: PreExposure
+  min value: Never
+  max value: PreExposurePostSeq
+  default value: PreExposure
+  count: 6
+FrameCapable access: ExistCheckOnly
+  count: 1
+Pmode access: ReadWrite
+  current value: Normal
+  min value: Normal
+  max value: Interline
+  default value: Normal
+  count: 4
+CcsStatus access: ReadOnly
+  current value: 0
+  min value: 0
+  max value: 3
+  default value: 0
+  count: 4
+Temp access: ReadOnly
+  current value: 1495
+  min value: -32768
+  max value: 32767
+  default value: 0
+  count: 0
+TempSetpoint access: ReadWrite
+  current value: -3000
+  min value: -5000
+  max value: 2500
+  default value: -5000
+  count: 0
+CamFwVersion access: ReadOnly
+  current value: 2076
+  min value: 2076
+  max value: 2076
+  default value: 2076
+  count: 1
+HeadSerNumAlpha access: ReadOnly
+  current value: A08B101016
+  min value: 
+  max value: 
+  default value: 
+  count: 11
+PciFwVersion access: ReadOnly
+  current value: 1
+  min value: 1
+  max value: 1
+  default value: 1
+  count: 1
+CamFwFullVersion is not available.
+ExposureMode access: ReadOnly
+  current value: TimedMode
+  min value: TimedMode
+  max value: IntStrobeMode
+  default value: TimedMode
+  count: 6
+BitDepth access: ReadOnly
+  current value: 16
+  min value: 16
+  max value: 16
+  default value: 16
+  count: 1
+GainIndex access: ReadWrite
+  current value: 1
+  min value: 1
+  max value: 3
+  default value: 1
+  count: 3
+SpdtabIndex access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 1
+  default value: 0
+  count: 2
+ReadoutPort access: ReadWrite
+  current value: Port1
+  min value: Port1
+  max value: PortLowNoise
+  default value: Port1
+  count: 2
+PixTime access: ReadOnly
+  current value: 100
+  min value: 100
+  max value: 100
+  default value: 100
+  count: 1
+ShtrCloseDelay access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+ShtrOpenDelay access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+ShtrOpenMode access: ReadWrite
+  current value: PreExposure
+  min value: Never
+  max value: NoChange
+  default value: PreExposure
+  count: 5
+ShtrStatus access: ReadOnly
+  current value: Fault
+  min value: Fault
+  max value: Unknown
+  default value: Unknown
+  count: 6
+ShtrCloseDelayUnit is not available.
+IoAddr access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+IoType access: ReadOnly
+  current value: Ttl
+  min value: Ttl
+  max value: Dac
+  default value: Ttl
+  count: 1
+IoDirection access: ReadWrite
+  current value: Input
+  min value: Input
+  max value: InputOutput
+  default value: Input
+  count: 1
+IoState access: ReadOnly
+  current value: 0
+  min value: 0
+  max value: 3
+  default value: 0
+  count: 1
+IoBitdepth access: ReadOnly
+  current value: 2
+  min value: 2
+  max value: 2
+  default value: 2
+  count: 1
+GainMultFactor access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 1000
+  default value: 0
+  count: 0
+GainMultEnable access: ReadOnly
+  current value: 1
+  min value: 0
+  max value: 1
+  default value: 1
+  count: 0
+End of camera status report
+Status report for camera PM1394Cam01
+Camera handle: 0x0001
+Class 0 parameters:
+DdInfoLength access: ReadOnly
+  current value: 256
+  min value: 256
+  max value: 256
+  default value: 256
+  count: 1
+DdVersion access: ReadOnly
+  current value: 512
+  min value: 512
+  max value: 512
+  default value: 512
+  count: 1
+DdRetries access: ReadWrite
+  current value: 1000
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+DdTimeout access: ReadWrite
+  current value: 1000
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+DdInfo access: ReadOnly
+  current value: 
+Roper Scientfic 1394 Device Driver Version 2.0
+     Copyright (c) 2004, Roper Scientific, Inc.
+
+  min value: 
+  max value: 
+  default value: 
+Roper Scientfic 1394 Device Driver Version 2.0
+     Copyright (c) 2004, Roper Scientific, Inc.
+
+  count: 257
+Class 2 parameters:
+MinBlock is not available.
+NumMinBlock is not available.
+SkipAtOnceBlk is not available.
+NumOfStripsPerClr is not available.
+ContClears is not available.
+AntiBlooming is not available.
+LogicOutput is not available.
+EdgeTrigger is not available.
+IntensifierGain is not available.
+ShtrGateMode is not available.
+AdcOffset access: ReadWrite
+  current value: 1000
+  min value: -32768
+  max value: 32767
+  default value: 0
+  count: 0
+ChipName access: ReadOnly
+  current value: QUANTEM:512SC
+  min value: 
+  max value: 
+  default value:                 
+  count: 17
+CoolingMode access: ReadOnly
+  current value: NormalCool
+  min value: NormalCool
+  max value: CryoCool
+  default value: NormalCool
+  count: 2
+PreampDelay access: ReadOnly
+  current value: 1
+  min value: 1
+  max value: 1
+  default value: 1
+  count: 1
+Preflash access: ReadOnly
+  current value: 0
+  min value: 0
+  max value: 0
+  default value: 0
+  count: 1
+ColorMode access: ReadOnly
+  current value: None
+  min value: None
+  max value: Rggb
+  default value: None
+  count: 2
+MppCapable is not available.
+PreampOffControl access: ReadWrite
+  current value: 10000
+  min value: 0
+  max value: 4294967295
+  default value: 0
+  count: 0
+SerialNum access: ReadOnly
+  current value: 0
+  min value: 0
+  max value: 0
+  default value: 0
+  count: 1
+Premask access: ReadWrite
+  current value: 535
+  min value: 535
+  max value: 535
+  default value: 535
+  count: 1
+Prescan access: ReadWrite
+  current value: 28
+  min value: 28
+  max value: 28
+  default value: 28
+  count: 1
+Postmask access: ReadWrite
+  current value: 8
+  min value: 8
+  max value: 8
+  default value: 8
+  count: 1
+Postscan access: ReadWrite
+  current value: 12
+  min value: 12
+  max value: 12
+  default value: 12
+  count: 1
+PixParDist access: ReadOnly
+  current value: 16000
+  min value: 16000
+  max value: 16000
+  default value: 16000
+  count: 1
+PixParSize access: ReadOnly
+  current value: 16000
+  min value: 16000
+  max value: 16000
+  default value: 16000
+  count: 1
+PixSerDist access: ReadOnly
+  current value: 16000
+  min value: 16000
+  max value: 16000
+  default value: 16000
+  count: 1
+PixSerSize access: ReadOnly
+  current value: 16000
+  min value: 16000
+  max value: 16000
+  default value: 16000
+  count: 1
+SummingWell is not available.
+FwellCapacity access: ReadOnly
+  current value: 240000
+  min value: 240000
+  max value: 240000
+  default value: 240000
+  count: 1
+ParSize access: ReadWrite
+  current value: 512
+  min value: 512
+  max value: 512
+  default value: 512
+  count: 1
+SerSize access: ReadWrite
+  current value: 512
+  min value: 512
+  max value: 512
+  default value: 512
+  count: 1
+AccumCapable is not available.
+FlashDwnldCapable access: ReadOnly
+  current value: 1
+  min value: 0
+  max value: 1
+  default value: 0
+  count: 1
+ControllerAlive is not available.
+ReadoutTime is not available.
+ClearCycles access: ReadWrite
+  current value: 2
+  min value: 0
+  max value: 65535
+  default value: 2
+  count: 0
+ClearMode access: ReadWrite
+  current value: PreExposure
+  min value: Never
+  max value: PreExposurePostSeq
+  default value: PreExposure
+  count: 6
+FrameCapable access: ExistCheckOnly
+  count: 1
+Pmode access: ReadWrite
+  current value: Normal
+  min value: Normal
+  max value: Interline
+  default value: Normal
+  count: 4
+CcsStatus access: ReadOnly
+  current value: 0
+  min value: 0
+  max value: 3
+  default value: 0
+  count: 4
+Temp access: ReadOnly
+  current value: 1530
+  min value: -32768
+  max value: 32767
+  default value: 0
+  count: 0
+TempSetpoint access: ReadWrite
+  current value: -3000
+  min value: -5000
+  max value: 2500
+  default value: -5000
+  count: 0
+CamFwVersion access: ReadOnly
+  current value: 2077
+  min value: 2077
+  max value: 2077
+  default value: 2077
+  count: 1
+HeadSerNumAlpha access: ReadOnly
+  current value: A08F101002
+  min value: 
+  max value: 
+  default value: 
+  count: 11
+PciFwVersion access: ReadOnly
+  current value: 1
+  min value: 1
+  max value: 1
+  default value: 1
+  count: 1
+CamFwFullVersion is not available.
+ExposureMode access: ReadOnly
+  current value: TimedMode
+  min value: TimedMode
+  max value: IntStrobeMode
+  default value: TimedMode
+  count: 6
+BitDepth access: ReadOnly
+  current value: 16
+  min value: 16
+  max value: 16
+  default value: 16
+  count: 1
+GainIndex access: ReadWrite
+  current value: 1
+  min value: 1
+  max value: 3
+  default value: 1
+  count: 3
+SpdtabIndex access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 1
+  default value: 0
+  count: 2
+ReadoutPort access: ReadWrite
+  current value: Port1
+  min value: Port1
+  max value: PortLowNoise
+  default value: Port1
+  count: 2
+PixTime access: ReadOnly
+  current value: 100
+  min value: 100
+  max value: 100
+  default value: 100
+  count: 1
+ShtrCloseDelay access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+ShtrOpenDelay access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+ShtrOpenMode access: ReadWrite
+  current value: PreExposure
+  min value: Never
+  max value: NoChange
+  default value: PreExposure
+  count: 5
+ShtrStatus access: ReadOnly
+  current value: Fault
+  min value: Fault
+  max value: Unknown
+  default value: Unknown
+  count: 6
+ShtrCloseDelayUnit is not available.
+IoAddr access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 65535
+  default value: 0
+  count: 0
+IoType access: ReadOnly
+  current value: Ttl
+  min value: Ttl
+  max value: Dac
+  default value: Ttl
+  count: 1
+IoDirection access: ReadWrite
+  current value: Input
+  min value: Input
+  max value: InputOutput
+  default value: Input
+  count: 1
+IoState access: ReadOnly
+  current value: 0
+  min value: 0
+  max value: 3
+  default value: 0
+  count: 1
+IoBitdepth access: ReadOnly
+  current value: 2
+  min value: 2
+  max value: 2
+  default value: 2
+  count: 1
+GainMultFactor access: ReadWrite
+  current value: 0
+  min value: 0
+  max value: 1000
+  default value: 0
+  count: 0
+GainMultEnable access: ReadOnly
+  current value: 1
+  min value: 0
+  max value: 1
+  default value: 1
+  count: 0
+End of camera status report

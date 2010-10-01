@@ -1,0 +1,12 @@
+#!/bin/zsh
+
+TESTNAME=$1
+
+grep -v flat.pro win.pro | grep -v TARGET > wintest.pro
+echo "TARGET = wintest" >> wintest.pro
+grep -v toplevel flat.pro >> wintest.pro
+echo "SOURCES += test/$TESTNAME.cpp" >> wintest.pro
+echo "Preparing for wintest.pro"
+qmake-dw wintest.pro
+make
+

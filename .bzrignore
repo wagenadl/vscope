@@ -1,0 +1,12 @@
+Makefile
+.moc
+.obj
+*.so
+*.so.*
+*.moc
+*.o
+*~
+*.bin
+qrc_*.cpp
+a.out
+core

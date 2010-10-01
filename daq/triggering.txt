@@ -1,0 +1,9 @@
+Normal data acquisition is timed as follows in my setup:
+
+- AI is triggered by software
+- AO is triggered by AI's start (i.e. ai/StartTrigger -> ao/StartTrigger)
+- DI sampling is timed from AI sampling (i.e. ai/SampleClock -> di/SampleClock)
+- DO sampling is timed from AO sampling (i.e. ao/SampleClock -> do/SampleClock)
+
+9/11/08: I don't think that's true. The way I programmed analogout, ao is
+timed from ai's sample clock, not triggered from ai's start.

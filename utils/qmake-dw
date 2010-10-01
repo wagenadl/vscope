@@ -1,0 +1,61 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+my $tgt = shift @ARGV or usage();
+if ($tgt eq "-C") {
+  chdir(shift @ARGV);
+  print "Entering: ", `pwd`, "\n";
+  $tgt = shift @ARGV or usage();
+}
+
+sub usage {
+  print STDERR "Usage: qmake-dw [-C directory] project.pro ...\n";
+  exit 1;
+}
+
+my $qtdir = $ENV{QTDIR};
+unless (defined $qtdir) {
+  $qtdir = "/cygdrive/c/Qt";
+  opendir DIR, $qtdir;
+  my @subs = readdir(DIR);
+  closedir DIR;
+  @subs = sort(@subs);
+  $qtdir .= "/" . pop(@subs);
+  print STDERR "QTDIR set to '$qtdir'\n";
+}
+
+system("QMAKESPEC=win32-g++ $qtdir/bin/qmake $tgt ".join(" ",@ARGV)) and die "Cannot run qmake\n";
+
+opendir DIR, ".";
+for (readdir(DIR)) {
+  /^Makefile/ or next;
+  chomp;
+  process($_);
+}
+closedir(DIR);
+exit 0;
+
+sub process {
+  my $filename = $_;
+  print "Working on '$filename'...\n";
+  open IN, "<$filename" or die "Cannot read '$filename'\n";
+  my @lines;
+  while (<IN>) {
+    s/\\([^ \t\r\n])/\/$1/g;
+    s/[cC]:/\/cygdrive\/c/g;
+    s/\.\\/.\//g;
+    s/^(\s*QMAKE\s*=\s*).*/$1\/usr\/local\/bin\/qmake-dw/;
+    #s/CHK_DIR_EXISTS\) (.*?) /CHK_DIR_EXISTS\) $1 ||/;
+    s/-lQtXml(d?) -lQtGuid? -lQtCored?/-lQtXml4 -lQtGui4 -lQtCore4/;
+    s/-lmingw32/-L\/usr\/lib\/mingw -lmingw32/;
+    push @lines, $_;
+  }
+  close IN;
+  open OUT, ">$filename" or die "Cannot write '$filename'\n";
+  for (@lines) {
+    print OUT $_;
+  }
+  close OUT;
+}
+

@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+BASEDIR=`dirname $0`
+
+MYPATH=""
+for a in $BASEDIR/*/; do
+  MYPATH=$a:$MYPATH
+done
+
+LD_LIBRARY_PATH=$MYPATH$LD_LIBRARY_PATH $BASEDIR/vscope.bin

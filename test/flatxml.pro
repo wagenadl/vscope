@@ -1,0 +1,10 @@
+SOURCES += ../xml/enumerator.cpp
+SOURCES += ../xml/xmlfind.cpp
+SOURCES += ../xml/param.cpp
+SOURCES += ../xml/attribute.cpp
+SOURCES += ../xml/paramtree.cpp
+HEADERS += ../xml/enumerator.h
+HEADERS += ../xml/xmlfind.h
+HEADERS += ../xml/param.h
+HEADERS += ../xml/attribute.h
+HEADERS += ../xml/paramtree.h

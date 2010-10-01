@@ -1,0 +1,1201 @@
+<?xml version="1.0" encoding="UTF-8" standalone='yes'?>
+<!DOCTYPE vsdscopeGUIConfig>
+<vsdscopeGUIConfig>
+
+<geometry x0="0" y0="512" w="1024" h="256" cols="8.2" rows="6.2"
+          menucaph="17"
+          leftx="5" rightx="5" topy="4" bottomy="4"
+          intx="5" inty="4"
+          fontFamily="Arial Rounded MT" fontSize="13"/>
+
+<!-- *************************** TOP LEVEL ****************************** -->
+<page id="" subdxl="1.05" subdyt="1.2" subdxr="2.05" subdyb="0">
+  <group id="showLeft">
+    <button id="panelLeft1" label="*%1" x="1" y="0" bg="#ddffdd"/>
+    <button id="panelLeft2" label="*%1" x="2" y="0" bg="#ddffdd"/>
+    <button id="panelLeft3" label="*%1" x="3" y="0" bg="#ddffdd"/>
+  </group>
+  <group id="showRight">
+    <button id="panelRight1" label="*%1" x="4.2" y="0" bg="#ffeedd"/>
+    <button id="panelRight2" label="*%1" x="5.2" y="0" bg="#ffeedd"/>
+    <button id="panelRight3" label="*%1" x="6.2" y="0" bg="#ffeedd"/>
+  </group>
+  <group id="a">
+    <button id="panelLeft" label="Left&#xA;Panel..." x="0" y="0.1" bg="#bbeebb"/>
+    <button id="panelRight" label="Right&#xA;Panel..." x="7.2" y="0.1" bg="#eeccaa"/>
+
+    <button id="acqEphys" label="Electrophys.&#xA;Rec." x="0" y="1.2" bg="#bbffff"/>
+    <button id="acqCCD" label="Image&#xA;Acq." x="0" y="2.2" bg="#ccccff"/>
+    <!--button id="acqMEA" label="MEA&#xA;Rec." x="0" y="3.2" bg="#bbffbb"/-->
+    <button id="stimVideo" label="Video&#xA;Stim." x="0" y="4.2" bg="#ffffbb"/>
+    <button id="stimEphys" label="Electrophys.&#xA;Stim." x="0" y="5.2" bg="#ffbbff"/>
+
+    <button id="acquisition" label="Acquisition" x="6.2" y="1.2" bg="#ccccff"/>
+    <button id="analysis" label="VSD&#xA;Analysis" bg="#bbffbb"/>
+    <button id="maintenance" label="Maintenance" bg="#ffcccc"/>
+    <button id="savedSettings" label="Saved&#xA;Settings" x="7.2" y="1.2" bg="#ff99ff"/>
+  </group>
+    <button id="minimize" label="Minimize" x="7.2" y="4.2" bg="#88dddd"/>
+    <button id="quit" label="Quit" x="7.2" y="5.2" bg="#dddd88"/>
+
+  <!-- ************************ "SHOW WHAT" CHOICES ************************ -->
+  <menu id="panelLeft"  rows="3" >
+    <break dx="-.5"/>
+    <item value="VSDCc" label="Coumarin&#xA;VSD"/>
+    <item value="VSDOx" label="Oxonol&#xA;VSD"/>
+    <break dx=".2"/>
+    <item value="EphysInt" label="Intracellular&#xA;E'phys"/>
+    <item value="EphysExt" label="Extracellular&#xA;E'phys"/>
+    <item value="Stimuli"/>
+    <break dx=".2"/>
+    <item value="VSDTraces" label="VSD&#xA;Traces"/>
+    <item value="Coherence"/>
+    <item value="CohGraph"/>
+  </menu>
+  <menu id="panelRight"  rows="3">
+    <break dx="0.2"/>
+    <item value="VSDCc" label="Coumarin&#xA;VSD"/>
+    <item value="VSDOx" label="Oxonol&#xA;VSD"/>
+    <break dx=".2"/>
+    <item value="EphysInt" label="Intracellular&#xA;E'phys"/>
+    <item value="EphysExt" label="Extracellular&#xA;E'phys"/>
+    <item value="Stimuli"/>
+    <break dx=".2"/>
+    <item value="VSDTraces" label="VSD&#xA;Traces"/>
+    <item value="Coherence"/>
+    <item value="CohGraph"/>
+  </menu>
+
+  <!-- ******************** EPHYS. RECORDING CONFIG PAGE ******************* -->
+  <page id="acqEphys" subdxl="1.1">
+    <group id="a">
+      <button id="acqTime" label="Trial dur.:&#xA;%1" bg="#88ffff"/> <!-- These IDs match params in parameters.xml -->
+      <button id="aiChannels" label="Input&#xA;channels" bg="#88ffcc"/>
+      <button id="acqFreq" label="Sample rate:&#xA;%1" bg="#88ddff"/>
+    </group>
+    <!-- ********************* MENUS FOR EPHYS. RECORDING ******************** -->
+    <checklist id="aiChannels" caption="Input channels" rows="4" cols="4">
+      <!-- "values" match "tags" in AICHAIN enum -->
+      <item value="ME1_10Vm" label="V_1"/>
+      <item value="ME2_Vm"   label="V_2"/>
+      <item value="ME1_I"    label="I_1"/>
+      <item value="ME2_I"    label="I_2"/>
+      <break/>
+      <item value="ExtVA1"   label="V_A1"/>
+      <item value="ExtVA2"   label="V_A2"/>
+      <item value="ExtVA3"   label="V_A3"/>
+      <item value="ExtVA4"   label="V_A4"/>
+      <break/>
+      <item value="ExtVB1"   label="V_B1"/>
+      <item value="ExtVB2"   label="V_B2"/>
+      <item value="ExtVB3"   label="V_B3"/>
+      <item value="ExtVB4"   label="V_B4"/>
+      <break/>
+        <item value="Stim0Mon" label="AO0m"/>
+        <item value="Stim1Mon" label="AO1m"/>
+        <item value="Stim2Mon" label="VidXm"/>
+        <item value="Stim3Mon" label="VidYm"/>
+    </checklist>
+
+    <menu id="acqTime" caption="Trial duration" rows="6" cols="3">
+      <item value="1.0 s"/>
+      <item value="1.5 s"/>
+      <item value="2.0 s"/>
+      <item value="3.0 s"/>
+      <item value="5.0 s"/>
+      <item value="7.0 s"/>
+      <break/>
+      <item value="10 s"/>
+      <item value="15 s"/>
+      <item value="20 s"/>
+      <item value="30 s"/>
+      <item value="45 s"/>
+      <break/>
+      <item value="60 s"/>
+      <item value="90 s"/>
+      <item value="120 s"/>
+      <item value="180 s"/>
+      <space dy="1"/>
+      <item custom="1"  editcaption="Custom trial duration"/>
+    </menu>
+  
+    <menu id="acqFreq" caption="Sample rate" rows="5" cols="2">
+      <item value="1 kHz"/> <!-- "label" is automatic for most types based on "value" -->
+      <item value="2 kHz"/>
+      <item value="3 kHz"/>
+      <item value="5 kHz"/>
+      <item value="7 kHz"/>
+      <break/>
+      <item value="10 kHz"/>
+      <item value="15 kHz"/>
+      <item value="20 kHz"/>
+      <item value="30 kHz"/>
+      <item custom="1"  editcaption="Custom sample rate"/> <!-- "custom" creates a user editable button. The value will be overwritten in the local.xml settings file. -->
+    </menu>
+
+  </page>
+
+  <!-- ****************** EPHYS. STIMULATION CONFIG PAGE ******************* -->
+  <page id="stimEphys" subdxl="1.05">
+    <button id="enable" label="Enabled" type="bool" bg="#ffaaff"/>
+    <group id="channel" cols="2">
+      <button id="channel*AO0" value="AO0"/>
+      <button id="channel*AO1" value="AO1"/>
+      <!--button id="channel*AO2" value="AO2"/-->
+      <!--button id="channel*AO3" value="AO3"/-->
+      <break/>
+      <button id="channel*DO0" value="DO0"/>
+      <button id="channel*DO1" value="DO1"/>
+      <button id="channel*DO2" value="DO2"/>
+      <button id="channel*DO3" value="DO3"/>
+    </group>
+    <tabbedpage id="channel" subdxl="2.1">
+      <button id="enable" label="Channel&#xA;Enabled" type="bool" bg="#ffaaff" y="-1"/>
+      <group id="a">
+        <button id="delay" label="Delay:&#xA;%1" bg="#bb88bb"/>
+        <button id="nTrains" label="# of trains:&#xA;%1" bg="#aaaaff"/>
+        <button id="trainPeriod" label="Train period:&#xA;%1" bg="#77aaff"/>
+        <button id="nPulses"  label="Pulses/train:&#xA;%1" bg="#ffaaaa"/>
+        <button id="pulsePeriod" label="Pulse period:&#xA;%1" bg="#ffaa77"/>
+        <break/>
+        <button id="pulseType" label="Pulse type:&#xA;%1" y="0" bg="#ff77ff"/>
+        <button id="pulseAmp" label="Amplitude:&#xA;%1" bg="#aa77ff"/>
+        <button id="pulseDur" label="Duration:&#xA;%1" bg="#8855ff"/>
+        <button id="pulseAmp2" label="2nd Ampl.:&#xA;%1" bg="#ff77aa"/> <!-- This is final ampl for ramp, or ampl for second phase for biphasic -->
+        <button id="pulseDur2" label="2nd Dur.:&#xA;%1" bg="#ff5588"/> <!-- This is duration for second phase for biphasic -->
+      </group>
+  
+      <menu id="pulseType" caption="Pulse type" rows="4" cols="1">
+        <item value="TTL"/>
+        <item value="Square"/>
+        <item value="Biphasic"/>
+        <item value="Ramp"/>
+      </menu>    
+    
+      <menu id="nTrains" caption="Number of trains" rows="5" cols="3">
+        <item value="1"/>
+        <item value="2"/>
+        <item value="3"/>
+        <item value="4"/>
+        <item value="5"/>
+        <break/>
+        <item value="6"/>
+        <item value="7"/>
+        <item value="8"/>
+        <item value="9"/>
+        <item value="10"/>
+        <break/>
+        <item value="12"/>
+        <item value="15"/>
+        <item value="20"/>
+        <item value="30"/>
+        <item custom="1"  editcaption="Custom number of trains"/>
+      </menu>
+    
+      <menu id="nPulses" caption="Pulses per train" rows="5" cols="3">
+        <item value="1"/>
+        <item value="2"/>
+        <item value="3"/>
+        <item value="4"/>
+        <item value="5"/>
+        <break/>
+        <item value="6"/>
+        <item value="7"/>
+        <item value="8"/>
+        <item value="9"/>
+        <item value="10"/>
+        <break/>
+        <item value="12"/>
+        <item value="15"/>
+        <item value="20"/>
+        <item value="30"/>
+        <item custom="1" editcaption="Custom number of pulses per train"/>
+      </menu>
+    
+      <menu id="delay" caption="Train period" rows="6" cols="4">
+        <item value="0 ms"/>
+        <item custom="1" editcaption="Custom train period" y="5"/>
+        <break/>
+        <item value="10 ms"/>
+        <item value="15 ms"/>
+        <item value="20 ms"/>
+        <item value="30 ms"/>
+        <item value="50 ms"/>
+        <item value="70 ms"/>
+        <break/>
+        <item value="100 ms"/>
+        <item value="150 ms"/>
+        <item value="200 ms"/>
+        <item value="300 ms"/>
+        <item value="500 ms"/>
+        <item value="700 ms"/>
+        <break/>
+        <item value="1 s"/>
+        <item value="1.5 s"/>
+        <item value="2 s"/>
+        <item value="3 s"/>
+        <item value="5 s"/>
+        <item value="7 s"/>
+      </menu>
+
+      <menu id="trainPeriod" caption="Train period" rows="6" cols="3">
+        <item value="100 ms"/>
+        <item value="150 ms"/>
+        <item value="200 ms"/>
+        <item value="300 ms"/>
+        <item value="500 ms"/>
+        <item value="700 ms"/>
+        <break/>
+        <item value="1 s"/>
+        <item value="1.5 s"/>
+        <item value="2 s"/>
+        <item value="3 s"/>
+        <item value="5 s"/>
+        <item value="7 s"/>
+        <break/>
+        <item value="10 s"/>
+        <item value="15 s"/>
+        <item value="20 s"/>
+        <item value="30 s"/>
+        <item value="50 s"/>
+        <item custom="1" editcaption="Custom train period"/>
+      </menu>
+    
+      <menu id="pulsePeriod" label="Pulse period" rows="6" cols="3">
+        <item value="10 ms"/>
+        <item value="15 ms"/>
+        <item value="20 ms"/>
+        <item value="30 ms"/>
+        <item value="50 ms"/>
+        <item value="70 ms"/>
+        <break/>
+        <item value="100 ms"/>
+        <item value="150 ms"/>
+        <item value="200 ms"/>
+        <item value="300 ms"/>
+        <item value="500 ms"/>
+        <item value="700 ms"/>
+        <break/>
+        <item value="1 s"/>
+        <item value="1.5 s"/>
+        <item value="2 s"/>
+        <item value="3 s"/>
+        <item value="5 s"/>
+        <item custom="1" editcaption="Custom pulse period"/>
+      </menu>
+    
+      <menu id="pulseDur" caption="Pulse duration" rows="6" cols="4">
+        <item value="0.1 ms"/>
+        <item value="0.15 ms"/>
+        <item value="0.2 ms"/>
+        <item value="0.3 ms"/>
+        <item value="0.5 ms"/>
+        <item value="0.7 ms"/>
+        <break/>
+        <item value="1 ms"/>
+        <item value="1.5 ms"/>
+        <item value="2 ms"/>
+        <item value="3 ms"/>
+        <item value="5 ms"/>
+        <item value="7 ms"/>
+        <break/>
+        <item value="10 ms"/>
+        <item value="15 ms"/>
+        <item value="20 ms"/>
+        <item value="30 ms"/>
+        <item value="50 ms"/>
+        <item value="70 ms"/>
+        <break/>
+        <item value="100 ms"/>
+        <item value="150 ms"/>
+        <item value="200 ms"/>
+        <item value="300 ms"/>
+        <item value="500 ms"/>
+        <item custom="1" editcaption="Custom pulse duration"/>
+      </menu>
+    
+      <menu id="pulseDur2" caption="Duration of second phase" rows="6" cols="4">
+        <item value="0.1 ms"/>
+        <item value="0.15 ms"/>
+        <item value="0.2 ms"/>
+        <item value="0.3 ms"/>
+        <item value="0.5 ms"/>
+        <item value="0.7 ms"/>
+        <break/>
+        <item value="1 ms"/>
+        <item value="1.5 ms"/>
+        <item value="2 ms"/>
+        <item value="3 ms"/>
+        <item value="5 ms"/>
+        <item value="7 ms"/>
+        <break/>
+        <item value="10 ms"/>
+        <item value="15 ms"/>
+        <item value="20 ms"/>
+        <item value="30 ms"/>
+        <item value="50 ms"/>
+        <item value="70 ms"/>
+        <break/>
+        <item value="100 ms"/>
+        <item value="150 ms"/>
+        <item value="200 ms"/>
+        <item value="300 ms"/>
+        <item value="500 ms"/>
+        <item custom="1" editcaption="Custom duration of 2nd phase"/>
+      </menu>
+    
+      <menu id="pulseAmp" caption="Pulse amplitude (initial for ramp)" rows="6" cols="4">
+            <!-- I could make stimuli appear in natural units, but I think that's too much trouble? -->
+        <item value="0.01 V"/>
+        <item value="0.015 V"/>
+        <item value="0.02 V"/>
+        <item value="0.03 V"/>
+        <item value="0.05 V"/>
+        <item value="0.07 V"/>
+        <break/>
+        <item value="0.1 V"/>
+        <item value="0.15 V"/>
+        <item value="0.2 V"/>
+        <item value="0.3 V"/>
+        <item value="0.5 V"/>
+        <item value="0.7 V"/>
+        <break/>
+        <item value="1 V"/>
+        <item value="1.5 V"/>
+        <item value="2 V"/>
+        <item value="3 V"/>
+        <item value="5 V"/>
+        <item value="7 V"/>
+        <break/>
+        <item value="10 V"/>
+        <item custom="1" editcaption="Custom pulse amplitude (initial for ramp)"/>
+      </menu>
+    
+      <menu id="pulseAmp2" caption="Final pulse amplitude (2nd phase or end of ramp)" rows="6" cols="4">
+            <!-- I could make stimuli appear in natural units, but I think that's too much trouble? -->
+        <item value="0.01 V"/>
+        <item value="0.015 V"/>
+        <item value="0.02 V"/>
+        <item value="0.03 V"/>
+        <item value="0.05 V"/>
+        <item value="0.07 V"/>
+        <break/>
+        <item value="0.1 V"/>
+        <item value="0.15 V"/>
+        <item value="0.2 V"/>
+        <item value="0.3 V"/>
+        <item value="0.5 V"/>
+        <item value="0.7 V"/>
+        <break/>
+        <item value="1 V"/>
+        <item value="1.5 V"/>
+        <item value="2 V"/>
+        <item value="3 V"/>
+        <item value="5 V"/>
+        <item value="7 V"/>
+        <break/>
+        <item value="10 V"/>
+        <item custom="1" editcaption="Custom final pulse amplitude (2nd phase or end of ramp)"/>
+      </menu>
+    </tabbedpage>
+  </page>
+
+  <!-- ******************** CCD ACQUISITION CONFIG PAGE ******************* -->
+  <page id="acqCCD" subdxl="2.1">
+    <button id="enable" label="Enabled" type="bool" bg="#ccccff"/>
+    <group id="a">
+      <button id="binning" label="Binning:&#xA;%1" bg="#aaaaff"/>
+      <button id="region" label="Region:&#xA;%1" bg="#8888ff"/>
+      <button id="preIllum" label="Pre-illum:&#xA;%1"  bg="#ddbbff"/>
+      <button id="postIllum" label="Post-illum:&#xA;%1" bg="#bb99ff"/>
+      <break/>
+      <button id="delay" label="VSD delay:&#xA;%1" y="1" bg="#88aaff"/>
+      <button id="dur" label="VSD dur.:&#xA;%1" bg="#77bbff"/>
+      <button id="rate" label="Frame rate:&#xA;%1" bg="#4488ff"/>
+      <button id="dutyCycle" label="Duty cycle:&#xA;%1" bg="#4444ff"/>
+     </group>
+
+    <menu id="binning" caption="CCD Binning" rows="4" cols="2">
+      <item value="1x1+0+0" label="1 x 1"/>
+      <break/>
+      <item value="1x2+0+0" label="1 x 2"/>
+      <item value="1x3+0+0" label="1 x 3"/>
+      <item value="1x4+0+0" label="1 x 4"/>
+      <break/>
+      <item value="2x2+0+0" label="2 x 2"/>
+      <item value="3x3+0+0" label="3 x 3"/>
+      <item value="4x4+0+0" label="4 x 4"/>
+    </menu>
+  
+    <menu id="region" caption="CCD Region" rows="5">
+      <item value="512x512+0+0" label="Full&#xA;(512x512)"/>
+      <space dy="1"/>
+      <item value="384x384+64+64" label="Central Half&#xA;(384x384)"/>
+      <item value="256x256+128+128" label="Central Quarter&#xA;(256x256)"/>
+      <break/>
+      <item value="256x256+0+0" label="NW Quarter&#xA;(256x256)"/>
+      <item value="256x256+256+0" label="NE Quarter&#xA;(256x256)"/>
+      <item value="256x256+0+256" label="SW Quarter&#xA;(256x256)"/>
+      <item value="256x256+256+256" label="SE Quarter&#xA;(256x256)"/>
+    </menu>
+  
+    <menu id="rate" caption="CCD frame rate (fps)" rows="5" cols="2">
+      <item value="1 Hz"/> <!-- "label" is automatic for most types based on "value" -->
+      <item value="2 Hz"/>
+      <item value="3 Hz"/>
+      <item value="5 Hz"/>
+      <item value="7 Hz"/>
+      <break/>
+      <item value="10 Hz"/>
+      <item value="15 Hz"/>
+      <item value="20 Hz"/>
+      <item value="30 Hz"/>
+      <item custom="1" editcaption="Custom CCD frame rate"/> <!-- "custom" creates a user editable button. The value will be overwritten in the local.xml settings file. -->
+    </menu>
+  
+    <menu id="delay" caption="Delay before image acquisition" rows="6" cols="4">
+      <item value="100 ms"/>
+      <item value="150 ms"/>
+      <item value="200 ms"/>
+      <item value="300 ms"/>
+      <item value="500 ms"/>
+      <item value="700 ms"/>
+      <break/>
+      <item value="1.0 s"/>
+      <item value="1.5 s"/>
+      <item value="2.0 s"/>
+      <item value="3.0 s"/>
+      <item value="5.0 s"/>
+      <item value="7.0 s"/>
+      <break/>
+      <item value="10 s"/>
+      <item value="15 s"/>
+      <item value="20 s"/>
+      <item value="30 s"/>
+      <item value="45 s"/>
+      <break/>
+      <item value="60 s"/>
+      <item value="90 s"/>
+      <item value="120 s"/>
+      <item value="180 s"/>
+      <space dy="1"/>
+      <item custom="1" editcaption="Custom delay before image acquisition"/>
+    </menu>
+
+    <menu id="dur" caption="Duration of image acquisition" rows="6" cols="4">
+      <item value="100 ms"/>
+      <item value="150 ms"/>
+      <item value="200 ms"/>
+      <item value="300 ms"/>
+      <item value="500 ms"/>
+      <item value="700 ms"/>
+      <break/>
+      <item value="1.0 s"/>
+      <item value="1.5 s"/>
+      <item value="2.0 s"/>
+      <item value="3.0 s"/>
+      <item value="5.0 s"/>
+      <item value="7.0 s"/>
+      <break/>
+      <item value="10 s"/>
+      <item value="15 s"/>
+      <item value="20 s"/>
+      <item value="30 s"/>
+      <item value="45 s"/>
+      <break/>
+      <item value="60 s"/>
+      <item value="90 s"/>
+      <item value="120 s"/>
+      <item value="180 s"/>
+      <space dy="1"/>
+      <item custom="1" editcaption="Custom duration of image acquisition"/>
+    </menu>
+  
+    <menu id="preIllum" caption="Pre-illumination time" rows="6" cols="3">
+      <item value="1 ms"/>
+      <item value="1.5 ms"/>
+      <item value="2 ms"/>
+      <item value="3 ms"/>
+      <item value="5 ms"/>
+      <item value="7 ms"/>
+      <break/>
+      <item value="10 ms"/>
+      <item value="15 ms"/>
+      <item value="20 ms"/>
+      <item value="30 ms"/>
+      <item value="50 ms"/>
+      <item value="70 ms"/>
+      <break/>
+      <item value="100 ms"/>
+      <item value="150 ms"/>
+      <item value="200 ms"/>
+      <item value="300 ms"/>
+      <item value="500 ms"/>
+      <item custom="1"  editcaption="Custom pre-illumination time"/>
+    </menu>
+  
+    <menu id="postIllum" caption="Post-illumination time" rows="6" cols="3">
+      <item value="0.1 ms"/>
+      <item value="0.15 ms"/>
+      <item value="0.2 ms"/>
+      <item value="0.3 ms"/>
+      <item value="0.5 ms"/>
+      <item value="0.7 ms"/>
+      <break/>
+      <item value="1 ms"/>
+      <item value="1.5 ms"/>
+      <item value="2 ms"/>
+      <item value="3 ms"/>
+      <item value="5 ms"/>
+      <item value="7 ms"/>
+      <break/>
+      <item value="10 ms"/>
+      <item value="15 ms"/>
+      <item value="20 ms"/>
+      <item value="30 ms"/>
+      <item value="50 ms"/>
+      <item custom="1"  editcaption="Custom post-illumination time"/>
+    </menu>
+
+    <menu id="dutyCycle" caption="Duty cycle" rows="5" cols="3">
+      <item value="10%"/>
+      <item value="20%"/>
+      <item value="30%"/>
+      <item value="40%"/>
+      <item value="50%"/>
+      <break/>
+      <item value="60%"/>
+      <item value="70%"/>
+      <item value="80%"/>
+      <item value="90%"/>
+      <item value="100%"/>
+      <break/>
+      <item custom="1" editcaption="Custom duty cycle"/>
+    </menu>
+  </page>
+
+  <!-- ******************** CCD ACQUISITION CONFIG PAGE ******************* -->
+  <page id="stimVideo" subdxl="3.1">
+    <button id="enable" label="Disabled" type="bool" bg="#ffff33"/>
+    <button id="avoidCCD" label="Avoid CCD" type="bool" bg="#cccc99"/>
+    <button id="_@lightOn" label="[Light On]" type="bool" y="4" bg="#ffff00"/>
+    <!-- buttons with names starting with "@" or "_@" are never disabled -->
+    <group id="a">
+      <button id="delay" label="Onset delay:&#xA;%1" y="2" bg="#dddd66"/>
+      <button id="dur" label="Duration:&#xA;%1" bg="#bbbb44"/>
+      <button id="prog" label="Program:&#xA;%1" x="1" y="0" bg="#bbbb44"/>
+      <button id="parA" label="Param A #:&#xA;%1" bg="#ffff88"/>
+      <button id="parB" label="Param B #:&#xA;%1" bg="#ffff55"/>
+      <button id="parC" label="Param C #:&#xA;%1" bg="#ffff22"/>
+      <button id="frameRate" label="Frame Rate:&#xA;%1" x="2" y="0" bg="#dddd99"/>
+      <button id="preIllum" label="Pre-illum.:&#xA;%1"  bg="#dddd99"/>
+      <button id="postIllum" label="Post-illum.:&#xA;%1" bg="#dddd99"/>
+      <button id="marginPreCCD" label="Pre-CCD:&#xA;%1"  bg="#bb99ff"/>
+      <button id="marginPostCCD" label="Post-CCD:&#xA;%1" bg="#bb99ff"/>
+    </group>
+
+    <menu id="frameRate" caption="Video frame rate if not avoiding CCD" rows="4" cols="4">
+      <item value="5 Hz"/>
+      <item value="10 Hz"/>
+      <item value="15 Hz"/>
+      <item value="20 Hz"/>
+      <item value="25 Hz"/>
+      <item value="30 Hz"/>
+      <item value="40 Hz"/>
+      <item value="50 Hz"/>
+      <break/>
+      <break/>
+      <space dy="3"/>
+      <item custom="1" editcaption="Video frame rate if not avoiding CCD"/>
+    </menu>
+
+    <menu id="preIllum" caption="Pre-illumination time" rows="4" cols="4">
+      <item value="0 ms"/>
+      <space dy="2"/>
+      <item custom="1" editcaption="Pre-illumination time"/>
+      <break/>
+      <item value="1 ms"/>
+      <item value="2 ms"/>
+      <item value="5 ms"/>
+      <break/>
+      <item value="10 ms"/>
+      <item value="20 ms"/>
+      <item value="50 ms"/>
+      <break/>
+      <item value="100 ms"/>
+      <item value="200 ms"/>
+      <item value="500 ms"/>
+    </menu>
+
+    <menu id="postIllum" caption="Post-illumination time" rows="4" cols="4">
+      <item value="0 ms"/>
+      <space dy="2"/>
+      <item custom="1" editcaption="Post-illumination time"/>
+      <item value="1 ms"/>
+      <item value="2 ms"/>
+      <item value="5 ms"/>
+      <break/>
+      <item value="10 ms"/>
+      <item value="20 ms"/>
+      <item value="50 ms"/>
+      <break/>
+      <item value="100 ms"/>
+      <item value="200 ms"/>
+      <item value="500 ms"/>
+    </menu>
+
+    <menu id="marginPreCCD" caption="Pre-CCD avoidance time" rows="4" cols="4">
+      <item value="0 ms"/>
+      <space dy="2"/>
+      <item custom="1" editcaption="Pre-CCD avoidance time"/>
+      <break/>
+      <item value="1 ms"/>
+      <item value="2 ms"/>
+      <item value="5 ms"/>
+      <break/>
+      <item value="10 ms"/>
+      <item value="20 ms"/>
+      <item value="50 ms"/>
+      <break/>
+      <item value="100 ms"/>
+      <item value="200 ms"/>
+      <item value="500 ms"/>
+    </menu>
+
+    <menu id="marginPostCCD" caption="Post-CCD avoidance time" rows="4" cols="4">
+      <item value="0 ms"/>
+      <space dy="2"/>
+      <item custom="1" editcaption="Post-CCD avoidance time"/>
+      <item value="1 ms"/>
+      <item value="2 ms"/>
+      <item value="5 ms"/>
+      <break/>
+      <item value="10 ms"/>
+      <item value="20 ms"/>
+      <item value="50 ms"/>
+      <break/>
+      <item value="100 ms"/>
+      <item value="200 ms"/>
+      <item value="500 ms"/>
+    </menu>
+
+    <menu id="delay" caption="Delay before video stimulation" rows="6" cols="4">
+      <item value="100 ms"/>
+      <item value="150 ms"/>
+      <item value="200 ms"/>
+      <item value="300 ms"/>
+      <item value="500 ms"/>
+      <item value="700 ms"/>
+      <break/>
+      <item value="1.0 s"/>
+      <item value="1.5 s"/>
+      <item value="2.0 s"/>
+      <item value="3.0 s"/>
+      <item value="5.0 s"/>
+      <item value="7.0 s"/>
+      <break/>
+      <item value="10 s"/>
+      <item value="15 s"/>
+      <item value="20 s"/>
+      <item value="30 s"/>
+      <item value="45 s"/>
+      <break/>
+      <item value="60 s"/>
+      <item value="90 s"/>
+      <item value="120 s"/>
+      <item value="180 s"/>
+      <space dy="1"/>
+      <item custom="1" editcaption="Custom delay before video stimulation"/>
+    </menu>
+
+    <menu id="dur" caption="Duration of video stimulation" rows="6" cols="4">
+      <item value="100 ms"/>
+      <item value="150 ms"/>
+      <item value="200 ms"/>
+      <item value="300 ms"/>
+      <item value="500 ms"/>
+      <item value="700 ms"/>
+      <break/>
+      <item value="1.0 s"/>
+      <item value="1.5 s"/>
+      <item value="2.0 s"/>
+      <item value="3.0 s"/>
+      <item value="5.0 s"/>
+      <item value="7.0 s"/>
+      <break/>
+      <item value="10 s"/>
+      <item value="15 s"/>
+      <item value="20 s"/>
+      <item value="30 s"/>
+      <item value="45 s"/>
+      <break/>
+      <item value="60 s"/>
+      <item value="90 s"/>
+      <item value="120 s"/>
+      <item value="180 s"/>
+      <space dy="1"/>
+      <item custom="1"  editcaption="Custom duration of video stimulation"/>
+    </menu>
+
+    <menu id="prog" caption="Program number" rows="6" cols="5">
+      <item value="01"/>
+      <item value="02"/>
+      <item value="03"/>
+      <item value="04"/>
+      <item value="05"/>
+      <item value="06"/>
+      <item value="11"/>
+      <item value="12"/>
+      <item value="13"/>
+      <item value="14"/>
+      <item value="15"/>
+      <item value="16"/>
+      <item value="21"/>
+      <item value="22"/>
+      <item value="23"/>
+      <item value="24"/>
+      <item value="25"/>
+      <item value="26"/>
+      <item value="31"/>
+      <item value="32"/>
+      <item value="33"/>
+      <item value="34"/>
+      <item value="35"/>
+      <item value="36"/>
+      <item value="41"/>
+      <item value="42"/>
+      <item value="43"/>
+      <item value="44"/>
+      <item value="45"/>
+      <item value="46"/>
+    </menu>
+
+    <menu id="parA" caption="Parameter A" rows="6" cols="4">
+      <item value="01"/>
+      <item value="02"/>
+      <item value="03"/>
+      <item value="04"/>
+      <item value="05"/>
+      <item value="06"/>
+      <break/>
+      <item value="11"/>
+      <item value="12"/>
+      <item value="13"/>
+      <item value="14"/>
+      <item value="15"/>
+      <item value="16"/>
+      <break/>
+      <item value="21"/>
+      <item value="22"/>
+      <item value="23"/>
+      <item value="24"/>
+      <item value="25"/>
+      <item value="26"/>
+      <break/>
+      <item value="31"/>
+      <item value="32"/>
+      <item value="33"/>
+      <item value="34"/>
+      <space dy="1" />
+      <item custom="1"  editcaption="Custom parameter value"/>
+    </menu>
+
+    <menu id="parB" caption="Parameter B" rows="6" cols="4">
+      <item value="01"/>
+      <item value="02"/>
+      <item value="03"/>
+      <item value="04"/>
+      <item value="05"/>
+      <item value="06"/>
+      <break/>
+      <item value="11"/>
+      <item value="12"/>
+      <item value="13"/>
+      <item value="14"/>
+      <item value="15"/>
+      <item value="16"/>
+      <break/>
+      <item value="21"/>
+      <item value="22"/>
+      <item value="23"/>
+      <item value="24"/>
+      <item value="25"/>
+      <item value="26"/>
+      <break/>
+      <item value="31"/>
+      <item value="32"/>
+      <item value="33"/>
+      <item value="34"/>
+      <space dy="1" />
+      <item custom="1"  editcaption="Custom parameter value"/>
+    </menu>
+
+    <menu id="parC" caption="Parameter C" rows="6" cols="4">
+      <item value="01"/>
+      <item value="02"/>
+      <item value="03"/>
+      <item value="04"/>
+      <item value="05"/>
+      <item value="06"/>
+      <break/>
+      <item value="11"/>
+      <item value="12"/>
+      <item value="13"/>
+      <item value="14"/>
+      <item value="15"/>
+      <item value="16"/>
+      <break/>
+      <item value="21"/>
+      <item value="22"/>
+      <item value="23"/>
+      <item value="24"/>
+      <item value="25"/>
+      <item value="26"/>
+      <break/>
+      <item value="31"/>
+      <item value="32"/>
+      <item value="33"/>
+      <item value="34"/>
+      <space dy="1" />
+      <item custom="1"  editcaption="Custom parameter value"/>
+    </menu>
+  </page>
+
+  <!-- %%%%%%%%%%%%%%%%%%%%% ACQUISITION PAGE %%%%%%%%%%%%%%%%%% -->
+  <page id="acquisition" subdxr="4.1">
+    <button id="_exptname" label="Expt. Name:&#xA;%1" x="3.1" y="0" editcaption="Experiment Name" bg="#88aaff"/>
+    <button id="_trialno" label="Trial No.:&#xA;%1" editcaption="Trial Number" bg="#77bbff"/>
+    <button id="_dummy" label="Dummy" type="bool" bg="#ffffff"/>
+    <button id="log"  label="Log Note..." y="3" bg="#eeeecc"/>
+    <button id="load"  label="Load Old&#xA;Data..." bg="#88ffff"/>
+    <break/>
+    <button id="singleframe" label="Single Frame" bg="#ddbbff"/>
+    <button id="singletrial" label="Single Trial" bg="#bb99ff"/>
+    <button id="contEphys" label="Cont. E'phys&#xA;Disabled" type="bool" bg="#22ff77"/>
+    <button id="autoRun"  label="Auto Run&#xA;Disabled" type="bool" bg="#9977ff"/>
+    <group id="a">
+      <button id="trialPeriod" label="Trial period:&#xA;%1" bg="#44ffaa"/>
+      <button id="_ccvals" label="Coumarin:&#xA;%1" x="1.05" y="0" bg="#8888ff" value="-/-/-"/>
+      <button id="_oxvals" label="Oxonol:&#xA;%1" x="2.05" y="0" bg="#ff8888" value="-/-/-"/>
+    </group>
+
+    <button id="_walltime" label="%1" x="2.05" y="2" bg="#99aa99"/>
+    <button id="_exptelapsed" label="Since Start:&#xA;%1" bg="#88bb88"/>
+    <button id="_trialelapsed" label="Since Last:&#xA;%1" bg="#77cc77"/>
+
+    <page id="_ccvals">
+      <button id="blackPlus" label="More black"/>
+      <button id="blackMin" label="Less black"/>
+      <button id="whitePlus" label="More white"/>
+      <button id="whiteMin" label="Less white"/>
+      <button id="reset" label="Reset"/>
+    </page>
+
+    <page id="_oxvals">
+      <button id="blackPlus" label="More black"/>
+      <button id="blackMin" label="Less black"/>
+      <button id="whitePlus" label="More white"/>
+      <button id="whiteMin" label="Less white"/>
+      <button id="reset" label="Reset"/>
+    </page>
+
+    <menu id="trialPeriod" caption="Trial period" rows="5" cols="1">
+      <item value="1 min"/>
+      <item value="2 min"/>
+      <item value="5 min"/>
+      <item value="10 min"/>
+      <item custom="1" editcaption="Custom trial period"/>
+    </menu>
+
+  </page>
+
+  <page id="analysis" subdxr="3.1">
+    <group id="clickmode">
+      <button id="zoom" label="Zoom" x="4.1" y="0" bg="#88ffcc"/>
+      <button id="roiMove" label="Move ROI" x="3.1" y="0" bg="#aaff00"/>
+      <button id="roiRotSize" label="Resize ROI" bg="#88ff44"/>
+      <button id="roiRotate" label="Rotate ROI" bg="#11ff11"/>
+      <button id="roiSelect" label="Select ROI" x="2.1" y="0" bg="#aaeeaa"/>
+      <button id="roiBlob" label="Blob ROI" bg="#ffff88"/>
+      <button id="roiAdd" label="Create&#xA;Elliptic ROI" bg="#ffff00"/>
+    </group>
+    <button id="roiDelete" label="Delete ROI" x="4.1" y="3" bg="#ff8833"/>
+    <group id="subs">
+      <button id="refType" label="Ref. Type:&#xA;%1" x="3.1" y="3" bg="#44ffee"/>
+      <button id="refTrace" label="Ref. Trace:&#xA;%1" x="3.1" y="4" bg="#66ffaa" hidewhendisabled="yes"/>
+      <button id="refDigi" label="Digi. Ref.:&#xA;%1" x="3.1" y="4" bg="#66ffaa" hidewhendisabled="yes"/>
+      <button id="refFreq" label="Ref. Freq.:&#xA;%1" x="3.1" y="4" bg="#66ffaa" hidewhendisabled="yes"/>
+      <button id="showROIs" label="ROIs:&#xA;%1" x="2.1" y="3" bg="#44ff88"/>
+      <button id="debleach" label="Debleach:&#xA;%1" x="2.1" y="4" bg="#88ff88"/>
+    </group>
+    <button id="roiDeleteAll" label="Delete All ROIs" x="4.1" y="4" bg="#ff4411"/>
+    <button id="zoomIn" label="Zoom In" x="4.1" y="1" bg="#55eecc"/>
+    <button id="zoomOut" label="Zoom Out" bg="#22ddcc"/>
+
+    <menu id="refType" caption="Reference type" rows="3" cols="1">
+      <item value="Analog" label="Analog"/>
+      <item value="Digital" label="Digital"/>
+      <item value="Frequency" label="Frequency"/>
+    </menu>
+
+    <menu id="refFreq" caption="Reference frequency" rows="5" cols="3">
+      <item value="0.1 Hz"/>
+      <item value="0.2 Hz"/>
+      <item value="0.3 Hz"/>
+      <item value="0.5 Hz"/>
+      <item value="0.7 Hz"/>
+      <break/>
+      <item value="1 Hz"/>
+      <item value="2 Hz"/>
+      <item value="3 Hz"/>
+      <item value="5 Hz"/>
+      <item value="7 Hz"/>
+      <break/>
+      <item value="10 Hz"/>
+      <item value="15 Hz"/>
+      <item value="20 Hz"/>
+      <item value="30 Hz"/>
+      <item custom="1" editcaption="Custom reference freq."/>
+    </menu>
+
+    <menu id="refDigi" caption="Digital lines" rows="5" cols="3">
+      <item value="DO0mon" label="DO0"/>
+      <item value="DO1mon" label="DO1"/>
+      <item value="DO2mon" label="DO2"/>
+      <item value="DO3mon" label="DO3"/>
+      <item value="VideoLightMon" label="Video&#xA;light"/>
+      <item value="ExcShtrMon" label="Excitation&#xA;Shutter"/>
+      <item value="TrigCcMon" label="Coumarin&#xA;Trigger"/>
+      <item value="TrigOxMon" label="Oxonol&#xA;Trigger"/>
+      <item value="FrameCc" label="Coumarin&#xA;Frame"/>
+      <item value="FrameOx" label="Oxonol&#xA;Frame"/>
+    </menu>
+
+    <menu id="refTrace" caption="Input channels" rows="5" cols="3">
+      <!-- ID values match defines for "AI_xxx" in channels.h -->
+      <item value="ME1_10Vm" label="V_1"/>
+      <item value="ME2_Vm"   label="V_2"/>
+      <item value="ME1_I"    label="I_1"/>
+      <item value="ME2_I"    label="I_2"/>
+      <item value="Stim0Mon" label="AO0m"/>
+      <break/>
+      <item value="ExtVA1"   label="V_A1"/>
+      <item value="ExtVA2"   label="V_A2"/>
+      <item value="ExtVA3"   label="V_A3"/>
+      <item value="ExtVA4"   label="V_A4"/>
+      <item value="Stim1Mon" label="AO1m"/>
+      <break/>
+      <item value="ExtVB1"   label="V_B1"/>
+      <item value="ExtVB2"   label="V_B2"/>
+      <item value="ExtVB3"   label="V_B3"/>
+      <item value="ExtVB4"   label="V_B4"/>
+      <item value="60HzRef"  label="60 Hz ref."/>
+    </menu>
+
+    <menu id="showROIs" caption="Show ROIs" rows="5" cols="1">
+      <item value="Hidden"/>
+      <item value="Centers"/>
+      <item value="Outlines"/>
+      <item value="IDs"/>
+      <item value="Full" label="Outlines&#xA;and IDs"/>
+    </menu>
+
+    <menu id="debleach" caption="Debleach mode" rows="3" cols="1">
+      <item value="None"/>
+      <item value="Linear"/>
+      <item value="Quadratic"/>
+      <!--item value="Exponential" label="Exp. (NYI)"/-->
+    </menu>
+  </page>
+
+  <page id="maintenance" subdxr="2.1">
+    <group id="chk">
+      <button id="focus" label="Focus" x="3.1" y="0" bg="#ffcc88"/>
+      <button id="liveEphys" label="Oscilloscope" bg="#eeaaaa"/>
+      <break/>
+      <button id="checkDaq" label="DAQ Board&#xA;Status" bg="#bbffff"/>
+      <button id="checkCam" label="Camera&#xA;Status" bg="#ccccff"/>
+      <!--button id="checkMEA" label="MEA&#xA;Status" bg="#bbffbb"/>
+      <button id="checkVideo" label="Video&#xA;Status" bg="#ffffbb"/-->
+    </group>
+    <page id="focus">
+      <button id="autoRange" label="Auto Range" x=".5" y="4" bg="#ddcc88"/>
+      <group id="rgn" default="viewAll">
+        <button id="viewAll" label="Two Full&#xA;Images" x="2" y="0" bg="#eecc77"/>
+        <button id="viewA" label="Coumarin and&#xA;Central Zoom" bg="#bbddff"/>
+        <button id="viewB" label="Oxonol and&#xA;Central Zoom" bg="#ffff77"/>
+        <button id="viewZoom" label="Coumarin and&#xA;Oxonol Zooms" bg="#ddbb66"/>
+        <button id="viewDiff" label="Difference and&#xA;Central Zoom" bg="#ddbb66"/>
+      </group>
+      <group id="val">
+        <button id="focusA" label="Coum. Focus:&#xA;%1" x="0" y="0" bg="#cceeff"/>
+        <button id="focusB" label="Ox. Focus:&#xA;%1" bg="#ffff77"/>
+        <button id="intensityA" label="Coum. Avg/Max:&#xA;%1" x="0" y="2" bg="#bbddff"/>
+        <button id="intensityB" label="Ox. Avg/Max:&#xA;%1" bg="#eeee55"/>
+        <button id="alignScale" label="Scale:&#xA;%1"  x="1" y="0." bg="#ffffaa"/>
+        <button id="alignRotate" label="Rotation:&#xA;%1" bg="#ffddcc"/>
+        <button id="alignX" label="X Shift:&#xA;%1" bg="#ffdd99"/>
+        <button id="alignY" label="Y Shift:&#xA;%1" bg="#ffddbb"/>
+      </group>
+    </page>
+    <page id="liveEphys" subdxr="1.1">
+      <group id="a" default="timeBase">
+      <button id="timeBase" label="Time Base:&#xA;%1" x="2" bg="#dd9999"/>
+      <button id="aiChannels" label="Analog:&#xA;Inputs" bg="#ddbb99"/>
+      <!--button id="diChannels" label="Digital:&#xA;inputs" bg="#ddbb99"/-->
+      <button id="vcoSource" label="VCO:&#xA;%1" bg="#ddbb99"/>
+      </group>
+      <button id="autoRange" label="Auto Range" x="2" y="4" bg="#dddd99"/>
+    <!-- ********************* MENUS FOR LIVE EPHYS. ******************** -->
+      <checklist id="diChannels" caption="Digital inputs" rows="4" cols="4">
+        <item value="DO0Mon" label="DO0"/>
+        <item value="DO1Mon" label="DO1"/>
+        <item value="DO2Mon" label="DO2"/>
+        <item value="DO3Mon" label="DO3"/>
+
+        <item value="VideoResp" label="VResp"/>
+        <item value="VideoFrame" label="VFrame"/>
+        <item value="VideoCmdMon" label="VCmd"/>
+        <item value="VideoLightMon" label="VLight"/>
+
+        <!--item value="ExcShtrMon" label="ExcShtr"/-->
+        <!--item value="VideoShtrMon" label="VShtr"/-->
+        <break/>
+        <item value="TrigCcMon" label="TrgCc"/>
+        <item value="TrigOxMon" label="TrgOx"/>
+        <item value="FrameCc" label="FrmCc"/>
+        <item value="FrameOx" label="FrmOx"/>
+      </checklist>
+      <checklist id="aiChannels" caption="Input channels" rows="4" cols="4">
+        <!-- "values" match "tags" in AICHAIN enum -->
+        <item value="ME1_10Vm" label="V_1"/>
+        <item value="ME2_Vm"   label="V_2"/>
+        <item value="ME1_I"    label="I_1"/>
+        <item value="ME2_I"    label="I_2"/>
+        <break/>
+        <item value="ExtVA1"   label="V_A1"/>
+        <item value="ExtVA2"   label="V_A2"/>
+        <item value="ExtVA3"   label="V_A3"/>
+        <item value="ExtVA4"   label="V_A4"/>
+        <break/>
+        <item value="ExtVB1"   label="V_B1"/>
+        <item value="ExtVB2"   label="V_B2"/>
+        <item value="ExtVB3"   label="V_B3"/>
+        <item value="ExtVB4"   label="V_B4"/>
+        <break/>
+        <item value="Stim0Mon" label="AO0m"/>
+        <item value="Stim1Mon" label="AO1m"/>
+        <item value="Stim2Mon" label="VidXm"/>
+        <item value="Stim3Mon" label="VidYm"/>
+        <!--item value="60HzRef"  label="60 Hz ref."/-->
+      </checklist>
+      <menu id="vcoSource" caption="VCO Channel" rows="5" cols="1">
+        <item value="off" label="Off"/>
+        <item value="ME1_10Vm" label="V_1"/>
+        <item value="ME2_Vm"   label="V_2"/>
+      </menu>
+      <menu id="timeBase" caption="Time Base" rows="6" cols="3">
+        <item value="10 ms"/>
+        <item value="20 ms"/>
+        <item value="50 ms"/>
+        <item value="100 ms"/>
+        <item value="200 ms"/>
+        <item value="500 ms"/>
+        <break/>
+        <item value="1 s"/>
+        <item value="2 s"/>
+        <item value="5 s"/>
+        <item value="10 s"/>
+        <item value="30 s"/>
+        <item value="1 min"/>
+        <break/>
+        <item value="2 min"/>
+        <item value="5 min"/>
+        <item value="10 min"/>
+      </menu>
+    </page>
+    <page id="checkDaq"/>
+    <page id="checkCam"/>
+    <page id="checkMEA"/>
+    <page id="checkVideo"/>
+  </page>
+
+  <page id="savedSettings" subdxr="1.1">
+    <button id="save" label="Save..." x="4.1" y="4" bg="#ff99cc"/>
+    <button id="_name" label="(name)" x="10" y="0"/>
+    <menu id="_name">
+      <item value="(..)"/>
+    </menu>
+  </page>
+</page>
+
+<multigraph id="stim">
+  <graph ch="AO0" typ="ao"/>
+  <graph ch="AO1" typ="ao"/>
+  <graph ch="AO2" typ="ao"/>
+  <graph ch="AO3" typ="ao"/>
+  <graph ch="DO0" typ="do" tiny="yes"/>
+  <graph ch="DO1" typ="do" tiny="yes"/>
+  <graph ch="DO2" typ="do" tiny="yes"/>
+  <graph ch="DO3" typ="do" tiny="yes"/>
+  <graph ch="ExcShtr" typ="do" tiny="yes"/>
+  <graph ch="VideoTrig" typ="do" tiny="yes"/>
+  <graph ch="VideoLight" typ="do" tiny="yes"/>
+  <graph ch="TrigCc" typ="do" tiny="yes"/>
+  <graph ch="TrigOx" typ="do" tiny="yes"/>
+</multigraph>
+<multigraph id="intra">
+  <graph ch="ME1_10Vm" typ="ai"/>
+  <graph ch="ME2_Vm"   typ="ai"/>
+  <graph ch="ME1_I" typ="ai"/>
+  <graph ch="ME2_I" typ="ai"/>
+  <graph ch="AO0" typ="ao" tiny="yes"/>
+  <graph ch="DO0" typ="do" tiny="yes"/>
+  <graph ch="DO0Mon" typ="di" tiny="yes"/>
+  <graph ch="ExcShtrMon" typ="di" tiny="yes"/>
+  <graph ch="VideoFrame" typ="di" tiny="yes"/>
+  <graph ch="VideoLightMon" typ="di" tiny="yes"/>
+  <graph ch="FrameCc" typ="di" tiny="yes"/>
+  <graph ch="FrameOx" typ="di" tiny="yes"/>
+</multigraph>
+<multigraph id="extra">
+  <graph ch="ExtVA1" typ="ai"/>
+  <graph ch="ExtVA2" typ="ai"/>
+  <graph ch="ExtVA3" typ="ai"/>
+  <graph ch="ExtVA4" typ="ai"/>
+  <graph ch="ExtVB1" typ="ai"/>
+  <graph ch="ExtVB2" typ="ai"/>
+  <graph ch="ExtVB3" typ="ai"/>
+  <graph ch="ExtVB4" typ="ai"/>
+</multigraph>
+<multigraph id="liveEPhysLeft">
+  <graph ch="ME1_10Vm" typ="ai"/>
+  <graph ch="ME2_Vm"   typ="ai"/>
+  <graph ch="ME1_I" typ="ai"/>
+  <graph ch="ME2_I" typ="ai"/>
+  <graph ch="DO0Mon" typ="di" tiny="yes"/>
+  <graph ch="DO1Mon" typ="di" tiny="yes"/>
+  <graph ch="DO2Mon" typ="di" tiny="yes"/>
+  <graph ch="DO3Mon" typ="di" tiny="yes"/>
+  <graph ch="ExcShtrMon" typ="di" tiny="yes"/>
+  <graph ch="TrigCcMon" typ="di" tiny="yes"/>
+  <graph ch="TrigOxMon" typ="di" tiny="yes"/>
+  <graph ch="FrameCc" typ="di" tiny="yes"/>
+  <graph ch="FrameOx" typ="di" tiny="yes"/>
+</multigraph>
+<multigraph id="liveEPhysRight">
+  <graph ch="ExtVA1" typ="ai"/>
+  <graph ch="ExtVA2" typ="ai"/>
+  <graph ch="ExtVA3" typ="ai"/>
+  <graph ch="ExtVA4" typ="ai"/>
+  <graph ch="ExtVB1" typ="ai"/>
+  <graph ch="ExtVB2" typ="ai"/>
+  <graph ch="ExtVB3" typ="ai"/>
+  <graph ch="ExtVB4" typ="ai"/>
+  <graph ch="VideoFrame" typ="di" tiny="yes"/>
+  <graph ch="VideoResp" typ="di" tiny="yes"/>
+  <graph ch="VideoLightMon" typ="di" tiny="yes"/>
+  <graph ch="VideoCmdMon" typ="di" tiny="yes"/>
+</multigraph>
+
+</vsdscopeGUIConfig>

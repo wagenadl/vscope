@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<!DOCTYPE vsdscopeSettings>
+<vsdscopeSettings>
+ <dates modified="20080917.103500" creation="20080917.103500" />
+ <custom value="30" id="ccdFreq.1" />
+ <settings>
+  <category id="stimEphys" >
+   <array id="channel" >
+    <elt id="AO0" >
+     <pval value="false" id="enable" />
+     <pval value="5" id="nPulses" />
+     <pval value="1" id="nTrains" />
+     <pval value="5" id="pulseAmp" />
+     <pval value="-5" id="pulseAmp2" />
+     <pval value="10 ms" id="pulseDur" />
+     <pval value="10 ms" id="pulseDur2" />
+     <pval value="100 ms" id="pulsePeriod" />
+     <pval value="TTL" id="pulseType" />
+     <pval value="1 s" id="trainPeriod" />
+    </elt>
+    <elt id="DO0" >
+     <pval value="true" id="enable" />
+     <pval value="1" id="nTrains" />
+     <pval value="15 s" id="trainPeriod" />
+     <pval value="10" id="nPulses" />
+     <pval value="1 s" id="pulsePeriod" />
+     <pval value="TTL" id="pulseType" />
+     <pval value="5" id="pulseAmp" />
+     <pval value="-5" id="pulseAmp2" />
+     <pval value="10 ms" id="pulseDur" />
+     <pval value="10 ms" id="pulseDur2" />
+    </elt>
+    <elt id="AO1" >
+     <pval value="false" id="enable" />
+     <pval value="5" id="nPulses" />
+     <pval value="1" id="nTrains" />
+     <pval value="5" id="pulseAmp" />
+     <pval value="-5" id="pulseAmp2" />
+     <pval value="10 ms" id="pulseDur" />
+     <pval value="10 ms" id="pulseDur2" />
+     <pval value="100 ms" id="pulsePeriod" />
+     <pval value="TTL" id="pulseType" />
+     <pval value="1 s" id="trainPeriod" />
+    </elt>
+    <elt id="AO2" >
+     <pval value="false" id="enable" />
+     <pval value="5" id="nPulses" />
+     <pval value="1" id="nTrains" />
+     <pval value="5" id="pulseAmp" />
+     <pval value="-5" id="pulseAmp2" />
+     <pval value="10 ms" id="pulseDur" />
+     <pval value="10 ms" id="pulseDur2" />
+     <pval value="100 ms" id="pulsePeriod" />
+     <pval value="TTL" id="pulseType" />
+     <pval value="1 s" id="trainPeriod" />
+    </elt>
+    <elt id="AO3" >
+     <pval value="false" id="enable" />
+     <pval value="5" id="nPulses" />
+     <pval value="1" id="nTrains" />
+     <pval value="5" id="pulseAmp" />
+     <pval value="-5" id="pulseAmp2" />
+     <pval value="10 ms" id="pulseDur" />
+     <pval value="10 ms" id="pulseDur2" />
+     <pval value="100 ms" id="pulsePeriod" />
+     <pval value="TTL" id="pulseType" />
+     <pval value="1 s" id="trainPeriod" />
+    </elt>
+    <elt id="DO1" >
+     <pval value="false" id="enable" />
+     <pval value="5" id="nPulses" />
+     <pval value="1" id="nTrains" />
+     <pval value="5" id="pulseAmp" />
+     <pval value="-5" id="pulseAmp2" />
+     <pval value="10 ms" id="pulseDur" />
+     <pval value="10 ms" id="pulseDur2" />
+     <pval value="100 ms" id="pulsePeriod" />
+     <pval value="TTL" id="pulseType" />
+     <pval value="1 s" id="trainPeriod" />
+    </elt>
+    <elt id="DO2" >
+     <pval value="false" id="enable" />
+     <pval value="5" id="nPulses" />
+     <pval value="1" id="nTrains" />
+     <pval value="5" id="pulseAmp" />
+     <pval value="-5" id="pulseAmp2" />
+     <pval value="10 ms" id="pulseDur" />
+     <pval value="10 ms" id="pulseDur2" />
+     <pval value="100 ms" id="pulsePeriod" />
+     <pval value="TTL" id="pulseType" />
+     <pval value="1 s" id="trainPeriod" />
+    </elt>
+    <elt id="DO3" >
+     <pval value="false" id="enable" />
+     <pval value="5" id="nPulses" />
+     <pval value="1" id="nTrains" />
+     <pval value="5" id="pulseAmp" />
+     <pval value="-5" id="pulseAmp2" />
+     <pval value="10 ms" id="pulseDur" />
+     <pval value="10 ms" id="pulseDur2" />
+     <pval value="100 ms" id="pulsePeriod" />
+     <pval value="TTL" id="pulseType" />
+     <pval value="1 s" id="trainPeriod" />
+    </elt>
+   </array>
+   <pval value="true" id="enable" />
+  </category>
+  <category id="acqCCD" >
+   <pval value="1x1" id="binning" />
+   <pval value="500 ms" id="delay" />
+   <pval value="true" id="enable" />
+   <pval value="10 ms" id="postIllum" />
+   <pval value="100 ms" id="preIllum" />
+   <pval value="10 Hz" id="rate" />
+   <pval value="512x512+0+0" id="region" />
+  </category>
+  <category id="acqEphys" >
+   <pval value="10 kHz" id="acqFreq" />
+   <pval value="11 s" id="acqTime" />
+   <pval value="ME1_10Vm ME2_Vm" id="aiChannels" />
+   <pval value="false" id="contEphys" />
+   <pval value="5 min" id="trialPeriod" />
+  </category>
+  <category id="acquisition" >
+   <pval value="nn" id="exptname" />
+   <pval value="1" id="trialno" />
+  </category>
+  <category id="analysis" >
+   <pval value="None" id="debleach" />
+  </category>
+  <category id="custom" >
+   <category id="acqCCD" >
+    <pval value="1 s" id="delay-1" />
+    <pval value="1 s" id="postIllum-1" />
+    <pval value="1 s" id="preIllum-1" />
+    <pval value="10 Hz" id="rate-1" />
+   </category>
+   <category id="acqEphys" >
+    <pval value="50 kHz" id="acqFreq-1" />
+    <pval value="11 s" id="acqTime-1" />
+    <pval value="5 min" id="trialPeriod-1" />
+   </category>
+   <category id="stimEphys" >
+    <category id="channel" >
+     <pval value="50" id="nTrains-1" />
+     <pval value="2" id="pulseAmp-1" />
+     <pval value="-2" id="pulseAmp2-1" />
+     <pval value="60 s" id="pulseDur-1" />
+     <pval value="60 s" id="pulseDur2-1" />
+     <pval value="60 s" id="pulsePeriod-1" />
+     <pval value="60 s" id="trainPeriod-1" />
+    </category>
+   </category>
+  </category>
+  <category id="maintenance" >
+   <category id="checkCam" />
+   <category id="checkDaq" />
+   <category id="checkMEA" />
+   <category id="checkVideo" />
+   <category id="focus" />
+   <category id="liveEphys" >
+    <pval value="1 s" id="timeBase" />
+   </category>
+  </category>
+ </settings>
+</vsdscopeSettings>

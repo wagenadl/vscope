@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+SUBDIRS="base math gfx xml gui daq pvp acq video toplevel"
+
+rm -f flat.pro
+touch flat.pro
+
+for a in ${=SUBDIRS}; do
+  for s in `tr ' ' '\n' < $a/$a.pro | grep cpp | grep -vi dummy`; do
+    echo "SOURCES += $a/$s" >> flat.pro
+  done
+  for h in `tr ' ' '\n' < $a/$a.pro | grep '.h$' | grep -vi dummy`; do
+    echo "HEADERS += $a/$h" >> flat.pro
+  done
+  echo >> flat.pro
+done
+
