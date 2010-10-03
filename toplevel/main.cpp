@@ -304,6 +304,8 @@ int main(int argc, char **argv) {
     Globals::vsdtraces->
       setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach")
 				    .toInt()));
+    QObject::connect(Globals::vsdtraces,SIGNAL(roisChanged()),
+                     Globals::trove,SLOT(saveROIs()));
     Globals::vsdtraces->hide();
 
     Globals::coherence = new Coherence(Globals::vsdtraces, 0,
