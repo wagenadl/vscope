@@ -295,32 +295,33 @@ void CCDImage::sharedZoom(bool has, QRect rect) {
 
 CCDImage::ZoomInfo CCDImage::makeZoomInfo() {
   ZoomInfo z;
-  if (hasZoom) {
-    /* We have to do the zoom transformation if hasZoom is true.
-       Screen coordinates (0,0)-(w,h) correspond to
-         (zoomRect.left(),zoomRect.top())-
-           (zoomRect.right()+1,zoomRect.bottom()+1).
-       (I think the +1 is correct.)
-       We need an equation:
-         x_screen = a*x_world + b
-       that captures that. The correspondence above says:
-         0 = a*zR.left + b
-         w = a*(zR.right+1) + b
-       Subtract these:
-         w = a*(zR.right+1) - a*zR.left = a*zR.width
-       Thus:
-         a = w / zR.width.
-       And:
-  	 b = -a * zR.left.
-    */
-    z.ax = double(width()) / zoomRect.width();
-    z.ay = double(height()) / zoomRect.height();
-    /* Note that we always zoom with ratio preserved, thus ax = ay, but
-       this is more general.
-    */
-    z.bx = -z.ax*zoomRect.left();
-    z.by = -z.ay*zoomRect.top();
-  }
+  QRect zr = safeZoomRect();
+
+  /* We have to do the zoom transformation if hasZoom is true.
+     Screen coordinates (0,0)-(w,h) correspond to
+       (zoomRect.left(),zoomRect.top())-
+         (zoomRect.right()+1,zoomRect.bottom()+1).
+     (I think the +1 is correct.)
+     We need an equation:
+       x_screen = a*x_world + b
+     that captures that. The correspondence above says:
+       0 = a*zR.left + b
+       w = a*(zR.right+1) + b
+     Subtract these:
+       w = a*(zR.right+1) - a*zR.left = a*zR.width
+     Thus:
+       a = w / zR.width.
+     And:
+	 b = -a * zR.left.
+  */
+
+  z.ax = double(width()) / zr.width();
+  z.ay = double(height()) / zr.height();
+  /* Note that we always zoom with ratio preserved, thus ax = ay, but
+     this is more general.
+  */
+  z.bx = -z.ax*zr.left();
+  z.by = -z.ay*zr.top();
   return z;
   }
 
@@ -398,88 +399,102 @@ void CCDImage::overwriteImage(QImage img) {
   update();
 }
 
+QRect CCDImage::safeZoomRect() const {
+  if (hasZoom)
+    return zoomRect;
+  else
+    return QRect(0,0,image.width(),image.height());
+}
 
-XYRRA CCDImage::imageToScreen(XYRRA el) {
-  if (hasZoom) {
-    double ax = double(width()) / zoomRect.width();
-    double ay = double(height()) / zoomRect.height();
-    /* Since we preserve aspect ratio in zoom, a=ax=ay by definition. */
-    double bx = -ax*zoomRect.left();
-    double by = -ay*zoomRect.top();
-    el.x0 = ax*el.x0+bx;
-    el.y0 = ay*el.y0+by;
-    XYABC abc(el);
-    abc.a /= ax*ax;
-    abc.b /= ay*ay;
-    abc.c /= ax*ay;
-    el = abc.toXYRRA();
-  }
+
+XYRRA CCDImage::imageToScreen(XYRRA el) const {
+  QRect r = safeZoomRect();
+  double ax = double(width()) / r.width();
+  double ay = double(height()) / r.height();
+  double bx = -ax*r.left();
+  double by = -ay*r.top();
+  el.x0 = ax*el.x0+bx;
+  el.y0 = ay*el.y0+by;
+  XYABC abc(el);
+  abc.a /= ax*ax;
+  abc.b /= ay*ay;
+  abc.c /= ax*ay;
+  el = abc.toXYRRA();
   return el;
 }
 
-QPoint CCDImage::imageToScreen(QPointF xy) {
-  if (hasZoom) {
-    double ax = double(width()) / zoomRect.width();
-    double ay = double(height()) / zoomRect.height();
-    /* Since we preserve aspect ratio in zoom, a=ax=ay by definition. */
-    double bx = -ax*zoomRect.left();
-    double by = -ay*zoomRect.top();
-    return QPoint(roundi(ax*xy.x()+bx), roundi(ay*xy.y()+by));
-  } else {
-    return QPoint(roundi(xy.x()),roundi(xy.y()));
-  }
+QRect CCDImage::imageToScreen(QRect xy) const {
+  QRect r = safeZoomRect();
+  double ax = double(width()) / r.width();
+  double ay = double(height()) / r.height();
+  double bx = -ax*r.left();
+  double by = -ay*r.top();
+  return QRect(roundi(ax*xy.left()+bx), roundi(ay*xy.top()+by),
+	       roundi(ax*xy.width()), roundi(ay*xy.height()));
 }
 
-double CCDImage::imageToScreen(double len) {
-  if (hasZoom) {
-    double ax = double(width()) / zoomRect.width();
-    double ay = double(height()) / zoomRect.height();
-    len *= sqrt(ax*ay);
-  }
+QPoint CCDImage::imageToScreen(QPointF xy) const {
+  QRect r = safeZoomRect();
+  double ax = double(width()) / r.width();
+  double ay = double(height()) / r.height();
+  double bx = -ax*r.left();
+  double by = -ay*r.top();
+  return QPoint(roundi(ax*xy.x()+bx), roundi(ay*xy.y()+by));
+}
+
+
+
+double CCDImage::imageToScreen(double len) const {
+  QRect r = safeZoomRect();
+  double ax = double(width()) / r.width();
+  double ay = double(height()) / r.height();
+  len *= sqrt(ax*ay);
   return len;
 }
 
-XYRRA CCDImage::screenToImage(XYRRA el) {
-  if (hasZoom) {
-    /* As in paintEvent, we write x_screen = a*x_image + bx, thus
-       x_image = (x_screen-bx)/a. */
-    double ax = double(width()) / zoomRect.width();
-    double ay = double(height()) / zoomRect.height();
-    /* Since we preserve aspect ratio in zoom, a=ax=ay by definition. */
-    double bx = -ax*zoomRect.left();
-    double by = -ay*zoomRect.top();
-    el.x0 = (el.x0-bx)/ax;
-    el.y0 = (el.y0-by)/ay;
-    XYABC abc(el);
-    abc.a *= ax*ax;
-    abc.b *= ay*ay;
-    abc.c *= ax*ay;
-    el = abc.toXYRRA();
-  }
+XYRRA CCDImage::screenToImage(XYRRA el) const {
+  QRect r = safeZoomRect();
+  /* As in paintEvent, we write x_screen = a*x_image + bx, thus
+     x_image = (x_screen-bx)/a. */
+  double ax = double(width()) / r.width();
+  double ay = double(height()) / r.height();
+  double bx = -ax*r.left();
+  double by = -ay*r.top();
+  el.x0 = (el.x0-bx)/ax;
+  el.y0 = (el.y0-by)/ay;
+  XYABC abc(el);
+  abc.a *= ax*ax;
+  abc.b *= ay*ay;
+  abc.c *= ax*ay;
+  el = abc.toXYRRA();
   return el;
 }
 
-QPointF CCDImage::screenToImage(QPoint xy) {
-  if (hasZoom) {
-    /* As in paintEvent, we write x_screen = a*x_image + bx, thus
-       x_image = (x_screen-bx)/a. */
-    double ax = double(width()) / zoomRect.width();
-    double ay = double(height()) / zoomRect.height();
-    /* Since we preserve aspect ratio in zoom, a=ax=ay by definition. */
-    double bx = -ax*zoomRect.left();
-    double by = -ay*zoomRect.top();
-    return QPointF((xy.x()-bx)/ax, (xy.y()-by)/ay);
-  } else {
-    return QPointF(xy);
-  }
+QPointF CCDImage::screenToImage(QPoint xy) const {
+  QRect r = safeZoomRect();
+  double ax = double(width()) / r.width();
+  double ay = double(height()) / r.height();
+  double bx = -ax*r.left();
+  double by = -ay*r.top();
+  return QPointF((xy.x()-bx)/ax, (xy.y()-by)/ay);
 }
 
-double CCDImage::screenToImage(double len) {
-  if (hasZoom) {
-    double ax = double(width()) / zoomRect.width();
-    double ay = double(height()) / zoomRect.height();
-    len /= sqrt(ax*ay);
-  }
+QRect CCDImage::screenToImage(QRect r) const {
+  QRect zr = safeZoomRect();
+  double ax = double(width()) / zr.width();
+  double ay = double(height()) / zr.height();
+  /* Since we preserve aspect ratio in zoom, a=ax=ay by definition. */
+  double bx = -ax*zr.left();
+  double by = -ay*zr.top();
+  return QRect(roundi((r.left()-bx)/ax), roundi((r.top()-by)/ay),
+	       roundi(r.width()/ax), roundi(r.height()/ay));
+}
+
+double CCDImage::screenToImage(double len) const {
+  QRect r = safeZoomRect();
+  double ax = double(width()) / r.width();
+  double ay = double(height()) / r.height();
+  len /= sqrt(ax*ay);
   return len;
 }
 

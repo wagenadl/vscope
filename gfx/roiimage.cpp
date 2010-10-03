@@ -179,13 +179,7 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 	break;
       case SM_Outlines: case SM_Full:
 	if (roiset->isXYRRA(id)) {
-	  XYRRA el = roiset->get(id);
-	  if (hasZoom) {
-	    el.x0 = z.ax*el.x0 + z.bx;
-	    el.y0 = z.ay*el.y0 + z.by;
-	    el.R *= z.ax; // Note: this means
-	    el.r *= z.ax; // trouble if ax!=ay
-	  }
+	  XYRRA el = imageToScreen(roiset->get(id));
 	  el.paint(&p);
 	} else if (roiset->isPoly(id)) {
 	  PolyBlob const &pb = roiset->getp(id);

@@ -150,15 +150,16 @@ protected:
        If it is ZOOM, we zoom out to show the entire image.
   */
 protected:
-  XYRRA screenToImage(XYRRA el);
-  XYRRA imageToScreen(XYRRA el);
-  QPointF screenToImage(QPoint xy);
-  QPoint imageToScreen(QPointF xy);
-  QRect screenToImage(QRect r);
-  QRect imageToScreen(QRect r);
-  double screenToImage(double length); // approx!
-  double imageToScreen(double length); // approx!
+  XYRRA screenToImage(XYRRA el) const;
+  XYRRA imageToScreen(XYRRA el) const;
+  QPointF screenToImage(QPoint xy) const;
+  QPoint imageToScreen(QPointF xy) const;
+  QRect screenToImage(QRect r) const;
+  QRect imageToScreen(QRect r) const;
+  double screenToImage(double length) const; // approx!
+  double imageToScreen(double length) const; // approx!
   void rebuildGammaTable();
+  QRect safeZoomRect() const;
 public:
   QImage currentImage() const { return image; }
   void overwriteImage(QImage img);
