@@ -42,41 +42,41 @@ VirtKeyboard::VirtKeyboard(QWidget *parent): QFrame(parent) {
 	case 0: // backspace or delete
 	  if (j==J-1) {
 	    cap.widget->setText("Del");
-	    connect(cap.widget,SIGNAL(clicked(bool)),
+	    connect(cap.widget,SIGNAL(pressed()),
 		    this,SLOT(clickedDelete()));
 	  } else {
 	    cap.widget->setText("Back\nSpace");
-	    connect(cap.widget,SIGNAL(clicked(bool)),
+	    connect(cap.widget,SIGNAL(pressed()),
 		    this,SLOT(clickedBackspace()));
 	  }
 	  break;
 	case 1: // tab
 	  cap.widget->setText("Tab");
-	  connect(cap.widget,SIGNAL(clicked(bool)),this,SLOT(clickedTab()));
+	  connect(cap.widget,SIGNAL(pressed()),this,SLOT(clickedTab()));
 	  break;
 	case 2:
 	  if (j==0) { // caps lock
 	    cap.widget->setText("Caps\nLock");
 	    cap.widget->setCheckable(true);
-	    connect(cap.widget,SIGNAL(clicked(bool)),
+	    connect(cap.widget,SIGNAL(pressed()),
 		    this,SLOT(clickedCapsLock(bool)));
 	  } else { // enter
 	    cap.widget->setText("Enter");
-	    connect(cap.widget,SIGNAL(clicked(bool)),
+	    connect(cap.widget,SIGNAL(pressed()),
 		    this,SLOT(clickedEnter()));
 	  }
 	  break;
 	case 3: // shift
 	  cap.widget->setText("Shift");
 	  cap.widget->setCheckable(true);
-	  connect(cap.widget,SIGNAL(clicked(bool)),
+	  connect(cap.widget,SIGNAL(pressed()),
 		  this,SLOT(clickedShift(bool)));
 	  shiftkeys.push_back(cap.widget);
 	  break;
 	}
       } else {
 	// regular keys
-	connect(cap.widget,SIGNAL(clicked(bool)),
+	connect(cap.widget,SIGNAL(pressed()),
 		this,SLOT(clickedKey()));
 	lowers[cap.widget]=lower[i][j];
 	uppers[cap.widget]=upper[i][j];

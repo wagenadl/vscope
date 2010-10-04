@@ -92,10 +92,12 @@ void FileList::populate(QDir const &src, QStringList fns) {
 
   for (int n=0; n<N; n++) {
     if (n>=N0) {
-      children.push_back(new Button(this));
-      children[n]->setBackground(bg);
-      children[n]->show();
-      connect(children[n],SIGNAL(activated(QString,QString)),
+      Button *b = new Button(this);
+      children.push_back(b);
+      b->setBackground(bg);
+      b->setVisualType(Button::VTAction);
+      b->show();
+      connect(b,SIGNAL(activated(QString,QString)),
 	      this,SLOT(buttonClicked(QString,QString)));
     }
     QString txt = fns[n];

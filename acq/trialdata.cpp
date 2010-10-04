@@ -195,7 +195,7 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   QDomElement settings = myxml.find("settings");
 
   bool own_ptree_dest = ptree_dest==0;
-  dbg("trialdata: own_ptree_dest=%i",own_ptree_dest);
+  Dbg() << "trialdata::read " << exptname << "/" << trialid << "own_ptree_dest=" <<own_ptree_dest;
   
   if (own_ptree_dest)
     ptree_dest = new ParamTree(settings);
@@ -203,6 +203,8 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
     ptree_dest->read(settings);
 
   dbg("trialdata: read ptree");
+  ptree_dest->find("acquisition/_exptname").set(exptname);
+  ptree_dest->find("acquisition/_trialno").set(trialid);
   
   contEphys = info.attribute("contephys")=="1";
   
@@ -502,7 +504,7 @@ void TrialData::readCCDOldStyle(QVector<QString> &camsstored,
 
 void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
 				QDomElement ccd) {
-  int ndata = ccddata.size();
+  // int ndata = ccddata.size();
   int ncam = camsstored.size();
   double ccd_rate_Hz = UnitQty::str2num(ccd.attribute("rate"),"Hz");
   double ccd_delay_s = UnitQty::str2num(ccd.attribute("delay"),"s");

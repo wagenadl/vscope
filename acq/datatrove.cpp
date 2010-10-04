@@ -6,6 +6,7 @@
 #include <base/roiset.h>
 #include <base/roiset3data.h>
 #include <math/cohdata.h>
+#include <base/dbg.h>
 
 DataTrove::DataTrove(ParamTree *ptree): QObject() {
   ptree_ = ptree;
@@ -40,6 +41,7 @@ void DataTrove::read(QString dir, QString exptname, QString trialid) {
   rois_->load(QString("%1/%2/%3-rois.xml")
 	      .arg(dir).arg(exptname).arg(trialid));
   savedir = dir;
+  Dbg() << "DataTrove::read" << trial_->exptName() << "/" << trial_->trialID();
 }
 
 void DataTrove::write(QString dir) {
@@ -49,6 +51,7 @@ void DataTrove::write(QString dir) {
 }
 
 void DataTrove::saveROIs() {
+  Dbg() << "DataTrove::saveROIs" << trial_->exptName() << "/" << trial_->trialID();
   if (savedir.isNull()) {
     warn("DataTrove::saveROIs: not saving - no directory set");
     return;
