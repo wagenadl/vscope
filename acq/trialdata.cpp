@@ -329,6 +329,7 @@ void TrialData::readAnalog(XML &myxml, QString base) {
 
   adataIn->reshape(nscans, nchans);
   
+  Enumerator *aichan = Enumerator::find("AICHAN");
   QMap<int,double> scalemap;
   for (QDomElement elt=analog.firstChildElement("channel");
        !elt.isNull(); elt=elt.nextSiblingElement("channel")) {
@@ -339,13 +340,15 @@ void TrialData::readAnalog(XML &myxml, QString base) {
     if (!ok)
       throw Exception("Trial","Cannot read channel number from xml","read");
     adataIn->defineChannel(idx,chn);
-
-    if (adataIn->getChannelAtIndex(idx)!=chn)
-      throw Exception("Trial",
-		      QString("Channel map mismatch (idx#%1 = %2; expected %3)")
-		      .arg(idx).arg(chn).arg(adataIn->getChannelAtIndex(idx)),
-		      "read");
     double scl = getScale(elt.attribute("scale"));
+    try {
+      QString chname = aichan->reverseLookup(chn);
+      Connections::AIChannel const *chinfo = Connections::findpAI(chname);
+      if (chinfo) 
+	scl = scl / chinfo->scale;
+    } catch(...) {
+      Dbg() << "TrialData:: unknown channel #" << chn;
+    }
     scalemap[chn] = scl;
   }
   adataIn->readInt16(base + "-analog.dat", scalemap);

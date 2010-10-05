@@ -7,11 +7,9 @@
 #include <base/dbg.h>
 
 ExptDirList::ExptDirList(QWidget *parent): FileList(parent) {
-  dbg("exptdirlist");
 }
 
 QString ExptDirList::infoHook(QDir const &dir, QString fn) {
-  dbg("exptdirlist:info for %s",qPrintable(fn));
   QDir sub(dir.absoluteFilePath(fn));
   if (sub.exists()) {
     // This means "fn" actually is a directory
@@ -46,7 +44,7 @@ QString ExptDirList::infoHook(QDir const &dir, QString fn) {
 	}
       }
       if (ntrials_tot>0) 
-	return QString("%1 (+%2 snap.)")
+	return QString("%1 (+%2 snap)")
 	  .arg(ntrials_nonsnap)
 	  .arg(ntrials_snap);
     }

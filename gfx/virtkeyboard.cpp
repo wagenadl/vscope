@@ -59,7 +59,8 @@ VirtKeyboard::VirtKeyboard(QWidget *parent): QFrame(parent) {
 	    cap.widget->setText("Caps\nLock");
 	    cap.widget->setCheckable(true);
 	    connect(cap.widget,SIGNAL(pressed()),
-		    this,SLOT(clickedCapsLock(bool)));
+		    this,SLOT(clickedCapsLock()));
+	    capskey=cap.widget;
 	  } else { // enter
 	    cap.widget->setText("Enter");
 	    connect(cap.widget,SIGNAL(pressed()),
@@ -70,7 +71,7 @@ VirtKeyboard::VirtKeyboard(QWidget *parent): QFrame(parent) {
 	  cap.widget->setText("Shift");
 	  cap.widget->setCheckable(true);
 	  connect(cap.widget,SIGNAL(pressed()),
-		  this,SLOT(clickedShift(bool)));
+		  this,SLOT(clickedShift()));
 	  shiftkeys.push_back(cap.widget);
 	  break;
 	}
@@ -194,8 +195,8 @@ void VirtKeyboard::unshift() {
   }
 }
 
-void VirtKeyboard::clickedCapsLock(bool l) {
-  capslock = l;
+void VirtKeyboard::clickedCapsLock() {
+  capslock = !capskey->isChecked();
   unshift();
 }
 
@@ -249,7 +250,7 @@ void VirtKeyboard::clickedEscape() {
   unshift();
 }
 
-void VirtKeyboard::clickedShift(bool s) {
-  shifted = s;
+void VirtKeyboard::clickedShift() {
+  shifted = !shiftkeys[0]->isChecked();
 }
 

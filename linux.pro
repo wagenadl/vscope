@@ -1,5 +1,5 @@
 #CONFIG += debug
-CONFIG += qt
+CONFIG += qt ordered
 CONFIG += warn_on
 
 TEMPLATE = subdirs
@@ -10,7 +10,7 @@ INCLUDEPATH += .
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
 
-SUBDIRS = base math gfx xml gui pvp daq acq video toplevel
+SUBDIRS = base math gfx xml pvp daq video gui acq toplevel
 # SUBDIRS += test
 DEFINES += vsdLINUX
 

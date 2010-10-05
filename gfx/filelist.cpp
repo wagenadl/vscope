@@ -95,7 +95,7 @@ void FileList::populate(QDir const &src, QStringList fns) {
       Button *b = new Button(this);
       children.push_back(b);
       b->setBackground(bg);
-      b->setVisualType(Button::VTAction);
+      //b->setVisualType(Button::VTAction);
       b->show();
       connect(b,SIGNAL(activated(QString,QString)),
 	      this,SLOT(buttonClicked(QString,QString)));

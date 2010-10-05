@@ -74,9 +74,39 @@ void FileDialog::resizeEvent(class QResizeEvent *e) {
 void FileDialog::relayout() {
   pathbar->setGeometry(2,2,width()-192-2-2-4,37);
   editor->setGeometry(width()-192-2,2,192,37);
-  dirs->setGeometry(2,2+37+6,width()/3-8,height()-2-37-6-2);
-  files->setGeometry(width()/3+6,2+37+6,2*width()/3-8,height()-2-37-6-2);
 
+  int nc_dir = dirs->countItems();
+  int nc_fil = files->countItems();
+  Dbg() << "filedialog dir="<<nc_dir<<" fil="<<nc_fil;
+  int w_dir = 0;
+  int x0_fil = 2;
+  if (nc_fil<=0)
+    w_dir = width()-4;
+  else if (nc_dir<=0)
+    w_dir = 0;
+  else {
+    double frc = nc_dir / (nc_dir+nc_fil+.0);
+    if (frc<.2)
+      frc=.2;
+    else if (frc>.8)
+      frc=.8;
+    w_dir = width()*frc-8;
+  }
+  if (w_dir<=0) {
+    w_dir=0;
+    dirs->hide();
+  } else {
+    dirs->setGeometry(2,2+37+6,w_dir,height()-2-37-6-2);
+    dirs->show();
+    x0_fil = w_dir+6;
+  }
+  if (nc_fil<=0) {
+    files->hide();
+  } else {
+    files->setGeometry(x0_fil,2+37+6,width()-x0_fil-2,height()-2-37-6-2);
+    files->show();
+  }
+  
   if (confirmFlag) {
     ok->setGeometry(width()-2-72,height()-2-37,72,37);
     cancel->setGeometry(width()-2-72-4-80,height()-2-37,80,37);
@@ -107,9 +137,8 @@ void FileDialog::goDir(QString path0) {
   pathbar->setAsPath(path);
   dirs->populateDirs(dir);
   files->populateFiles(dir,extn,true);
-  dirs->show();
-  files->show();
   dbg("path = %s",qPrintable(path));
+  relayout();
   emit changedDir(path);
 }
 
@@ -117,6 +146,7 @@ void FileDialog::setExtn(QString extn0) {
   extn = extn0;
   QDir dir(path);
   files->populateFiles(dir,extn,true);
+  relayout();
 }
 
 void FileDialog::selectedFile(QString fn) {
@@ -151,7 +181,6 @@ void FileDialog::edited(QString fn) {
     if (dir.exists(realfn)) {
       editor->setText("");
       goDir(realfn);
-      emit changedDir(realfn);
       return;
     } else {
       // issue warning of some sort?

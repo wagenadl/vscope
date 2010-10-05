@@ -29,6 +29,7 @@ public:
   void populateFiles(QDir const &src, QString extn, bool hideextn=true);
   void populateDirs(QDir const &src);
   int countColumns() const;
+  int countItems() const;
   void setBackground(QColor bg);
 signals:
   void clickedItem(QString fn);
@@ -43,7 +44,7 @@ public slots:
   void clickedFile(QString fn);
   void scroll(double col);
   void scrolling(double col);
-  void scrollTo(QString partianfn);
+  void scrollTo(QString partialfn="");
 protected:
   void resizeEvent(class QResizeEvent *);
 private:

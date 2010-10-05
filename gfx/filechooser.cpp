@@ -52,15 +52,18 @@ FileChooser::~FileChooser() {
 
 void FileChooser::populateFiles(QDir const &src, QString extn, bool hideextn) {
   list->populateFiles(src,extn,hideextn);
+  dbg("fc:popdirs");
   isDirs=false;
   relayout();
+  scrollTo();
 }
 
 void FileChooser::populateDirs(QDir const &src) {
   list->populateDirs(src);
-  dbg("fc:foo");
+  dbg("fc:popdirs");
   isDirs=true;
   relayout();
+  scrollTo();
 }
 
 void FileChooser::resizeEvent(class QResizeEvent *) {
@@ -75,6 +78,10 @@ void FileChooser::resizeEvent(class QResizeEvent *) {
 
 int FileChooser::countColumns() const {
   return list->countColumns();
+}
+
+int FileChooser::countItems() const {
+  return list->countItems();
 }
 
 void FileChooser::relayout() {
@@ -105,7 +112,7 @@ void FileChooser::relayout() {
       // buttonRight->setGeometry(2+40+4,hei-H_BUTTON-2,40,H_BUTTON);
       // buttonUp->hide();
       scrollBar->setGeometry(2,list->countRows()*list->rowHeight()+2,
-			     wid-2-80-4-2,H_BUTTON);
+			     wid-2/*-80-4*/-2,H_BUTTON);
       y0 = 0;
     }      
     // buttonLeft->show();
@@ -130,9 +137,7 @@ void FileChooser::relayout() {
   list->move(x0,y0);
   scrollBar->setRange(0,list->countColumns());
   int nvis = wid/list->columnWidth();
-  //dbg("  countcol=%i wid=%i nvis=%i colw=%i",list->countColumns(),
-  //    wid,nvis,list->columnWidth());
-  scrollBar->setSlider(-x0/double(w0-wid), nvis);
+  scrollBar->setSlider(-x0*list->countColumns()/(w0+.01), nvis);
 }
 
 void FileChooser::scroll(double x) {
@@ -146,7 +151,7 @@ void FileChooser::scrolling(double x) {
 }
 
 void FileChooser::scrollTo(QString partialfn) {
-  int idx = list->indexOf(partialfn);
+  int idx = partialfn.isEmpty() ? (countItems()-1) : list->indexOf(partialfn);
   if (idx>=0) {
     int col = idx/list->countRows();
     int nvis = width()/list->columnWidth();

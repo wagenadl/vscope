@@ -50,11 +50,12 @@ private:
   QMap<QObject *,QChar> lowers;
   QMap<QObject *,QChar> uppers;
   QVector<class QPushButton *> shiftkeys;
+  QPushButton *capskey;
 private slots:
   void clickedKey();
-  void clickedCapsLock(bool);
+  void clickedCapsLock();
   void clickedTab();
-  void clickedShift(bool);
+  void clickedShift();
   void clickedEnter();
   void clickedSpace();
   void clickedBackspace();

@@ -135,7 +135,7 @@ void Button::toggleSelected() {
 
 void Button::mousePressEvent(class QMouseEvent *) {
   lastClick.start();
-  if (vtype==VTAction) {
+  if (true) { // vtype==VTAction) {
     setFrameShadow(QFrame::Sunken);
   }
   if (isAction) 
@@ -145,7 +145,7 @@ void Button::mousePressEvent(class QMouseEvent *) {
 }
 
 void Button::mouseReleaseEvent(class QMouseEvent *) {
-  if (vtype==VTAction) {
+  if (true) { // vtype==VTAction) {
     int dt = lastClick.elapsed();
     if (dt>=100)
       restoreActionFrame();
@@ -155,7 +155,7 @@ void Button::mouseReleaseEvent(class QMouseEvent *) {
 }
 
 void Button::restoreActionFrame() {
-  setFrameShadow(QFrame::Raised);
+  representState(); // setFrameShadow(QFrame::Raised);
 }  
 
 void Button::mouseDoubleClickEvent(class QMouseEvent *) {
@@ -230,6 +230,7 @@ void Button::representState() {
     break;
   case VTAction:
     setAutoFillBackground(false);
+    setFrameShadow(QFrame::Raised);
     setLineWidth(0);
     break;
   case VTGrouped:
