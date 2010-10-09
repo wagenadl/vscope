@@ -34,6 +34,7 @@
     <button id="analysis" label="VSD&#xA;Analysis" bg="#bbffbb"/>
     <button id="maintenance" label="Maintenance" bg="#ffcccc"/>
     <button id="savedSettings" label="Saved&#xA;Settings" x="7.2" y="1.2" bg="#ff99ff"/>
+    <button id="scripts" label="Scripts" bg="#eeccff"/>
   </group>
     <button id="minimize" label="Minimize" x="7.2" y="4.2" bg="#88dddd"/>
     <button id="quit" label="Quit" x="7.2" y="5.2" bg="#dddd88"/>
@@ -1126,6 +1127,14 @@
     <menu id="_name">
       <item value="(..)"/>
     </menu>
+  </page>
+
+  <page id="scripts" subdxr="1.1">
+    <button id="load" label="Load ..." x="4.1"/>
+    <button id="save" label="Save"/>
+    <button id="saveAs" label="Save as ..."/>
+    <button id="check" label="Check"/>
+    <button id="_run" label="Run" type="bool"/>
   </page>
 </page>
 

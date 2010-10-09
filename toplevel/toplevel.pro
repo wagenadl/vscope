@@ -20,6 +20,8 @@ HEADERS += roisetguard.h
 SOURCES += roisetguard.cpp
 HEADERS += panelhistory.h
 SOURCES += panelhistory.cpp
+HEADERS += scripts.h
+SOURCES += scripts.cpp 
  
 LIBS += -L../base -L../gfx -L../xml -L../gui
 LIBS += -lvscope-base -lvscope-gfx -lvscope-xml -lvscope-gui

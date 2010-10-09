@@ -236,5 +236,9 @@
   <category id="savedSettings">
     <param id="_name" type="string" default="Default"/>
   </category>
+  <category id="scripts">
+    <param id="_run" type="bool" default="off"/>
+    <param id="_name" type="string" default=""/>
+  </category>
 </params>
 </vsdscopeDefs>

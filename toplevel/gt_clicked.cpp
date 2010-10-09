@@ -14,6 +14,7 @@
 #include <gui/timebutton.h>
 #include <gui/xmlbutton.h>
 #include <toplevel/vscopegui.h>
+#include <toplevel/scripts.h>
 
 static void dimple(QString p) {
   xmlButton *b = Globals::gui->findpButton(p);
@@ -63,6 +64,14 @@ void gt_slots::clicked(QString p) {
     } else if (p.startsWith("acquisition/_oxvals/")) {
       Globals::oxonolw->recolor(p.split("/").last());
       Globals::acquire->redisplayCCD();
+    } else if (p=="scripts/load") {
+      Globals::scripts->prepareLoad();
+    } else if (p=="scripts/save") {
+      Globals::scripts->resave();
+    } else if (p=="scripts/saveAs") {
+      Globals::scripts->prepareSave();
+    } else if (p=="scripts/check") {
+      Globals::scripts->check();
     }
   } catch (Exception const &e) {
     report(e,"button click");

@@ -25,6 +25,7 @@
 #include <base/roiset3data.h>
 #include <toplevel/roisetguard.h>
 #include <toplevel/panelhistory.h>
+#include <toplevel/scripts.h>
 #include <daq/daqbase.h>
 #include <pvp/campool.h>
 #include <base/roi3data.h>
@@ -63,6 +64,7 @@
 #include <QTextEdit>
 
 vscopeGui *Globals::gui;
+gt_slots *Globals::gtslots;
 
 QWidget *Globals::mainwindow;
 QWidget *Globals::leftplace;
@@ -98,6 +100,8 @@ ExptLog *Globals::exptlog;
 
 ParamTree *Globals::ptree;
 DataTrove *Globals::trove;
+
+Scripts *Globals::scripts;
 
 PanelHistory *Globals::panelHistory;
 
@@ -372,7 +376,7 @@ int main(int argc, char **argv) {
     }
 
     Globals::gui = new vscopeGui(&mw,Globals::ptree,guiConf);
-    gt_slots sl(Globals::gui);
+    Globals::gtslots = new gt_slots(Globals::gui);
 
     Globals::walltime =
       new TimeButton(0,
@@ -398,6 +402,8 @@ int main(int argc, char **argv) {
 
     Globals::panelHistory = new PanelHistory();
     Globals::panelHistory->makeButtons();
+
+    Globals::scripts = new Scripts(&Globals::gui->findPage("scripts"));
     
     //// test code follows
     //Trial trial(Globals::connections,Globals::cameras);

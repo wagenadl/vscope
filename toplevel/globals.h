@@ -10,6 +10,7 @@ public:
   static class DataTrove *trove; // defined in main.cpp
 
   static class vscopeGui *gui; // defined in main.cpp
+  static class gt_slots *gtslots; // defined in main.cpp
 
   static class QWidget *mainwindow;
   static class QWidget *leftplace;  // defined in main.cpp
@@ -39,6 +40,8 @@ public:
 
   static class TimeButton *walltime, *trialelapsed, *exptelapsed;
 
+  static class Scripts *scripts;
+  
   static class ExptLog *exptlog;
 
   static class PanelHistory *panelHistory;

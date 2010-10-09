@@ -16,6 +16,7 @@ class ParamTree {
        element.
   */
 public:
+  ParamTree(ParamTree &other);
   ParamTree(QDomElement doc);
   /*:F constructor
    *:D This builds the tree.
@@ -122,6 +123,7 @@ protected:
   /*:F constructor
    *:D This builds one element of an array.
    */
+  void construct();
   void buildEnablers();
   /*:F buildEnablers
    *:D This creates the cond-attribute links between elements.

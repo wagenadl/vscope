@@ -23,6 +23,7 @@
 #include <toplevel/cohgraph.h>
 #include <xml/enumerator.h>
 #include <acq/datatrove.h>
+#include <toplevel/scripts.h>
 
 static void setRefTrace() {
   int typ = Globals::ptree->find("analysis/refType").toInt();
@@ -130,6 +131,8 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::acquire->setAutoRun();
     } else if (p=="stimVideo/_@lightOn") {
       VideoLight::set(Globals::ptree->find(p).toBool());
+    } else if (p=="scripts/_run") {
+      Globals::scripts->setRunning(Globals::ptree->find(p).toBool());
     } else if (p.startsWith("panel")) {
       ;
     } else {

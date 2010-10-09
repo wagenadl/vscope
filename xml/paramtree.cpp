@@ -7,8 +7,13 @@
 #include <xml/enumerator.h>
 #include <QStringList>
 #include <stdio.h>
+#include <base/xml.h>
 
 ParamTree::ParamTree(QDomElement doc): base(doc) {
+  construct();
+}
+
+void ParamTree::construct() {  
   leaf_ = 0;
   arrayElement = "";
   if (base.tagName()=="vsdscopeDefs") {
@@ -42,19 +47,6 @@ ParamTree::ParamTree(QDomElement doc): base(doc) {
 #endif
 }
 
-#if PARAM_DBG
-void ParamTree::setDbgPath(QString p) {
-  dbgPath = p;
-  if (arrayElement.isEmpty()) 
-    dbgPath += "/" + base.attribute("id");
-  else 
-    dbgPath += ":" + arrayElement;
-  for (QMap<QString,ParamTree*>::iterator i=children.begin();
-       i!=children.end(); ++i)
-    i.value()->setDbgPath(dbgPath);
-}
-#endif
-
 ParamTree::ParamTree(QDomElement doc, QString elt): base(doc) {
   // this private constructor requires that doc is <array>
   leaf_=0;
@@ -68,6 +60,19 @@ ParamTree::ParamTree(QDomElement doc, QString elt): base(doc) {
   dbgPath = base.attribute("id") + "/" + dbgPath;
 #endif
 }
+
+#if PARAM_DBG
+void ParamTree::setDbgPath(QString p) {
+  dbgPath = p;
+  if (arrayElement.isEmpty()) 
+    dbgPath += "/" + base.attribute("id");
+  else 
+    dbgPath += ":" + arrayElement;
+  for (QMap<QString,ParamTree*>::iterator i=children.begin();
+       i!=children.end(); ++i)
+    i.value()->setDbgPath(dbgPath);
+}
+#endif
 
 void ParamTree::buildEnablers() {
   if (leaf_)
@@ -108,7 +113,7 @@ void ParamTree::read(QDomElement doc) {
   if (doc.tagName()=="pval") {
     leaf().read(doc);
   } else if (doc.tagName()=="settings" || doc.tagName()=="category"
-      || doc.tagName()=="array" || doc.tagName()=="elt") {
+	     || doc.tagName()=="array" || doc.tagName()=="elt") {
     for (QDomElement e=doc.firstChildElement();
 	 !e.isNull(); e=e.nextSiblingElement()) {
       ParamTree *c = childp(xmlAttribute(e,"id"));
@@ -336,3 +341,12 @@ int ParamTree::report(int level, int maxelts) {
 //  throw Exception("ParamTree","checksum() not yet implemented");
 //  return sum;
 //}
+
+ParamTree::ParamTree(ParamTree &other): base(other.base) {
+  construct();
+  XML xml(0,"vsdscopeSettings");
+  other.write(xml.root());
+  read(xml.root());
+}
+
+  
