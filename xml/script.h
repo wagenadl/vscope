@@ -8,6 +8,28 @@
 #include <QString>
 
 class Script {
+  /*:C Script
+   *:D A Script is a text file with lines of the form
+       KEYWORD ARGUMENT [ARGUMENT ...]
+       Any text after "#" is ignored.
+       Syntax:
+         set PARNAME PARVALUE - Sets a parameter
+	 trial - Runs a trial
+	 snap - Takes a single frame
+	 ival TIME - Sets (start-to-start) time between trials
+	 loadsettings FILENAME - Loads a settings file
+       Example:
+         loadsettings vidblock  # Note: no path, no ".xml".
+	 ival 60 s
+	 set stimVideo/parB 90
+	 trial
+	 set stimVideo/parB 270
+	 trial
+	 # etcetera
+       If a trial takes longer than the interval, the next trial happens
+       very quickly after its end: a watchdog timer checks for trial's end
+       every second.
+   */
 public:
   enum Keyword {
     KW_SET,
