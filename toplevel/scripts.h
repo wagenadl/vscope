@@ -49,6 +49,7 @@ private:
   QList<Script::Command>::const_iterator it;
   double ival_ms;
   QTimer timer;
+  int lineno;
 };
 
 #endif

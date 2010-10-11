@@ -20,6 +20,7 @@ public slots:
   void customchanged(QString p, int cno, QString val);
   void pgopen(QString p, QWidget *w);
   void pgclose(QString p, QWidget *w);
+  void everythingChanged();
 protected:
   void report(class Exception const &e, QString act);
 };

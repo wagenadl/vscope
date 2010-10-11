@@ -14,6 +14,8 @@
 #include <toplevel/exptlog.h>
 #include <QDateTime>
 #include <acq/datatrove.h>
+#include <gui/videogui.h>
+#include <toplevel/gt_slots.h>
 
 SavedSettings::SavedSettings(QWidget *parent): FileChooser(parent) {
   savedlg = 0;
@@ -63,7 +65,7 @@ void SavedSettings::loadSettings(QString fn) {
     XML xml(fn);
     Globals::ptree->read(xml.root());
     Connections::readXML(xml.root());
-    Globals::mgstim->rebuild();
+    Globals::gtslots->everythingChanged();
     QString setname = fn;
     int lastslash = setname.lastIndexOf("/");
     if (lastslash>=0)

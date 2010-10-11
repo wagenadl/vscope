@@ -47,7 +47,26 @@ static void setRefTrace() {
     dbg("gt_paramchanged: Unknown reference type");
   }
 }
-  
+
+void gt_slots::everythingChanged() {
+  Globals::videogui->changeEnable(Globals::gui, Globals::ptree);
+  Globals::trial->prepare(Globals::ptree);
+  Globals::mgintra->rebuild();
+  Globals::mgextra->rebuild();
+  Globals::mgstim->rebuild();
+  setRefTrace();
+
+  ROIImage::ShowMode sm =
+    ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs").toInt());
+  Globals::coumarinw->showROIs(sm);
+  Globals::oxonolw->showROIs(sm);
+  Globals::coherence->setShowMode(sm);
+  Globals::vsdtraces->
+    setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach").toInt()));
+  Globals::acquire->newTrialPeriod();
+  Globals::acquire->setContEphys();
+  Globals::acquire->setAutoRun();
+}
 
 void gt_slots::paramchanged(QString p, QString val) {
   try {

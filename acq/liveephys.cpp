@@ -57,6 +57,7 @@ LiveEPhys::LiveEPhys(QWidget *parent, QDomElement conf): QFrame(parent) {
 
   vcoidx = -1;
   vcoid = "off"; // this should probably be "" as a default.
+  ptree = 0;
 }
 
 LiveEPhys::~LiveEPhys() {

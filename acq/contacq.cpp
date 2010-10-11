@@ -199,8 +199,10 @@ void ContAcq::start() {
 }
 
 void ContAcq::stop() {
-  if (!active)
-    throw Exception("ContAcq","Cannot stop: not active");
+  if (!active) {
+    Dbg() << "ContAcq: Cannot stop: not active";
+    return;
+  }
 
   if (ephysacq) {
     if (ephysacq->isActive())
