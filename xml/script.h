@@ -16,15 +16,18 @@ class Script {
          set PARNAME PARVALUE - Sets a parameter
 	 trial - Runs a trial
 	 snap - Takes a single frame
-	 ival TIME - Sets (start-to-start) time between trials
+	 ival TIME - Sets (start-to-start) time between trials. Note that
+	             this is applied *after* the next trial.
 	 loadsettings FILENAME - Loads a settings file
+	 loop [LINENO] - Loops starting at the beginning or at the given
+	                 line (counts from 1).
        Example:
          loadsettings vidblock  # Note: no path, no ".xml".
 	 ival 60 s
 	 set stimVideo/parB 90
-	 trial
+	 trial # happens right away
 	 set stimVideo/parB 270
-	 trial
+	 trial # happens 60 s later
 	 # etcetera
        If a trial takes longer than the interval, the next trial happens
        very quickly after its end: a watchdog timer checks for trial's end
@@ -37,6 +40,7 @@ public:
     KW_SNAP,
     KW_IVAL,
     KW_LOADSETTINGS,
+    KW_LOOP,
   };
   class Command {
   public:

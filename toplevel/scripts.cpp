@@ -42,6 +42,8 @@ Scripts::Scripts(QWidget *parent): QWidget(parent) {
 
   active = false;
   ival_ms = 1000;
+  timer.setSingleShot(true);
+  connect(&timer,SIGNAL(timeout()), this, SLOT(timeout()));
 }
 
 Scripts::~Scripts() {
@@ -175,6 +177,7 @@ void Scripts::setDir(QString dir) {
 }
 
 void Scripts::setRunning(bool r) {
+  Dbg() << "Scripts::setRunning " << r;
   if (r)
     run();
   else
@@ -200,10 +203,9 @@ bool Scripts::status() {
   return true;
 }
 
-void Scripts::timerEvent(QTimerEvent *e) {
-  killTimer(e->timerId());
+void Scripts::timeout() {
   if (Globals::trial->isActive()) 
-    startTimer(1000); // wait one second to make sure previous trial ended
+    timer.start(1000); // wait one second to make sure previous trial ended
   else
     runSome();
 }
@@ -223,8 +225,11 @@ void Scripts::run() {
 }
 
 void Scripts::runSome() {
-  if (!active)
+  Dbg() << "Scripts::runSome active="<<active;
+  if (!active) {
     stop();
+    return;
+  }
 
   while (it!=script.contents().end()) {
     Script::Command const &c(*it);
@@ -236,17 +241,22 @@ void Scripts::runSome() {
       break;
     case Script::KW_TRIAL:
       Globals::acquire->acqTrial();
-      startTimer(ival_ms);
+      timer.start(ival_ms);
       return;
     case Script::KW_SNAP:
       Globals::acquire->acqFrame();
-      startTimer(ival_ms);
+      timer.start(ival_ms);
       return;
     case Script::KW_IVAL:
       ival_ms = c.argv;
       break;
     case Script::KW_LOADSETTINGS:
       Globals::savedSettings->loadSettings(c.arg1);
+      break;
+    case Script::KW_LOOP:
+      it=script.contents().begin();
+      for (int k=0; k<c.argv-1; k++)
+	++it;
       break;
     }
   }
@@ -257,6 +267,8 @@ void Scripts::runSome() {
 
 void Scripts::stop() {
   Dbg() << "Scripts::stop";
+  timer.stop();
+  active = false;
   Globals::ptree->find("scripts/_run").set("off");
   Globals::gui->findPage("scripts").open();
 }

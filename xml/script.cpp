@@ -4,6 +4,7 @@
 #include <xml/param.h>
 #include <base/xml.h>
 #include <base/dbg.h>
+#include <math.h>
 
 Script::Script() {
 }
@@ -12,6 +13,7 @@ bool Script::setText(QString const &doc) {
   QStringList ss = doc.split("\n");
   lines.clear();
   int lineno=0;
+  int lasttrial=-1;
   foreach (QString s, ss) {
     lineno++;
     s.replace(QRegExp("#.*"),"");
@@ -41,6 +43,7 @@ bool Script::setText(QString const &doc) {
 	  .arg(lineno);
 	return false;
       }
+      lasttrial = lineno;
     } else if (kw=="snap") {
       c.kwd = KW_SNAP;
       if (!bits.isEmpty()) {
@@ -48,6 +51,7 @@ bool Script::setText(QString const &doc) {
 	  .arg(lineno);
 	return false;
       }
+      lasttrial = lineno;
     } else if (kw=="ival") {
       c.kwd = KW_IVAL;
       QString arg = bits.join(" ");
@@ -73,6 +77,22 @@ bool Script::setText(QString const &doc) {
 	return false;
       }
       c.arg1 = bits.first();
+    } else if (kw=="loop") {
+      c.kwd = KW_LOOP;
+      if (bits.size()>1) {
+	err = QString("Syntax error at line %1: LOOP takes at most one argument")
+	  .arg(lineno);
+	return false;
+      }
+      if (bits.size()>=1)
+	c.argv = floor(bits.takeFirst().toDouble(0));
+      else
+	c.argv = 1;
+      if (c.argv<1 || c.argv>lasttrial) {
+	err = QString("Illegal line number for LOOP at line %1: %2")
+	  .arg(lineno).arg(c.argv);
+	return false;
+      }
     } else {
       err = QString("Unknown keyword at line %1: %2")
 	.arg(lineno).arg(kw);

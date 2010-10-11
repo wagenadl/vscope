@@ -6,6 +6,8 @@
 
 #include <QString>
 #include <QWidget>
+#include <QTimer>
+
 #include <xml/script.h>
 
 class Scripts: public QWidget {
@@ -21,13 +23,14 @@ public slots:
   void run();
   void stop();
   void setRunning(bool run);
+private slots:
   void doLoad(QString);
   void doSave(QString);
   void setDir(QString);
   void setName(QString);
+  void timeout();
 public:
   bool status();
-  void timerEvent(QTimerEvent *);
 private:
   void runSome();
 private:
@@ -45,6 +48,7 @@ private:
   Script script;
   QList<Script::Command>::const_iterator it;
   double ival_ms;
+  QTimer timer;
 };
 
 #endif

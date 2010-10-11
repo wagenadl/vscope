@@ -11,6 +11,7 @@ LineEdit::~LineEdit() {
 
 void LineEdit::keyPressEvent(QKeyEvent *ke) {
   //fprintf(stderr,"lineedit:keypressevent %i\n",ke->key());
+  ctrlheld = ke->modifiers() & Qt::ControlModifier;
   switch (ke->key()) { 
   case Qt::Key_Escape: 
     emit escapePressed();

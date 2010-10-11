@@ -11,10 +11,13 @@ class LineEdit: public QLineEdit {
 public:
   LineEdit(QWidget *parent);
   virtual ~LineEdit();
+  bool ctrlHeld() const { return ctrlheld; }
 protected:
   virtual void keyPressEvent(class QKeyEvent *);
 signals:
   void escapePressed(); // emitted when Escape is pressed
+private:
+  bool ctrlheld;
 };
 
 #endif

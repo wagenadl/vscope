@@ -173,3 +173,8 @@ void TextEntry::syntheticKeyPress(QChar asc) {
   }
   contents->setFocus(Qt::PopupFocusReason);
 }
+
+bool TextEntry::ctrlHeld() const {
+  return contents->ctrlHeld();
+}
+

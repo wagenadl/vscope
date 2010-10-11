@@ -44,6 +44,8 @@ void ExptLog::acceptUserNote(QString s) {
   activate();
   addNote("Note: " + s);
   noteEditor->setText("");
+  if (!noteEditor->ctrlHeld())
+    noteEditor->hide();
 }
 
 void ExptLog::cancelUserNote() {

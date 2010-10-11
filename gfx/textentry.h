@@ -39,6 +39,10 @@ class TextEntry: public QFrame {
   /*:F hideEvent
    *:D When the widget is closed, so is its virtkeyboard.
    */
+  bool ctrlHeld() const;
+  /*:F ctrlHeld
+   *:D Returns true iff Ctrl was held during current return press.
+   */
 public slots:
   void setMessage(QString s);
   /*:F setMessage
