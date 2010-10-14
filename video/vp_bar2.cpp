@@ -58,38 +58,26 @@ void VP_Bar2::render(VPRenderInfo const &info) const {
   
   bool flip = false;
   for (int n=0; n<nlines; n++) {
-    double t_s = n*points_per_line/info.fs_hz;
-    double dt_s = fmod(t_s-t0_s, period_s);
-    double eta0 = dt_s*speed_fields_per_s;
-    if (eta0<1) {
+    for (int k=0; k<points_per_line; k++) {
+      double t_s = (n*points_per_line+k)/info.fs_hz;
+      double dt_s = fmod(t_s-t0_s, period_s);
+      double eta0 = dt_s*speed_fields_per_s;
       // let's draw a line
       double eta = -1+2*eta0;
-      for (int k=0; k<points_per_line; k++) {
-	double xi = 1-2.*k/points_per_line;
-	if (flip)
-	  xi=-xi;
-	*ptrx = xscale*(xi*cs + eta*sn);
-	*ptry = yscale*(xi*sn - eta*cs);
-	//*ptrd |= info.dmask_light;
-	ptrx += dn;
-	ptry += dn;
-	ptrd ++;
-      }
-      flip=!flip;
-    } else {
-      double xi = 1;
+      double xi = 1-2.*k/points_per_line;
       if (flip)
-	xi = -xi;
-      for (int k=0; k<points_per_line; k++) {
-	double eta = -1;
-	*ptrx = xscale*(xi*cs - eta*sn);
-	*ptry = yscale*(xi*sn + eta*cs);
+	xi=-xi;
+      *ptrx = xscale*(xi*cs + eta*sn);
+      *ptry = yscale*(xi*sn - eta*cs);
+      if (eta0<1)
+	*ptrd |= info.dmask_light;
+      else
 	*ptrd &= ~info.dmask_light;
-	ptrx += dn;
-	ptry += dn;
-	ptrd ++;
-      }
+      ptrx += dn;
+      ptry += dn;
+      ptrd ++;
     }
+    flip=!flip;
   }
   while (ptrd<endd) {
     *ptrd &= ~info.dmask_light;
