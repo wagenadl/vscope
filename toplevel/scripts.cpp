@@ -44,6 +44,7 @@ Scripts::Scripts(QWidget *parent): QWidget(parent) {
   ival_ms = 1000;
   timer.setSingleShot(true);
   connect(&timer,SIGNAL(timeout()), this, SLOT(timeout()));
+  connect(editor,SIGNAL(textChanged()), this, SLOT(changed()));
 }
 
 Scripts::~Scripts() {
@@ -280,3 +281,7 @@ void Scripts::stop() {
   Globals::gui->findPage("scripts").open();
 }
 
+
+void Scripts::changed() {
+  statusLabel->setText("Script edited");
+}

@@ -199,6 +199,7 @@ QMap<int,double> AnalogData::writeInt16(QString ofn) throw(Exception) {
     if (int(fwrite(buffer, nchannels*2, now, ofd)) != now) {
       delete buffer;
       delete range;
+      fclose(ofd);
       throw SysExc("AnalogData::writeInt16: Cannot write '" + ofn + "'");
     }
       
@@ -255,6 +256,7 @@ void AnalogData::readInt16(QString ifn, QMap<int,double> steps)
     // dbg("  now=%i nread=%i",now,nread);
     if (nread!=now) {
       delete [] buffer;
+      fclose(ifd);
       throw SysExc("AnalogData::readInt16: Cannot read '" + ifn + "'");
     }
     int16_t *bp = buffer;

@@ -345,7 +345,8 @@ void TrialData::readAnalog(XML &myxml, QString base) {
       QString chname = aichan->reverseLookup(chn);
       Connections::AIChannel const *chinfo = Connections::findpAI(chname);
       if (chinfo) 
-	scl = scl / chinfo->scale;
+	scl /= getScale(QString("%1 %2").arg(chinfo->scale).arg(chinfo->unit));
+      //scl = scl / chinfo->scale;
     } catch(...) {
       Dbg() << "TrialData:: unknown channel #" << chn;
     }

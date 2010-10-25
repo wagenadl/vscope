@@ -55,7 +55,8 @@ void VP_Bar2::render(VPRenderInfo const &info) const {
   double cs = cos(direction_rad);
   double sn = sin(direction_rad);
   uint32_t *endd = ptrd + npoints;
-  
+
+  double minx=0, maxx=0, miny=0, maxy=0;
   bool flip = false;
   for (int n=0; n<nlines; n++) {
     for (int k=0; k<points_per_line; k++) {
@@ -64,11 +65,24 @@ void VP_Bar2::render(VPRenderInfo const &info) const {
       double eta0 = dt_s*speed_fields_per_s;
       // let's draw a line
       double eta = -1+2*eta0;
+      if (eta>1)
+	eta=1;
       double xi = 1-2.*k/points_per_line;
+      //      Dbg() << t_s << ";" << dt_s << ";" << eta0 << ";" << eta << ";" << xi;
       if (flip)
 	xi=-xi;
-      *ptrx = xscale*(xi*cs + eta*sn);
-      *ptry = yscale*(xi*sn - eta*cs);
+      double x = xscale*(xi*cs + eta*sn);
+      double y = yscale*(xi*sn - eta*cs);
+      *ptrx = x;
+      *ptry = y;
+      if (x<minx)
+	minx=x;
+      if (x>maxx)
+	maxx=x;
+      if (y<miny)
+	miny=y;
+      if (y>maxy)
+	maxy=y;
       if (eta0<1)
 	*ptrd |= info.dmask_light;
       else
@@ -83,4 +97,5 @@ void VP_Bar2::render(VPRenderInfo const &info) const {
     *ptrd &= ~info.dmask_light;
     ptrd++;
   }
+  //  Dbg() << "VP_BAR2: x: " << minx << " " << maxx << "; y: " << miny << " " << maxy;
 }

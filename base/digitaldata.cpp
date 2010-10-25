@@ -111,8 +111,10 @@ void DigitalData::writeUInt32(QString ofn) throw(Exception) {
   if (!ofd)
     throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
 
-  if (int32_t(fwrite(data,4,nscans,ofd))!=nscans)
+  if (int32_t(fwrite(data,4,nscans,ofd))!=nscans) {
+    fclose(ofd);
     throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
+  }
 
   if (fclose(ofd))
     throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
@@ -124,7 +126,7 @@ void DigitalData::readUInt32(QString ifn) throw(Exception) {
     throw SysExc("DigitalData::readUInt32: Cannot stat '" + ifn + "'");
   int filelength_bytes = s.st_size;
   int newscans = filelength_bytes/4;
-  if (newscans*4 != filelength_bytes)
+  if (newscans*4 != filelength_bytes) 
     throw Exception("DigitalData",
 		       "Unexpected file size: not a multiple of scan size",
 		       "readUInt32");
@@ -134,8 +136,10 @@ void DigitalData::readUInt32(QString ifn) throw(Exception) {
   if (!ifd)
     throw SysExc("DigitalData::readUInt32: Cannot read '" + ifn + "'");
 
-  if (int32_t(fread(data,4,newscans,ifd)) != newscans)
+  if (int32_t(fread(data,4,newscans,ifd)) != newscans) {
+    fclose(ifd);
     throw SysExc("DigitalData::readUInt32: Cannot read '" + ifn + "'");
+  }
 
   fclose(ifd);
 }

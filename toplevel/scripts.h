@@ -29,6 +29,7 @@ private slots:
   void setDir(QString);
   void setName(QString);
   void timeout();
+  void changed();
 public:
   bool status();
 private:
