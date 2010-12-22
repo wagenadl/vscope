@@ -9,13 +9,13 @@
 #include <QString>
 #include <pvp/ccdconfig.h>
 #include <xml/connections.h>
-#include <base/ccdtiming.h>
+#include <acq/ccdtimingdetail.h>
 
 class CCDAcq {
 public:
   CCDAcq();
   ~CCDAcq();
-  bool prepare(class ParamTree /*const*/ *ptree, CCDTiming const &timing);
+  bool prepare(class ParamTree const *ptree, CCDTimingDetail const &timing);
   /*:F prepare
    *:D Gets the cameras ready.
    *:R Returns true iff the cameras are present and available.

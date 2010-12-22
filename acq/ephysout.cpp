@@ -54,15 +54,15 @@ void EPhysOut::setBuffer(AnalogData *ad, DigitalData *dd) {
   ddata = dd;
 }
 
-bool EPhysOut::prepare(ParamTree const *ptree) {
+bool EPhysOut::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
   // This trial might involve ephys acquisition, ccd acquisition,
   // ephys stimulation, or all three.
   if (!ddata)
     throw Exception("EPhysOut","No digital buffer defined",
 		    "prepare");
   trialtime_ms = ptree->find("acqEphys/acqTime").toDouble();
-  EPhO_CCD epho_ccd(ptree, false);
-  ddata->reshape(epho_ccd.neededScans());
+  EPhO_CCD epho_ccd(timing);
+  ddata->reshape(timing.neededScans());
   ddata->zero();
   epho_ccd.prepare(ddata);
   bool enableStim = ptree->find("stimEphys/enable").toBool();
@@ -74,22 +74,23 @@ bool EPhysOut::prepare(ParamTree const *ptree) {
   }
 
   if (ptree->find("stimVideo/enable").toBool())
-    VideoProg::find().prepStim(ptree, epho_ccd.timing(), adata, ddata);
+    VideoProg::find().prepStim(ptree, timing, adata, ddata);
   
   prep = true;
   
   return createDAQ(ptree);
 }
 
-bool EPhysOut::prepareSnap(ParamTree const *ptree) {
+bool EPhysOut::prepareSnap(ParamTree const *ptree,
+			   CCDTimingDetail const &timing) {
   // All we will do is trigger the camera and open the shutter for the
   // right amount of time. No other stimuli.
   if (!ddata)
     throw Exception("EPhysOut","No digital buffer defined",
 		    "prepare");
   trialtime_ms=0;
-  EPhO_CCD epho_ccd(ptree, true);
-  ddata->reshape(epho_ccd.neededScans());
+  EPhO_CCD epho_ccd(timing);
+  ddata->reshape(timing.neededScans());
   ddata->zero();
   epho_ccd.prepare(ddata);
   setupAData_dummy();

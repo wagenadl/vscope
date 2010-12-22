@@ -13,8 +13,8 @@ class TrialData {
 public:
   TrialData();
   virtual ~TrialData();
-  void prepare(class ParamTree /*const*/ *ptree);
-  void prepareSnapshot(class ParamTree /*const*/ *ptree);
+  void prepare(class ParamTree const *ptree);
+  void prepareSnapshot(class ParamTree const *ptree);
   virtual QString write(QString dir) const;
   /*:F write
    *:R Actual trial name, which may differ from trialno if there was a
@@ -43,7 +43,7 @@ public:
   QString exptName() const { return exptname; }
   QString trialID() const { return trialid; }
 private:
-  void generalPrep(class ParamTree *ptree);
+  void generalPrep(class ParamTree const *ptree);
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;

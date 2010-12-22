@@ -19,7 +19,6 @@ private: friend class CohData;
   CCDTiming timing;
 public:
   enum { refANALOG, refDIGITAL, refFIXED } refType;
-  CohData_(): timing(0) {}
 private: // friend class CohData;
   int ref_chn; // doubles as ref_digiline
   double ref_hz; // for refFIXED mode

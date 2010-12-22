@@ -33,7 +33,7 @@ CCDAcq::CCDAcq() {
   isDone=false;
 }
 
-bool CCDAcq::prepare(ParamTree *ptree, CCDTiming const &timing) {
+bool CCDAcq::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
   if (isActive)
     throw Exception("CCDAcq","Cannot prepare while active");
   isActive = false; isGood=false; isDone = false;

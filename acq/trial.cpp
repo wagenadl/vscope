@@ -73,32 +73,35 @@ Trial::~Trial() {
     delete dat; // eventually, this will not be here any more
 }
 
-void Trial::prepare(ParamTree *ptree) {
+void Trial::prepare(ParamTree const *ptree) {
   if (active)
     throw Exception("Trial","Cannot prepare for new trial while active");
 
   dat->prepare(ptree);
+
+  CCDTimingDetail timing(ptree, false);
   
+  dbg("trial:prepare contephys=%i. ephysacq=%p",dat->hasContEPhys(),ephysacq);
   if (dat->isCCD())
-    ccdacq->prepare(ptree,false);
-      dbg("trial:prepare contephys=%i. ephysacq=%p",dat->hasContEPhys(),ephysacq);
-      ephysout->setMaster(dat->hasContEPhys() ? 0 : ephysacq);
-  ephysout->prepare(ptree);
+    ccdacq->prepare(ptree, timing);
+  ephysout->setMaster(dat->hasContEPhys() ? 0 : ephysacq);
+  ephysout->prepare(ptree, timing);
   if (dat->isEPhys())
     ephysacq->prepare(ptree);
   outcomplete = acqcomplete = false;
   prep = true;
 }
 
-void Trial::prepareSnapshot(ParamTree *ptree) {
+void Trial::prepareSnapshot(ParamTree const *ptree) {
   if (active)
     throw Exception("Trial","Cannot prepare for new trial while active");
 
   dat->prepareSnapshot(ptree);
+  CCDTimingDetail timing(ptree, false);
   
-  ccdacq->prepare(ptree,true);
+  ccdacq->prepare(ptree, timing);
   ephysout->setMaster(0);
-  ephysout->prepareSnap(ptree);
+  ephysout->prepareSnap(ptree, timing);
   outcomplete = acqcomplete = false;
   prep = true;
 }

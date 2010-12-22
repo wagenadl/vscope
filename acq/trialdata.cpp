@@ -71,7 +71,7 @@ CCDData *TrialData::ccdData(QString camid) {
     return 0;
 }
 
-void TrialData::generalPrep(ParamTree *ptree) {
+void TrialData::generalPrep(ParamTree const *ptree) {
   if (xml)
     delete xml;
 
@@ -118,7 +118,7 @@ void TrialData::generalPrep(ParamTree *ptree) {
   }
 }
 
-void TrialData::prepare(ParamTree *ptree) {
+void TrialData::prepare(ParamTree const *ptree) {
   snap=false;
   contEphys = ptree->find("acquisition/contEphys").toBool();
   /* contEphys tracks whether continuous e'phys acq is simultaneously
@@ -128,7 +128,7 @@ void TrialData::prepare(ParamTree *ptree) {
   prep = true;
 }
 
-void TrialData::prepareSnapshot(ParamTree *ptree) {
+void TrialData::prepareSnapshot(ParamTree const *ptree) {
   snap=true;
   do_ccd = true;
   generalPrep(ptree);

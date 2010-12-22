@@ -5,15 +5,17 @@
 #define EPHYSOUT_H
 
 #include <QObject>
-#include <base/ccdtiming.h>
+#include <acq/ccdtimingdetail.h>
 
 class EPhysOut: public QObject {
   Q_OBJECT;
 public:
   EPhysOut();
   virtual ~EPhysOut();
-  bool prepare(class ParamTree const *ptree); // returns true if DAQ board present and operational
-  bool prepareSnap(class ParamTree const *ptree);
+  bool prepare(class ParamTree const *ptree,
+	       CCDTimingDetail const &timing); // returns true if DAQ board present and operational
+  bool prepareSnap(class ParamTree const *ptree,
+		   CCDTimingDetail const &timing);
   void setBuffer(class AnalogData *adata, class DigitalData *ddata);
   /*:F setBuffer
    *:D We do not do our own memory management. Rather, this function 

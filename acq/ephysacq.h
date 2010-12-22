@@ -12,7 +12,7 @@ class EPhysAcq: public QObject {
 public:
   EPhysAcq();
   virtual ~EPhysAcq();
-  bool prepare(class ParamTree /*const*/ *ptree);
+  bool prepare(class ParamTree const *ptree);
   /*:F prepare
    *:D Prepares DAQ board. You must call setBuffer before calling prepare.
        This reshapes the data buffers.
@@ -65,7 +65,7 @@ signals:
        setBuffer().
   */
 private:
-  bool createDAQ(class ParamTree *ptree);
+  bool createDAQ(class ParamTree const *ptree);
 private:
   bool active;
   bool prep;

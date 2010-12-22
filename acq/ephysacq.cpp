@@ -44,7 +44,7 @@ EPhysAcq::~EPhysAcq() {
     delete din;
 }
 
-bool EPhysAcq::prepare(ParamTree *ptree) {
+bool EPhysAcq::prepare(ParamTree const *ptree) {
   if (!adata)
     throw Exception("EPhysAcq","No analog buffer defined","prepare");
   if (!ddata)
@@ -115,7 +115,7 @@ bool EPhysAcq::prepare(ParamTree *ptree) {
   return true;
 }
 
-bool EPhysAcq::createDAQ(ParamTree *) {
+bool EPhysAcq::createDAQ(ParamTree const *) {
   // perhaps we should use the ptree to figure out what device to use?
   QString devid = "";
   if (!DAQDevice::find(devid).ok())
