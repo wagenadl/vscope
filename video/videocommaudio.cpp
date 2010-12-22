@@ -14,7 +14,7 @@
 #include <base/digitaldata.h>
 #include <xml/paramtree.h>
 #include <xml/enumerator.h>
-#include <base/ccdavoid.h>
+#include <base/ccdtiming.h>
 
 /* Keep these in sync with vsdvideo/main/WaiterCli.H */
 #define cmdSetProgram  1  // arg is a single byte prog no
@@ -239,8 +239,8 @@ QStringList VideoCommAudio::getParValues(int prog, int par) {
 }
 #endif
 
-void VideoCommAudio::prepStim(ParamTree /*const*/ *ptree,
-			      CCDAvoid const &ccdavoid,
+void VideoCommAudio::prepStim(ParamTree const *ptree,
+			      CCDTiming const &ccdtiming,
 			      AnalogData *,
 			      DigitalData *ddata) const {
   if (!ddata)
@@ -293,18 +293,18 @@ void VideoCommAudio::prepStim(ParamTree /*const*/ *ptree,
 
   if (ptree->find("stimVideo/avoidCCD").toBool()) {
     dbg("avoidccd on");
-    int s = ccdavoid.start_scans - int(marginpre_ms*outrate_hz/1000);
-    int ds = ccdavoid.actv_scans + int(marginpre_ms*outrate_hz/1000) 
+    int s = ccdtiming.startScans() - int(marginpre_ms*outrate_hz/1000);
+    int ds = ccdtiming.activeScans() + int(marginpre_ms*outrate_hz/1000) 
       + int(marginpost_ms*outrate_hz/1000);
     while (s>start_scans)
-      s-=ccdavoid.ival_scans;
+      s-=ccdtiming.periodScans();
     while (s<0)
-      s+=ccdavoid.ival_scans;
+      s+=ccdtiming.periodScans();
     while (s<end_scans) {
       int s1 = s+ds;
       if (s1>end_scans)
 	s1=end_scans;
-      int s2 = s+ccdavoid.ival_scans;
+      int s2 = s+ccdtiming.periodScans();
       while (s<s1)
 	data[s++] &= ~lightval;
       s=s2;

@@ -174,3 +174,9 @@ DigitalData &DigitalData::operator=(DigitalData const &other) {
   copy(other);
   return *this;
 }
+
+void DigitalData::zero() {
+  if (data)
+    for (int n=0; n<nscans; n++)
+      data[n]=0;
+}

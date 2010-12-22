@@ -128,8 +128,11 @@
     <param id="delay" type="time" default="500 ms" min="0 ms" max="1 h"/>
     <param id="dur" type="time" default="10 s" min="100 ms" max="1 h"/>
     <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="100 Hz"/>
-    <param id="preIllum" type="time" default="100 ms" min="0 ms" max="1 h"/>
-    <param id="postIllum" type="time" default="10 ms" min="0 ms" max="1 h"/>
+    <param id="preIllum" type="time" default="1.5 ms" min="0 ms" max="1 h"/>
+    <param id="postIllum" type="time" default="0.1 ms" min="0 ms" max="1 h"/>
+    <param id="preShutter" type="time" default="50 ms" min="0 ms" max="1 h"/>
+    <param id="postShutter" type="time" default="100 ms" min="0 ms" max="1 h"/>
+    <param id="preHeat" type="time" default="0 ms" min="0 ms" max="1 h"/>
     <param id="dutyCycle" type="percentage" default="100%" min="0%" max="100%"/>
   </category>
 
@@ -214,7 +217,8 @@
       <param id="dur-1" type="time" default="5 min"/>
       <param id="preIllum-1" type="time" default="1.0 s"/>
       <param id="postIllum-1" type="time" default="1.0 s"/>
-      <param id="dutyCycle-1" type="percentage" default="75 %"/>
+      <param id="preHeat-1" type="time" default="60 s"/>
+      <param id="dutyCycle-1" type="percentage" default="38 %"/>
     </category>
     <category id="stimVideo">
       <param id="delay-1" type="time" default="1.0 s"/>

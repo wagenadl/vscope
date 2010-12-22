@@ -33,7 +33,7 @@ CCDAcq::CCDAcq() {
   isDone=false;
 }
 
-bool CCDAcq::prepare(ParamTree *ptree, bool snap) {
+bool CCDAcq::prepare(ParamTree *ptree, CCDTiming const &timing) {
   if (isActive)
     throw Exception("CCDAcq","Cannot prepare while active");
   isActive = false; isGood=false; isDone = false;
@@ -47,20 +47,14 @@ bool CCDAcq::prepare(ParamTree *ptree, bool snap) {
     QRect bin(ptree->find("acqCCD/binning").toRect());
     cfg.binning = CCDBinning(bin.width(),bin.height());
   
-    double rate_hz = ptree->find("acqCCD/rate").toDouble();
-    double frame_ms = 1000 / rate_hz;
-    double dur_ms = ptree->find("acqCCD/dur").toDouble();
-    double delay_ms = ptree->find("acqCCD/delay").toDouble();
-    double dutyCycle_Percent = ptree->find("acqCCD/dutyCycle").toDouble();
-    bool trigEach = dutyCycle_TriggerEach(dutyCycle_Percent);
-    dutyCycle_Percent = dutyCycle_Clip(dutyCycle_Percent);
+    bool trigEach = DutyCycle::triggerEach(timing.duty_percent());
   
-    t0_ms = delay_ms;
-    dt_ms = 1e3/rate_hz;
+    t0_ms = timing.t0_ms();
+    dt_ms = timing.dt_ms();
   
-    cfg.nframes = snap ? 1 : int(dur_ms*rate_hz/1000);
+    cfg.nframes = timing.nframes();
     cfg.iscont = false;
-    cfg.expose_ms = frame_ms*dutyCycle_Percent/100;
+    cfg.expose_ms = dt_ms*timing.duty_percent()/100;
     cfg.trigmode = trigEach ? CCDTrigMode::EachFrame : CCDTrigMode::FirstFrame;
     cfg.clear_every_frame = false; // trigEach ? true : false;
   

@@ -57,8 +57,8 @@
     <item tag="VideoLightMon" value="17"/>
     <item tag="VideoTrig" value="14"/>
     <item tag="VideoTrigMon" value="15"/>
-    <!--item tag="ExcShtr" value="20"/--> <!-- for Uniblitz -->
-    <item tag="ExcShtr" value="7"/> <!-- for homemade LED -->
+    <item tag="ExcShtr" value="20"/> <!-- for Uniblitz -->
+    <item tag="ExcLight" value="7"/> <!-- for homemade LED -->
     <!--item tag="VideoShtr" value="21"/-->
     <item tag="ExcShtrMon" value="24"/> <!-- for Uniblitz only -->
     <!--item tag="VideoShtrMon" value="25"/-->
@@ -136,7 +136,8 @@
   <dichannel id="VideoLightMon" alias="LightM" />
   <!--dichannel id="VideoShtrMon" alias="VShtrM" /-->
 
-  <dochannel id="ExcShtr" alias="Exc"/>
+  <dochannel id="ExcShtr" alias="EShtr"/>
+  <dochannel id="ExcLight" alias="LED"/>
   <dochannel id="VideoShtr" alias="VShtr"/>
   <dochannel id="TrigOx"  alias="TrigOx"/>
   <dochannel id="TrigCc"  alias="TrigCc"/>
@@ -144,7 +145,7 @@
   <dochannel id="DO1" alias="DO1"/>
   <dochannel id="DO2" alias="DO2"/>
   <dochannel id="DO3" alias="DO3"/>
-  <dochannel id="VideoLight" alias="Light"/>
+  <dochannel id="VideoLight" alias="VLight"/>
   <dochannel id="VideoCmd" alias="VCmd"/>
   <dochannel id="VideoTrig" alias="VTrig"/>
 

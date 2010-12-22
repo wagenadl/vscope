@@ -5,15 +5,15 @@
 #define EPHYSOUT_H
 
 #include <QObject>
-#include <base/ccdavoid.h>
+#include <base/ccdtiming.h>
 
 class EPhysOut: public QObject {
   Q_OBJECT;
 public:
   EPhysOut();
   virtual ~EPhysOut();
-  bool prepare(class ParamTree /*const*/ *ptree); // returns true if DAQ board present and operational
-  bool prepareSnap(class ParamTree /*const*/ *ptree);
+  bool prepare(class ParamTree const *ptree); // returns true if DAQ board present and operational
+  bool prepareSnap(class ParamTree const *ptree);
   void setBuffer(class AnalogData *adata, class DigitalData *ddata);
   /*:F setBuffer
    *:D We do not do our own memory management. Rather, this function 
@@ -29,12 +29,11 @@ protected slots:
 signals:
   void ended();
 private:
-  CCDAvoid setupDData_CCD(class ParamTree /*const*/ *ptree);
-  void setupDData_addStim(class ParamTree /*const*/ *ptree);
-  void setupAData_stim(class ParamTree /*const*/ *ptree);
+  void setupDData_addStim(class ParamTree const *ptree);
+  void setupAData_stim(class ParamTree const *ptree);
   void setupAData_dummy();
-  bool createDAQ(class ParamTree /*const*/ *ptree); // true iff hardware present
-  void setupAData_mkStim(ParamTree /*const*/ *ptree, int channel, QString path);
+  bool createDAQ(class ParamTree const *ptree); // true iff hardware present
+  void setupAData_mkStim(ParamTree const *ptree, int channel, QString path);
 private:
   bool active;
   bool prep;

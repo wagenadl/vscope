@@ -136,7 +136,7 @@ void ParamTree::read(QDomElement doc) {
   }
 }
 
-void ParamTree::write(QDomElement doc) {
+void ParamTree::write(QDomElement doc) const {
   //fprintf(stderr,"ParamTree::write <%s> '%s' to <%s> '%s'\n",
   //        qPrintable(base.tagName()),qPrintable(base.attribute("id")),
   //        qPrintable(doc.tagName()),qPrintable(doc.attribute("id")));
@@ -153,7 +153,7 @@ void ParamTree::write(QDomElement doc) {
     // We are a leaf, this should not happen.
     throw Exception("ParamTree","write() cannot directly write leaves");
   
-  for (QMap<QString,ParamTree*>::iterator i=children.begin();
+  for (QMap<QString, ParamTree *>::const_iterator i=children.begin();
        i!=children.end(); ++i) {
     ParamTree *c = i.value();
     QString id = i.key();
@@ -226,6 +226,10 @@ void ParamTree::reset() {
   }
 }
 
+Param const *ParamTree::leafp() const {
+  return leaf_;
+}
+
 Param *ParamTree::leafp() {
   return leaf_;
 }
@@ -237,6 +241,21 @@ Param &ParamTree::leaf() {
     throw Exception("ParamTree: No leaf");
 }
 
+Param const &ParamTree::leaf() const {
+  if (leaf_)
+    return *leaf_;
+  else
+    throw Exception("ParamTree: No leaf");
+}
+
+ParamTree const *ParamTree::childp(QString id) const {
+  QMap<QString,ParamTree *>::const_iterator i = children.find(id);
+  if (i==children.end())
+    return 0;
+  else
+    return i.value();
+}
+
 ParamTree *ParamTree::childp(QString id) {
   QMap<QString,ParamTree *>::iterator i = children.find(id);
   if (i==children.end())
@@ -245,12 +264,33 @@ ParamTree *ParamTree::childp(QString id) {
     return i.value();
 }
 
+ParamTree const &ParamTree::child(QString id) const {
+  ParamTree const *c = childp(id);
+  if (c)
+    return *c;
+  else
+    throw Exception(QString("ParamTree: No child named '") + id + "'");
+}
+
 ParamTree &ParamTree::child(QString id) {
   ParamTree *c = childp(id);
   if (c)
     return *c;
   else
     throw Exception(QString("ParamTree: No child named '") + id + "'");
+}
+
+Param const *ParamTree::findp(QString path) const {
+  if (path.isEmpty())
+    return leafp();
+  QStringList p=path.split(QRegExp("[/:]"));
+  QString head = p.takeFirst();
+  QString tail = p.join("/");
+  ParamTree const *c = childp(head);
+  if (c)
+    return c->findp(tail);
+  else
+    return 0;
 }
 
 Param *ParamTree::findp(QString path) {
@@ -266,29 +306,13 @@ Param *ParamTree::findp(QString path) {
     return 0;
 }
 
-//Param *ParamTree:findpCustom(QString path, int cno) {
-//  QStringList p=path.split(QRegExp("[/:]"));
-//  QString head = p.takeFirst();
-//  if (p.isEmpty()) {
-//    // we're at the level where the parameter should live
-//    QString cust = QString("%1-%2").arg(head).arg(cno);
-//    Param *pc = findp(cust);
-//    if (pc)
-//      return pc;
-//    // ok, so we need to create it.
-//    ParamTree *pt = new ParamTree
-//    else 
-//  } else {
-//    // we should go further down
-//    QString tail = p.join("/");
-//    ParamTree *c = childp(head);
-//    if (c)
-//      return c->findpCustom(tail,cno);
-//    else
-//      return 0;
-//  }
-  
-  
+Param const &ParamTree::find(QString path) const {
+  Param const *p = findp(path);
+  if (p)
+    return *p;
+  else
+    throw Exception("ParamTree","Cannot find parameter '"+path+"'","find");
+}
 
 Param &ParamTree::find(QString path) {
   Param *p = findp(path);
@@ -298,7 +322,7 @@ Param &ParamTree::find(QString path) {
     throw Exception("ParamTree","Cannot find parameter '"+path+"'","find");
 }
 
-int ParamTree::report(int level, int maxelts) {
+int ParamTree::report(int level, int maxelts) const {
   if (level==0)
     printf("ParamTree report:\n");
   else
@@ -314,7 +338,7 @@ int ParamTree::report(int level, int maxelts) {
   } else {
     printf("\n");
   	   
-    for (QMap<QString,ParamTree*>::iterator i=children.begin();
+    for (QMap<QString,ParamTree*>::const_iterator i=children.begin();
          i!=children.end(); ++i) {
       ParamTree *c = i.value();
       QString id = i.key();

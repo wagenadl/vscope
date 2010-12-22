@@ -410,6 +410,7 @@
       <button id="preIllum" label="Pre-illum:&#xA;%1"  bg="#ddbbff"/>
       <button id="postIllum" label="Post-illum:&#xA;%1" bg="#bb99ff"/>
       <break/>
+      <button id="preHeat" label="Pre-Heat:&#xA;%1" bg="#bb77ee"/>
       <button id="delay" label="VSD delay:&#xA;%1" y="1" bg="#88aaff"/>
       <button id="dur" label="VSD dur.:&#xA;%1" bg="#77bbff"/>
       <button id="rate" label="Frame rate:&#xA;%1" bg="#4488ff"/>
@@ -558,19 +559,52 @@
       <item custom="1"  editcaption="Custom post-illumination time"/>
     </menu>
 
-    <menu id="dutyCycle" caption="Duty cycle" rows="5" cols="3">
+    <menu id="preHeat" caption="Pre-heating time" rows="6" cols="3">
+      <item value="100 ms"/>
+      <item value="150 ms"/>
+      <item value="200 ms"/>
+      <item value="300 ms"/>
+      <item value="500 ms"/>
+      <item value="700 ms"/>
+      <break/>
+      <item value="1 s"/>
+      <item value="1.5 s"/>
+      <item value="2 s"/>
+      <item value="3 s"/>
+      <item value="5 s"/>
+      <item value="7 s"/>
+      <break/>
+      <item value="10 s"/>
+      <item value="15 s"/>
+      <item value="20 s"/>
+      <item value="30 s"/>
+      <item value="45 s"/>
+      <item custom="1"  editcaption="Custom pre-heating time"/>
+    </menu>
+
+    <menu id="dutyCycle" caption="Duty cycle" rows="5" cols="4">
       <item value="10%"/>
+      <item value="15%"/>
       <item value="20%"/>
+      <item value="25%"/>
       <item value="30%"/>
+      <break/>
+      <item value="35%"/>
       <item value="40%"/>
+      <item value="45%"/>
       <item value="50%"/>
+      <item value="55%"/>
       <break/>
       <item value="60%"/>
+      <item value="65%"/>
       <item value="70%"/>
+      <item value="75%"/>
       <item value="80%"/>
-      <item value="90%"/>
-      <item value="100%"/>
       <break/>
+      <item value="85%"/>
+      <item value="90%"/>
+      <item value="95%"/>
+      <item value="100%"/>
       <item custom="1" editcaption="Custom duty cycle"/>
     </menu>
   </page>
@@ -1148,6 +1182,7 @@
   <graph ch="DO2" typ="do" tiny="yes"/>
   <graph ch="DO3" typ="do" tiny="yes"/>
   <graph ch="ExcShtr" typ="do" tiny="yes"/>
+  <graph ch="ExcLight" typ="do" tiny="yes"/>
   <graph ch="VideoTrig" typ="do" tiny="yes"/>
   <graph ch="VideoLight" typ="do" tiny="yes"/>
   <graph ch="TrigCc" typ="do" tiny="yes"/>

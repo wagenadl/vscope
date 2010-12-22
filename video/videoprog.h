@@ -22,8 +22,8 @@ public:
   QStringList const &parNames(int prog);
   QStringList const &parUnits(int prog);
   QStringList const &parValues(int prog, int par);
-  void prepStim(class ParamTree /*const*/ *ptree,
-		class CCDAvoid const &ccdavoid,
+  void prepStim(class ParamTree const *ptree,
+		class CCDTiming const &ccdtiming,
 		class AnalogData *adata, class DigitalData *ddata) const;
   void reset(class ParamTree /*const*/ *ptree); // ensures our prog and pars match ptree
   bool enabled(class ParamTree *ptree) const;

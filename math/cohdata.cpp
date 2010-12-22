@@ -104,8 +104,8 @@ bool CohData::validate() {
   coh_mag.clear();
   coh_pha.clear();
 
-  if (timing.nframes<=1) {
-    dbg("cohdata::validate: not enough frames: n=%i",timing.nframes);
+  if (timing.nframes()<=1) {
+    dbg("cohdata::validate: not enough frames: n=%i",timing.nframes());
     valid = true; // so we won't repeat this warning inf'ly many times
     return false;
   }
@@ -128,10 +128,10 @@ bool CohData::validate() {
   if (!cohest)
     cohest = new CohEst;
   
-  double dt_s = timing.dt_ms/1000;
+  double dt_s = timing.dt_ms()/1000;
   double df_hz = 2./3;
-  dbg("cohdata:recalc: nfr=%i dt=%g df=%g",timing.nframes,dt_s,df_hz);
-  int N = timing.nframes - COH_STRIP_START - COH_STRIP_END;
+  dbg("cohdata:recalc: nfr=%i dt=%g df=%g",timing.nframes(),dt_s,df_hz);
+  int N = timing.nframes() - COH_STRIP_START - COH_STRIP_END;
   TaperID tid(N, dt_s, df_hz);
   rvec trc; trc.resize(N);
   if (Taperbank::hasTaper(tid)) {
@@ -195,16 +195,12 @@ void CohData::refineTiming() {
       }
     }
   }
-  if (istart>=0 && count==timing.nframes-1) {
-    timing.t0_ms = istart*1000.0/timing.fs_hz;
-    timing.dt_ms = (ilatest-istart)*1000.0/count/timing.fs_hz;
-    ///* Why is the following happening? I am not sure I buy its correctness. */
-    //Param *p = Globals::ptree->findp("analysis/vsdDelay");
-    //if (p) 
-    //  timing.t0_ms -= p->toDouble();
+  if (istart>=0 && count==timing.nframes()-1) {
+    timing.setTiming(istart*1000.0/timing.fs_hz(),
+		     (ilatest-istart)*1000.0/count/timing.fs_hz());
   } else {
     dbg("istart=%i ilatest=%i count=%i nfr=%i mask=0x%08x",istart,ilatest,
-	count,timing.nframes,mask);   
+	count,timing.nframes(),mask);   
     dbg("CohData: WARNING: Could not count CCD frames");
     // I could give a GUI warning, but this probably only ever happens
     // when there are no cameras. Even otherwise, the problem will be minor.
@@ -215,7 +211,7 @@ void CohData::recalcReference() {
   /* We are going to reinterpolate the reference signal at the times of the
      ccd frames. We will also recalculate fstar_hz. */
   
-  int N = timing.nframes-COH_STRIP_START-COH_STRIP_END;
+  int N = timing.nframes()-COH_STRIP_START-COH_STRIP_END;
   if (N<0)
     return;
   
@@ -260,12 +256,12 @@ void CohData::recalcReference() {
      to use the actual values from the FrameCc and FrameOx monitors. */
 
   dbg("CohData:recRef: N=%i dt_ms=%g fs_hz=%g ephl=%i",
-      N,timing.dt_ms,timing.fs_hz,ephyslen);
+      N,timing.dt_ms(),timing.fs_hz(),ephyslen);
   for (int k=0; k<N; k++) {
-    double tstart = timing.t0_ms+(k+COH_STRIP_START)*timing.dt_ms;
-    double tend = tstart+timing.dt_ms;
-    int istart = int(tstart/1e3*timing.fs_hz);
-    int iend = int(tend/1e3*timing.fs_hz);
+    double tstart = timing.t0_ms()+(k+COH_STRIP_START)*timing.dt_ms();
+    double tend = tstart+timing.dt_ms();
+    int istart = int(tstart/1e3*timing.fs_hz());
+    int iend = int(tend/1e3*timing.fs_hz());
     if (istart<0)
       istart=0;
     if (iend>ephyslen)
@@ -321,7 +317,7 @@ void CohData::recalcReference() {
     sumtx += t*ref[k];
     sumtt += t*t;
   }
-  double b = sumx/timing.nframes;
+  double b = sumx/timing.nframes();
   double a = sumtx / sumtt;
   for (int k=0; k<N; k++) {
     double t = k-t0;
@@ -329,7 +325,7 @@ void CohData::recalcReference() {
   }
 
   // run a psdest to find spectral peak
-  double dt_s = timing.dt_ms/1000;
+  double dt_s = timing.dt_ms()/1000;
   double df_hz = 1./3;
   //dbg("coherence:recalcref: nfr=%i dt=%g df=%g",timing.nframes,dt_s,df_hz);
   //dbg("coherence:recalcref: isdigi=%i chn=%i",ref_is_digital,ref_chn);

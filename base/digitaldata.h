@@ -89,6 +89,10 @@ public:
        will not release any unneeded space unless FREE is set to true.
    *:A True if reallocation occurred.
    */
+  void zero();
+  /*:F zero
+   *:D Set all data to zero.
+   */
   uint32_t getMask() const { return cmask; }
   void clearMask();
   void addLine(uint32_t line);

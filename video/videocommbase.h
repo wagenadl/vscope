@@ -21,8 +21,8 @@ public:
   virtual QStringList getParNames(int prog)=0;
   virtual QStringList getParUnits(int prog)=0;
   virtual QStringList getParValues(int prog, int parno)=0; // parno=1,2,3
-  virtual void prepStim(class ParamTree /*const*/ *ptree,
-			class CCDAvoid const &ccdavoid,
+  virtual void prepStim(class ParamTree const *ptree,
+			class CCDTiming const &ccdtiming,
 			class AnalogData *adata,
 			class DigitalData *ddata) const=0;
 };

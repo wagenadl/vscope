@@ -18,7 +18,7 @@
 #include <base/ccddata.h>
 #include <acq/datatrove.h>
 
-VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent) {
+VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent), timing(0) {
   roiset=0;
   lastAnalog=0;
   lastDigital=0;
@@ -111,11 +111,10 @@ void VSDTraces::newCCDData(bool dontTell) {
   dbg("vsdtraces: newccddata");
   CCDData const *don = Globals::trove->trial().ccdData("Cc");
   CCDData const *acc = Globals::trove->trial().ccdData("Ox");
-  timing.nframes = don->getNFrames();
-  timing.t0_ms = don->getT0();
-  timing.dt_ms = don->getDT();
-  Dbg() << "VSDTraces:: don nfr=" << timing.nframes
-	<< " t0=" << timing.t0_ms << " dt=" << timing.dt_ms;
+  timing.setFrames(don->getNFrames());
+  timing.setTiming(don->getT0(), don->getDT());
+  Dbg() << "VSDTraces:: don nfr=" << timing.nframes()
+	<< " t0=" << timing.t0_ms() << " dt=" << timing.dt_ms();
   selected->setData(don,acc);
   allgraph->setData(don,acc);
   if (!dontTell) {
@@ -173,8 +172,8 @@ void VSDTraces::newEPhys(bool dontTell) {
     : lastAnalog->allData();
   dbg("vsdtraces::newephys. refchn=%i contained=%i. data=%p donttell=%i",
       refchn,lastAnalog->contains(refchn), dp.dp_double, dontTell);
-  timing.fs_hz = Globals::ptree->find("acqEphys/acqFreq").toDouble();
-  reftrace->setData(0,1/timing.fs_hz,
+  timing.setRate(Globals::ptree->find("acqEphys/acqFreq").toDouble());
+  reftrace->setData(0,1/timing.fs_hz(),
 		    dp,
 		    lastAnalog->getNumScans(),
 		    lastAnalog->getNumChannels());

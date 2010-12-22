@@ -121,11 +121,11 @@ QString VideoProg::prognum2name(int num) {
 }
 
 
-void VideoProg::prepStim(class ParamTree /*const*/ *ptree,
-			 class CCDAvoid const &ccdavoid,
+void VideoProg::prepStim(class ParamTree const *ptree,
+			 class CCDTiming const &ccdtiming,
 			 class AnalogData *adata,
 			 class DigitalData *ddata) const {
-  vidcom->prepStim(ptree, ccdavoid, adata, ddata);
+  vidcom->prepStim(ptree, ccdtiming, adata, ddata);
 }
 
 QMap<int,QString> const &VideoProg::progNames() {

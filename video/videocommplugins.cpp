@@ -11,7 +11,7 @@
 #include <xml/paramtree.h>
 #include <base/digitaldata.h>
 #include <base/analogdata.h>
-#include <base/ccdavoid.h>
+#include <base/ccdtiming.h>
 
 #define PAR_OUTRATE "acqEphys/acqFreq"
 // Alternative: "stimEphys/outrate"
@@ -74,8 +74,8 @@ QStringList VideoCommPlugins::getParValues(int prog, int par) {
   return values.split(":");
 }
 
-void VideoCommPlugins::prepStim(ParamTree *ptree,
-				CCDAvoid const &ccdavoid,
+void VideoCommPlugins::prepStim(ParamTree const *ptree,
+				CCDTiming const &ccdtiming,
 				AnalogData *adata,
 				DigitalData *ddata) const {
   if (!adata)
@@ -99,11 +99,11 @@ void VideoCommPlugins::prepStim(ParamTree *ptree,
   info.i0 = int(tstart_s*samplingrate_hz);
   dbg("vcplugin: i0=%i n=%i fs=%g",info.i0,info.nscans, info.fs_hz);
   if (ptree->find("stimVideo/avoidCCD").toBool()) {
-    int avoid_i0 = ccdavoid.start_scans
+    int avoid_i0 = ccdtiming.startScans()
       - int(marginpre_ms*samplingrate_hz/1000);
-    int avoid_n = ccdavoid.actv_scans
+    int avoid_n = ccdtiming.activeScans()
       + int((marginpre_ms+marginpost_ms)*samplingrate_hz/1000);
-    int avoid_di = ccdavoid.ival_scans;
+    int avoid_di = ccdtiming.periodScans();
     dbg("  vcp: avoid_i0=%i avoid_n=%i avoid_di=%i",avoid_i0,avoid_n,avoid_di);
     // find the ccd activity that affects our first pulse:
     while (avoid_i0+avoid_n>info.i0)

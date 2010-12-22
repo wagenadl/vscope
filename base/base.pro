@@ -20,7 +20,8 @@ HEADERS += base26.h \
 	polyblob.h blobroi.h \
 	roiset.h roiset3data.h \
 	analogdata.h digitaldata.h \
-	xml.h unitqty.h xyabc.h
+	xml.h unitqty.h xyabc.h \
+        ccdtiming.h
 	   
 SOURCES += base26.cpp \
            dbg.cpp \
@@ -35,8 +36,8 @@ SOURCES += base26.cpp \
 	polyblob.cpp blobroi.cpp \
 	roiset.cpp roiset3data.cpp \
 	analogdata.cpp digitaldata.cpp \
-	xml.cpp unitqty.cpp xyabc.cpp
-
+	xml.cpp unitqty.cpp xyabc.cpp \
+        ccdtiming.cpp
 
 
 

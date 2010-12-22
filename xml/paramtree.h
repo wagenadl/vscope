@@ -32,35 +32,36 @@ public:
        in doc but not in our tree cause a warning.
    *:A doc: a <settings>, < element or an element containing a <settings> element.
   */
-  void write(QDomElement doc);
+  void write(QDomElement doc) const;
   /*:F write
    *:D This writes all values from the tree into doc.
    *:A doc: a <settings> element or an element containing a <settings> element.
        New child nodes are created inside doc as needed.
    *:N If doc contains children that are not matched by our own children, those
        are not affected.
-   *:N This should be labeled const, but I don't want to create const versions of
-       each of the find-related functions below.
   */
   void reset();
   /*:F reset
    *:D This reloads default values from the <params> element passed to the
        constructor.
   */
-  int report(int level=0, int maxelts=1000000000);
+  int report(int level=0, int maxelts=1000000000) const;
   /*:F report
    *:D This writes the contents of the tree to stdout.
    */
+  Param const *leafp() const;
   Param *leafp();
   /*:F leafp
    *:D Returns a pointer to the parameter stored at this node, if any.
    *:N Returns null if there is no parameter stored at this node.
    */
+  Param const &leaf() const;
   Param &leaf();
   /*:F leaf
    *:D Returns a reference to the parameter stored at this node, if any.
    *:N This throws an exception if there is no parameter stored at this node.
    */
+  class ParamTree const *childp(QString name) const;
   class ParamTree *childp(QString name);
   /*:F childp
    *:D Returns a pointer to an immediate descendent of this tree.
@@ -68,6 +69,7 @@ public:
    *:R Returns null if not found.
    *:N This will not search subtrees, so 'name' cannot be a multi-level path.
    */
+  class ParamTree const &child(QString name) const;
   class ParamTree &child(QString name);
   /*:F child
    *:D Returns a reference to an immediate descendent of this tree.
@@ -75,42 +77,20 @@ public:
    *:N This throws an exception if there is no parameter stored at this node.
    *:N This will not search subtrees, so 'name' cannot be a multi-level path.
    */
+  Param const *findp(QString path) const;
   Param *findp(QString path);
   /*:F findp
    *:D Returns a pointer to a param somewhere down in this tree.
    *:A path: slash- and colon-separated path of the item.
    *:R Pointer to the item, or null if not found.
    */  
+  Param const &find(QString path) const;
   Param &find(QString path);
   /*:F find
    *:D Returns a reference to a param somewhere down in this tree.
    *:A path: slash- and colon-separated path of the item.
    *:N Throws an exception if not found.
    */
-  // Param *findpCustom(QString path, int custom);
-  /*:F findpCustom
-   *:D Returns a pointer to a custom value for a param somewhere down
-       in this tree.
-   *:A path: slash- and colon-separated path of the item itself, not the
-             custom value.
-    :  custom: number identifying the custom value.
-   *:N This creates the custom param if it doesn't already exist, but
-       null is returned if 'path' doesn't refer to a Param.
-   *:N Custom parameters are named NAME-NUMBER, where NAME is the name
-       of the Param being customized, and NUMBER is the custom number.
-  */
-  // Param &findCustom(QString path, int custom);
-  /*:F findCustom
-   *:D Returns a reference to a custom value for a param somewhere down
-       in this tree.
-   *:A path: slash- and colon-separated path of the item itself, not the
-             custom value.
-    :  custom: number identifying the custom value.
-   *:N This creates the custom param if it doesn't already exist.
-   *:N An exception is thrown if path does not refer to a Param.
-   *:N Custom parameters are named NAME-NUMBER, where NAME is the name
-       of the Param being customized, and NUMBER is the custom number.
-  */
   //uint64_t checksum();
   /*:F checksum
    *:D Calculates a number that is (hopefully) unique to the current set

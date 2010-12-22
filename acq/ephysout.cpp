@@ -18,6 +18,7 @@
 #include <video/videoprog.h>
 #include <QTimer>
 #include <QSet>
+#include <acq/epho_ccd.h>
 
 #define PAR_OUTRATE "acqEphys/acqFreq"
 // Alternative: "stimEphys/outrate"
@@ -53,12 +54,17 @@ void EPhysOut::setBuffer(AnalogData *ad, DigitalData *dd) {
   ddata = dd;
 }
 
-bool EPhysOut::prepare(ParamTree *ptree) {
+bool EPhysOut::prepare(ParamTree const *ptree) {
   // This trial might involve ephys acquisition, ccd acquisition,
   // ephys stimulation, or all three.
+  if (!ddata)
+    throw Exception("EPhysOut","No digital buffer defined",
+		    "prepare");
   trialtime_ms = ptree->find("acqEphys/acqTime").toDouble();
-  CCDAvoid ccdavoid = setupDData_CCD(ptree);
-
+  EPhO_CCD epho_ccd(ptree, false);
+  ddata->reshape(epho_ccd.neededScans());
+  ddata->zero();
+  epho_ccd.prepare(ddata);
   bool enableStim = ptree->find("stimEphys/enable").toBool();
   if (enableStim) {
     setupAData_stim(ptree);
@@ -68,25 +74,31 @@ bool EPhysOut::prepare(ParamTree *ptree) {
   }
 
   if (ptree->find("stimVideo/enable").toBool())
-    VideoProg::find().prepStim(ptree, ccdavoid, adata, ddata);
+    VideoProg::find().prepStim(ptree, epho_ccd.timing(), adata, ddata);
   
   prep = true;
   
   return createDAQ(ptree);
 }
 
-bool EPhysOut::prepareSnap(ParamTree *ptree) {
+bool EPhysOut::prepareSnap(ParamTree const *ptree) {
   // All we will do is trigger the camera and open the shutter for the
   // right amount of time. No other stimuli.
+  if (!ddata)
+    throw Exception("EPhysOut","No digital buffer defined",
+		    "prepare");
   trialtime_ms=0;
-  setupDData_CCD(ptree);
+  EPhO_CCD epho_ccd(ptree, true);
+  ddata->reshape(epho_ccd.neededScans());
+  ddata->zero();
+  epho_ccd.prepare(ddata);
   setupAData_dummy();
   prep=true;
   
   return createDAQ(ptree);
 }
 
-bool EPhysOut::createDAQ(ParamTree *ptree) {
+bool EPhysOut::createDAQ(ParamTree const *ptree) {
   // perhaps we should use the ptree to figure out what device to use?
   QString devid = "";
   if (!DAQDevice::find(devid).ok())
@@ -108,135 +120,7 @@ bool EPhysOut::createDAQ(ParamTree *ptree) {
   return true;
 }
 
-CCDAvoid EPhysOut::setupDData_CCD(ParamTree *ptree) {
-  /* This fills a DigitalData structure that triggers the cameras and
-     opens the shutter if CCD acquisition is enabled in the ptree.
-     If trialtime_ms=0, this is a "snapshot", and triggering and shuttering
-     is enabled irrespective of the ptree.
-  */
-  /* NOTE dd 10/8/09: This, and other "setupDData" functions really
-     ought to be farmed out to separate CCD, VStim, EPStim modules. */
-
-  CCDAvoid ccdavoid;
-  
-  if (!ddata)
-    throw Exception("EPhysOut","No digital buffer defined",
-		    "setupDData_CCD");
-
-  bool isSnap = trialtime_ms==0;
-
-  double preshtr_ms = ptree->find("acqCCD/preIllum").toDouble();
-  double postshtr_ms = ptree->find("acqCCD/postIllum").toDouble();
-
-  if (isSnap) {
-    postshtr_ms = 10; // HACK FOR POSTILLUMINATION TIME IN SNAPSHOTS
-    dbg("Post-illum ignored for snapshot. Using 10 ms fixed value.");
-  }
-  
-  double framerate_hz = ptree->find("acqCCD/rate").toDouble();
-  double active_ms =  ptree->find("acqCCD/dur").toDouble();
-  double delay_ms =  isSnap ? preshtr_ms 
-    : ptree->find("acqCCD/delay").toDouble();
-  if (delay_ms < preshtr_ms) {
-    delay_ms = preshtr_ms;
-    fprintf(stderr,"Warning: CCD delay increased to respect pre-illumination setting\n");
-  }
-  double dutyCycle_percent = ptree->find("acqCCD/dutyCycle").toDouble();
-  bool trigEach = dutyCycle_TriggerEach(dutyCycle_percent);
-  double frame_ms = 1000 / framerate_hz;
-  bool enableCCD = isSnap ? true : ptree->find("acqCCD/enable").toBool();
-  int nframes = isSnap ? 1 : int(active_ms/frame_ms+.49);
-  //  double illumend_ms = delay_ms + nframes*frame_ms + postshtr_ms;
-  double outrate_hz = ptree->find(PAR_OUTRATE).toDouble();
-  int seqstartscan = int(delay_ms * outrate_hz/1000);
-  int illumprescans = int(preshtr_ms*outrate_hz/1000);
-  int illumpostscans = int(postshtr_ms*outrate_hz/1000);
-  int nscans = int(trialtime_ms * outrate_hz/1000);
-  int framescans = int(frame_ms * outrate_hz/1000);
-  int actvscans = int(frame_ms*dutyCycle_percent/100 * outrate_hz/1000);
-  if (nscans>0 && nscans<40)
-    throw Exception("EPhysOut","Trial too short for CCD to acquire anything",
-		    "setupDDataForCCD");
-
-  if (nscans==0)
-    nscans = seqstartscan + nframes*actvscans + illumpostscans + 40;
-
-  if (seqstartscan > nscans - 40) {
-    fprintf(stderr,
-	    "Warning: Trimming CCD acq. start by %i to fit in trial dur.\n",
-	    seqstartscan - (nscans-40));
-    seqstartscan = nscans - 40; // ensure all our loops are clean
-    // Probably, a warning should be issued.
-  }
-  if (trigEach && seqstartscan+nframes*framescans>nscans-40) {
-    int nfr = (nscans-40-seqstartscan)/framescans;
-    fprintf(stderr,
-	    "Warning: Reducing trigger count by %i to fit in trial dur.\n",
-	    nframes-nfr);
-    // Probably, a warning should be issued.
-  }
-
-  ccdavoid.start_scans = seqstartscan;
-  ccdavoid.ival_scans = framescans;
-  ccdavoid.actv_scans = actvscans;
-  ccdavoid.nframes = nframes;
-
-  Enumerator *lines = Enumerator::find("DIGILINES");
-  int shtrline = lines->lookup("ExcShtr");
-  int trigccline = lines->lookup("TrigCc");
-  int trigoxline = lines->lookup("TrigOx");
-  ddata->addLine(shtrline);
-  ddata->addLine(trigccline);
-  ddata->addLine(trigoxline);
-  uint32_t one = 1;
-  uint32_t shtrval = one<<shtrline;
-  uint32_t trigccval = one<<trigccline;
-  uint32_t trigoxval = one<<trigoxline;
-  
-  /* Really, this ought to be done elsewhere, but we do need the correct
-     value of nscans, which is set by CCD demands in case of snapshots: */
-  ddata->reshape(nscans);
-  uint32_t *data = ddata->allData();
-  for (int i=0; i<nscans; i++)
-    data[i]=0;
-  /* End of unfortunately placed code. */
-
-  if (enableCCD) {
-    for (int n=0; n<nframes; n++) {
-      int framestart = seqstartscan + n*framescans;
-      int trigend = framestart + 10;
-      int illumstart = framestart-illumprescans;
-      int illumend = framestart+actvscans+illumpostscans;
-      if (illumstart<0) {
-	fprintf(stderr,
-		"Warning: Illumination did not start as early as requested (by %i scans)\n",
-		-illumstart);
-	illumstart=0;
-      }
-      if (illumend>nscans-2) {
-	fprintf(stderr,
-		"Warning: Illumination did not end as late as requested (by %i scans)\n",
-		illumend-(nscans-2));
-	illumend=nscans-2;
-      }
-      if (trigend>nscans-2) {
-	fprintf(stderr,
-		"Warning: Trigger pulse trimmed to fit in trial (by %i scans)\n",
-		trigend-(nscans-2));
-	trigend=nscans-2;
-      }
-      for (int i=illumstart; i<illumend; i++)
-	data[i] |= shtrval;
-      if (trigEach || n==0)
-	for (int i=framestart; i<trigend; i++)
-	  data[i] |= trigccval|trigoxval;
-    }
-  }
-  return ccdavoid;
-}
-
-void EPhysOut::setupDData_addStim(ParamTree *ptree) {
-  // This must be called *after* setupDData_CCD.
+void EPhysOut::setupDData_addStim(ParamTree const *ptree) {
   if (!ddata)
     throw Exception("EPhysOut","No digital buffer defined","setupDStim");
 
@@ -256,7 +140,8 @@ void EPhysOut::setupDData_addStim(ParamTree *ptree) {
   QList<int> channels;
   Dbg() << "ephysout: nmax = " << nmax;
   for (int n=0; n<=nmax; n++) {
-    Param &p = ptree->find(QString("stimEphys/channel:DO%1/enable").arg(n));
+    Param const &p =
+      ptree->find(QString("stimEphys/channel:DO%1/enable").arg(n));
     uint32_t line = lines->lookup(QString("DO%1").arg(n));
     ddata->addLine(line); /* We're clamping all DOx lines, even if they
 			     are not enabled. (We'll just write zeros.) */
@@ -309,8 +194,7 @@ void EPhysOut::setupDData_addStim(ParamTree *ptree) {
 }
 
 
-void EPhysOut::setupAData_stim(ParamTree *ptree) {
-  // This must be called *after* setupDData_CCD.
+void EPhysOut::setupAData_stim(ParamTree const *ptree) {
   if (!adata)
     throw Exception("EPhysOut","No analog buffer defined","setupAData_stim");
   if (!ddata)
@@ -332,7 +216,8 @@ void EPhysOut::setupAData_stim(ParamTree *ptree) {
     } else if (name=="SIGNATURE") {
       use = true;
     } else {
-      Param *p = ptree->findp(QString("stimEphys/channel:%1/enable").arg(name));
+      Param const *p =
+	ptree->findp(QString("stimEphys/channel:%1/enable").arg(name));
       use = p && p->toBool();
       chanIsStim.insert(n);
     }
@@ -366,7 +251,8 @@ void EPhysOut::setupAData_stim(ParamTree *ptree) {
   dbg("ephysout:setupastim complete nch=%i nsc=%i",nchans,nscans);
 }
 
-void EPhysOut::setupAData_mkStim(ParamTree *ptree, int channel, QString path) {
+void EPhysOut::setupAData_mkStim(ParamTree const *ptree,
+				 int channel, QString path) {
   double *dat = adata->channelData(channel);
   double freqhz = ptree->find(PAR_OUTRATE).toDouble();
   int nscans = adata->getNumScans();
