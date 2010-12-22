@@ -410,8 +410,8 @@
       <button id="preIllum" label="Pre-illum:&#xA;%1"  bg="#ddbbff"/>
       <button id="postIllum" label="Post-illum:&#xA;%1" bg="#bb99ff"/>
       <break/>
-      <button id="preHeat" label="Pre-Heat:&#xA;%1" bg="#bb77ee"/>
-      <button id="delay" label="VSD delay:&#xA;%1" y="1" bg="#88aaff"/>
+      <button id="preHeat" label="Pre-Heat:&#xA;%1" y="0" bg="#bb77ee"/>
+      <button id="delay" label="VSD delay:&#xA;%1" bg="#88aaff"/>
       <button id="dur" label="VSD dur.:&#xA;%1" bg="#77bbff"/>
       <button id="rate" label="Frame rate:&#xA;%1" bg="#4488ff"/>
       <button id="dutyCycle" label="Duty cycle:&#xA;%1" bg="#4444ff"/>
