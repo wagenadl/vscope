@@ -97,7 +97,7 @@ void Trial::prepareSnapshot(ParamTree const *ptree) {
     throw Exception("Trial","Cannot prepare for new trial while active");
 
   dat->prepareSnapshot(ptree);
-  CCDTimingDetail timing(ptree, false);
+  CCDTimingDetail timing(ptree, true);
   
   ccdacq->prepare(ptree, timing);
   ephysout->setMaster(0);
