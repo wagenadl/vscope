@@ -284,12 +284,14 @@ void TrialData::writeCCD(QString base) const {
   
   int ndata = ccddata.size();
   for (int k=0; k<ndata; k++) {
-    int nfr = ccddata[k]->getNFrames();
-    int frpix = ccddata[k]->getFramePix();
-    for (int fr=0; fr<nfr; fr++) 
-      if (ccdf.write((char const *)ccddata[k]->frameData(fr),2*frpix)
-	  != 2*frpix)
-	throw Exception("Trial","Cannot write CCD data","write");
+    if (ccddata[k]) {
+      int nfr = ccddata[k]->getNFrames();
+      int frpix = ccddata[k]->getFramePix();
+      for (int fr=0; fr<nfr; fr++) 
+	if (ccdf.write((char const *)ccddata[k]->frameData(fr),2*frpix)
+	    != 2*frpix)
+	  throw Exception("Trial","Cannot write CCD data","write");
+    }
   }
   ccdf.close();
   QDomElement ccd = xml->find("ccd");

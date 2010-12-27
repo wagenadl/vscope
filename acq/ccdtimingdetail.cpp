@@ -16,7 +16,7 @@ CCDTimingDetail::CCDTimingDetail(ParamTree const *ptree, bool snap) {
   bool enableCCD = is_snap ? true : ptree->find("acqCCD/enable").toBool();
   double framerate_hz = ptree->find("acqCCD/rate").toDouble();
   double sequence_ms = enableCCD ? ptree->find("acqCCD/dur").toDouble() : 0;
-
+  // Note: sequence_ms is not used for snapshots
   double preillum_ms = ptree->find("acqCCD/preIllum").toDouble();
   double postillum_ms = is_snap ? 1
     : ptree->find("acqCCD/postIllum").toDouble();
@@ -38,7 +38,7 @@ CCDTimingDetail::CCDTimingDetail(ParamTree const *ptree, bool snap) {
   double trial_ms = is_snap
     ? pre_ms + frame_ms*dutyCycle_percent/100 + post_ms
     : ptree->find("acqEphys/acqTime").toDouble();
-  if (delay_ms + sequence_ms + post_ms > trial_ms) {
+  if (!is_snap && delay_ms + sequence_ms + post_ms > trial_ms) {
     sequence_ms = trial_ms - post_ms - delay_ms;
     fprintf(stderr,"Warning: CCD Sequence shortened to fit inside trial.\n");
   }

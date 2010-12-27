@@ -166,7 +166,8 @@ void Acquire::displayCCD() {
   dbg("acquire:displayccd");
   CCDData const *ccdat = Globals::trove->trial().ccdData("Cc");
   CCDData const *oxdat = Globals::trove->trial().ccdData("Ox");
-  if (!ccdat || !oxdat) {
+  if (!ccdat || !oxdat ||
+      ccdat->getNFrames()==0 || oxdat->getNFrames()==0) {
     dbg("Acquire::displayCCD: no data");
     return;
   }

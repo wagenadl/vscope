@@ -11,6 +11,8 @@
 #include <xml/connections.h>
 #include <acq/ccdtimingdetail.h>
 
+#define CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA 0
+
 class CCDAcq {
 public:
   CCDAcq();

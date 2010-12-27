@@ -61,6 +61,8 @@
 #include <math/taperbank.h>
 #include <math/cohdata.h>
 
+#include <acq/ccdacq.h>
+
 #include <QTextEdit>
 
 vscopeGui *Globals::gui;
@@ -418,7 +420,11 @@ int main(int argc, char **argv) {
 #ifdef vsdLINUX
       fprintf(stderr,"Cameras not available.\n");
 #else
+#if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
       guiwarn("Cameras not available. Acquisition will take black frames.");
+#else
+      guiwarn("Cameras not available. No CCD data will be acquired.");
+#endif
 #endif
     }
     if (!DAQDevice::find().ok()) {

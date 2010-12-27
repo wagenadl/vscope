@@ -69,9 +69,16 @@ bool CCDAcq::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
     for (int k=0; k<ncams; k++) {
       cameras[k] = CamPool::findp(camids[k]);
       // actually, we should check whether this camera is enabled in the ptree.
-      Dbg() << "CCDAcq: camera "<< k << ": " << camids[k]<<" is " << cameras[k];
+      Dbg() << "CCDAcq: camera "<< k << ": " << camids[k]<<" is " << cameras[k] << "; dest is " << dest[k];
+
+#if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
+      //
+#else
+      if (!cameras[k])
+	ccdcfg[k].nframes=0; // never acquire from dummy camera
+#endif
     }
-      
+
     for (int k=0; k<ncams; k++)
       if (dest[k])
 	dest[k]->reshape(ccdcfg[k].getSerPix(),ccdcfg[k].getParPix(),
