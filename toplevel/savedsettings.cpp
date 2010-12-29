@@ -80,7 +80,7 @@ void SavedSettings::loadSettings(QString fn) {
 void SavedSettings::prepareSave() {
   if (!savedlg) {
     saveframe = new QFrame(Globals::mainwindow);
-    saveframe->setGeometry(100,80,824,600);
+    saveframe->setGeometry(50,30,924,700);
     saveframe->setFrameStyle(QFrame::Raised|QFrame::Panel);
     saveframe->setLineWidth(2);
     saveframe->setAutoFillBackground(true);

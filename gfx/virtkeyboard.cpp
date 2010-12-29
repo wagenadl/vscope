@@ -146,6 +146,7 @@ VirtKeyboard::VirtKeyboard(QWidget *parent): QFrame(parent) {
   setAutoFillBackground(true);
   QPalette p = palette();
   p.setColor(QPalette::Button,"#eeeedd");
+  p.setColor(QPalette::Window,"#888888");
   setPalette(p);
   relayout();
 }

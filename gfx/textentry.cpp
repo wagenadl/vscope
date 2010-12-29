@@ -13,6 +13,7 @@ const int TE_HEIGHT = 128;
 TextEntry::TextEntry(QWidget *parent): QFrame(parent) {
   kb = 0;
   QSize ps = parent->size();
+  Dbg() << "TextEntry: " << ps.width() << "x" << ps.height();
   setGeometry(ps.width()/2-TE_WIDTH/2,
 	      ps.height()/2-TE_HEIGHT,
 	      TE_WIDTH,
@@ -73,10 +74,10 @@ TextEntry::TextEntry(QWidget *parent): QFrame(parent) {
   autohide = false;
 
   kb = new VirtKeyboard(parent);
-  kb->setGeometry(ps.width()/2-300,
-		  ps.height()/2,
-		  600,
-		  200);
+  kb->setGeometry(ps.width()/2-500,
+		  ps.height()/2+20,
+		  1000,
+		  350);
   connect(kb,SIGNAL(keyPress(QChar)),this,SLOT(syntheticKeyPress(QChar)));
 }
 

@@ -282,7 +282,7 @@ void Acquire::prepareLoad() {
   if (!loaddlg) {
     dbg("prepareload: creating dialog");
     loadframe = new QFrame(Globals::mainwindow);
-    loadframe->setGeometry(100,80,824,600);
+    loadframe->setGeometry(50,30,924,700);
     loadframe->setFrameStyle(QFrame::Raised|QFrame::Panel);
     loadframe->setLineWidth(2);
     loadframe->setAutoFillBackground(true);
