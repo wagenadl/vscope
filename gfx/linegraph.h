@@ -169,7 +169,7 @@ class LineGraph: public QFrame {
   void setAxisTextColor(QColor const &c);
   /*:F setAxisTextColor
    *:D Sets the color of axis text (used for tick labels).
-       The default is the same grey used for the axis pen.
+       The default is a reddish brown.
    *:N To avoid printing axis text, do not set this to the background
        color. Instead, call showXTickLabels(false) or showYTickLabels(false).
    */

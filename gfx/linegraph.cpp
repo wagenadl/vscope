@@ -20,7 +20,7 @@ LineGraph::LineGraph(QWidget *parent): QFrame(parent),
 				       axisPen(QColor("#888888")),
 				       lastTracePen(QColor("black")),
 				       backgroundColor("white"),
-				       axisTextColor("#888888"),
+				       axisTextColor("#880000"),
 				       axisTickLength(6),
 				       axisMinorTickLength(2),
 				       x0(-.2), x1(1.2),
@@ -413,7 +413,9 @@ void LineGraph::paintXAxis(QPainter &p) {
     br = QRect(width(),height(),0,0);
   } else {
     br = p.boundingRect(r, Qt::AlignRight | Qt::AlignBottom, xLabel);
+    p.setPen(axisTextColor);
     p.drawText(r, Qt::AlignRight | Qt::AlignBottom, xLabel);
+    p.setPen(axisPen);
   }
 
   // draw major x ticks & labels
@@ -427,8 +429,11 @@ void LineGraph::paintXAxis(QPainter &p) {
       QString s = QString::number(double(x),'f',prec);
       QRect r1 = QRect(scrx-100,0,200,scry-axisTickLength-labelVTickSpace);
       QRect br1 = p.boundingRect(r1, Qt::AlignHCenter | Qt::AlignBottom, s);
-      if (br1.right()<br.left()-2 && br1.left()>axisTickLength)
+      if (br1.right()<br.left()-2 && br1.left()>axisTickLength) {
+	p.setPen(axisTextColor);
 	p.drawText(r1, Qt::AlignHCenter | Qt::AlignBottom, s);
+	p.setPen(axisPen);
+      }
     }
   }
 }
@@ -458,7 +463,9 @@ void LineGraph::paintYAxis(QPainter &p) {
     br = QRect(0,0,0,0);
   } else {
     br = p.boundingRect(r, Qt::AlignLeft | Qt::AlignTop, yLabel);
+    p.setPen(axisTextColor);
     p.drawText(r, Qt::AlignLeft | Qt::AlignTop, yLabel);
+    p.setPen(axisPen);
   }
 
   // draw major y ticks & labels
@@ -473,8 +480,11 @@ void LineGraph::paintYAxis(QPainter &p) {
       QRect r1 = QRect(scrx+axisTickLength+labelHTickSpace,scry-100,100,200);
       QRect br1 = p.boundingRect(r1, Qt::AlignLeft | Qt::AlignVCenter, s);
       if (br1.top()>br.bottom() &&
-	  br1.bottom()<contentsHeight()-0*axisTickLength)
+	  br1.bottom()<contentsHeight()-0*axisTickLength) {
+	p.setPen(axisTextColor);
 	p.drawText(r1, Qt::AlignLeft | Qt::AlignVCenter, s);
+	p.setPen(axisPen);
+      }
     }
   }
 }
@@ -555,8 +565,6 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 void LineGraph::paintEvent(class QPaintEvent *) {
   //  dbg("linegraph(%p)::paintevent\n",this);
   QPainter p(this);
-  paintXAxis(p);
-  paintYAxis(p);
   p.setFont(traceFont);
   int dy_legend = p.fontMetrics().lineSpacing();
   int y0_legend = p.fontMetrics().height() + 2;
@@ -569,6 +577,8 @@ void LineGraph::paintEvent(class QPaintEvent *) {
 	       traceLabels[i.key()]);
     y += dy_legend;
   }
+  paintXAxis(p);
+  paintYAxis(p);
 }
 
 int LineGraph::reasonablePrecision(double dx) {

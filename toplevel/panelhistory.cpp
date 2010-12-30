@@ -6,7 +6,7 @@
 #include <xml/paramtree.h>
 #include <gui/xmlbutton.h>
 #include <base/dbg.h>
-
+#include <QDir>
 #include <toplevel/mgauto.h>
 #include <toplevel/vsdtraces.h>
 #include <toplevel/coherence.h>
@@ -16,23 +16,44 @@
 PanelHistory::PanelHistory() {
   busy = false;
   nButtons = countButtons();
-  oldLeft = 0; // Globals::banner;
+  oldLeft = 0;
   oldRight = 0;
-  //  makeButtons();
+  lasttrial="";
+  figno=0;
 }
 
-QString PanelHistory::whatName(QString where, int n) {
-  return QString("panelHistory/what%1%2").arg(where).arg(n);
+PanelHistory::~PanelHistory() {
 }
 
-QString PanelHistory::prioName(QString where, int n) {
-  return QString("panelHistory/prio%1%2").arg(where).arg(n);
+Param &PanelHistory::whatPar(QString where, int n) {
+  QString name = QString("panelHistory/what%1%2").arg(where).arg(n);
+  return Globals::ptree->find(name);
 }
 
-int PanelHistory::countButtons() {
+Param &PanelHistory::prioPar(QString where, int n) {
+  QString name = QString("panelHistory/prio%1%2").arg(where).arg(n);
+  return Globals::ptree->find(name);
+}
+
+xmlButton &PanelHistory::barButton(QString where, int n) {
+  QString name = QString("panel%1%2").arg(where).arg(n);
+  return Globals::gui->findButton(name);
+}
+
+xmlButton &PanelHistory::menuButton(QString where, QString what) {
+  QString name = QString("panel%1/%2").arg(where).arg(what);
+  return Globals::gui->findButton(name);
+}
+
+int PanelHistory::countButtons() /*const*/ {
   int n = 0;
-  while (Globals::ptree->findp(whatName("Left",n+1)))
-    n++;
+  try {
+    while (true) {
+      whatPar("Left",n+1);
+      n++;
+    }
+  } catch (Exception const &) {
+  }
   return n;
 }
 
@@ -42,63 +63,61 @@ void PanelHistory::makeButtons() {
 }
 
 void PanelHistory::makeButtons(QString where) {
-  //dbg("makebuttons(%s) nbut=%i",qPrintable(where),nButtons);
   QString what = Globals::ptree->find("panel" + where).toString();
-  //  dbg("makebuttons. what=%s",qPrintable(what));
   for (int k=1; k<=nButtons; k++) {
-    setShown(where,k,"");
-    if (shown(where,k) == what) 
-      Globals::gui->findButton(QString("panel%1%2").arg(where).arg(k))
-	.setSelected(true);
+    Button &b = barButton(where,k);
+    setItemAt(where,k,"");
+    if (itemAt(where,k) == what) 
+      b.setSelected(true);
+    connect(&b, SIGNAL(doubleClicked(QString,QString)),
+	    this, SLOT(doubleClicked(QString,QString)));
   }
 }
 
 void PanelHistory::newSelection(QString const &where) {
+  Dbg() << "PanelHistory::newSelection(" << where <<")";
   if (busy) {
-    // dbg("panelhistory:newsel: recursion quelched");
     return;
   }
   busy = true;
   QString what = Globals::ptree->find("panel" + where).toString();
   QString label = niceLabel(where,what);
-  // dbg("PanelHistory: changing '%s' to '%s' which is called '%s'",
-  //     qPrintable(where),qPrintable(what),qPrintable(label));
   int n = find(where,what);
   if (n==0) {
     n = weakest(where);
-    setShown(where,n,what);
-    // dbg("  Replacing oldest, i.e., #%i",n);
+    setItemAt(where,n,what);
   } else {
-    // dbg("  Found at #%i",n);
+    ;
   }
   reprioritize(where,n);
-  // dbg("  new contents: 1: %s (%g). 2: %s (%g). 3: %s (%g)",
-  //     qPrintable(shown(where,1)),prio(where,1),
-  //     qPrintable(shown(where,2)),prio(where,2),
-  //     qPrintable(shown(where,3)),prio(where,3));
   open(where, what);
   busy = false;
 }
 
+QString PanelHistory::butNameToWhere(QString const &s) {
+  return s.contains("Left") ? "Left" : "Right";
+}
+
+int PanelHistory::butNameToNumber(QString const &s) {
+  return s.right(1).toInt();
+}
+
+QString PanelHistory::itemAt(QString const &s) /*const*/ {
+  QString where = butNameToWhere(s);
+  int n = butNameToNumber(s);
+  return itemAt(where, n);
+}
+
 void PanelHistory::oldSelection(QString const &p) {
+  Dbg() << "PanelHistory::oldSelection(" << p <<")";
   if (busy) {
-    // dbg("panelhistory:oldsel: recursion quelched");
     return;
   }
   busy = true;
-  QString where = p.contains("Left") ? "Left" : "Right";
-  int n = p.right(1).toInt();
-  //dbg("PanelHistory: selecting #%i for '%s'",n,qPrintable(where));
-  QString pname = whatName(where,n);
-  //dbg("  looking for %s",qPrintable(pname));
-  QString what = Globals::ptree->find(pname).toString();
-  // dbg("PanelHistory: selecting #%i for '%s': '%s'",
-  //     n,qPrintable(where),qPrintable(what));
+  QString where = butNameToWhere(p);
+  int n = butNameToNumber(p);
+  QString what = itemAt(where, n);
   reprioritize(where,n);
-  // dbg("  new contents: 1: %s (%g). 2: %s (%g). 3: %s (%g)",
-  //     qPrintable(shown(where,1)),prio(where,1),
-  //     qPrintable(shown(where,2)),prio(where,2),
-  //     qPrintable(shown(where,3)),prio(where,3));
   open(where, what);
   busy=false;
 }
@@ -112,52 +131,47 @@ void PanelHistory::reprioritize(QString where, int n) {
       p*=.8;
     setPrio(where,k,p);
   }
-  Globals::gui->findButton(QString("panel%1%2").arg(where).arg(n))
-    .setSelected(true);
+  barButton(where,n).setSelected(true);
 }
 
-double PanelHistory::prio(QString where, int n) {
-  return Globals::ptree->find(prioName(where,n)).toDouble();
+double PanelHistory::prio(QString where, int n) /*const*/ {
+  return prioPar(where,n).toDouble();
 }
 
-QString PanelHistory::shown(QString where, int n) {
-  return Globals::ptree->find(whatName(where,n)).toString();
+QString PanelHistory::itemAt(QString where, int n) /*const*/ {
+  return whatPar(where,n).toString();
 }
 
-int PanelHistory::find(QString where, QString what) {
+int PanelHistory::find(QString where, QString what) /*const*/ {
   for (int k=1; k<=nButtons; k++)
-    if (shown(where,k)==what)
+    if (itemAt(where,k)==what)
       return k;
   return 0;
 }
 
 void PanelHistory::setPrio(QString where, int n, double prio) {
-  Globals::ptree->find(prioName(where,n)).setDouble(prio);
+  prioPar(where,n).setDouble(prio);
 }
 
 QString PanelHistory::niceLabel(QString where, QString what) {
-  xmlButton const *butp = Globals::gui->findpButton(QString("panel%1/%2")
-						   .arg(where).arg(what));
-  return butp ? butp->text() : what;
+  try {
+    return menuButton(where, what).text();
+  } catch (Exception const &) {
+    return what;
+  }      
 }
 
-void PanelHistory::setShown(QString where, int n, QString what) {
-  // dbg("panelhistory:setshown(%s,%i,%s)",qPrintable(where),n,qPrintable(what));
-  if (what.isEmpty())
-    what = Globals::ptree->find(whatName(where,n)).toString();
+void PanelHistory::setItemAt(QString where, int n, QString what) {
+  if (what.isEmpty()) /* Special case for MakeButtons */
+    what = itemAt(where, n);
   else
-    Globals::ptree->find(whatName(where,n)).set(what);
-  // dbg("  -> what=%s",qPrintable(what));
-  xmlButton &but = Globals::gui->findButton(QString("panel%1%2")
-					    .arg(where).arg(n));
-  // dbg("  found button");
+    whatPar(where,n).set(what);
+  xmlButton &but = barButton(where,n);
   but.setFormat(niceLabel(where,what));
-  // dbg("  setformat");
   but.setValue(what);
-  // dbg("  setvalue");
 }
 
-int PanelHistory::weakest(QString where) {
+int PanelHistory::weakest(QString where) /*const*/ {
   int best=nButtons;
   double p0=1000000;
   for (int k=1; k<=nButtons; k++) {
@@ -170,15 +184,7 @@ int PanelHistory::weakest(QString where) {
   return best;
 }
 
-void PanelHistory::open(QString where, QString what) {
-  // dbg("PanelHistory: open %s at %s",qPrintable(what),qPrintable(where));
-  Globals::gui->findButton(QString("panel%1/%2")
-			   .arg(where).arg(what))
-    .setSelected(true);
-
-  QWidget *place = (where=="Left") ? Globals::leftplace : Globals::rightplace;
-  QWidget *&old = (where=="Left") ? oldLeft : oldRight;
-  QWidget *&otherOld = (where=="Left") ? oldRight : oldLeft;
+QWidget *PanelHistory::childWidget(QString what) {
   QWidget *child = 0;
   if (what=="VSDCc")
     child = Globals::coumarinw;
@@ -196,43 +202,67 @@ void PanelHistory::open(QString where, QString what) {
     child = Globals::coherence;
   else if (what=="CohGraph")
     child = Globals::cohgraph;
-  if (child) {
-    if (old && old->parent()==place)
-      old->hide();
-    old=0;
-    child->setParent(place);
-    child->show();
-    if (child==otherOld) {
-      // we're stealing
-      QString otherWhere = (where=="Left") ? "Right" : "Left";
-      for (int k=1; k<=nButtons; k++) {
-	QString pname = whatName(otherWhere,k);
-	QString otherWhat = Globals::ptree->find(pname).toString();
-	if (otherWhat!=what) {
-	  busy=false;
-	  oldSelection(pname);
-	  busy=true;
-	  break;
-	}
+  return child;
+}
+  
+
+void PanelHistory::open(QString where, QString what) {
+  menuButton(where,what).setSelected(true);
+  QWidget *place = (where=="Left") ? Globals::leftplace : Globals::rightplace;
+  QWidget *&old = (where=="Left") ? oldLeft : oldRight;
+  QWidget *&otherOld = (where=="Left") ? oldRight : oldLeft;
+  QWidget *child = childWidget(what);
+  if (!child) {
+    dbg("PanelHistory::open: Don't know about %s",qPrintable(what));
+    return;
+  }
+
+  if (old && old->parent()==place)
+    old->hide();
+  old=0;
+  child->setParent(place);
+  child->show();
+  if (child==otherOld) {
+    // we're stealing
+    QString otherWhere = (where=="Left") ? "Right" : "Left";
+    for (int k=1; k<=nButtons; k++) {
+      QString otherWhat = whatPar(otherWhere,k).toString();
+      if (otherWhat!=what) {
+	busy=false;
+	oldSelection(QString("panel%1%2").arg(otherWhere).arg(k));
+	busy=true;
+	break;
       }
     }
-    old = child;
-  } else {
-    // dbg("PanelHistory::open: Don't know about %s",qPrintable(what));
   }
+  old = child;
 }
 
-/*
-    if (p=="leftCam1")
-      Globals::coumarinw->show();
-    else if (p=="rightCam2")
-      Globals::oxonolw->show();
-    else if (p=="rightVSD")
-      Globals::vsdtraces->show();
-    else if (p=="leftIntra")
-      Globals::mgintra->show();
-    else if (p=="leftStim")
-      Globals::mgstim->show();
-    else if (p=="rightExtra")
-      Globals::mgextra->show();
-*/
+void PanelHistory::doubleClicked(QString id, QString txt) {
+  QString what = itemAt(id);
+  Dbg() << "PanelHistory::doubleClicked("<<id<<","<<txt<<"): " << what;
+  QWidget *child = childWidget(what);
+  if (!child) {
+    dbg("PanelHistory::doubleClicked: Don't know about %s",qPrintable(what));
+    return;
+  }
+
+  QPixmap pixmap(child->size());
+  child->render(&pixmap);
+  QString filePath = Globals::ptree->find("_filePath").toString();
+  QString exptname = Globals::ptree->find("acquisition/_exptname").toString();
+  int trialno = Globals::ptree->find("acquisition/_trialno").toInt();
+  QString trialid = QString("%1").arg(trialno,int(3),int(10),QChar('0'));
+  QString newtrial = filePath + "/" + exptname + "/" + trialid;
+  if (newtrial==lasttrial)
+    figno++;
+  else
+    figno=1;
+  lasttrial = newtrial;
+  QString figId = QString("%1").arg(figno,int(2),int(10),QChar('0'));
+  QString path = filePath + "/" + exptname;
+  QDir d; d.mkpath(path);
+  QString fileName = path + "/" + trialid + "-fig-" + figId
+    + "-" + what + ".png";
+  pixmap.save(fileName);
+}

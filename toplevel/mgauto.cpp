@@ -207,7 +207,7 @@ void MGAuto::newtraces() {
 	  Connections::AIChannel const &aich =
 	    Connections::findAI(id);
 	  tr->setScaleFactor(aich.scale);
-	  g->setYLabel(aich.unit);
+	  g->setYLabel("("+aich.unit+")");
 	}
 	break;
       case Channel::AO:
@@ -217,7 +217,7 @@ void MGAuto::newtraces() {
 		      dp,
 		      astim->getNumScans(),
 		      astim->getNumChannels());
-	  g->setYLabel("V"); // AO always in volts for now
+	  g->setYLabel("(V)"); // AO always in volts for now
 	}
 	break;
       case Channel::DI:

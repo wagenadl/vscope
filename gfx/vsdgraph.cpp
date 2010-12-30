@@ -69,7 +69,7 @@ void VSDGraph::paintEvent(class QPaintEvent *e) {
   p.dp_double = data.dataRatio();
   trcRatio->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
 
-  dbg("VSDGraph::paintEvent. t0=%g dt=%g n=%i",t0_ms,dt_ms,data.getNFrames());
+  //dbg("VSDGraph::paintEvent. t0=%g dt=%g n=%i",t0_ms,dt_ms,data.getNFrames());
   
   // Following is not really great, I think it may mess up zoom, but
   // where else can I reasonably do this?
