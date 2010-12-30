@@ -11,7 +11,11 @@
 #include <xml/connections.h>
 #include <acq/ccdtimingdetail.h>
 
+#ifdef vsdLINUX
+#define CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA 1
+#else
 #define CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA 0
+#endif
 
 class CCDAcq {
 public:

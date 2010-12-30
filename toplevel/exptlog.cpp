@@ -11,19 +11,20 @@
 #include <QDir>
 #include <base/exception.h>
 #include <acq/datatrove.h>
+#include <base/dbg.h>
 
 ExptLog::ExptLog(QObject *parent): QObject(parent) {
   noteEditor = 0;
   outputFile = 0;
   outputStream = 0;
   suppressFurtherROI = false;
-  suppressFurtherSetting = false;
   addNote("VSDScope starting");
   addNote("New experiment: "
 	  + Globals::ptree->find("acquisition/_exptname").toString());
 }
 
 ExptLog::~ExptLog() {
+  writeSettingsBacklog();
   addNote("VSDScope closing");
 }
 
@@ -52,9 +53,10 @@ void ExptLog::cancelUserNote() {
   noteEditor->hide();
 }
 
-void ExptLog::activate() {
+void ExptLog::openFile() {
   if (outputStream)
     return;
+
   QString exptname = Globals::ptree->find("acquisition/_exptname").toString();
   QString basedir = Globals::ptree->find("_filePath").toString();
   QDir d; d.mkpath(basedir + "/" + exptname);
@@ -64,49 +66,57 @@ void ExptLog::activate() {
     throw Exception("ExptLog","Cannot write log file: "
 		    + outputFile->fileName());
   outputStream = new QTextStream(outputFile);
-  if (preexist)
+  if (preexist) {
     (*outputStream) << endl;
-  for (QStringList::iterator i=backLog.begin(); i!=backLog.end(); ++i)
+    addNote("Appending to existing log");
+  }
+}
+
+void ExptLog::writeBacklog() {
+  if (backlog.isEmpty() || !outputStream)
+    return;
+
+  for (QStringList::iterator i=backlog.begin(); i!=backlog.end(); ++i)
     (*outputStream) << (*i) << endl;
-  backLog.clear();
-}  
-    
+  backlog.clear();
+}
+
+void ExptLog::writeSettingsBacklog() {
+  if (settingsBacklog.isEmpty() | !outputStream)
+    return;
+
+  addNote("Parameter change");
+  for (QMap<QString,QString>::const_iterator i=settingsBacklog.begin();
+       i!=settingsBacklog.end(); ++i)
+    addNote("  " + i.key() + ": " + i.value(),true);
+  settingsBacklog.clear();
+}
+
+void ExptLog::activate() {
+  openFile();
+  writeBacklog();
+  writeSettingsBacklog();
+}
 
 void ExptLog::addNote(QString s, bool nodate) {
   s.replace("\n"," ");
   QDateTime now = QDateTime::currentDateTime();
   QString nowdate = now.toString("MM/dd/yy");
-  QString nowhr = now.toString(" hh");
-  QString nowmin = now.toString(":mm");
-  QString nowsec = now.toString(":ss");
-  QString nowrep = nowdate==olddate ? "        " : nowdate;
-  if (nowhr!=oldhr || nowmin!=oldmin) {
-    nowrep += nowhr+nowmin+nowsec;
-  } else {
-    nowrep += "   ";
-    if (nowmin!=oldmin) {
-      nowrep += nowmin+nowsec;
-    } else {
-      nowrep += "   ";
-      if (nowsec!=oldsec) {
-	nowrep += nowsec;
-      } else {
-	nowrep += "   ";
-      }
-    }
-  }
+  QString nowtime = now.toString("hh:mm:ss");
+  bool suppressDate = nodate || (nowdate==olddate);
+  bool suppressTime = nodate || (nowdate==olddate && nowtime==oldtime
+				&& !s.startsWith("Trial"));
+  QString nowrep = suppressDate ? "        " : nowdate;
+  nowrep += " ";
+  nowrep += suppressTime ? "        " : nowtime;
   olddate = nowdate;
-  oldhr = nowhr;
-  oldmin = nowmin;
-  oldsec = nowsec;
-  if (nodate)
-    nowrep = "                 ";
+  oldtime = nowtime;
   QString note = nowrep + " " + s;
   if (outputStream) {
     (*outputStream) << note << endl;
     outputStream->flush();
   } else {
-    backLog.push_back(note);
+    backlog.push_back(note);
   }
 }
 
@@ -123,6 +133,7 @@ void ExptLog::newExptName() {
 }
 
 void ExptLog::markTrial(bool snap) {
+  Dbg() <<"markTrial";
   activate();
   int trialno = Globals::ptree->find("acquisition/_trialno").toInt();
   QString typ;
@@ -140,10 +151,10 @@ void ExptLog::markTrial(bool snap) {
   }
   addNote(QString("Trial %1: %2").arg(trialno,3,10,QChar('0')).arg(typ));
   suppressFurtherROI = false;
-  suppressFurtherSetting = false;
 }
 
 void ExptLog::markContEphys(bool start_not_stop) {
+  activate();
   if (start_not_stop) {
     int trialno = Globals::ptree->find("acquisition/_trialno").toInt();
     addNote(QString("Start of continuous e'phys., recording as Trial %1")
@@ -153,12 +164,8 @@ void ExptLog::markContEphys(bool start_not_stop) {
   }
 }
   
-void ExptLog::changeSetting(QString label) {
-  if (!suppressFurtherSetting)
-    addNote("Parameter change");
-  if (!label.isEmpty())
-    addNote("  " + label,true);
-  suppressFurtherSetting = true;
+void ExptLog::changeSetting(QString label, QString value) {
+  settingsBacklog[label]=value;
 }
 
 void ExptLog::changeROI() {

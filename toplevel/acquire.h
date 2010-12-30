@@ -33,7 +33,7 @@ private:
   void abortTrial();
   void incTrialNo();
   void saveData();
-  void displayCCD();
+  void displayCCD(bool writePixStatsToLog=false);
   void displayEPhys();
   void updateVSDTraces();
   void closeDialog();

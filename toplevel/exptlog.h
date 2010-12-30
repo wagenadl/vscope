@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QMap>
 
 class ExptLog: public QObject {
   Q_OBJECT;
@@ -19,7 +20,7 @@ public slots:
   void markTrial(bool snap);
   void markContEphys(bool start_not_stop);
   void markLoadSettings(QString s);
-  void changeSetting(QString label);
+  void changeSetting(QString label, QString value);
   void changeROI();
   void activate();
 private slots:
@@ -27,13 +28,18 @@ private slots:
   void cancelUserNote();
 private:
   class TextEntry *noteEditor;
-  QStringList backLog;
+  QStringList backlog;
   bool suppressFurtherROI;
-  bool suppressFurtherSetting;;
+  bool suppressFurtherSetting;
   QString fileName;
   class QFile *outputFile;
   class QTextStream *outputStream;
-  QString olddate, oldhr, oldmin, oldsec;
+  QString olddate, oldtime;
+  QMap<QString, QString> settingsBacklog;
+private:
+  void openFile();
+  void writeBacklog();
+  void writeSettingsBacklog();
 };
 
 #endif

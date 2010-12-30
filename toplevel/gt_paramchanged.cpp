@@ -189,16 +189,14 @@ void gt_slots::paramchanged(QString p, QString val) {
       if (chn!="")
 	lbl += " (" + chn + ")";
       if (lbl.contains(" Enabled") || lbl.contains(" Disabled")) {
-	lbl.replace(" Enabled","");
-	lbl.replace(" Disabled","");
 	lbl.replace("Enabled","");
 	lbl.replace("Disabled","");
 	val = (val=="true") ? "Enabled" : "Disabled";
       }
       lbl.replace("...","");
-      lbl.replace(QRegExp(" +")," ");
+      lbl=lbl.simplified();
       lbl.replace(" :",":");
-      Globals::exptlog->changeSetting(lbl + ": " + val);
+      Globals::exptlog->changeSetting(lbl, val);
       dbg("wrote '%s: %s' to log",qPrintable(lbl), qPrintable(val));
     }
   } catch (Exception const &e) {

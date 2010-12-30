@@ -162,30 +162,34 @@ void Acquire::redisplayCCD() {
   displayCCD();
 }
 
-void Acquire::displayCCD() {
+void Acquire::displayCCD(bool writePixStatsToLog) {
   dbg("acquire:displayccd");
-  CCDData const *ccdat = Globals::trove->trial().ccdData("Cc");
-  CCDData const *oxdat = Globals::trove->trial().ccdData("Ox");
-  if (!ccdat || !oxdat ||
-      ccdat->getNFrames()==0 || oxdat->getNFrames()==0) {
-    dbg("Acquire::displayCCD: no data");
-    return;
-  }
-  ROIImage *ccimg = Globals::coumarinw;
-  ROIImage *oximg = Globals::oxonolw;
-  Connections::CamCon const &cccam = Connections::findCam("Cc");
-  Connections::CamCon const &oxcam = Connections::findCam("Ox");
-  dbg("  ccdat=%p oxdat=%p ccimg=%p oximg=%p",ccdat,oxdat,ccimg,oximg);
-  dbg("  ser=%i par=%i ser=%i par=%i",
-      ccdat->getSerPix(),ccdat->getParPix(),
-      oxdat->getSerPix(),oxdat->getParPix());
+  int K=2;
+  QVector<QString> camname;
+  camname.push_back("Cc");
+  camname.push_back("Ox");
+  QVector<ROIImage *> imgs;
+  imgs.push_back(Globals::coumarinw);
+  imgs.push_back(Globals::oxonolw);
+  QVector<xmlButton *> btn;
+  btn.push_back(&Globals::gui->findButton("acquisition/_ccvals"));
+  btn.push_back(&Globals::gui->findButton("acquisition/_oxvals"));
 
-  xmlButton *btn[2] = { &Globals::gui->findButton("acquisition/_ccvals"),
-		    &Globals::gui->findButton("acquisition/_oxvals") };
-  CCDData const *src[2] = { ccdat, oxdat };
-  ROIImage *imgs[2] = { ccimg, oximg };
-  Connections::CamCon const *cams[2] = { &cccam, &oxcam };
-  for (int k=0; k<2; k++) {
+  QVector<CCDData const *>src;
+  for (int k=0; k<K; k++) {
+    src.push_back(Globals::trove->trial().ccdData(camname[k]));
+    if (!src[k] || src[k]->getNFrames()==0) {
+      dbg("Acquire::displayCCD: no data");
+      return;
+    }
+  }
+
+  QVector<Connections::CamCon const *> cams;
+  for (int k=0; k<K; k++)
+    cams.push_back(&Connections::findCam(camname[k]));
+
+  QString brightMsg = "Pixel values:";
+  for (int k=0; k<K; k++) {
     uint16_t const *dat = src[k]->frameData(0);
     int nser = src[k]->getSerPix();
     int npar = src[k]->getParPix();
@@ -211,8 +215,14 @@ void Acquire::displayCCD() {
       }
     }
     double avg = double(sum)/nser/npar;
-    btn[k]->setValue(QString("%1/%2/%3").arg(min).arg(int(avg)).arg(max));
+    QString s = QString("%1/%2/%3").arg(min).arg(int(avg)).arg(max);
+    btn[k]->setValue(s);
+    if (k)
+      brightMsg += ";";
+    brightMsg += " " + camname[k] + ": " + s;
   }
+  if (writePixStatsToLog)
+    Globals::exptlog->addNote(brightMsg);
 }
 
 void Acquire::displayEPhys() {
@@ -230,7 +240,7 @@ void Acquire::updateVSDTraces() {
 void Acquire::doneFrame() {
   dbg("frame complete");
   saveData();
-  displayCCD();
+  displayCCD(true);
 }
 
 void Acquire::doneTrial() {
