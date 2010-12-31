@@ -176,6 +176,6 @@ void ExptLog::changeROI() {
 }
 
 void ExptLog::markLoadSettings(QString s) {
+  settingsBacklog.clear();
   addNote("Settings loaded: " + s);
-  suppressFurtherSetting = false;
 }

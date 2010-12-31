@@ -262,7 +262,8 @@ void PanelHistory::doubleClicked(QString id, QString txt) {
   QString figId = QString("%1").arg(figno,int(2),int(10),QChar('0'));
   QString path = filePath + "/" + exptname;
   QDir d; d.mkpath(path);
-  QString fileName = path + "/" + trialid + "-fig-" + figId
-    + "-" + what + ".png";
+  QString leaf = trialid + "-fig-" + figId + "-" + what + ".png";
+  QString fileName = path + "/" + leaf;
   pixmap.save(fileName);
+  Globals::exptlog->addNote("Figure: " + leaf);
 }

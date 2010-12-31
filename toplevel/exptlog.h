@@ -30,7 +30,6 @@ private:
   class TextEntry *noteEditor;
   QStringList backlog;
   bool suppressFurtherROI;
-  bool suppressFurtherSetting;
   QString fileName;
   class QFile *outputFile;
   class QTextStream *outputStream;
