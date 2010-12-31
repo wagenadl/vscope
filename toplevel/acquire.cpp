@@ -240,7 +240,7 @@ void Acquire::updateVSDTraces() {
 void Acquire::doneFrame() {
   dbg("frame complete");
   saveData();
-  displayCCD(true);
+  displayCCD();
 }
 
 void Acquire::doneTrial() {
@@ -330,6 +330,10 @@ void Acquire::chgDir(QString dir) {
 void Acquire::setContEphys() {
   bool contephys = Globals::ptree->find("acquisition/contEphys").toBool();
   if (contephys) {
+    if (Globals::contacq->isActive()) {
+      Dbg() << "Acquire: continuous acquisition already active";
+      return;
+    }
     incTrialNo();
     Globals::exptlog->markContEphys(true);
     Globals::gui->open(); // make sure updated trial number visible.
@@ -337,6 +341,10 @@ void Acquire::setContEphys() {
 			      Globals::ptree->find("_filePath").toString());
     Globals::contacq->start();
   } else {
+    if (!Globals::contacq->isActive()) {
+      Dbg() << "Acquire: continuous acquisition already stopped";
+      return;
+    }
     Globals::contacq->stop();
     Globals::exptlog->markContEphys(false);
   }

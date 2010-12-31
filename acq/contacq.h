@@ -18,6 +18,7 @@ public: // information
   class AnalogData *adata() const { return active ? adataIn : 0; }
   class DigitalData *ddata() const { return active ? ddataIn : 0; }
   double getAcqFreq_Hz() const { return analogRate_Hz; }
+  bool isActive() const { return active; }
 public slots:
   void start();
   void stop();

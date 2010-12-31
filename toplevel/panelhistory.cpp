@@ -11,6 +11,7 @@
 #include <toplevel/vsdtraces.h>
 #include <toplevel/coherence.h>
 #include <toplevel/cohgraph.h>
+#include <toplevel/exptlog.h>
 #include <gfx/roiimage.h>
 
 PanelHistory::PanelHistory() {
@@ -249,6 +250,14 @@ void PanelHistory::doubleClicked(QString id, QString txt) {
 
   QPixmap pixmap(child->size());
   child->render(&pixmap);
+
+  QImage img = pixmap.toImage();
+  QImage tst = img.scaled(QSize(1,1))//,Qt::IgnoreAspectRatio,
+    //Qt::SmoothTransformation)
+    .convertToFormat(QImage::Format_MonoLSB);
+  if (tst.bits()[0] & 1) 
+    img.invertPixels();
+  
   QString filePath = Globals::ptree->find("_filePath").toString();
   QString exptname = Globals::ptree->find("acquisition/_exptname").toString();
   int trialno = Globals::ptree->find("acquisition/_trialno").toInt();
@@ -264,6 +273,6 @@ void PanelHistory::doubleClicked(QString id, QString txt) {
   QDir d; d.mkpath(path);
   QString leaf = trialid + "-fig-" + figId + "-" + what + ".png";
   QString fileName = path + "/" + leaf;
-  pixmap.save(fileName);
+  img.save(fileName);
   Globals::exptlog->addNote("Figure: " + leaf);
 }

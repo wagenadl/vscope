@@ -58,6 +58,7 @@ void gt_slots::clicked(QString p) {
     } else if (p=="acquisition/_exptelapsed") {
       Globals::exptelapsed->setFormat("Since Click:\n%1");
       Globals::exptelapsed->startCountUp();
+      Globals::exptlog->addNote("Timer reset");
     } else if (p.startsWith("acquisition/_ccvals/")) {
       Globals::coumarinw->recolor(p.split("/").last());
       Globals::acquire->redisplayCCD();

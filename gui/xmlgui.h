@@ -7,6 +7,7 @@
 #include <xml/param.h>
 #include <QDomElement>
 #include <QObject>
+#include <gui/xmlbutton.h>
 
 class xmlGui: public QObject {
   /*:C xmlGui

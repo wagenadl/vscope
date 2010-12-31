@@ -12,20 +12,22 @@
 #include <base/exception.h>
 #include <acq/datatrove.h>
 #include <base/dbg.h>
+#include "vscopegui.h"
 
 ExptLog::ExptLog(QObject *parent): QObject(parent) {
   noteEditor = 0;
   outputFile = 0;
   outputStream = 0;
   suppressFurtherROI = false;
-  addNote("VSDScope starting");
+  addNote("VScope starting");
   addNote("New experiment: "
 	  + Globals::ptree->find("acquisition/_exptname").toString());
+  makeConnections();
 }
 
 ExptLog::~ExptLog() {
   writeSettingsBacklog();
-  addNote("VSDScope closing");
+  addNote("VScope closing");
 }
 
 void ExptLog::prepareUserNote() {
@@ -68,7 +70,7 @@ void ExptLog::openFile() {
   outputStream = new QTextStream(outputFile);
   if (preexist) {
     (*outputStream) << endl;
-    addNote("Appending to existing log");
+    //    addNote("Appending to existing log");
   }
 }
 
@@ -84,6 +86,13 @@ void ExptLog::writeBacklog() {
 void ExptLog::writeSettingsBacklog() {
   if (settingsBacklog.isEmpty() | !outputStream)
     return;
+
+  if (settingsBacklog.contains("!")) {
+    addNote("Settings loaded: " + settingsBacklog["!"]);
+    settingsBacklog.remove("!");
+    if (settingsBacklog.isEmpty())
+      return;
+  }
 
   addNote("Parameter change");
   for (QMap<QString,QString>::const_iterator i=settingsBacklog.begin();
@@ -140,14 +149,21 @@ void ExptLog::markTrial(bool snap) {
   if (snap) {
     typ = "Snapshot";
   } else {
-    bool hasvsd = Globals::ptree->find("acqCCD/enable").toBool();
+    bool hasvsd =  Globals::ptree->find("acqCCD/enable").toBool();
     bool hasstim = Globals::ptree->find("stimEphys/enable").toBool();
+    bool hasvid =  Globals::ptree->find("stimVideo/enable").toBool();
     if (hasvsd)
       typ = "E'phys. + vsd";
     else
       typ = "E'phys.";
-    if (hasstim)
-      typ += " with e'phys. stimuli";
+    if (hasstim) {
+      typ += " with e'phys.";
+      if (hasvid)
+	typ += " and video";
+      typ += " stimuli";
+    } else if (hasvid) {
+      typ += " with video stimuli";
+    }
   }
   addNote(QString("Trial %1: %2").arg(trialno,3,10,QChar('0')).arg(typ));
   suppressFurtherROI = false;
@@ -177,5 +193,22 @@ void ExptLog::changeROI() {
 
 void ExptLog::markLoadSettings(QString s) {
   settingsBacklog.clear();
-  addNote("Settings loaded: " + s);
+  settingsBacklog["!"] = s;
+}
+
+void ExptLog::acceptDoubleClick(QString, QString txt) {
+  txt.replace("\n"," ");
+  addNote("Info: " + txt);
+}
+
+void ExptLog::makeConnections() {
+  QStringList buts;
+  buts.append("acquisition/_ccvals");
+  buts.append("acquisition/_oxvals");
+  foreach (QString s, buts) {
+    connect(Globals::gui->findpButton(s),
+	    SIGNAL(doubleClicked(QString,QString)),
+	    this,
+	    SLOT(acceptDoubleClick(QString,QString)));
+  }
 }

@@ -26,6 +26,7 @@ public slots:
 private slots:
   void acceptUserNote(QString);
   void cancelUserNote();
+  void acceptDoubleClick(QString but, QString txt);
 private:
   class TextEntry *noteEditor;
   QStringList backlog;
@@ -39,6 +40,7 @@ private:
   void openFile();
   void writeBacklog();
   void writeSettingsBacklog();
+  void makeConnections();
 };
 
 #endif
