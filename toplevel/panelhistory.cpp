@@ -252,10 +252,15 @@ void PanelHistory::doubleClicked(QString id, QString txt) {
   child->render(&pixmap);
 
   QImage img = pixmap.toImage();
-  QImage tst = img.scaled(QSize(1,1))//,Qt::IgnoreAspectRatio,
-    //Qt::SmoothTransformation)
-    .convertToFormat(QImage::Format_MonoLSB);
-  if (tst.bits()[0] & 1) 
+  QImage tst = img.scaled(QSize(4,4),Qt::IgnoreAspectRatio,
+    Qt::SmoothTransformation)
+    .convertToFormat(QImage::Format_RGB32);
+  double gry = 0;
+  for (int k=0; k<16; k++) 
+    gry += (tst.bits()[4*k+0] + tst.bits()[4*k+1]
+	    + tst.bits()[4*k+2])/3.0/256.0;
+  Dbg() << "gry: " << gry;
+  if (gry<8)
     img.invertPixels();
   
   QString filePath = Globals::ptree->find("_filePath").toString();
@@ -271,8 +276,16 @@ void PanelHistory::doubleClicked(QString id, QString txt) {
   QString figId = QString("%1").arg(figno,int(2),int(10),QChar('0'));
   QString path = filePath + "/" + exptname;
   QDir d; d.mkpath(path);
-  QString leaf = trialid + "-fig-" + figId + "-" + what + ".png";
-  QString fileName = path + "/" + leaf;
+  QString leaf;
+  QString fileName;
+  while (true) {
+    leaf = trialid + "-fig-" + figId + "-" + what + ".png";
+    fileName = path + "/" + leaf;
+    QFile f(fileName);
+    if (!f.exists())
+      break;
+    figno++;
+  };
   img.save(fileName);
   Globals::exptlog->addNote("Figure: " + leaf);
 }
