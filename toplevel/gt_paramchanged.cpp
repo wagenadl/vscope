@@ -156,10 +156,13 @@ void gt_slots::paramchanged(QString p, QString val) {
       ;
     } else {
       // Create log entry
-      QRegExp re(":([^/]+)/");
+      QRegExp re("/([^/:]+):([^/]+)/");
+      QString arr="";
       QString chn="";
-      if (re.indexIn(p)>=0) 
-	chn=re.cap(1);
+      if (re.indexIn(p)>=0) {
+	arr=re.cap(1);
+	chn=re.cap(2);
+      }
       dbg("chn = [%s]",qPrintable(chn));
       QString val = Globals::ptree->find(p).toString();
       QString gp = Globals::gui->pathDeinstantiate(p);
@@ -174,20 +177,22 @@ void gt_slots::paramchanged(QString p, QString val) {
 	  lbl += " ";
 	QString pp = pathparts.takeFirst();
 	gp += pp;
-	xmlButton *b = Globals::gui->findpButton(gp);
-	if (b) {
-	  QString t = b->text();
-	  int idx = t.indexOf(':');
-	  if (idx>=0)
-	    t=t.left(idx);
-	  t.replace("\n"," ");
-	  lbl += t;
+	if (pp==arr) {
+	  Dbg() << "Adding chn: " << chn;
+	  lbl += chn;
 	} else {
-	  // lbl += pp;
+	  xmlButton *b = Globals::gui->findpButton(gp);
+	  if (b) {
+	    QString t = b->text();
+	    int idx = t.indexOf(':');
+	    if (idx>=0)
+	      t=t.left(idx);
+	    t.replace("\n"," ");
+	    lbl += t;
+	    Dbg() << "Adding t: " << t;
+	  }
 	}
       }
-      if (chn!="")
-	lbl += " (" + chn + ")";
       if (lbl.contains(" Enabled") || lbl.contains(" Disabled")) {
 	lbl.replace("Enabled","");
 	lbl.replace("Disabled","");

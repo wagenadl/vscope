@@ -13,6 +13,7 @@
 #include <acq/datatrove.h>
 #include <base/dbg.h>
 #include "vscopegui.h"
+#include <xml/enumerator.h>
 
 ExptLog::ExptLog(QObject *parent): QObject(parent) {
   noteEditor = 0;
@@ -151,6 +152,18 @@ void ExptLog::markTrial(bool snap) {
   } else {
     bool hasvsd =  Globals::ptree->find("acqCCD/enable").toBool();
     bool hasstim = Globals::ptree->find("stimEphys/enable").toBool();
+    if (hasstim) {
+      hasstim = false;
+      Enumerator const *e = Enumerator::find("STIMCHS");
+      QStringList chs = e->getAllTags();
+      foreach (QString s, chs) {
+	if (Globals::ptree->find(QString("stimEphys/channel:%1/enable").arg(s))
+	    .toBool()) {
+	  hasstim = true;
+	  break;
+	}
+      }
+    }
     bool hasvid =  Globals::ptree->find("stimVideo/enable").toBool();
     if (hasvsd)
       typ = "E'phys. + vsd";

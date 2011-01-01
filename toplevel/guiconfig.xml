@@ -151,7 +151,7 @@
       <button id="channel*DO3" value="DO3"/>
     </group>
     <tabbedpage id="channel" subdxl="2.1">
-      <button id="enable" label="Channel&#xA;Enabled" type="bool" bg="#ffaaff" y="-1"/>
+      <button id="enable" label=" Enabled" type="bool" bg="#ffaaff" y="-1"/>
       <group id="a">
         <button id="delay" label="Delay:&#xA;%1" bg="#bb88bb"/>
         <button id="nTrains" label="# of trains:&#xA;%1" bg="#aaaaff"/>
