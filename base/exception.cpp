@@ -53,6 +53,7 @@ Exception::Exception(QString issuer_, QString msg_, QString aux_) {
 Exception::Exception(Exception const &e) {
   issuer = e.issuer;
   message = e.message;
+  backtrace_data = 0;
   if (e.backtrace_data) {
     try {
       backtrace_data = new void *[backtrace_count=e.backtrace_count];
@@ -81,7 +82,7 @@ void Exception::addMessage(QString msg) {
 
 void Exception::report() const {
   dbg("Exception: %s: %s",qPrintable(issuer),qPrintable(message));
-  if (backtrace_count<=0) {
+  if (!backtrace_data || backtrace_count<=0) {
     Dbg() << "  No backtrace information available.";
   } else {
     Dbg() << "  Backtrace information:";
