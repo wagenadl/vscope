@@ -38,6 +38,6 @@ private:
   QStringList backlog;
 };
 
-extern DbgFile dbgfile;
+extern DbgFile *dbgfile;
 
 #endif

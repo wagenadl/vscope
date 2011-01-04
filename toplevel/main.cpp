@@ -231,7 +231,9 @@ int main(int argc, char **argv) {
     while (d.exists(fpath + "/" + exptname + addn)) 
       addn = num2az(++adno);
     Globals::ptree->find("acquisition/_exptname").set(exptname + addn);
-    dbgfile.setDir(fpath + "/" + exptname + addn);
+    if (!dbgfile)
+      dbgfile = new DbgFile();
+    dbgfile->setDir(fpath + "/" + exptname + addn);
 
     Enumerator *daqenum = Enumerator::find("DAQDEV");
     unsigned int daqtype = daqenum->has("TYPE")

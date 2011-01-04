@@ -23,7 +23,9 @@ Dbg::~Dbg() throw () {
       txt += "\n";
     
     fprintf(stderr,"%s",qPrintable(txt));
-    dbgfile << txt;
+    if (!dbgfile)
+      dbgfile = new DbgFile();
+    *dbgfile << txt;
   } catch (...) {
     ;
   }
@@ -57,7 +59,7 @@ void dbg(char const *fmt, ...) throw() {
 }
 
 //----------------------------------------------------------------------
-DbgFile dbgfile;
+DbgFile *dbgfile = 0;
 
 DbgFile::DbgFile() {
   ts=0;
