@@ -10,3 +10,7 @@ Makefile
 qrc_*.cpp
 a.out
 core
+*.exe
+*.stackdump
+object_script.*
+
