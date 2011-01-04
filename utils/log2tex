@@ -1,0 +1,268 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+my $dir = ".";
+$dir = shift @ARGV if @ARGV;
+usage() if @ARGV || $dir =~ /^-/;
+chdir($dir);
+
+# -----------------------------------------------------------------------
+# ---- Read log file
+open LOG, "<log.txt" or die "Cannot read log file\n";
+my $olddat;
+my $oldtim;
+my $exptname;
+my %namedfigures;
+my @loglines;
+my $firstdate;
+while (<LOG>) {
+  chomp;
+  /^$/ and next;
+  my $dat = substr($_,0,8);
+  my $tim = substr($_,9,8);
+  my $msg = substr($_,18);
+  
+  # $dat = $olddat unless $dat =~ /\d/;
+  $firstdate = $dat if !defined($firstdate) && $dat =~/\d/;
+  $tim = $oldtim unless $tim =~ /\d/;
+  $olddat = $dat;
+  $oldtim = $tim;
+  
+  my %logline;
+  $logline{"date"} = $dat;
+  $logline{"time"} = $tim;
+  $logline{"msg"} = $msg;
+  if ($msg =~ /Figure: (.*)/) {
+    $namedfigures{$1} = 1;
+  } elsif ($msg =~/New experiment: (.*)/) {
+    $exptname = $1;
+  }
+  push @loglines, \%logline;
+}
+close LOG;
+
+# ------------------------------------------------------------------------
+# ---- Interpret first date and match against expt
+my $firstmo = substr($firstdate,0,2);
+my $firstdy = substr($firstdate,3,2);
+my $firstyr = substr($firstdate,6,2);
+my $auxname = "";
+if (substr($exptname,0,6) eq "$firstyr$firstmo$firstdy") {
+  # Experiment name matches date.
+} else {
+  # Experiment name does not match date
+  $auxname = "dd $firstdate";
+}
+
+# ----------------------------------------------------------------------
+# ---- Read set of figures
+my %figsbytrial;
+opendir DIR, ".";
+my @allfigs = grep { /fig/ && /png/ } readdir(DIR);
+closedir DIR;
+for (@allfigs) {
+  /^(\d+)-fig-(\d+)-(.*)\.png$/ or next;
+  $figsbytrial{$1}->{$2} = $_;
+}
+
+# ------------------------------------------------------------------------
+# ---- Write LaTeX preamble
+open TEX, ">log.tex" or die "Cannot write LaTeX file\n";
+# -- Packages
+print TEX << 'EOF';
+\documentclass[10pt]{article}
+\usepackage{helvet}
+\usepackage{charter}
+\usepackage[letterpaper,width=6.5in,height=9in,right=.35in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{multicol}
+EOF
+
+print TEX "\\def\\exptname{$exptname}\n";
+print TEX "\\def\\auxname{$auxname}\n";
+
+# -- Style options
+print TEX << 'EOF';
+\pagestyle{fancy}
+\def\headrulewidth{0.4pt}
+\def\footrulewidth{0.pt}
+\lhead{{\bf\exptname} \auxname}
+\chead{}
+\rhead{\thepage/\pageref{end}}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\headsep=3pt
+\footskip=5pt
+\def\noteface{\normalfont\normalsize}
+\def\infoface{\normalfont\sffamily\scriptsize}
+\def\trialface{\normalfont\sffamily\footnotesize}
+\def\capface{\normalfont\sffamily\itshape\scriptsize}
+\parindent=0.0cm
+\def\newdate#1{{\normalfont\normalsize\sffamily\bfseries#1}}
+\def\myfig#1#2{\kern3pt\mbox{}\kern.25cm\begin{minipage}[b]{.5in}\capface#2\vspace{2.27in}\end{minipage}~\includegraphics[width=2.5in]{#1}}
+EOF
+
+# -- Start the document
+print TEX << 'EOF';
+\begin{document}
+\raggedbottom\raggedright\raggedcolumns
+\begin{multicols}{2}
+EOF
+
+# ----------------------------------------------------------------------
+# ---- Write log
+my $firsttrial = undef;
+my $lasttrial = undef;
+my $firsttime = undef;
+my $lasttime = undef;
+my $ignorepixval = 0;
+my @noteaccum;
+my @infoaccum;
+my %trialtypes;
+for my $line (@loglines) {
+  my $dat = $line->{date};
+  my $tim = $line->{time};
+  my $msg = $line->{msg};
+
+  next if $msg =~ /^V(SD)?Scope (starting|closing)/;
+  next if $msg =~ /^Appending to existing log/;
+  next if $msg =~ /^New experiment:/;
+  next if $msg =~ /^Pixel value/ && $ignorepixval;
+  
+  if ($dat =~ /\d/) {
+    # Let's print a date unless it is the first date
+    writeout();
+    print TEX "\n\\newdate{$dat}\n\n" unless $dat eq $firstdate;
+  }
+  if ($msg =~ /^Trial (\d+): (.*)/) {
+    writeout("Trial");
+    my $tri = $1;
+    my $typ = $2;
+    if ($typ eq "Snapshot") {
+      if (exists $trialtypes{"Snapshot"} || exists $trialtypes{"Snapshots"}) {
+	$trialtypes{"Snapshots"}=1;
+	delete $trialtypes{"Snapshot"};
+      } else {
+	$trialtypes{"Snapshot"}=1;
+      }
+    } else {
+      $ignorepixval = 1;
+      $trialtypes{$typ} = 1;
+    }
+    $firsttrial = $tri unless defined $firsttrial;
+    $firsttime = $tim unless defined $firsttime;
+    $lasttrial = $tri;
+    $lasttime = $tim;
+    my $havefigs = 0;
+    if (exists($figsbytrial{$tri})) {
+      for (values %{$figsbytrial{$tri}}) {
+	$havefigs = 1 unless exists($namedfigures{$_});
+      }
+    }
+    if ($havefigs) {
+      writeout();
+      writeautofigures($tri);
+    }
+  } elsif ($msg =~ /Note: (.*)/) {
+    next if $1 eq "";
+    writeout("Note");
+    push @noteaccum, $1;
+  } elsif ($msg =~/Figure: (.*)/) {
+    writeout();
+    writefigure($1);
+  } else {
+    writeout("Info");
+    push @infoaccum, $msg;
+  }
+}
+
+writeout();
+# ----------------------------------------------------------------------
+# ---- close LaTeX file
+print TEX <<'EOF';
+\label{end}
+\end{multicols}
+\end{document}
+EOF
+close TEX;
+
+# ----------------------------------------------------------------------
+
+
+# ======================================================================
+sub writeout {
+  my $except = shift || "";
+  writetrials() unless $except =~ /Trial/;
+  writenotes() unless $except =~ /Note/;
+  writeinfo() unless $except =~ /Info/;
+}
+
+sub writetrials {
+  return unless defined $firsttrial;
+  my $daterep = $firsttime;
+  $daterep .= "--$lasttime" unless $lasttime eq $firsttime;
+  my $trialrep = "\\#$firsttrial";
+  $trialrep .= "--\\#$lasttrial" unless $lasttrial eq $firsttrial;
+  print TEX "\\trialface\\rule{0pt}{8pt}{\\bf $trialrep} ($daterep):\n";
+  my @trialtypes;
+  for (sort keys %trialtypes) {
+    s/E'phys\. \+ vsd/VSD/;
+    s/vsd/VSD/;
+    s/e'phys\. stimuli/stimuli/;
+    push @trialtypes, $_;
+  }
+  print TEX join(", ",@trialtypes), "\n\n";
+  $firsttrial = undef;
+  $firsttime = undef;
+  %trialtypes = ();
+}
+
+sub writenotes {
+  return unless @noteaccum;
+  for (@noteaccum) {
+    s/$/\./ unless /[:;.,?!]([] })'"])*$/;
+    $_ = ucfirst($_);
+  }
+  print TEX "\\leftskip=0cm\\noteface\\rule{0pt}{9pt}";
+  print TEX texify(join("\n",@noteaccum));
+  print TEX "\\vspace{1pt}\n\n\\leftskip=0cm";
+  @noteaccum = ();
+}
+
+sub writeinfo {
+  return unless @infoaccum;
+  for (@infoaccum) {
+    s/^Parameter change/Parameter change:/;
+    s/$/./ unless /[:;.,?!][]})'"]*$/;
+  }
+  print TEX "\\leftskip=.5cm\\infoface\\rule{0pt}{6.2pt}";
+  print TEX texify(join("\n",@infoaccum));
+  print TEX "\\vspace{-.5pt}\n\n\\leftskip=0cm\n";
+  @infoaccum = ();
+}
+
+sub writeautofigures {
+  my $tri = shift;
+  for (sort values %{$figsbytrial{$tri}}) {
+    next if exists $namedfigures{$_};
+    writefigure($_);
+  }
+}
+
+sub writefigure {
+  my $fig = shift;
+  my $lbl = $fig;
+  $lbl =~ s/(\d+)-fig-(\d+)-(.*).png/\\\#$1.$2: $3/;
+  print TEX "\\myfig{$fig}{$lbl}\n\n";
+}
+
+sub texify {
+  my $txt = shift;
+  $txt =~ s/([\%\$\{\}\&])/\\$1/g;
+  $txt =~ s/([_^])\{(.*)\}/\$\{\}$1\{\\textrm{\\tiny\\sffamily $2}\}\$/g;
+  $txt =~ s/([_^])(.?\w*)/\$\{\}$1\{\\textrm{\\tiny\\sffamily $2}\}\$/g;
+  return $txt;
+}
