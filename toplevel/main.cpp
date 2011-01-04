@@ -426,9 +426,9 @@ int main(int argc, char **argv) {
       fprintf(stderr,"Cameras not available.\n");
 #else
 #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
-      guiwarn("Cameras not available. Acquisition will take black frames.");
+      GUIExc::warn("Cameras not available. Acquisition will take black frames.");
 #else
-      guiwarn("Cameras not available. No CCD data will be acquired.");
+      GUIExc::warn("Cameras not available. No CCD data will be acquired.");
 #endif
 #endif
     }
