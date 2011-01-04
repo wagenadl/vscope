@@ -85,7 +85,11 @@ void Exception::report() const {
     Dbg() << "  No backtrace information available.";
   } else {
     Dbg() << "  Backtrace information:";
+#ifdef vsdLINUX
     char **symbols = backtrace_symbols(backtrace_data, backtrace_count);
+#else
+    char **symbols = 0;
+#endif
     size_t dm_length = 1024;
     char *demangled;
     try {
@@ -112,8 +116,12 @@ void Exception::report() const {
 	if (begin_name && begin_offset && end_offset
 	    && begin_name<begin_offset) {
 	  *begin_name++ = *begin_offset++ = *end_offset = 0;
+#ifdef vsdLINUX
 	  demangled = abi::__cxa_demangle(begin_name, demangled,
 					  &dm_length,&status);
+#else
+	  demangled = 0;
+#endif
 	  if (status==0) {
 	    Dbg() << "    " << demangled << " +" << begin_offset;
 	  } else {
