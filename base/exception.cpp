@@ -17,8 +17,8 @@
 #ifdef vsdLINUX
 #include <execinfo.h>
 #include <cxxabi.h>
-#include <stdlib.h>
 #endif
+#include <stdlib.h>
 
 bool Exception::immrep = true;
 
