@@ -20,7 +20,7 @@ ExptLog::ExptLog(QObject *parent): QObject(parent) {
   outputFile = 0;
   outputStream = 0;
   suppressFurtherROI = false;
-  addNote("VScope starting");
+  //  addNote("VScope starting");
   addNote("New experiment: "
 	  + Globals::ptree->find("acquisition/_exptname").toString());
   makeConnections();
@@ -138,6 +138,10 @@ void ExptLog::newExptName() {
     delete outputFile;
     outputFile = 0;
   }
+  backlog.clear();
+  settingsBacklog.clear();
+  olddate="";
+  oldtime="";
   addNote("New experiment: "
 	  + Globals::ptree->find("acquisition/_exptname").toString());
 }

@@ -2,20 +2,15 @@
 
 #include "ccddata.h"
 #include <base/exception.h>
-
+#include <base/memalloc.h>
 CCDData::CCDData(int serpix, int parpix, int nframes):
   serpix(serpix),
   parpix(parpix),
   nframes(nframes) {
   framepix = serpix*parpix;
   allocpix = framepix*nframes;
-  try {
-    data = new uint16_t[allocpix];
-  } catch (...) {
-    throw MemExc("CCDData::constructor");
-  }
-  if (data==0)
-    throw MemExc("CCDData::constructor: 0 from new");
+  data = 0;
+  data = memalloc<uint16_t>(allocpix, "CCDData:: constructor");
 }
 
 bool CCDData::reshape(int ser, int par, int nfr, bool free) {
@@ -24,14 +19,8 @@ bool CCDData::reshape(int ser, int par, int nfr, bool free) {
   if (realloc) {
     delete [] data;
     data=0;
-    try {
-      allocpix = needed;
-      data = new uint16_t[allocpix];
-    } catch(...) {
-      throw MemExc("CCDData::reshape");
-    }
-    if (data==0)
-      throw MemExc("CCDData::reshape: 0 from new");
+    allocpix = needed;
+    data = memalloc<uint16_t>(allocpix, "CCDData::reshape");
   }
   serpix = ser;
   parpix = par;
@@ -66,12 +55,13 @@ void CCDData::setTimeBase(double t0, double dt) {
 }
 
 CCDData::CCDData(CCDData const &other): CCDData_(other) {
+  data = 0;
   copy(other);
 }
 
 void CCDData::copy(CCDData const &other) {
-  if (data) {
-    data = new uint16_t[allocpix];
+  if (other.data) {
+    data = memalloc<uint16_t>(allocpix, "CCDData");
     memcpy(data, other.data, allocpix*sizeof(uint16_t));
   }
 }
@@ -80,6 +70,7 @@ CCDData &CCDData::operator=(CCDData const &other) {
   if (data)
     delete [] data;
   *(CCDData_*)this = other;
+  data = 0;
   copy(other);
   return *this;
 }

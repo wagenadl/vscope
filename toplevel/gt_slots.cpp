@@ -32,5 +32,5 @@ void gt_slots::customchanged(QString p, int cno, QString val) {
 }
 
 void gt_slots::report(Exception const &e, QString act) {
-  ::report(e,act);
+  GUIExc::report(e,act);
 }

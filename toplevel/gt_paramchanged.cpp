@@ -135,6 +135,8 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::exptelapsed->setFormat("Since Start:\n%1");
       Globals::exptelapsed->startCountUp();
       Globals::exptlog->newExptName();
+      dbgfile.setDir(Globals::ptree->find("_filePath").toString()
+		     + "/" + val);
     } else if (p=="acquisition/contEphys") {
       Globals::acquire->setContEphys();
     } else if (p=="acquisition/_dummy") {

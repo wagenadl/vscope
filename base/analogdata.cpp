@@ -2,6 +2,7 @@
 
 #include <base/analogdata.h>
 #include <base/dbg.h>
+#include <base/memalloc.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -12,12 +13,8 @@
 AnalogData::AnalogData(int nscans_, int nchannels_) throw(Exception) {
   nscans = nscans_;
   nchannels = nchannels_;
-  try {
-    ndoubles_allocated = nchannels * nscans;
-    data = new double[ndoubles_allocated];
-  } catch(...) {
-    throw MemExc("AnalogData");
-  }
+  ndoubles_allocated = nchannels * nscans;
+  data = memalloc<double>(ndoubles_allocated, "AnalogData constructor");
   for (int n=0; n<nchannels; n++)
     index2channel[n]=n;
   for (int n=0; n<MAXCHANNELS; n++)
@@ -96,17 +93,9 @@ bool AnalogData::reshape(int nscans1, int nchannels1, bool free) {
   bool r=false;
   if (!data || needed > ndoubles_allocated ||
       (free && (needed < ndoubles_allocated))) {
-    try {
-      if (data)
-	delete [] data;
-    } catch(...) {
-      throw MemFreeExc("AnalogData");
-    }
-    try {
-      data = new double[needed];
-    } catch(...) {
-      throw MemExc("AnalogData");
-    }
+    if (data)
+      delete [] data;
+    data = memalloc<double>(needed, "AnalogData::reshape");
     ndoubles_allocated = needed;
     r=true;
   }
@@ -161,7 +150,7 @@ void AnalogData::defineChannels(uint32_t channelMask) throw(Exception) {
 QMap<int,double> AnalogData::writeInt16(QString ofn) throw(Exception) {
   dbg("adata:writeint16. ofn=%s",qPrintable(ofn));
   dbg("  nch=%i nsc=%i",nchannels,nscans);
-  double *range = new double[nchannels];
+  double *range = memalloc<double>(nchannels, "AnalogData::writeInt16");
   for (int c=0; c<nchannels; ++c)
     range[c]=1e-6; // base range is 1 uV, we don't want to get division by zero
   double *dp = data;
@@ -176,8 +165,9 @@ QMap<int,double> AnalogData::writeInt16(QString ofn) throw(Exception) {
   }
   for (int c=0; c<nchannels; c++)
     dbg("    range[%i] = %g",c,range[c]);
-  
-  int16_t *buffer = new int16_t[nchannels*1024];
+
+  int16_t *buffer = memalloc<int16_t>(nchannels*1024,
+				      "AnalogData::writeInt16");
   
   FILE *ofd = fopen(qPrintable(ofn),"wb");
   if (!ofd) {
@@ -244,7 +234,7 @@ void AnalogData::readInt16(QString ifn, QMap<int,double> steps)
   if (!ifd)
     throw SysExc("AnalogData::readInt16: Cannot open '" + ifn + "'");
 
-  int16_t *buffer = new int16_t[nchannels*1024];
+  int16_t *buffer = memalloc<int16_t>(nchannels*1024, "AnalogData::readInt16");
   int scansleft = newscans;
   double *dp = data;
   dbg("analogdata::readint16 nchannels=%i newscans=%i",nchannels,newscans);
@@ -283,12 +273,9 @@ int AnalogData::whereIsChannel(int ch) const {
 
 AnalogData::AnalogData(AnalogData const &other):
   AnalogData_(other) {
-  copy(other);
-}
-
-void AnalogData::copy(AnalogData const &other) {
-  if (data) {
-    data = new double[ndoubles_allocated];
+  data = 0;
+  if (other.data) {
+    reshape(other.nscans, other.nchannels);
     memcpy(data, other.data, nscans*nchannels*sizeof(double));
   }
 }
@@ -296,7 +283,11 @@ void AnalogData::copy(AnalogData const &other) {
 AnalogData &AnalogData::operator=(AnalogData const &other) {
   if (data)
     delete [] data;
-  *(AnalogData*)this = other;
-  copy(other);
+  *(AnalogData_*)this = other;
+  data = 0;
+  if (other.data) {
+    reshape(other.nscans, other.nchannels);
+    memcpy(data, other.data, nscans*nchannels*sizeof(double));
+  }
   return *this;
 }

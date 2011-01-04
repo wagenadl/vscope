@@ -6,17 +6,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <base/memalloc.h>
 
 #define DD_SECRETCODE 0xdddd0000
 
 DigitalData::DigitalData(int nscans_) throw(Exception) {
   nallocated = nscans = nscans_;
-  // cmask = 0;
-  try {
-    data = new uint32_t[nscans];
-  } catch(...) {
-    throw MemExc("DigitalData");
-  }
+  data = 0;
+  data = memalloc<uint32_t>(nscans, "DigitalData constructor");
 }
 
 DigitalData::~DigitalData() {
@@ -76,17 +73,9 @@ bool DigitalData::reshape(int nscans1, bool free) {
   bool r=false;
   if (nscans1 > nallocated ||
       (free && (nscans1 < nallocated))) {
-    try {
-      if (data)
-	delete [] data;
-    } catch(...) {
-      throw MemFreeExc("AnalogData");
-    }
-    try {
-      data = new uint32_t[nscans1];
-    } catch(...) {
-      throw MemExc("AnalogData");
-    }
+    if (data)
+      delete [] data;
+    data = memalloc<uint32_t>(nscans1, "AnalogData");
     nallocated = nscans1;
     r=true;
   }
@@ -157,21 +146,23 @@ void DigitalData::addLine(uint32_t line) {
 
 DigitalData::DigitalData(DigitalData const &other):
   DigitalData_(other) {
-  copy(other);
-}
-
-void DigitalData::copy(DigitalData const &other) {
-  if (data) {
-    data = new uint32_t[nallocated];
+  data = 0;
+  if (other.data) {
+    reshape(other.nscans);
     memcpy(data, other.data, nscans*sizeof(uint32_t));
   }
 }
 
+
 DigitalData &DigitalData::operator=(DigitalData const &other) {
   if (data)
     delete [] data;
-  *(DigitalData*)this = other;
-  copy(other);
+  *(DigitalData_*)this = other;
+  data = 0;
+  if (other.data) {
+    reshape(other.nscans);
+    memcpy(data, other.data, nscans*sizeof(uint32_t));
+  }
   return *this;
 }
 

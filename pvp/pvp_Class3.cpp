@@ -4,6 +4,8 @@
 #include <QTextStream>
 #include <pvp/dwpvcam.h>
 
+#include <base/memalloc.h>
+
 bool pvpCamera::availExpTime() throw(pvpException) {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_EXP_TIME,ATTR_AVAIL,&avail))

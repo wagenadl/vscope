@@ -7,6 +7,7 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 #include <base/blobroi.h>
+#include <base/memalloc.h>
 
 inline double sq(double x) { return x*x; }
 
@@ -133,7 +134,7 @@ void ROIData::makePolyBitmap() {
     h=h1;
   }
   if (!bitmap)
-    bitmap = new bool[w*h];
+    bitmap = memalloc<bool>(w*h, "ROIData");
   int r = blobROI->bitmap(bitmap,w*h);
   if (r!=w*h)
     throw Exception("ROIData",
@@ -159,7 +160,7 @@ void ROIData::makeXYRRABitmap() {
   w = w1;
   h = h1;
   if (!bitmap) 
-    bitmap = new bool[w*h];
+    bitmap = memalloc<bool>(w*h, "ROIData");
   bool *ptr = bitmap;
   double cs = cos(roi.a);
   double sn = sin(roi.a);
@@ -192,7 +193,7 @@ double const *ROIData::getRaw() {
     dataRaw=0;
   }
   if (!dataRaw) {
-    dataRaw = new double[len];
+    dataRaw = memalloc<double>(len, "ROIData");
     lengthRaw = len;
   }
 
@@ -277,7 +278,7 @@ double const *ROIData::getDebleachedDFF() {
     dataDebleached=0;
   }
   if (!dataDebleached) {
-    dataDebleached = new double[len];
+    dataDebleached = memalloc<double>(len, "ROIData");
     lengthDebleached = len;
   }
 
@@ -406,24 +407,28 @@ double const *ROIData::getDebleachedDFF() {
 }
 
 ROIData::ROIData(ROIData const &other): ROIData_(other) {
+  dataRaw=0;
+  dataDebleached=0;
+  bitmap=0;
+  blobROI=0;
   copy(other);
 }
 
 void ROIData::copy(ROIData const &other) {
-  if (dataRaw) {
-    dataRaw = new double[lengthRaw];
+  if (other.dataRaw) {
+    dataRaw = memalloc<double>(lengthRaw, "ROIData");
     memcpy(dataRaw, other.dataRaw, lengthRaw*sizeof(double));
   }
-  if (dataDebleached) {
-    dataDebleached = new double[lengthDebleached];
+  if (other.dataDebleached) {
+    dataDebleached = memalloc<double>(lengthDebleached, "ROIData");
     memcpy(dataDebleached, other.dataDebleached,
 	   lengthDebleached*sizeof(double));
   }
-  if (bitmap) {
-    bitmap = new bool[w*h];
+  if (other.bitmap) {
+    bitmap = memalloc<bool>(w*h, "ROIData");
     memcpy(bitmap, other.bitmap, w*h*sizeof(bool));
   }
-  if (blobROI)
+  if (other.blobROI)
     blobROI = new BlobROI(*other.blobROI);
 }
 
@@ -437,6 +442,10 @@ ROIData &ROIData::operator=(ROIData const &other) {
   if (blobROI)
     delete blobROI;
   *(ROIData_*)this = other;
+  dataRaw=0;
+  dataDebleached=0;
+  bitmap=0;
+  blobROI=0;
   copy(other);
   return *this;
 }

@@ -19,7 +19,7 @@ void daqTry(int errcode, char const *issuer,
   if (n<0 || n>1000)
     n=1000;
 
-  char *data = new char[n];
+  char *data = memalloc<char>(n, "daqTry");
   int e=DAQmxGetErrorString(errcode,data,n);
   if (e<0)
     sprintf(data,"Unknown.");

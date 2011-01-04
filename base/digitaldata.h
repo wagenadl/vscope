@@ -99,8 +99,6 @@ public:
   /*:F getMask, clearMask, addLine
    *:N The mask is not currently used by either DigitalIn or DigitalOut.
   */
-private:
-  void copy(DigitalData const &other);
 };
 
 #endif

@@ -143,8 +143,6 @@ public:
   /*:F whereIsChannel
    *:D Returns the index of the given channel, or -1 if not included.
    */
-private:
-  void copy(AnalogData const &other);
 };
 
 #endif

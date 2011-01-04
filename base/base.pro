@@ -8,6 +8,7 @@ include(../config.pro)
 HEADERS += base26.h \
            dbg.h \
 	   exception.h \
+           memalloc.h \
 	   minmax.h \
            numbers.h \
            range.h \
@@ -37,7 +38,7 @@ SOURCES += base26.cpp \
 	roiset.cpp roiset3data.cpp \
 	analogdata.cpp digitaldata.cpp \
 	xml.cpp unitqty.cpp xyabc.cpp \
-        ccdtiming.cpp
+        ccdtiming.cpp memalloc.cpp
 
 
 

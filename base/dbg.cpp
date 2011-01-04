@@ -5,52 +5,100 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include <QDateTime>
-
-//class DBG_T {
-// public:
-//  DBG_T() {
-//    gettimeofday(&tv,0);
-//  }
-//  struct timeval tv;
-//};
-//
-//DBG_T dbg_t0;
-
-void warn(char const *fmt, ...) {
-  va_list ap;
-  va_start(ap,fmt);
-  fprintf(stderr,"WARNING: ");
-  vfprintf(stderr,fmt,ap);
-  int n=strlen(fmt);
-  if (n==0 || fmt[n-1]!='\n')
-    fprintf(stderr,"\n");
-  va_end(ap);
-}
-
-
-void dbg(char const *fmt, ...) {
-  va_list ap;
-  va_start(ap,fmt);
-  fprintf(stderr,"[%s] ",
-	  qPrintable(QTime::currentTime().toString("hhmmss.zzz")));
-  vfprintf(stderr,fmt,ap);
-  int n=strlen(fmt);
-  if (n==0 || fmt[n-1]!='\n')
-    fprintf(stderr,"\n");
-  va_end(ap);
-}
-
 #include <QTime>
+#include <base/exception.h>
 
-Dbg::Dbg() {
-  txt = "[" + QTime::currentTime().toString("hhmmss.zzz") + "] ";
-  setString(&txt);
+Dbg::Dbg() throw() {
+  try {
+    txt = "[" + QTime::currentTime().toString("hhmmss.zzz") + "] ";
+    setString(&txt);
+  } catch(...) {
+    ;
+  }
 }
 
-Dbg::~Dbg() {
-  if (!txt.endsWith("\n"))
-    txt += "\n";
+Dbg::~Dbg() throw () {
+  try {
+    if (!txt.endsWith("\n"))
+      txt += "\n";
     
-  fprintf(stderr,"%s",qPrintable(txt));
+    fprintf(stderr,"%s",qPrintable(txt));
+    dbgfile << txt;
+  } catch (...) {
+    ;
+  }
+}
+
+Warning::Warning() throw() {
+  try {
+    txt += "WARNING: ";
+  } catch (...) {
+    ;
+  }
+}
+
+// ----------------------------------------------------------------------
+void warn(char const *fmt, ...) throw() {
+  va_list ap;
+  va_start(ap,fmt);
+  char txt[10240];
+  vsnprintf(txt,10240,fmt,ap);
+  Warning() << txt;
+  va_end(ap);
+}
+
+void dbg(char const *fmt, ...) throw() {
+  va_list ap;
+  va_start(ap,fmt);
+  char txt[10240];
+  vsnprintf(txt,10240,fmt,ap);
+  Dbg() << txt;
+  va_end(ap);
+}
+
+//----------------------------------------------------------------------
+DbgFile dbgfile;
+
+DbgFile::DbgFile() {
+  ts=0;
+}
+
+DbgFile::~DbgFile() {
+  if (ts)
+    delete ts;
+}
+
+void DbgFile::setDir(QString const &d) {
+  dir = d;
+  if (ts)
+    delete ts;
+  ts = 0;
+  f.close();
+}
+
+DbgFile &DbgFile::operator<<(QString const &str) {
+  if (!ts) {
+    f.setFileName(dir + "/debug.txt");
+    if (f.exists()) {
+      int n=0;
+      while (f.exists()) {
+	n++;
+	f.setFileName(dir + QString("/debug-%1.txt").arg(n));
+      }
+    }
+    if (f.open(QIODevice::WriteOnly | QIODevice::Append)) {
+      ts = new QTextStream(&f);
+      foreach (QString s, backlog) {
+	*ts << s;
+      }
+      backlog.clear();
+    } else {
+      backlog.append(str);
+    }
+  }
+  if (ts) {
+    *ts << str;
+    ts->flush();
+  }
+  return *this;
 }

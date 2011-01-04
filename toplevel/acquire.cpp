@@ -70,6 +70,7 @@ void Acquire::acqFrame() {
 }
 
 void Acquire::acqTrial() {
+  throw Exception("Acquire", "Purposeful exception");
   bool dummy = Globals::ptree->find("acquisition/_dummy").toBool();
   blockout = true;
   Globals::blackout->show();
@@ -154,7 +155,7 @@ void Acquire::saveData() {
   try {
     Globals::trove->write(filePath);
   } catch (Exception const &e) {
-    report(e,"Acquire");
+    GUIExc::report(e,"Acquire");
   }
 }
 
@@ -264,8 +265,7 @@ void Acquire::loadData(QString xmlfn) {
   try {
     Globals::trove->read(dirbit,exptbit,trialbit);
   } catch (Exception const &e) {
-    e.report();
-    ::report(e,"load data");
+    GUIExc::report(e,"load data");
   }
 
   Globals::coumarinw->setROIs(&Globals::trove->rois());

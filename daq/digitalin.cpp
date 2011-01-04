@@ -9,11 +9,6 @@ DigitalIn::DigitalIn(AnalogIn *master, QString id) throw(daqException):
   daqTask(id), master(master) {
   cmask=0;
   device().demand(); // just to make sure we have one...
-  //  try {
-  //    buffer = new uint32_t[bufferLength];
-  //  } catch (...) {
-  //    throw daqMemExc("DigitalIn");
-  //  }
   if (!master)
     throw daqException("DigitalIn","Cannot work without an AnalogIn master");
   master->attachDI(this);
@@ -21,12 +16,6 @@ DigitalIn::DigitalIn(AnalogIn *master, QString id) throw(daqException):
 
 DigitalIn::~DigitalIn() {
   master->detachDI();
-  //  try {
-  //    if (buffer)
-  //      delete [] buffer;
-  //  } catch (...) {
-  //    fprintf(stderr,"DigitalIn: Memory freeing failed. Armageddon imminent.\n");
-  //  }
 }
 
 void DigitalIn::setAcqLength(int nscans_) {

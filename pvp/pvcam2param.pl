@@ -61,6 +61,7 @@ for (keys %CLASSNAMES) {
   $fcpp[$_]->print("#include <pvp/pvp$CLASSNAMES{$_}.h>\n");
   $fcpp[$_]->print("#include <QTextStream>\n");
   $fcpp[$_]->print("#include <pvp/dwpvcam.h>\n\n");
+  $fcpp[$_]->print("#include <base/memalloc.h>\n\n");
 }
 
 # Scan for enums
@@ -235,9 +236,9 @@ EOF
   my $lcptype = ($ptype eq "ENUM") ? "uns32" : lc($ptype);
   if ($ptype eq "CHAR") {
     if ($pname eq "DD_INFO") {
-      $fcpp[$pclass]->print("    char *x = new char[getDdInfoLength()];\n");
+      $fcpp[$pclass]->print("    char *x = memalloc<char>(getDdInfoLength(), \"pvcam\");\n");
     } else {
-      $fcpp[$pclass]->print("    char *x = new char[count$nicename()];\n");
+      $fcpp[$pclass]->print("    char *x = memalloc<char>(count$nicename(), \"pvcam\");\n");
     }
     $ref = "x";
   } else {

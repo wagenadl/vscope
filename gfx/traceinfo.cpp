@@ -2,6 +2,7 @@
 
 #include <gfx/traceinfo.h>
 #include <base/dbg.h>
+#include <base/memalloc.h>
 
 #include <algorithm>
 #include <math.h>
@@ -37,7 +38,7 @@ template <class X> Range ti_minmax99(X const*xx, int N, int step,
   if (frc0<=0 && (frc1<=0 || frc1>=1))
     return ti_minmax(xx,N,step);
   
-  X *yy = new X[N];
+  X *yy = memalloc<X>(N, "ti_minmax99");
   X *yyp = yy;
   for (int n=0; n<N; n++) {
     *yyp = *xx;

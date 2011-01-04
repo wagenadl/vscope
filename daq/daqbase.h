@@ -10,6 +10,7 @@
 #include <QStringList>
 #include <base/types.h>
 #include <base/exception.h>
+#include <base/memalloc.h>
 
 #define daq_PRODUCT_NUMBER_TO_USE 0x7346 // USB-6229
 

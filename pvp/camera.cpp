@@ -4,6 +4,7 @@
 #include "pvpCamera.h"
 #include <base/types.h>
 #include <base/dbg.h>
+#include <base/memalloc.h>
 
 Camera::Camera(QString camname) {
   pvpcam = new pvpCamera(camname);
@@ -55,7 +56,8 @@ void Camera::setConfig(CCDConfig const &cfg0) {
     if (!contBuffer || npixels_in_buffer<npixels_for_seq) {
       if (contBuffer)
 	delete [] contBuffer;
-      contBuffer = new uint16_t[npixels_in_buffer = npixels_for_seq];
+      contBuffer = memalloc<uint16_t>(npixels_in_buffer = npixels_for_seq,
+				      "Camera");
     }
   }
 }

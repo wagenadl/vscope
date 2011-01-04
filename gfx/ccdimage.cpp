@@ -14,6 +14,7 @@
 #include <base/numbers.h>
 #include <base/minmax.h>
 #include <base/xyabc.h>
+#include <base/memalloc.h>
 
 #define CCDImage_GAMMA_Entries 4096
 
@@ -45,7 +46,8 @@ CCDImage::~CCDImage() {
 
 void CCDImage::rebuildGammaTable() {
   if (!gamma_table)
-    gamma_table = new int[CCDImage_GAMMA_Entries];
+    gamma_table = memalloc<int>(CCDImage_GAMMA_Entries,
+				"CCDImage::rebuildGammaTable");
   for (int k=0; k<CCDImage_GAMMA_Entries; k++) {
     double v = double(k) / (CCDImage_GAMMA_Entries-1);
     v = 1-pow(1-pow(v,1+adjust_black),1+adjust_white);
@@ -61,7 +63,7 @@ void CCDImage::createTestImage() {
   uint32_t *dst = (uint32_t*)image.bits();
   int phase1 = ccdTestImageCounter*138;
   int phase2 = ccdTestImageCounter*38901;
-  uint8_t *costbl = new uint8_t[256];
+  uint8_t *costbl = memalloc<uint8_t>(256, "CCDImage::createTestImage");
   for (int i=0; i<256; i++)
     costbl[i] = uint8_t(127+127*cos(i*6.2832/256));
   ccdTestImageCounter++;
@@ -150,7 +152,7 @@ void CCDImage::autoRange(uint16_t const *data, int X, int Y,
 			 double frc0, double frc1) {
   if (data && X*Y>0) {
     if (frc0>0 || frc1<1) {
-      uint16_t *cp = new uint16_t[X*Y];
+      uint16_t *cp = memalloc<uint16_t>(X*Y, "CCDImage::autorange");
       memcpy((void*)cp,(void*)data,X*Y*2);
     
       int kmin = int(floor(frc0*X*Y));

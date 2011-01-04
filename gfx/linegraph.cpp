@@ -1,7 +1,7 @@
 // linegraph.cpp
 
 #include <gfx/linegraph.h>
-
+#include <base/memalloc.h>
 #include <base/numbers.h>
 #include <base/minmax.h>
 #include <math.h>
@@ -503,8 +503,8 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
       pts[n] = QPoint(x0pix+int(dxpix*n), dataToScreenY(ti->getDatum(n)));
     p.drawPolyline(pts);
   } else {
-    double *yy_min = new double[M];
-    double *yy_max = new double[M];
+    double *yy_min = memalloc<double>(M, "Linegraph");
+    double *yy_max = memalloc<double>(M, "Linegraph");
     ti->trueBlue(x0,dx_per_pix,M, yy_min,yy_max);
   
     //dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
@@ -535,7 +535,7 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
       // POLYGON DRAWING STYLE
       p.setBrush(QBrush(p.pen().color()));
       int x0pix = contentsX0();
-      QPoint *pts = new QPoint[2*M];
+      QPoint *pts = memalloc<QPoint>(2*M, "LineGraph");
       for (int m=0; m<M; m++) {
         pts[m].setX(x0pix+m+m0);
         pts[m].setY(dataToScreenY(yy_min[m+m0]));

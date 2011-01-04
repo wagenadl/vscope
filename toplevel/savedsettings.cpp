@@ -16,6 +16,8 @@
 #include <acq/datatrove.h>
 #include <gui/videogui.h>
 #include <toplevel/gt_slots.h>
+#include <gui/guiexc.h>
+#include <xml/settingsfile.h>
 
 SavedSettings::SavedSettings(QWidget *parent): FileChooser(parent) {
   savedlg = 0;
@@ -62,9 +64,7 @@ void SavedSettings::loadSettings(QString fn) {
   if (!fn.endsWith(".xml"))
     fn += ".xml";
   try {
-    XML xml(fn);
-    Globals::ptree->read(xml.root());
-    Connections::readXML(xml.root());
+    SettingsFile::load(fn, Globals::ptree);
     Globals::gtslots->everythingChanged();
     QString setname = fn;
     int lastslash = setname.lastIndexOf("/");
@@ -73,7 +73,7 @@ void SavedSettings::loadSettings(QString fn) {
     setname = setname.left(setname.length()-4); // drop the ".xml";
     Globals::exptlog->markLoadSettings(setname);
   } catch (Exception const &e) {
-    dbg("SavedSettings::loadSettings: caught exception");
+    GUIExc::report(e,"SavedSettings::loadSettings");
   }
 }
 
@@ -112,12 +112,7 @@ void SavedSettings::saveSettings(QString fn) {
 
   saveframe->hide();
   try {
-    XML xml(0,"vsdscopeSettings");
-    Globals::ptree->write(xml.root());
-    Connections::writeXML(xml.root());
-    QDomElement e=xml.append("date");
-    e.setAttribute("modified",QDateTime::currentDateTime().toString());
-    xml.write(fn);
+    SettingsFile::save(fn, Globals::ptree);
   } catch (Exception const &e) {
     dbg("SavedSettings::saveSettings: Caught exception");
   }

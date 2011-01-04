@@ -5,6 +5,9 @@
 
 #include <QQueue>
 
+/* Note that these classes cannot use memalloc<...>, because that could easily
+   lead to terrible recursion during error handling. */
+
 //#include <iostream>
 //#include <fstream>
 //using namespace std;
@@ -35,8 +38,12 @@ Exception::Exception(QString issuer_, QString msg_, QString aux_) {
   message = msg_;
 
 #ifdef vsdLINUX
-  backtrace_data = new void*[1024];
-  backtrace_count = backtrace(backtrace_data,1024);
+  try {
+    backtrace_data = new void*[1024];
+    backtrace_count = backtrace(backtrace_data,1024);
+  } catch (...) {
+    backtrace_data = 0;
+  }
 #endif
 
   if (immrep && message!="")
@@ -47,18 +54,20 @@ Exception::Exception(Exception const &e) {
   issuer = e.issuer;
   message = e.message;
   if (e.backtrace_data) {
-    backtrace_data = new void *[backtrace_count=e.backtrace_count];
-    memcpy(backtrace_data,e.backtrace_data,backtrace_count*sizeof(void*));
+    try {
+      backtrace_data = new void *[backtrace_count=e.backtrace_count];
+      memcpy(backtrace_data,e.backtrace_data,backtrace_count*sizeof(void*));
+    } catch (...) {
+      backtrace_data = 0;
+    }
   }
 }
 
 Exception::~Exception() {
-#ifdef vsdLINUX
   if (backtrace_data) {
     delete [] backtrace_data;
     backtrace_data = 0;
   }
-#endif
 }
 
 void Exception::addMessage(QString msg) {
@@ -72,14 +81,18 @@ void Exception::addMessage(QString msg) {
 
 void Exception::report() const {
   dbg("Exception: %s: %s",qPrintable(issuer),qPrintable(message));
-#ifdef vsdLINUX
-  Dbg() << "  Backtrace information:";
   if (backtrace_count<=0) {
-    Dbg() << "    No backtrace information available.";
+    Dbg() << "  No backtrace information available.";
   } else {
+    Dbg() << "  Backtrace information:";
     char **symbols = backtrace_symbols(backtrace_data, backtrace_count);
     size_t dm_length = 1024;
-    char *demangled = (char*)malloc(dm_length);
+    char *demangled;
+    try {
+      demangled = new char[dm_length];
+    } catch (...) {
+      demangled = 0;
+    }
     if (!demangled) {
       Dbg() << "    Cannot allocate memory to demangle. Raw data follows.";
       for (int k=0; k<backtrace_count; k++) 
@@ -117,22 +130,13 @@ void Exception::report() const {
     if (symbols)
       free(symbols);
     if (demangled)
-      free(demangled);
+      delete [] demangled ;
   }
   Dbg() << "  End of backtrace.";
-#endif
 }
 
 Exception::operator QString() const {
   return QString("%1: %2").arg(issuer).arg(message);
-}
-
-MemExc::MemExc(QString issuer):
-  Exception(issuer,"Memory allocation failed") {
-}
-
-MemFreeExc::MemFreeExc(QString issuer):
-  Exception(issuer,"Memory freeing failed") {
 }
 
 SysExc::SysExc(QString issuer, QString msg, QString aux):

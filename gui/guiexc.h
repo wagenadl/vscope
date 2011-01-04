@@ -7,6 +7,20 @@
 #include <QString>
 #include <base/exception.h>
 
-extern void report(Exception const &e, QString reporter);
-extern void guiwarn(QString txt);
+class GUIExc {
+public:
+  static void report(Exception const &e, QString reporter) throw();
+  static void warn(QString txt) throw();
+public:
+  static void setSettingsDir(QString path);
+  static void setParamTree(class ParamTree const *ptree);
+  static void setArgs(int argc, char **argv);
+  static void saveSettings();
+private:
+  static QString settingsdir;
+  static class ParamTree const *ptree;
+  static int argc;
+  static char **argv;
+};
+
 #endif

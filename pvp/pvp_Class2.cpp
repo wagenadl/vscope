@@ -4,6 +4,8 @@
 #include <QTextStream>
 #include <pvp/dwpvcam.h>
 
+#include <base/memalloc.h>
+
 bool pvpCamera::availMinBlock() throw(pvpException) {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_MIN_BLOCK,ATTR_AVAIL,&avail))
@@ -1194,7 +1196,7 @@ int pvpCamera::countChipName() throw(pvpException) {
 QString pvpCamera::getChipName() throw(pvpException) {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char *x = new char[countChipName()];
+    char *x = memalloc<char>(countChipName(), "pvcam");
     if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_CURRENT,x))
       throw pvpException("Cannot read CHIP_NAME");
     QString y = x;
@@ -4496,7 +4498,7 @@ int pvpCamera::countHeadSerNumAlpha() throw(pvpException) {
 QString pvpCamera::getHeadSerNumAlpha() throw(pvpException) {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char *x = new char[countHeadSerNumAlpha()];
+    char *x = memalloc<char>(countHeadSerNumAlpha(), "pvcam");
     if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_CURRENT,x))
       throw pvpException("Cannot read HEAD_SER_NUM_ALPHA");
     QString y = x;
@@ -4685,7 +4687,7 @@ int pvpCamera::countCamFwFullVersion() throw(pvpException) {
 QString pvpCamera::getCamFwFullVersion() throw(pvpException) {
   pvpAccess a = accessCamFwFullVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char *x = new char[countCamFwFullVersion()];
+    char *x = memalloc<char>(countCamFwFullVersion(), "pvcam");
     if (!pl_get_param(camh,PARAM_CAM_FW_FULL_VERSION,ATTR_CURRENT,x))
       throw pvpException("Cannot read CAM_FW_FULL_VERSION");
     QString y = x;

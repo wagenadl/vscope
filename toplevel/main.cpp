@@ -160,6 +160,7 @@ void setFlips() {
 }
 
 int main(int argc, char **argv) {
+  GUIExc::setArgs(argc, argv);
   QApplication app(argc, argv);
   try {
     checkTypes();
@@ -207,6 +208,9 @@ int main(int argc, char **argv) {
     
     Connections::readXML(connDoc.root());
 
+    GUIExc::setParamTree(Globals::ptree);
+    GUIExc::setSettingsDir(fpath + "/_settings");
+
     setFlips();
     
     QString settingsfn = fpath + "/_settings/Default.xml";
@@ -227,6 +231,7 @@ int main(int argc, char **argv) {
     while (d.exists(fpath + "/" + exptname + addn)) 
       addn = num2az(++adno);
     Globals::ptree->find("acquisition/_exptname").set(exptname + addn);
+    dbgfile.setDir(fpath + "/" + exptname + addn);
 
     Enumerator *daqenum = Enumerator::find("DAQDEV");
     unsigned int daqtype = daqenum->has("TYPE")
@@ -432,17 +437,16 @@ int main(int argc, char **argv) {
 #ifdef vsdLINUX
       fprintf(stderr,"DAQ not available.\n");
 #else
-      guiwarn(msg + "\nPlease adjust TYPE and/or SERNO in the DAQDEV enum in 'connections.xml'. Acquisition will NOT work otherwise.");
+      GUIExc::warn(msg + "\n"
+		   + "Please adjust TYPE and/or SERNO in the DAQDEV enum "
+		   + "in 'connections.xml'. "
+		   + "Acquisition will NOT work otherwise.");
 #endif
     }
     return app.exec();
   } catch (Exception const &e) {
-    fprintf(stderr,"Caught in main:\n");
-    e.report();
-    try {
-      report(e,"");
-    } catch (...) {
-    }
+    Warning() << "Exception caught in main.";
+    GUIExc::report(e,"");
   }
   return 0;
 }

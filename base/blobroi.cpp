@@ -4,6 +4,7 @@
 #include <base/polyblob.h>
 #include <base/minmax.h>
 #include <base/numbers.h>
+#include <base/memalloc.h>
 
 BlobROI::~BlobROI() {
   delete [] weight;
@@ -31,7 +32,7 @@ BlobROI::BlobROI(PolyBlob const &src, double border) {
   y0 = floori(ymin - 2*border);
   h = ceili(ymax + 2*border) - y0;
 
-  weight = new double[w*h];
+  weight = memalloc<double>(w*h, "BlobROI");
   sumw = 0;
   npix = 0;
   for (int y_=0; y_<h; y_++) {
@@ -132,12 +133,13 @@ BlobROI::Result BlobROI::study(uint16_t const *data, int X, int Y,
 }
 
 BlobROI::BlobROI(BlobROI const &other): BlobROI_(other) {
+  weight = 0;
   copy(other);
 }
 
 void BlobROI::copy(BlobROI const &other) {
-  if (weight) {
-    weight = new double[w*h];
+  if (other.weight) {
+    weight = memalloc<double>(w*h,"BlobROI");
     memcpy(weight, other.weight, w*h*sizeof(double));
   }
 }
@@ -146,6 +148,7 @@ BlobROI &BlobROI::operator=(BlobROI const &other) {
   if (weight)
     delete [] weight;
   *(BlobROI_*)this = other;
+  weight = 0;
   copy(other);
   return *this;
 }

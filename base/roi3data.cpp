@@ -2,6 +2,7 @@
 
 #include "roi3data.h"
 #include <base/ccddata.h>
+#include <base/memalloc.h>
 
 bool ROI3Data_::donorflipx = false;
 bool ROI3Data_::donorflipy = false;
@@ -72,7 +73,7 @@ double const *ROI3Data::dataRatio() {
 
   if (!datRatio) {
     nRatio = datDonor.getNFrames();
-    datRatio = new double[nRatio];
+    datRatio = memalloc<double>(nRatio, "ROI3Data");
   }
 
   double const *dd = dataDonor();
@@ -95,12 +96,13 @@ void ROI3Data::setFlip(bool donflipx, bool donflipy,
 }
 
 ROI3Data::ROI3Data(ROI3Data const &other): ROI3Data_(other) {
+  datRatio=0;
   copy(other);
 }
 
 void ROI3Data::copy(ROI3Data const &other) {
-  if (datRatio) {
-    datRatio = new double[nRatio];
+  if (other.datRatio) {
+    datRatio = memalloc<double>(nRatio, "ROI3Data");
     memcpy(datRatio, other.datRatio, nRatio*sizeof(double));
   }
 }
@@ -109,6 +111,7 @@ ROI3Data &ROI3Data::operator=(ROI3Data const &other) {
   if (datRatio)
     delete [] datRatio;
   *(ROI3Data_*)this = other;
+  datRatio=0;
   copy(other);
   return *this;
 }

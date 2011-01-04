@@ -11,6 +11,7 @@
 #include <pvp/camera.h>
 #include <toplevel/globals.h>
 #include <xml/connections.h>
+#include <base/memalloc.h>
 
 static QLabel *lbl = 0;
 static QLabel **camlbls = 0;
@@ -91,7 +92,7 @@ void checkcam(QWidget *dest) {
     if (camlbls)
       delete [] camlbls;
     if (ncams>0) {
-      camlbls = new QLabel*[ncams];
+      camlbls = memalloc<QLabel*>(ncams, "checkcam");
       for (int i=0; i<ncams; i++)
 	camlbls[i]=0;
     }

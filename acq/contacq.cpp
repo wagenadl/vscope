@@ -1,8 +1,7 @@
 // contacq.cpp
 
 #include "contacq.h"
-
-
+#include <base/memalloc.h>
 #include <base/analogdata.h>
 #include <base/digitaldata.h>
 #include <acq/ephysacq.h>
@@ -251,7 +250,9 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
       delete [] analogBinary;
     if (!analogBinary || analogBinaryScans<analogscans) {
       analogBinaryScans = analogscans;
-      analogBinary = new int16_t[analogBinaryScans * nchans];
+      analogBinary = 0;
+      analogBinary = memalloc<int16_t>(analogBinaryScans * nchans,
+				       "ContAcq::dataAvailable");
     }
     bool anymax=false;
     if (analogMax.isEmpty()) 

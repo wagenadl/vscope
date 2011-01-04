@@ -12,6 +12,7 @@
 #include <QDomDocument>
 #include <QPainter>
 #include <base/dbg.h>
+#include <base/memalloc.h>
 
 #define POLYBLOB_SCALE  50.0
 
@@ -124,7 +125,7 @@ void PolyBlob::build(int k, double *xx, double *yy) {
   for (int j=0; j<k; j++)
     y0+=yy[j]/k;
 
-  polyblob_rphi *src = new polyblob_rphi[k+1];
+  polyblob_rphi *src = memalloc<polyblob_rphi>(k+1, "PolyBlob");
   for (int j=0; j<k; j++)
     src[j].set(xx[j],yy[j],x0,y0);
   qsort((void*)src, k, sizeof(polyblob_rphi), &polyblob_rphi_cmp);
