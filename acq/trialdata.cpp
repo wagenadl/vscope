@@ -102,14 +102,20 @@ void TrialData::generalPrep(ParamTree const *ptree) {
     info.setAttribute("stim",ptree->find("stimEphys/enable").toString());
     info.setAttribute("duration",ptree->find("acqEphys/acqTime").toString());
   }
-  info.setAttribute("contephys", contEphys ? "1" : "0");
-
-  if (!snap && !contEphys) {
-    QString acqfreq = ptree->find("acqEphys/acqFreq").toString();
-    QDomElement analog = xml->append("analog");
-    analog.setAttribute("rate",acqfreq);
-    QDomElement digital = xml->append("digital");
-    digital.setAttribute("rate",acqfreq);
+  if (contEphys) {
+    QString conttri = QString("%1")
+      .arg(ptree->find("acqEphys/_contephys_trialno").toInt(),
+	   int(3),int(10),QChar('0'));
+    info.setAttribute("contephys", conttri);
+  } else {
+    info.setAttribute("contephys", "0");
+    if (!snap) {
+      QString acqfreq = ptree->find("acqEphys/acqFreq").toString();
+      QDomElement analog = xml->append("analog");
+      analog.setAttribute("rate",acqfreq);
+      QDomElement digital = xml->append("digital");
+      digital.setAttribute("rate",acqfreq);
+    }
   }
   if (do_ccd) {
     QDomElement ccd = xml->append("ccd");

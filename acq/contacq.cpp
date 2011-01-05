@@ -73,7 +73,7 @@ ContAcq::~ContAcq() {
   delete xml;
 }
 
-void ContAcq::prepare(class ParamTree /*const*/ *ptree, QString dir) {
+void ContAcq::prepare(class ParamTree *ptree, QString dir) {
   dbg("ContAcq::prepare");
   if (active)
     throw Exception("ContAcq","Cannot prepare while active");
@@ -129,6 +129,7 @@ void ContAcq::prepare(class ParamTree /*const*/ *ptree, QString dir) {
     digitalStream = new QDataStream(digitalFile);
   }
 
+  ptree->find("acquisition/_contephys_trialno").setInt(trialno);
   QDomElement settings = xml->append("settings");
   ptree->write(settings);
 
@@ -155,11 +156,15 @@ void ContAcq::prepare(class ParamTree /*const*/ *ptree, QString dir) {
   for (int idx=0; idx<nchans; idx++) {
     QDomElement channel = xml->append("channel",ana_elt);
     channel.setAttribute("idx",QString("%1").arg(idx));
-    channel.setAttribute("scale","1 uV");
     int chn = adataIn->getChannelAtIndex(idx);
     channel.setAttribute("chn",QString("%1").arg(chn));
     QString chname = aichan->reverseLookup(chn);
     channel.setAttribute("id",chname);
+    QString unit = "mV";
+    Connections::AIChannel const *chinfo = Connections::findpAI(chname);
+    if (chinfo)
+      unit = chinfo->unit;
+    channel.setAttribute("scale","1 " + unit);
   }
 
   digi_elt.setAttribute("type","uint32");
@@ -276,11 +281,21 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
       // must write new scale information to xml
       QDomElement elt = xml->append("scale",ana_elt);
       elt.setAttribute("startscan",QString::number(analogFileOffset));
+      Enumerator *aichan = Enumerator::find("AICHAN");
       for (int idx=0; idx<nchans; idx++) {
 	QDomElement channel = xml->append("channel",elt);
 	channel.setAttribute("idx",QString("%1").arg(idx));
 	double scl = analogMax[idx]/32767;
-	channel.setAttribute("scale",QString("%1 uV").arg(scl*1e6,0,'f',3));
+	int chn = adataIn->getChannelAtIndex(idx);
+	QString chname = aichan->reverseLookup(chn);
+	Connections::AIChannel const *chinfo = Connections::findpAI(chname);
+	QString unit = "V";
+	if (chinfo) {
+	  scl = scl * chinfo->scale;
+	  unit = chinfo->unit;
+	}
+	channel.setAttribute("scale",QString("%1 %2")
+			     .arg(scl,0,'f',9).arg(unit));
       }
       if (!dummy)
 	xml->write(xmlfn);

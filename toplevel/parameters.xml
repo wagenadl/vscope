@@ -160,6 +160,7 @@
   <category id="acquisition">
     <param id="_exptname" type="string" default="nn"/>
     <param id="_trialno" type="int" default="0"/>
+    <param id="_contephys_trialno" type="int" default="0"/>
     <param id="autoRun" type="bool" default="false"/>
     <param id="contEphys" type="bool" default="false"/>
     <param id="_dummy" type="bool" default="false"/>

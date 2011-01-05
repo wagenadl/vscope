@@ -13,7 +13,7 @@ class ContAcq: public QObject {
 public:
   ContAcq();
   virtual ~ContAcq();
-  void prepare(class ParamTree /*const*/ *ptree, QString dir);
+  void prepare(class ParamTree *ptree, QString dir);
 public: // information
   class AnalogData *adata() const { return active ? adataIn : 0; }
   class DigitalData *ddata() const { return active ? ddataIn : 0; }

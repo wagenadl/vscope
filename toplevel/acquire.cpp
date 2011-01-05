@@ -55,13 +55,15 @@ void Acquire::acqFrame() {
     Globals::trialelapsed->startCountUp(); // hmmm...
     Globals::exptelapsed->startCountUp(true);
     incTrialNo();
-    Globals::exptlog->markTrial(true);
-    Globals::contacq->markTrial(Globals::ptree->find("acquisition/_trialno")
-				.toInt());
   }
   
   type = FRAME;
   Globals::trial->prepareSnapshot(Globals::ptree);
+  if (!dummy) {
+    Globals::exptlog->markTrial(true);
+    Globals::contacq->markTrial(Globals::ptree->find("acquisition/_trialno")
+				.toInt());
+  }
   Globals::trial->start();
   if (dummy)
     Globals::blackout->setText("Acquiring *DUMMY* Single Frame...");
@@ -80,13 +82,15 @@ void Acquire::acqTrial() {
     Globals::trialelapsed->startCountUp();
     Globals::exptelapsed->startCountUp(true);
     incTrialNo();
-    Globals::exptlog->markTrial(false);
-    Globals::contacq->markTrial(Globals::ptree->find("acquisition/_trialno")
-				.toInt());
   }
   
   type = TRIAL;
   Globals::trial->prepare(Globals::ptree);
+  if (!dummy) {
+    Globals::exptlog->markTrial(false);
+    Globals::contacq->markTrial(Globals::ptree->find("acquisition/_trialno")
+				.toInt());
+  }
   Globals::trial->start();
   if (dummy)
     Globals::blackout->setText("Acquiring *DUMMY* Trial...");
