@@ -70,7 +70,6 @@ void Acquire::acqFrame() {
 }
 
 void Acquire::acqTrial() {
-  throw Exception("Acquire", "Purposeful exception");
   bool dummy = Globals::ptree->find("acquisition/_dummy").toBool();
   blockout = true;
   Globals::blackout->show();
