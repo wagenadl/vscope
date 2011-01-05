@@ -104,7 +104,7 @@ void TrialData::generalPrep(ParamTree const *ptree) {
   }
   if (contEphys) {
     QString conttri = QString("%1")
-      .arg(ptree->find("acqEphys/_contephys_trialno").toInt(),
+      .arg(ptree->find("acquisition/_contephys_trialno").toInt(),
 	   int(3),int(10),QChar('0'));
     info.setAttribute("contephys", conttri);
   } else {
