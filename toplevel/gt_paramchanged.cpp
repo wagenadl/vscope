@@ -24,6 +24,7 @@
 #include <xml/enumerator.h>
 #include <acq/datatrove.h>
 #include <toplevel/scripts.h>
+#include <gui/xmlpage.h>
 
 static void setRefTrace() {
   int typ = Globals::ptree->find("analysis/refType").toInt();
@@ -139,6 +140,13 @@ void gt_slots::paramchanged(QString p, QString val) {
 	dbgfile = new DbgFile();
       dbgfile->setDir(Globals::ptree->find("_filePath").toString()
 		      + "/" + val);
+      int lastmax = Acquire::maxTrial();
+      Dbg() << "trial for " << val << " is " << lastmax;
+      Globals::ptree->find("acquisition/_trialno").setInt(lastmax);
+      xmlPage *pg = Globals::gui->findpPage("acquisition");
+      Dbg() << "page is " << pg;
+      if (pg && pg->isVisible())
+	pg->open();
     } else if (p=="acquisition/contEphys") {
       Globals::acquire->setContEphys();
     } else if (p=="acquisition/_dummy") {

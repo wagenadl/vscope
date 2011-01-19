@@ -261,7 +261,8 @@ sub writefigure {
 
 sub texify {
   my $txt = shift;
-  $txt =~ s/([\%\$\{\}\&])/\\$1/g;
+  $txt =~ s/\\/\$\\backslash\$/g;
+  $txt =~ s/([\$\{\}\&\#])/\\$1/g;
   $txt =~ s/([_^])\{(.*)\}/\$\{\}$1\{\\textrm{\\tiny\\sffamily $2}\}\$/g;
   $txt =~ s/([_^])(.?\w*)/\$\{\}$1\{\\textrm{\\tiny\\sffamily $2}\}\$/g;
   return $txt;

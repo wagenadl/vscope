@@ -25,6 +25,7 @@
 #include <xml/connections.h>
 #include <video/videoprog.h>
 #include <acq/datatrove.h>
+#include <QDir>
 
 Acquire::Acquire() {
   connect(Globals::trial,SIGNAL(ended(QString,QString)),
@@ -380,4 +381,25 @@ void Acquire::autoRunEvent() {
   } else {
     acqTrial();
   }
+}
+
+int Acquire::maxTrial() {
+  QDir dir(Globals::ptree->find("_filePath").toString() + "/"
+	   + Globals::ptree->find("acquisition/_exptname").toString());
+  if (!dir.exists())
+    return 0;
+  QStringList flt; flt << "*.xml";
+  dir.setNameFilters(flt);
+  dir.setSorting(QDir::Name);
+  QStringList fls = dir.entryList();
+  if (fls.isEmpty())
+    return 0;
+  QString tri = fls.last();
+  tri = tri.left(3);
+  bool ok;
+  int n = tri.toInt(&ok);
+  if (ok)
+    return n;
+  else
+    return 0;
 }

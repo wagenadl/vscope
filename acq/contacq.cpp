@@ -164,7 +164,7 @@ void ContAcq::prepare(class ParamTree *ptree, QString dir) {
     Connections::AIChannel const *chinfo = Connections::findpAI(chname);
     if (chinfo)
       unit = chinfo->unit;
-    channel.setAttribute("scale","1 " + unit);
+    channel.setAttribute("scale","0 " + unit);
   }
 
   digi_elt.setAttribute("type","uint32");
@@ -274,7 +274,7 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
       }
       if (mx>analogMax[c]) {
 	anymax=true;
-	analogMax[c] = mx;
+	analogMax[c] = 2*mx; // let's have some headroom so we don't do this too often.
       }
     }
     if (anymax) {

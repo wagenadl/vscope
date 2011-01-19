@@ -19,6 +19,7 @@ public:
   void setContEphys(); // reads from ptree whether or not to enable cont ephys
   void setAutoRun(); // reads from ptree whether or not to enable auto run
   void newTrialPeriod();
+  static int maxTrial(); // returns the highest existing trial no for current expt
 public slots:
   void loadData(QString fn); // usu. "/PATH/EXPT/TRIAL.xml"
   void trialDone();
