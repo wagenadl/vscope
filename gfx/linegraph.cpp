@@ -195,6 +195,8 @@ double LineGraph::getMinorYTicks() const {
 }
 
 double LineGraph::reasonableTick(double dx, int fulpix) {
+  if (dx==0 || fulpix==0)
+    return 0;
   double tick = (dx/5)*(1000.0/fulpix);
   if (tick>dx/2.05)
     tick=dx/2.05;
@@ -212,6 +214,8 @@ double LineGraph::reasonableTick(double dx, int fulpix) {
 }
 
 double LineGraph::reasonableMinorTick(double dx, int fulpix) {
+  if (dx==0 || fulpix==0)
+    return 0;
   double tick = reasonableTick(dx,fulpix);
   double ord = pow(10,floor(log10(tick)));
   double digit = tick/ord;
@@ -222,7 +226,7 @@ double LineGraph::reasonableMinorTick(double dx, int fulpix) {
   else
     digit = .5; // for major=1
   double res = ord*digit;
-  if (res * fulpix/dx < 5)
+  if (res * fulpix < 5*dx)
     res=0;
   //fprintf(stderr,"reasonableMinorTick dx=%g fulpix=%i tick=%g res=%g\n",dx,fulpix,tick,res);
   return res;
@@ -263,6 +267,8 @@ void LineGraph::setAxisTickLength(int maj, int min) {
 
 double LineGraph::computeFirstTick(double x0, double x1, double dx,
 				   int pix) {
+  if (dx==0 || pix==0)
+    return 0;
   double scale = (x1-x0)/pix;
   scale=scale;
   double xx0 = x0; // first possible value for tick
@@ -344,21 +350,33 @@ double LineGraph::computeFirstMinorYTick() {
 }
 
 int LineGraph::dataToScreenX(double x) const {
+  if (x1==x0) {
+    Dbg() << "linegraph: Badly scaled x-axis: x0=x1="<<x0;
+    return 0;
+  }
   return int((x-x0) * (contentsWidth()-2*hMargin) / (x1-x0))
     + contentsX0() + hMargin;
 }
 
 int LineGraph::dataToScreenY(double y) const {
+  if (y1==y0) {
+    Dbg() << "linegraph: Badly scaled y-axis: y0=y1="<<y0;
+    return 0;
+  }
   return int((y1-y) * (contentsHeight()-2*vMargin) / (y1-y0))
     + contentsY1() + vMargin;
 }
 
 double LineGraph::screenToDataX(int x) const {
+  if (contentsWidth()<=2*hMargin)
+    return x0;
   return (x-contentsX0()-hMargin) * (x1-x0) / (contentsWidth()-2*hMargin)
     + x0;
 }
 
 double LineGraph::screenToDataY(int y) const {
+  if (contentsHeight()<=2*vMargin)
+    return y0;
   return y1
     - (y-contentsY1()-vMargin) * (y1-y0) / (contentsHeight()-2*vMargin);
 }
@@ -492,7 +510,13 @@ void LineGraph::paintYAxis(QPainter &p) {
 void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 
   int M = contentsWidth(); // number of pixels
+  if (M==0)
+    return;
   double dx_per_pix = (x1-x0) / M;
+  if (dx_per_pix<=0) {
+    Dbg() << "Linegraph: Badly scaled x-axis in paintTrace: x0=x1="<<x0;
+    return;
+  }
   if (dx_per_pix <= ti->getDX()) {
     // fewer than one data point per pixel
     int N = ti->getN();
