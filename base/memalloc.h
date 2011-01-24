@@ -37,7 +37,8 @@ template <class X> inline X *memalloc(int n, QString requestor) {
   try {
     if (n<=0)
       throw MemExc(requestor +
-		   ": Requesting non-positive amount of memory");
+		   ": Requesting non-positive amount of memory" +
+		   QString(" (%1x%2 bytes).").arg(n).arg(sizeof(X)));
     if (n*sizeof(X) > MEMALLOC_MAXBYTES)
       throw MemExc(requestor +
 		   ": Requesting unreasonable amount of memory" +

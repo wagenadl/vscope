@@ -520,6 +520,10 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
   if (dx_per_pix <= ti->getDX()) {
     // fewer than one data point per pixel
     int N = ti->getN();
+    if (N<=0) {
+      Dbg() << "LineGraph:: nothing to plot (N="<<N<<")";
+      return;
+    }
     int x0pix = int(contentsX0()+(ti->getX0()-x0)/dx_per_pix);
     double dxpix = ti->getDX()/dx_per_pix;
     QVector<QPoint> pts(N);
@@ -555,6 +559,10 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
     }
     // dbg("linegraph: m0=%i m1=%i",m0,m1);
     M=m1-m0;
+    if (M<=0) {
+      Dbg() << "Linegraph: nothing to plot (M="<<M<<")";
+      return;
+    }
     if (drawMode==Poly) {
       // POLYGON DRAWING STYLE
       p.setBrush(QBrush(p.pen().color()));
