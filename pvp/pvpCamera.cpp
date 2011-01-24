@@ -191,7 +191,7 @@ pvpCamera::Status pvpCamera::getContinuousStatus() {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;
   case READOUT_IN_PROGRESS: return Acquiring;
-  case READOUT_COMPLETE: return Completed;
+  case READOUT_COMPLETE: return Acquiring; // for continuous there is no such thing as Completed.
   case READOUT_FAILED: return Failed;
   case ACQUISITION_IN_PROGRESS: return Acquiring;
   default: throw pvpException("pvpCamera: unknown acquisition status");
