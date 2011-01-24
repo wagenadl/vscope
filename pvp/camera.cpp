@@ -81,8 +81,8 @@ void Camera::startContinuous() {
 }  
 
 void Camera::stopContinuous() {
-  if (!isRunning())
-    throw Exception("Camera", "Not running");
+  //if (!isRunning())
+  //  throw Exception("Camera", "Not running");
   if (!cfg.iscont)
     throw Exception("Camera", "stopContinuous() is not for finite acq.");
   pvpcam->stopContinuous();
