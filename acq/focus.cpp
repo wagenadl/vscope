@@ -260,6 +260,7 @@ void Focus::resizeEvent(class QResizeEvent *) {
 }
 
 void Focus::deactivate() {
+  Dbg() << "Focus::deactivate";
   if (!isActive) {
     fprintf(stderr,"Focus: Deactivated while not active\n");
     return;

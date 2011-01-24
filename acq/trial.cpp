@@ -93,13 +93,17 @@ void Trial::prepare(ParamTree const *ptree) {
 }
 
 void Trial::prepareSnapshot(ParamTree const *ptree) {
+  Dbg() << "Trial::prepareSnapshot";
   if (active)
     throw Exception("Trial","Cannot prepare for new trial while active");
 
+  Dbg() << "Trial: preparing data";
   dat->prepareSnapshot(ptree);
+  Dbg() << "Trial: preparing timing";
   CCDTimingDetail timing(ptree, true);
-  
-  ccdacq->prepare(ptree, timing);
+  Dbg() << "Trial: preparing cameras";
+  bool ccdok = ccdacq->prepare(ptree, timing);
+  Dbg() << "Trial: camera status: " << ccdok;
   ephysout->setMaster(0);
   ephysout->prepareSnap(ptree, timing);
   outcomplete = acqcomplete = false;
@@ -107,6 +111,7 @@ void Trial::prepareSnapshot(ParamTree const *ptree) {
 }
 
 void Trial::start() {
+  Dbg() << "Trial::start";
   if (!prep || !dat->isPrepared())
     throw Exception("Trial","Cannot start: not prepared");
   QDomElement info = dat->getXML()->find("info");
@@ -116,11 +121,16 @@ void Trial::start() {
   
   outcomplete = acqcomplete = false;
   ephysout->commit();
-  if (dat->isCCD())
+  if (dat->isCCD()) {
+    Dbg() << "Trial: Starting ccd";
     ccdacq->start();
+  }
+  Dbg() << "Trial: Starting ephysout";
   ephysout->start(); // this won't do anything if there is a master
-  if (dat->isEPhys())
+  if (dat->isEPhys()) {
+    Dbg() << "Trial: Starting ephysin";
     ephysacq->start(); // This starts ephysout synchronously through the "master" system.
+  }
   active = true;
 }
 
