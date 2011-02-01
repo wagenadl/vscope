@@ -4,6 +4,7 @@
 #include <xml/enumerator.h>
 #include <xml/attribute.h>
 #include <xml/xmlfind.h>
+#include <base/dbg.h>
 #include <base/exception.h>
 #include <math.h>
 #include <QRegExp>
