@@ -16,20 +16,22 @@ EPhO_CCD::EPhO_CCD(CCDTimingDetail const &timing): timing(timing) {
 void EPhO_CCD::prepare(DigitalData *ddata) const {
   Enumerator *lines = Enumerator::find("DIGILINES");
 
-  int shtrline = lines->lookup("ExcShtr");
-  int illumline = lines->lookup("ExcLight");
+  int shtrline = lines->lookup("ExcShtr",-1);
+  int illumline = lines->lookup("ExcLight",-1);
   int trigccline = lines->lookup("TrigCc");
   int trigoxline = lines->lookup("TrigOx");
 
-  ddata->addLine(shtrline);
-  ddata->addLine(illumline);
+  if (shtrline>=0)
+    ddata->addLine(shtrline);
+  if (illumline>=0)
+    ddata->addLine(illumline);
   ddata->addLine(trigccline);
   ddata->addLine(trigoxline);
 
   uint32_t one = 1;
 
-  uint32_t shtrval = one<<shtrline;
-  uint32_t illumval = one<<illumline;
+  uint32_t shtrval = (shtrval>=0) ? (one<<shtrline) : 0;
+  uint32_t illumval = (illumline>=0) ? (one<<illumline) : 0;
   uint32_t trigccval = one<<trigccline;
   uint32_t trigoxval = one<<trigoxline;
 
