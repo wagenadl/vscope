@@ -31,8 +31,14 @@ void Param::newDefn(QDomElement defn) {
   if (type=="set") {
     value=QVariant(QBitArray(enumerator->getLargestValue()+1));
   }
-  if (defn.hasAttribute("default"))
-    set(xmlAttribute(defn,"default"));
+  if (defn.hasAttribute("default")) {
+    try {
+      set(xmlAttribute(defn,"default"));
+    } catch (Exception const &) {
+      Dbg() << "Param caught exception: '" << xmlAttribute(defn,"default")
+	    << "' is not an acceptable value for "<< type;
+    }
+  }
   if (defn.hasAttribute("min")) {
     min = new Param(type,enumname);
     min->set(xmlAttribute(defn,"min"));

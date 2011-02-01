@@ -44,8 +44,15 @@ Enumerator::Enumerator() {
   enums[myname] = this;
 }
 
+int Enumerator::lookup(QString s, int dflt) const {
+  if (has(s))
+    return values[s];
+  else
+    return dflt;
+}
+
 int Enumerator::lookup(QString s) const {
-  if (values.contains(s))
+  if (has(s))
     return values[s];
   else
     throw Exception("Enumerator ", myname + " does not define '" + s + "'");

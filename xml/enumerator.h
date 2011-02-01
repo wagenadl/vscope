@@ -32,11 +32,13 @@ public:
    *:A def: should be of type <enum>; this is not explicitly verified.
    */
   int lookup(QString s) const;
+  int lookup(QString s, int dflt) const;
   /*:F lookup
    *:D Looks up the numerical value of an enumeration constant by name.
    *:A s: Name of constant (i.e. one of "NAME1", "NAME2", ...)
    *:R The corresponding numerical value (i.e. INT1, INT2, ...)
-   *:N Throws an exception if the constant is not part of the enumeration
+   *:N If dflt is not given, an exception is thrown if the constant
+       is not part of the enumeration.
    */
   bool has(QString s) const;
   /*:F has(QString)
