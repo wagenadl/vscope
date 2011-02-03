@@ -1,0 +1,6 @@
+#define bzr_version_local = "BzrBranch7(file:///home/wagenaar/progs/vscope/dw/)"
+#define bzr_version_master = "BzrBranch7(sftp://pachy.caltech.edu/home/bzr/vscope/dw/)"
+#define bzr_version_old_revno = "51"
+#define bzr_version_old_revid = "'daniel_a._wagenaar_daw_atsign_caltech_period_edu-20110203053240-zy9c568p7n0smox2'"
+#define bzr_version_future_revno = "52"
+#define bzr_version_future_revid = "'daw@caltech.edu-20110203221044-3vqbpi0y6a9q9aba'"

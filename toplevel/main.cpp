@@ -12,7 +12,7 @@
 
 #include <QDateTime>
 
-#include <toplevel/version.h>
+#include <bzr_versioninfo.h>
 #include <base/dbg.h>
 #include <base/base26.h>
 #include <base/xml.h>
@@ -115,9 +115,12 @@ QWidget *makeBanner1(QWidget *parent) {
   QTextEdit *w = new QTextEdit(parent);
   w->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   w->setReadOnly(true);
-  QString txt = "<html><body><h1>VScope ";
-  txt += VSCOPE_VERSION; txt += "</h1>";
-  txt += VSCOPE_COPYRIGHT; txt += "<br>";
+  QString txt = "<html><body><h1>VScope</h1>";
+  txt += "Revision #" + bzr_version_revno
+    + " dd " + bzr_version_month + "/" + bzr_version_day
+    + "/" + bzr_version_year + "<br>";
+  txt += "(C) Copyright Daniel Wagenaar 2008&ndash;"
+    + bzr_version_year + "<br>";
 
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();
