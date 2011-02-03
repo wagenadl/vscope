@@ -21,10 +21,10 @@
 #define PAR_OUTRATE "acqEphys/acqFreq"
 // Alternative: "stimEphys/outrate"
 
-MGAuto::Channel::Channel(QDomElement elt) {
+MGAuto::Channel::Channel(QDomElement c) {
   id = c.attribute("ch");
   QString ctyp = c.attribute("typ");
-  QString ctype = c.attribute("tiny");
+  QString ctiny = c.attribute("tiny");
   label = id;
   if (ctyp=="ai") {
     typ=AI;
@@ -55,7 +55,7 @@ MGAuto::Channel::Channel(QDomElement elt) {
 
   tiny = ctiny=="yes" || ctiny=="true";
 
-  if_enabled = xmlAttribute(e, "if_enabled", "");
+  if_enabled = xmlAttribute(c, "if_enabled", "");
 }
 
 bool MGAuto::Channel::available(QString cid, QString ctyp) {

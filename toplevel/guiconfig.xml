@@ -1194,7 +1194,7 @@
   <graph ch="ME1_I" typ="ai"/>
   <graph ch="ME2_I" typ="ai"/>
   <graph ch="AO0" typ="ao" tiny="yes" if_enabled="stimEphys/channel:AO0"/>
-  <graph ch="DO0Mon" typ="do" tiny="yes" if_enabled="stimEphys/channel:DO0"/>
+  <graph ch="DO0" typ="do" tiny="yes" if_enabled="stimEphys/channel:DO0"/>
   <graph ch="ExcShtrMon" typ="di" tiny="yes" if_enabled="acqCCD"/>
   <graph ch="VideoFrame" typ="di" tiny="yes" if_enabled="stimVideo"/>
   <graph ch="VideoLightMon" typ="di" tiny="yes" if_enabled="stimVideo"/>

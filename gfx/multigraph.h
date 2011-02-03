@@ -19,7 +19,7 @@ class MultiGraph: public QFrame {
    */
   Q_OBJECT;
 public:
-  static const int MAXTINYHEIGHT = 32;
+  static const int MAXTINYHEIGHT = 24;
   /*:V MAXTINYHEIGHT
    *:D A graph designated as "tiny" will take up no more than MAXTINYHEIGHT
        pixels. It will also never be taller than 1/2 of a normal graph.
