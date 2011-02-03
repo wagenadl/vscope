@@ -7,6 +7,7 @@
 #include <xml/paramtree.h>
 #include <xml/enumerator.h>
 #include <xml/connections.h>
+#include <xml/aliases.h>
 #include <daq/analogin.h>
 #include <base/analogdata.h>
 #include <math.h>
@@ -279,7 +280,7 @@ void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
       cc->addGraph(cid, lg, isChannelTiny(cid));
       lg->addTrace(cid, tr);
       Connections::AIChannel const &ch(Connections::findAI(cid));
-      lg->setTraceLabel(cid,ch.alias);
+      lg->setTraceLabel(cid,Aliases::lookup(cid));
       tr->setScaleFactor(ch.scale);
       lg->setYLabel(ch.unit);
       aitraces[cno] = tr;

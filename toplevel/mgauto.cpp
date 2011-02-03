@@ -11,6 +11,7 @@
 #include <xml/connections.h>
 #include <xml/paramtree.h>
 #include <xml/param.h>
+#include <xml/aliases.h>
 #include <acq/datatrove.h>
 #include <acq/trialdata.h>
 #include <acq/ephysout.h>
@@ -25,7 +26,7 @@ MGAuto::Channel::Channel(QString cid, QString ctyp, QString ctiny) {
   if (ctyp=="ai") {
     typ=AI;
     chn = Enumerator::find("AICHAN")->lookup(id);
-    label = Connections::findAI(id).alias;
+    label = Aliases::lookup(id);
     isOut = false;
     isDigi = false;
   } else if (ctyp=="ao") {
@@ -36,13 +37,13 @@ MGAuto::Channel::Channel(QString cid, QString ctyp, QString ctiny) {
   } else if (ctyp=="di") {
     typ=DI;
     chn = Enumerator::find("DIGILINES")->lookup(id);
-    label = Connections::findDig(id).alias;
+    label = Aliases::lookup(id);
     isOut = false;
     isDigi = true;
   } else if (ctyp=="do") {
     typ=DO;
     chn = Enumerator::find("DIGILINES")->lookup(id);
-    label = Connections::findDig(id).alias;
+    label = Aliases::lookup(id);
     isOut = true;
     isDigi = true;
   } else

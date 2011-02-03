@@ -1193,14 +1193,15 @@
   <graph ch="ME2_Vm"   typ="ai"/>
   <graph ch="ME1_I" typ="ai"/>
   <graph ch="ME2_I" typ="ai"/>
-  <graph ch="AO0" typ="ao" tiny="yes"/>
-  <graph ch="DO0" typ="do" tiny="yes"/>
-  <graph ch="DO0Mon" typ="di" tiny="yes"/>
-  <graph ch="ExcShtrMon" typ="di" tiny="yes"/>
-  <graph ch="VideoFrame" typ="di" tiny="yes"/>
-  <graph ch="VideoLightMon" typ="di" tiny="yes"/>
-  <graph ch="FrameCc" typ="di" tiny="yes"/>
-  <graph ch="FrameOx" typ="di" tiny="yes"/>
+  <graph ch="AO0" typ="ao" tiny="yes"
+	 if="stimEphys/enable" if2="stimEphys/channel:AO0/enable"/>
+  <graph ch="DO0Mon" typ="do" tiny="yes"
+	 if="stimEphys/enable" if2="stimEphys/channel:DO0/enable"/>
+  <graph ch="ExcShtrMon" typ="di" tiny="yes" if="acqCCD/enable"/>
+  <graph ch="VideoFrame" typ="di" tiny="yes" if="stimVideo/enable"/>
+  <graph ch="VideoLightMon" typ="di" tiny="yes" if="stimVideo/enable"/>
+  <graph ch="FrameCc" typ="di" tiny="yes" if="acqCCD/enable"/>
+  <graph ch="FrameOx" typ="di" tiny="yes" if="acqCCD/enable"/>
 </multigraph>
 <multigraph id="extra">
   <graph ch="ExtVA1" typ="ai"/>
@@ -1241,5 +1242,56 @@
   <graph ch="VideoLightMon" typ="di" tiny="yes"/>
   <graph ch="VideoCmdMon" typ="di" tiny="yes"/>
 </multigraph>
+
+<aliases>
+  <!-- Analog inputs -->
+  <alias id="ME1_10Vm" label="Vm"/>
+  <alias id="ME2_Vm" label="V2"/>
+  <alias id="ME1_I" label="Im"/>
+  <alias id="ME2_I" label="I2"/>
+  <alias id="Stim0Mon" label="AO0m"/>
+  <alias id="Stim1Mon" label="AO1m"/>
+  <alias id="Stim2Mon" label="AO2m"/>
+  <alias id="Stim3Mon" label="AO3m"/>
+  <alias id="60HzRef" label="line"/>
+  <alias id="ExtVA1" label="A1"/>
+  <alias id="ExtVA2" label="A2"/>
+  <alias id="ExtVA3" label="A3"/>
+  <alias id="ExtVA4" label="A4"/>
+  <alias id="ExtVB1" label="B1"/>
+  <alias id="ExtVB2" label="B2"/>
+  <alias id="ExtVB3" label="B3"/>
+  <alias id="ExtVB4" label="B4"/>
+
+  <!-- Digital inputs -->
+  <alias id="FrameOx" label="FrmOx"/>
+  <alias id="FrameCc" label="FrmCc"/>
+  <alias id="TrigOxMon" label="TrgOxM"/>
+  <alias id="TrigCcMon" label="TrgCcM"/>
+  <alias id="DO0Mon" label="DO0m" />
+  <alias id="DO1Mon" label="DO1m" />
+  <alias id="DO2Mon" label="DO2m" />
+  <alias id="DO3Mon" label="DO3m" />
+  <alias id="ExcShtrMon" label="ExcM" />
+  <alias id="VideoResp" label="VResp" />
+  <alias id="VideoFrame" label="VFrame" />
+  <alias id="VideoCmdMon" label="VidCmdM" />
+  <alias id="VideoLightMon" label="LightM" />
+  <!--alias id="VideoShtrMon" label="VShtrM" /-->
+
+  <!-- Digital outputs -->
+  <alias id="ExcShtr" label="EShtr"/>
+  <alias id="ExcLight" label="LED"/>
+  <alias id="VideoShtr" label="VShtr"/>
+  <alias id="TrigOx"  label="TrigOx"/>
+  <alias id="TrigCc"  label="TrigCc"/>
+  <alias id="DO0" label="DO0/Axo"/>
+  <alias id="DO1" label="DO1"/>
+  <alias id="DO2" label="DO2"/>
+  <alias id="DO3" label="DO3"/>
+  <alias id="VideoLight" label="VLight"/>
+  <alias id="VideoCmd" label="VCmd"/>
+  <alias id="VideoTrig" label="VTrig"/>
+</aliases>
 
 </vsdscopeGUIConfig>

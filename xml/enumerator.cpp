@@ -16,24 +16,18 @@ Enumerator::Enumerator(QDomElement def) {
   largestValue=-1000;
   smallestValue=1000;
   bool first=true;
-  for (QDomNode n=def.firstChild(); !n.isNull(); n=n.nextSibling()) {
-    QDomElement e=n.toElement();
-    if (!e.isNull()) {
-      if (e.tagName()=="item") {
-	if (e.hasAttribute("tag") && e.hasAttribute("value")) {
-	  QString tag = e.attribute("tag");
-	  int value = e.attribute("value").toInt(0,0);
-	  values[tag] = value;
-	  tags[value] = tag;
-	  if (first || value<smallestValue)
-	    smallestValue = value;
-	  if (first || value>largestValue)
-	    largestValue = value;
-	  first = false;
-	} else {
-	  cerr << "Warning: enum '" << qPrintable(myname) << "' has bad item def" << endl;
-	}
-      }
+  for (QDomElement e=def.firstChildElement("item"); !e.isNull();
+       e=e.nextSiblingElement("item")) {
+    if (e.hasAttribute("tag") && e.hasAttribute("value")) {
+      QString tag = e.attribute("tag");
+      int value = e.attribute("value").toInt(0,0);
+      values[tag] = value;
+      tags[value] = tag;
+      if (first || value<smallestValue)
+	smallestValue = value;
+      if (first || value>largestValue)
+	largestValue = value;
+      first = false;
     }
   }
   enums[myname] = this;
@@ -42,6 +36,15 @@ Enumerator::Enumerator(QDomElement def) {
 Enumerator::Enumerator() {
   myname = "-";
   enums[myname] = this;
+}
+
+void Enumerator::add(QString s, int n) {
+  values[s] = n;
+  tags[n] = s;
+  if (n<smallestValue)
+    smallestValue = n;
+  if (n>largestValue)
+    largestValue = n;
 }
 
 int Enumerator::lookup(QString s, int dflt) const {

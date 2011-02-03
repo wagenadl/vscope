@@ -37,7 +37,7 @@ void Param::newDefn(QDomElement defn) {
       set(xmlAttribute(defn,"default"));
     } catch (Exception const &) {
       Dbg() << "Param caught exception: '" << xmlAttribute(defn,"default")
-	    << "' is not an acceptable value for "<< type;
+	    << "' is not an acceptable value for "<< type  << "." << enumname;
     }
   }
   if (defn.hasAttribute("min")) {

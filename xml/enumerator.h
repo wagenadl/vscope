@@ -31,6 +31,7 @@ public:
    *:D This reads values from an <enum> xml element
    *:A def: should be of type <enum>; this is not explicitly verified.
    */
+  void add(QString s, int n);
   int lookup(QString s) const;
   int lookup(QString s, int dflt) const;
   /*:F lookup

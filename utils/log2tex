@@ -3,6 +3,12 @@
 use strict;
 
 my $dir = ".";
+my $html = 0;
+if (@ARGV && $ARGV[0] eq "-html") {
+  shift @ARGV;
+  $html = 1;
+}
+
 $dir = shift @ARGV if @ARGV;
 usage() if @ARGV || $dir =~ /^-/;
 chdir($dir);
@@ -67,50 +73,14 @@ for (@allfigs) {
 }
 
 # ------------------------------------------------------------------------
-# ---- Write LaTeX preamble
-open TEX, ">log.tex" or die "Cannot write LaTeX file\n";
-# -- Packages
-print TEX << 'EOF';
-\documentclass[10pt]{article}
-\usepackage{helvet}
-\usepackage{charter}
-\usepackage[letterpaper,width=6.5in,height=9in,right=.35in]{geometry}
-\usepackage{fancyhdr}
-\usepackage{graphicx}
-\usepackage{multicol}
-EOF
+# ---- Open output
+if ($html) {
+  open OUT, ">log.html" or die "Cannot write HTML file\n";
+} else {
+  open OUT, ">log.tex" or die "Cannot write LaTeX file\n";
+}
 
-print TEX "\\def\\exptname{$exptname}\n";
-print TEX "\\def\\auxname{$auxname}\n";
-
-# -- Style options
-print TEX << 'EOF';
-\pagestyle{fancy}
-\def\headrulewidth{0.4pt}
-\def\footrulewidth{0.pt}
-\lhead{{\bf\exptname} \auxname}
-\chead{}
-\rhead{\thepage/\pageref{end}}
-\lfoot{}
-\cfoot{}
-\rfoot{}
-\headsep=3pt
-\footskip=5pt
-\def\noteface{\normalfont\normalsize}
-\def\infoface{\normalfont\sffamily\scriptsize}
-\def\trialface{\normalfont\sffamily\footnotesize}
-\def\capface{\normalfont\sffamily\itshape\scriptsize}
-\parindent=0.0cm
-\def\newdate#1{{\normalfont\normalsize\sffamily\bfseries#1}}
-\def\myfig#1#2{\kern3pt\mbox{}\kern.25cm\begin{minipage}[b]{.5in}\capface#2\vspace{2.27in}\end{minipage}~\includegraphics[width=2.5in]{#1}}
-EOF
-
-# -- Start the document
-print TEX << 'EOF';
-\begin{document}
-\raggedbottom\raggedright\raggedcolumns
-\begin{multicols}{2}
-EOF
+writepreamble();
 
 # ----------------------------------------------------------------------
 # ---- Write log
@@ -135,7 +105,8 @@ for my $line (@loglines) {
   if ($dat =~ /\d/) {
     # Let's print a date unless it is the first date
     writeout();
-    print TEX "\n\\newdate{$dat}\n\n" unless $dat eq $firstdate;
+    writedate($dat) unless $dat eq $firstdate;
+    print OUT "\n\\newdate{$dat}\n\n"
   }
   if ($msg =~ /^Trial (\d+): (.*)/) {
     writeout("Trial");
@@ -180,14 +151,10 @@ for my $line (@loglines) {
 }
 
 writeout();
+
 # ----------------------------------------------------------------------
-# ---- close LaTeX file
-print TEX <<'EOF';
-\label{end}
-\end{multicols}
-\end{document}
-EOF
-close TEX;
+writetrailer();
+close OUT;
 
 # ----------------------------------------------------------------------
 
@@ -202,11 +169,11 @@ sub writeout {
 
 sub writetrials {
   return unless defined $firsttrial;
-  my $daterep = $firsttime;
-  $daterep .= "--$lasttime" unless $lasttime eq $firsttime;
-  my $trialrep = "\\#$firsttrial";
-  $trialrep .= "--\\#$lasttrial" unless $lasttrial eq $firsttrial;
-  print TEX "\\trialface\\rule{0pt}{8pt}{\\bf $trialrep} ($daterep):\n";
+  my $timerep = reptimes($firsttime, $lasttime);
+  my $trialrep = reptrials($firsttrial, $lasttrial);
+  print OUT "<div class=\"trial\">" if $html;
+  print OUT "\\trialface\\rule{0pt}{8pt}" unless $html;
+  print OUT "$trialrep $timerep: ";
   my @trialtypes;
   for (sort keys %trialtypes) {
     s/E'phys\. \+ vsd/VSD/;
@@ -214,7 +181,9 @@ sub writetrials {
     s/e'phys\. stimuli/stimuli/;
     push @trialtypes, $_;
   }
-  print TEX join(", ",@trialtypes), "\n\n";
+  print OUT join(", ",@trialtypes);
+  print OUT "</div>" if $html;
+  print OUT "\n\n";
   $firsttrial = undef;
   $firsttime = undef;
   %trialtypes = ();
@@ -226,9 +195,18 @@ sub writenotes {
     s/$/\./ unless /[:;.,?!]([] })'"])*$/;
     $_ = ucfirst($_);
   }
-  print TEX "\\leftskip=0cm\\noteface\\rule{0pt}{9pt}";
-  print TEX texify(join("\n",@noteaccum));
-  print TEX "\\vspace{1pt}\n\n\\leftskip=0cm";
+  print OUT "<div class=\"notes\">" if $html;
+  print OUT "\\leftskip=0cm\\noteface\\rule{0pt}{9pt}" unless $html;
+  if ($html) {
+    for (@noteaccum) {
+      #print OUT "<p class=\"note\">", htmlify($_), "\n";
+      print OUT htmlify($_), "\n";
+    }
+  } else {
+    print OUT texify(join("\n",@noteaccum));
+  }
+  print OUT "</div>\n\n" if $html;
+  print OUT "\\vspace{1pt}\n\n\\leftskip=0cm" unless $html;
   @noteaccum = ();
 }
 
@@ -238,9 +216,12 @@ sub writeinfo {
     s/^Parameter change/Parameter change:/;
     s/$/./ unless /[:;.,?!][]})'"]*$/;
   }
-  print TEX "\\leftskip=.5cm\\infoface\\rule{0pt}{6.2pt}";
-  print TEX texify(join("\n",@infoaccum));
-  print TEX "\\vspace{-.5pt}\n\n\\leftskip=0cm\n";
+  print OUT "<div class=\"info\">" if $html;
+  print OUT "\\leftskip=.5cm\\infoface\\rule{0pt}{6.2pt}" unless $html;
+  print OUT htmlify(join("\n",@infoaccum)) if $html;
+  print OUT texify(join("\n",@infoaccum)) unless $html;
+  print OUT "</div>\n\n" if $html;
+  print OUT "\\vspace{-.5pt}\n\n\\leftskip=0cm\n" unless $html;
   @infoaccum = ();
 }
 
@@ -255,8 +236,30 @@ sub writeautofigures {
 sub writefigure {
   my $fig = shift;
   my $lbl = $fig;
-  $lbl =~ s/(\d+)-fig-(\d+)-(.*).png/\\\#$1.$2: $3/;
-  print TEX "\\myfig{$fig}{$lbl}\n\n";
+  $lbl =~ s/(\d+)-fig-(\d+)-(.*).png/\#$1.$2: $3/;
+  $lbl =~ s/\#/\\\#/g unless $html;
+  if ($html) {
+    print OUT "<span class=\"floatimg\">";
+    print OUT "<a class=\"imlink\" href=\"\"";
+    print OUT " onclick=\"window.open('$fig', '_blank', ";
+    print OUT " 'width=516,height=516');\">";
+    print OUT "<object width=\"100%\"  data=\"$fig\"></object><br>";
+    print OUT "<span class=\"imlabel\">$lbl</span></a></span>\n\n";
+  } else {
+    print OUT "\\myfig{$fig}{$lbl}\n\n";
+  }
+}
+
+sub htmlify {
+  my $txt = shift;
+  $txt =~ s/\&/&amp;/g;
+  $txt =~ s/</&lt;/g;
+  $txt =~ s/>/&gt;/g;
+  $txt =~ s/(_)\{(.*)\}/<span class=\"sub\">$2<\/span>/g;
+  $txt =~ s/(\^)\{(.*)\}/<span class=\"sup\">$2<\/span>/g;
+  $txt =~ s/(_)(.?\w*)/<span class=\"sub\">$2<\/span>/g;
+  $txt =~ s/(\^)(.?\w*)/<span class=\"sup\">$2<\/span>/g;
+  return $txt;
 }
 
 sub texify {
@@ -266,4 +269,267 @@ sub texify {
   $txt =~ s/([_^])\{(.*)\}/\$\{\}$1\{\\textrm{\\tiny\\sffamily $2}\}\$/g;
   $txt =~ s/([_^])(.?\w*)/\$\{\}$1\{\\textrm{\\tiny\\sffamily $2}\}\$/g;
   return $txt;
+}
+
+######################################################################
+sub usage {
+  print STDERR "Usage: log2tex [-html] expt.dir\n";
+}
+
+######################################################################
+sub writepreamble {
+  if ($html) {
+    writehtmlheader();
+  } else {
+    writelatexheader();
+  }
+}
+
+sub writelatexheader {
+  # -- Packages
+  print OUT << 'EOF';
+\documentclass[10pt]{article}
+\usepackage{helvet}
+\usepackage{charter}
+\usepackage[letterpaper,width=6.5in,height=9in,right=.35in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{multicol}
+EOF
+
+  print OUT "\\def\\exptname{$exptname}\n";
+  print OUT "\\def\\auxname{$auxname}\n";
+
+  # -- Style options
+  print OUT << 'EOF';
+\pagestyle{fancy}
+\def\headrulewidth{0.4pt}
+\def\footrulewidth{0.pt}
+\lhead{{\bf\exptname} \auxname}
+\chead{}
+\rhead{\thepage/\pageref{end}}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\headsep=3pt
+\footskip=5pt
+\def\noteface{\normalfont\normalsize}
+\def\infoface{\normalfont\sffamily\scriptsize}
+\def\trialface{\normalfont\sffamily\footnotesize}
+\def\capface{\normalfont\sffamily\itshape\scriptsize}
+\parindent=0.0cm
+\def\newdate#1{{\normalfont\normalsize\sffamily\bfseries#1}}
+\def\myfig#1#2{\kern3pt\mbox{}\kern.25cm\begin{minipage}[b]{.5in}\capface#2\vspace{2.27in}\end{minipage}~\includegraphics[width=2.5in]{#1}}
+EOF
+
+# -- Start the document
+  print OUT << 'EOF';
+\begin{document}
+\raggedbottom\raggedright\raggedcolumns
+\begin{multicols}{2}
+EOF
+}
+
+
+sub writehtmlheader {
+  my @bits = split(/\//,$dir);
+  my $leaf = pop @bits;
+  print OUT << 'EOF';
+  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<style type="text/css">
+html {
+  background-color: #999999;
+}
+body {
+  text-align: left;
+  font-family: "Helvetica", "Sans";
+  font-size: 12px;
+  background-color: white;
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 30px;
+  padding-bottom: 40px;
+}
+.back {
+  font-size: 12px;
+}
+.header {
+  font-size: 20px;
+}
+.headline {
+  padding-bottom: -2px;
+  padding-top: -3px;
+  margin-left: -3px;
+  margin-top: -5px;
+  margin-bottom: -3px;
+  width:805px;
+}
+.topmarg {
+padding: 8px;
+}
+.botmarg {
+padding: 8px;
+}
+.trial {
+  margin-top: 2px;
+  font-size: 14px;
+}
+.trialno {
+  font-weight: bold;
+}
+.note {
+  padding: 0px;
+  margin: 0px;
+  margin-top: 5px;
+}
+.notes {
+  font-family: "Charter", "Georgia", "Times", "Serif";
+  font-size: 15px;
+  width: 650px;
+  line-height: 130%;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  color: #000080;
+  text-indent: 0px;
+}
+.info {
+  font-size: 13px;
+  color: #600000;
+  margin-left: 20px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  width: 550px;
+}
+.floatimg {
+  float: right;
+  border: 0px solid gray;
+  width: 160px;
+  padding: 6px;
+  padding-bottom: 2px;
+  margin: 5px;
+  text-align: center;
+  background-color: #cccccc;
+}
+.imlabel {
+}
+.imlink:link {
+    color: blue; text-decoration: none;
+}
+.imlink:visited {
+    color: blue; text-decoration: none;
+}
+.imlink:hover {
+    color: red; text-decoration: none;
+}
+.exptlink:link {
+  color: black; text-decoration: none;
+}
+.exptlink:visited {
+  color: black; text-decoration: none;
+}
+.exptlink:hover {
+  color: red; text-decoration: none;
+}
+</style>
+<title>Log for expt.
+EOF
+  print OUT "$leaf\n";
+  print OUT <<'EOF';
+</title>
+</head>
+
+<body>
+EOF
+  writehtmlheadline();
+  print OUT "<hr><div class=\"topmarg\"></div>\n";
+}
+
+sub writehtmlheadline {
+  my @bits = split(/\//,$dir);
+  my $leaf = pop @bits;
+print OUT <<'EOF';
+<table width="100%" class="headline">
+<tr>
+  <td>
+    <span class="header">Log for expt.
+EOF
+
+  print OUT "<a class=\"exptlink\" href=\"file://$dir/\">";
+  print OUT "$leaf</a>";
+  print OUT <<'EOF';
+    </span>
+  </td>
+  <td  align="right">
+    <span class="back">
+EOF
+  print OUT "<a class=\"exptlink\" href=\"../index.html#$leaf\">";
+  print OUT <<'EOF';
+[index]</a>
+    </span>
+  </td>
+</tr></table>
+
+EOF
+}
+
+sub writetrailer {
+  if ($html) {
+    print OUT "<div class=\"botmarg\"></div>\n<hr>\n";
+    writehtmlheadline();
+    print OUT <<'EOF';
+</body>
+</html>
+EOF
+  } else {
+    print OUT <<'EOF';
+\label{end}
+\end{multicols}
+\end{document}
+EOF
+  }
+}
+
+######################################################################
+sub writedate {
+  my $dat = shift;
+  if ($html) {
+    print OUT "\n<div class=\"newdate\">$dat</div>\n\n";
+  } else {
+    print OUT "\n\\newdate{$dat}\n\n"
+  }
+}
+
+sub reptimes {
+  my $ft = shift;
+  my $lt = shift;
+  unless ($ft eq $lt) {
+    $ft .= "&ndash;" if $html;
+    $ft .= "--" unless $html;
+    $ft .= $lt;
+  }
+  return "<span class=\"time\">($ft)</span>" if $html;
+  return "($ft)";
+}
+
+sub reptrials {
+  my $ft = shift;
+  my $lt = shift;
+  $ft = "#$ft" if $html;
+  $lt = "#$lt" if $html;
+  $ft = "\\#$ft" unless $html;
+  $lt = "\\#$lt" unless $html;
+  unless ($ft eq $lt) {
+    $ft .= "&ndash;" if $html;
+    $ft .= "--" unless $html;
+    $ft .= $lt;
+  }
+  return "<span class=\"trialno\">$ft</span>" if $html;
+  return "{\\bf $ft}";
 }

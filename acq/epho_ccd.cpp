@@ -30,7 +30,7 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
 
   uint32_t one = 1;
 
-  uint32_t shtrval = (shtrval>=0) ? (one<<shtrline) : 0;
+  uint32_t shtrval = (shtrline>=0) ? (one<<shtrline) : 0;
   uint32_t illumval = (illumline>=0) ? (one<<illumline) : 0;
   uint32_t trigccval = one<<trigccline;
   uint32_t trigoxval = one<<trigoxline;

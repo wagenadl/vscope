@@ -9,23 +9,12 @@
   </enum>
 
   <enum id="AICHAN">
-    <item tag="ME1_10Vm" value="0"/>
-    <item tag="ME2_Vm" value="1"/>
-    <item tag="ME1_I" value="2"/>
-    <item tag="ME2_I" value="3"/>
-    <item tag="Stim0Mon" value="4"/>
-    <item tag="Stim1Mon" value="5"/>
-    <item tag="Stim2Mon" value="6"/>
-    <item tag="Stim3Mon" value="7"/>
-    <item tag="ExtVA1" value="16"/>
-    <item tag="ExtVA2" value="17"/>
-    <item tag="ExtVA3" value="18"/>
-    <item tag="ExtVA4" value="19"/>
-    <item tag="ExtVB1" value="20"/>
-    <item tag="ExtVB2" value="21"/>
-    <item tag="ExtVB3" value="22"/>
-    <item tag="ExtVB4" value="23"/>
     <item tag="off" value="-1"/>
+    <!-- Actual connections are defined below, in (connections) -->
+    <!-- Use of this enum is deprecated.
+	 New code should use the (connections).
+         This enum will automatically be filled with the data from
+         (connections). -->
   </enum>
 
   <enum id="AOCHAN">
@@ -41,75 +30,48 @@
   </enum>
 
   <enum id="DIGILINES">
-    <item tag="DO0" value="0"/>
-    <item tag="DO1" value="1"/>
-    <item tag="DO2" value="2"/>
-    <item tag="DO3" value="3"/> <!-- Delete any DOx that are not available. Be sure to update guiconfig.xml. -->
-    <item tag="VideoResp" value="4"/>
-    <item tag="VideoFrame" value="5"/>
-    <item tag="DO0Mon" value="8"/>
-    <item tag="DO1Mon" value="9"/>
-    <item tag="DO2Mon" value="10"/>
-    <item tag="DO3Mon" value="11"/> <!-- Delete any DOxMon that are not available. Be sure to update guiconfig.xml. -->
-    <item tag="VideoCmd" value="12"/>
-    <item tag="VideoCmdMon" value="13"/>
-    <item tag="VideoLight" value="16"/>
-    <item tag="VideoLightMon" value="17"/>
-    <item tag="VideoTrig" value="14"/>
-    <item tag="VideoTrigMon" value="15"/>
-    <item tag="ExcShtr" value="20"/> <!-- for Uniblitz -->
-    <item tag="ExcLight" value="7"/> <!-- for homemade LED -->
-    <!--item tag="VideoShtr" value="21"/-->
-    <item tag="ExcShtrMon" value="24"/> <!-- for Uniblitz only -->
-    <!--item tag="VideoShtrMon" value="25"/-->
-    <item tag="TrigOxMon" value="26"/>
-    <item tag="TrigCcMon" value="27"/>
-    <item tag="FrameOx" value="28"/>
-    <item tag="FrameCc" value="29"/>
-    <item tag="TrigOx" value="30"/>
-    <item tag="TrigCc" value="31"/>
   </enum>
 </enums>
 
 <connections>
-  <aichannel id="ME1_10Vm" alias="Vm"
+  <aichannel id="ME1_10Vm" line="0"
      ground="RSE" range="5V" unit="mV" scale="100"/>
      <!-- That is, 1V of output corresponds to 100 mV of input -->
-  <aichannel id="ME2_Vm" alias="V2"
+  <aichannel id="ME2_Vm" line="1"
      ground="RSE" range="5V" unit="mV" scale="100"/> 
      <!-- That is, 1V of output corresponds to 100 mV of input -->
-  <aichannel id="ME1_I" alias="Im" 
+  <aichannel id="ME1_I" line="2"
      ground="RSE" range="5V" unit="nA" scale="10"/>      
      <!-- That is, 1V of output corresponds to 10 nA of input -->
-  <aichannel id="ME2_I" alias="I2" 
+  <aichannel id="ME2_I" line="3"
      ground="RSE" range="5V" unit="nA" scale="10"/>    
      <!-- That is, 1V of output corresponds to 10 nA of input -->
   <!-- I need to check all these numbers. -->
-  <aichannel id="Stim0Mon" alias="AO0m"
+  <aichannel id="Stim0Mon" line="4"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="Stim1Mon" alias="AO1m"
+  <aichannel id="Stim1Mon" line="5"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="Stim2Mon" alias="AO2m"
+  <aichannel id="Stim2Mon" line="6"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="Stim3Mon" alias="AO3m"
+  <aichannel id="Stim3Mon" line="7"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="60HzRef" alias="line"
+  <aichannel id="60HzRef" 
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVA1" alias="A1"
+  <aichannel id="ExtVA1" line="16"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVA2" alias="A2"
+  <aichannel id="ExtVA2" line="17"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVA3" alias="A3"
+  <aichannel id="ExtVA3" line="18"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVA4" alias="A4"
+  <aichannel id="ExtVA4" line="19"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVB1" alias="B1"
+  <aichannel id="ExtVB1" line="20"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVB2" alias="B2"
+  <aichannel id="ExtVB2" line="21"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVB3" alias="B3"
+  <aichannel id="ExtVB3" line="22"
      ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVB4" alias="B4"
+  <aichannel id="ExtVB4" line="23"
      ground="RSE" range="5V" unit="V" scale="1"/>
 
   <camera id="Cc" serno="A08F101002" 
@@ -121,42 +83,33 @@
      flipx="false" flipy="false"
      focusexpose="3 ms" partnerid="Cc"/>  <!-- top -->
 
-  <dichannel id="FrameOx" alias="FrmOx"/>
-  <dichannel id="FrameCc" alias="FrmCc"/>
-  <dichannel id="TrigOxMon" alias="TrgOxM"/>
-  <dichannel id="TrigCcMon" alias="TrgCcM"/>
-  <dichannel id="DO0Mon" alias="DO0m" />
-  <dichannel id="DO1Mon" alias="DO1m" />
-  <dichannel id="DO2Mon" alias="DO2m" />
-  <dichannel id="DO3Mon" alias="DO3m" />
-  <dichannel id="ExcShtrMon" alias="ExcM" />
-  <dichannel id="VideoResp" alias="VResp" />
-  <dichannel id="VideoFrame" alias="VFrame" />
-  <dichannel id="VideoCmdMon" alias="VidCmdM" />
-  <dichannel id="VideoLightMon" alias="LightM" />
-  <!--dichannel id="VideoShtrMon" alias="VShtrM" /-->
+  <dichannel id="FrameOx" line="28"/>
+  <dichannel id="FrameCc" line="29"/>
+  <dichannel id="TrigOxMon" line="26"/>
+  <dichannel id="TrigCcMon" line="27"/>
+  <dichannel id="DO0Mon" line="8"/>
+  <dichannel id="DO1Mon" line="9"/>
+  <dichannel id="DO2Mon" line="10"/>
+  <dichannel id="DO3Mon" line="11"/>
+  <dichannel id="ExcShtrMon" line="24"/>
+  <dichannel id="VideoResp"/> <!--line="4"-->
+  <dichannel id="VideoFrame"/> <!--line="5"-->
+  <dichannel id="VideoCmdMon"/> <!--line="13"-->
+  <dichannel id="VideoLightMon" line="17"/>
+  <dichannel id="VideoShtrMon"/>
 
-  <dochannel id="ExcShtr" alias="EShtr"/>
-  <dochannel id="ExcLight" alias="LED"/>
-  <dochannel id="VideoShtr" alias="VShtr"/>
-  <dochannel id="TrigOx"  alias="TrigOx"/>
-  <dochannel id="TrigCc"  alias="TrigCc"/>
-  <dochannel id="DO0" alias="DO0/Axo"/>
-  <dochannel id="DO1" alias="DO1"/>
-  <dochannel id="DO2" alias="DO2"/>
-  <dochannel id="DO3" alias="DO3"/>
-  <dochannel id="VideoLight" alias="VLight"/>
-  <dochannel id="VideoCmd" alias="VCmd"/>
-  <dochannel id="VideoTrig" alias="VTrig"/>
-
-  <!-- ID is what we call it in our software, which matches -->
-  <!-- the DIGILINE enumerator and which corresponds to -->
-  <!-- hardware connections. ALIAS is how it is labeled -->
-  <!-- in the GUI. -->
-
-  <!-- Really, all aliases ought to be defined in guiconfig.xml -->
-  <!-- rather than here, but we must define the direction of -->
-  <!-- channels here, so what can you do. -->
+  <dochannel id="ExcShtr" line="20"/>
+  <dochannel id="ExcLight" line="7"/>
+  <dochannel id="VideoShtr"/>
+  <dochannel id="TrigOx" line="30"/>
+  <dochannel id="TrigCc" line="31"/>
+  <dochannel id="DO0" line="0"/>
+  <dochannel id="DO1" line="1"/>
+  <dochannel id="DO2" line="2"/>
+  <dochannel id="DO3" line="3"/>
+  <dochannel id="VideoLight" line="16"/>
+  <dochannel id="VideoCmd"/> <!--line="12"-->
+  <dochannel id="VideoTrig"/> <!--line="14"-->
 </connections>
 
 </vsdscopeConnections>

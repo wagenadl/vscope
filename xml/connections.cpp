@@ -5,6 +5,7 @@
 #include <base/exception.h>
 #include <xml/param.h>
 #include <xml/attribute.h>
+#include <xml/enumerator.h>
 #include <base/dbg.h>
 
 namespace Connections {
@@ -13,11 +14,11 @@ namespace Connections {
   QMap<QString,CamCon *> cammap;
 
   AIChannel::AIChannel(QString id): id(id) {
+    line = -1;
     ground="NRSE";
     range = 5;
     scale = 1000;
     unit = "mV";
-    alias = id;
   }
   
   CamCon::CamCon(QString id): id(id) {
@@ -29,46 +30,28 @@ namespace Connections {
   }
   
   DigiChannel::DigiChannel(QString id): id(id) {
-    alias=id;
+    line = -1;
     out=false;
     in=true;
   }
   
-  //  Connections() {
-  //  }
-  //  
-  //  ~Connections() {
-  //    for (QMap<QString,AIChannel *>::iterator i=aimap.begin();
-  //         i!=aimap.end(); ++i)
-  //      delete i.value();
-  //    for (QMap<QString,CamCon *>::iterator i=cammap.begin();
-  //         i!=cammap.end(); ++i)
-  //      delete i.value();
-  //  }
-  
-  void writeXML(QDomElement doc) {
-    if (doc.tagName()!="connections") {
-      QDomElement e = doc.firstChildElement("connections");
-      if (e.isNull()) {
-        e = doc.ownerDocument().createElement("connections");
-        doc.appendChild(e);
-      }
-      doc = e;
-    }
-    
+  void writeAIChannels(QDomElement doc) {
     for (QMap<QString,AIChannel *>::const_iterator i=aimap.begin();
          i!=aimap.end(); ++i) {
       AIChannel &aic = *(*i);
       QDomElement e = doc.ownerDocument().createElement("aichannel");
       doc.appendChild(e);
       e.setAttribute("id",aic.id);
-      e.setAttribute("alias",aic.alias);
+      if (aic.line>=0)
+	e.setAttribute("line",QString("%1").arg(aic.line));
       e.setAttribute("ground",aic.ground);
       e.setAttribute("range",QString("%1V").arg(aic.range));
       e.setAttribute("unit",aic.unit);
       e.setAttribute("scale",QString("%1").arg(aic.scale));
     }
-  
+  }
+
+  void writeCameras(QDomElement doc) {
     for (QMap<QString,CamCon *>::const_iterator i=cammap.begin();
          i!=cammap.end(); ++i) {
       CamCon &cam = *(*i);
@@ -84,7 +67,9 @@ namespace Connections {
       Param expo("time"); expo.setDouble(cam.focusexp_ms);
       e.setAttribute("focusexpose",expo.toString());
     }
-  
+  }
+
+  void writeDIOChannels(QDomElement doc) {
     for (QMap<QString,DigiChannel *>::const_iterator i=digimap.begin();
          i!=digimap.end(); ++i) {
       DigiChannel &dig = *(*i);
@@ -92,10 +77,105 @@ namespace Connections {
         .createElement(dig.out?"dochannel":"dichannel");
       doc.appendChild(e);
       e.setAttribute("id",dig.id);
-      e.setAttribute("alias",dig.alias);
+      if (dig.line>=0)
+	e.setAttribute("line",QString("%1").arg(dig.line));
     }
   }
+
+  void writeXML(QDomElement doc) {
+    if (doc.tagName()!="connections") {
+      QDomElement e = doc.firstChildElement("connections");
+      if (e.isNull()) {
+        e = doc.ownerDocument().createElement("connections");
+        doc.appendChild(e);
+      }
+      doc = e;
+    }
+
+    writeAIChannels(doc);
+    writeDIOChannels(doc);
+    writeCameras(doc);
+  }
   
+  void readAIChannels(QDomElement doc) {
+    Enumerator *ai = Enumerator::find("AICHAN");
+    for (QDomElement e=doc.firstChildElement("aichannel");
+         !e.isNull(); e=e.nextSiblingElement("aichannel")) {
+      QString id = xmlAttribute(e,"id");
+      AIChannel *aic = new AIChannel(id);
+      aimap[id] = aic;
+      if (e.hasAttribute("ground"))
+        aic->ground = e.attribute("ground");
+      if (e.hasAttribute("line")) {
+	aic->line = e.attribute("line").toInt();
+	ai->add(id, aic->line);
+      }
+      if (e.hasAttribute("range")) {
+        Param p("voltage");
+        p.set(e.attribute("range"));
+        aic->range = p.toDouble()/1000; // convert mV to V.
+      }
+      if (e.hasAttribute("scale")) {
+        Param p("double");
+        p.set(e.attribute("scale"));
+        aic->scale = p.toDouble();
+      }
+      if (e.hasAttribute("unit"))
+        aic->unit = e.attribute("unit");
+    }
+  }
+
+  void readCameras(QDomElement doc) {
+    for (QDomElement e=doc.firstChildElement("camera");
+         !e.isNull(); e=e.nextSiblingElement("camera")) {
+      QString id = xmlAttribute(e,"id");
+      CamCon *cam = new CamCon(id);
+      cammap[id]=cam;
+      cam->serno = e.attribute("serno");
+      cam->partnerid = e.attribute("partnerid");
+      cam->xpix = e.attribute("xpix").toInt();
+      cam->ypix = e.attribute("ypix").toInt();
+      QString flipx = e.attribute("flipx");
+      cam->flipx = flipx=="true" || flipx=="on" || flipx=="yes";
+      QString flipy = e.attribute("flipy");
+      cam->flipy = flipy=="true" || flipy=="on" || flipy=="yes";
+      Param expo("time"); expo.set(e.attribute("focusexpose"));
+      cam->focusexp_ms = expo.toDouble();
+    }
+  }
+
+  void readDIChannels(QDomElement doc) {
+    Enumerator *dio = Enumerator::find("DIGILINES");
+    for (QDomElement e=doc.firstChildElement("dichannel");
+         !e.isNull(); e=e.nextSiblingElement("dichannel")) {
+      QString id = xmlAttribute(e,"id");
+      DigiChannel *dig = new DigiChannel(id);
+      digimap[id]=dig;
+      if (e.hasAttribute("line")) {
+	dig->line = e.attribute("line").toInt();
+	dio->add(id,dig->line);
+      }
+      dig->in = true;
+      dig->out = false;
+    }
+  }
+
+  void readDOChannels(QDomElement doc) {
+    Enumerator *dio = Enumerator::find("DIGILINES");
+    for (QDomElement e=doc.firstChildElement("dochannel");
+         !e.isNull(); e=e.nextSiblingElement("dochannel")) {
+      QString id = xmlAttribute(e,"id");
+      DigiChannel *dig = new DigiChannel(id);
+      digimap[id]=dig;
+      if (e.hasAttribute("line")) {
+	dig->line = e.attribute("line").toInt();
+	dio->add(id,dig->line);
+      }
+      dig->in = false;
+      dig->out = true;
+    }
+  }
+
   void readXML(QDomElement doc) {
     if (!aimap.isEmpty() || !digimap.isEmpty() || !cammap.isEmpty())
       dbg("Connections: Warning: Replacing old connections with new");
@@ -117,73 +197,13 @@ namespace Connections {
       doc = doc.firstChildElement("connections");
     if (doc.isNull())
       throw Exception("Connections","No <connections> element","read");
-  
-    // Read AI CHANNELS
-    for (QDomElement e=doc.firstChildElement("aichannel");
-         !e.isNull(); e=e.nextSiblingElement("aichannel")) {
-      QString id = xmlAttribute(e,"id");
-      AIChannel *aic = new AIChannel(id);
-      aimap[id] = aic;
-      if (e.hasAttribute("ground"))
-        aic->ground = e.attribute("ground");
-      if (e.hasAttribute("alias"))
-        aic->alias = e.attribute("alias");
-      if (e.hasAttribute("range")) {
-        Param p("voltage");
-        p.set(e.attribute("range"));
-        aic->range = p.toDouble()/1000; // convert mV to V.
-      }
-      if (e.hasAttribute("scale")) {
-        Param p("double");
-        p.set(e.attribute("scale"));
-        aic->scale = p.toDouble();
-      }
-      if (e.hasAttribute("unit"))
-        aic->unit = e.attribute("unit");
-    }
-  
-    // Read CAMERAS
-    for (QDomElement e=doc.firstChildElement("camera");
-         !e.isNull(); e=e.nextSiblingElement("camera")) {
-      QString id = xmlAttribute(e,"id");
-      CamCon *cam = new CamCon(id);
-      cammap[id]=cam;
-      cam->serno = e.attribute("serno");
-      cam->partnerid = e.attribute("partnerid");
-      cam->xpix = e.attribute("xpix").toInt();
-      cam->ypix = e.attribute("ypix").toInt();
-      QString flipx = e.attribute("flipx");
-      cam->flipx = flipx=="true" || flipx=="on" || flipx=="yes";
-      QString flipy = e.attribute("flipy");
-      cam->flipy = flipy=="true" || flipy=="on" || flipy=="yes";
-      Param expo("time"); expo.set(e.attribute("focusexpose"));
-      cam->focusexp_ms = expo.toDouble();
-    }
-  
-    // Read DI CHANNELS
-    for (QDomElement e=doc.firstChildElement("dichannel");
-         !e.isNull(); e=e.nextSiblingElement("dichannel")) {
-      QString id = xmlAttribute(e,"id");
-      DigiChannel *dig = new DigiChannel(id);
-      digimap[id]=dig;
-      if (e.hasAttribute("alias"))
-        dig->alias = e.attribute("alias");
-      dig->in = true;
-      dig->out = false;
-    }
-  
-    // Read DO CHANNELS
-    for (QDomElement e=doc.firstChildElement("dochannel");
-         !e.isNull(); e=e.nextSiblingElement("dochannel")) {
-      QString id = xmlAttribute(e,"id");
-      DigiChannel *dig = new DigiChannel(id);
-      digimap[id]=dig;
-      if (e.hasAttribute("alias"))
-        dig->alias = e.attribute("alias");
-      dig->in = false;
-      dig->out = true;
-    }
+
+    readAIChannels(doc);
+    readDIChannels(doc);
+    readDOChannels(doc);
+    readCameras(doc);
   }
+
   
   AIChannel const *findpAI(QString id) {
     if (aimap.contains(id))

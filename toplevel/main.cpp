@@ -16,6 +16,7 @@
 #include <base/dbg.h>
 #include <base/base26.h>
 #include <base/xml.h>
+#include <xml/aliases.h>
 #include <xml/param.h>
 #include <xml/paramtree.h>
 #include <xml/connections.h>
@@ -201,12 +202,11 @@ int main(int argc, char **argv) {
 
     Enumerator::readAll(pars);
     Enumerator::readAll(cons); // This must happen before ptree is init'ed
+    Connections::readXML(connDoc.root());
 
     Globals::ptree = new ParamTree(pars);
     Globals::trove = new DataTrove(Globals::ptree);
     Globals::ptree->find("_filePath").set(fpath);
-    
-    Connections::readXML(connDoc.root());
 
     GUIExc::setParamTree(Globals::ptree);
     GUIExc::setSettingsDir(fpath + "/_settings");
@@ -249,7 +249,8 @@ int main(int argc, char **argv) {
     Dbg() << "Reading gui config from: " << guifn;
     XML guiConfigDoc(guifn);
     QDomElement guiConf = guiConfigDoc.root();
-
+    Aliases::read(guiConf);
+    
     CamPool();
     QStringList sz = Connections::allCams();
     for (QStringList::iterator i=sz.begin(); i!=sz.end(); ++i) {

@@ -22,6 +22,7 @@ namespace Connections {
     AIChannel(QString id="-");
   public:
     QString id;     // id of this channel (as in enum AICHAN)
+    int line;       // line of this channel
     QString ground; // RSE, NRSE, or DIFF
     double range;   // in volts: maximum expected voltage at DAQ.
     double scale;   // this says by how much a DAQ value (in volts) has to be
@@ -30,7 +31,6 @@ namespace Connections {
                     // so DAQ voltage is 10 * Vm, scale would be 1000 mV/V / 10,
                     // i.e., 100.
     QString unit;   // e.g. "mV" or "pA".
-    QString alias;  // nice name for channel to use in graphs etc.
   };
   
   class DigiChannel {
@@ -38,7 +38,7 @@ namespace Connections {
     DigiChannel(QString id="-");
   public:
     QString id;
-    QString alias;
+    int line;
     bool out;
     bool in;
   };
