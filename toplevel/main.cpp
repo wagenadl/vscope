@@ -116,11 +116,12 @@ QWidget *makeBanner1(QWidget *parent) {
   w->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   w->setReadOnly(true);
   QString txt = "<html><body><h1>VScope</h1>";
-  txt += "Revision #" + bzr_version_revno
+  txt += QString() + "Revision #" + bzr_version_nick + ":" + bzr_version_revno
     + " dd " + bzr_version_month + "/" + bzr_version_day
-    + "/" + bzr_version_year + "<br>";
-  txt += "(C) Copyright Daniel Wagenaar 2008&ndash;"
-    + bzr_version_year + "<br>";
+    + "/" + bzr_version_year + ".<br>";
+  txt += QString() + "(C) Daniel A. Wagenaar 2008&ndash;"
+    + bzr_version_year + ".<br>";
+  txt += "For more info: email daw@caltech.edu.<br>";
 
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();

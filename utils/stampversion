@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+
+
+my %bits;
+open BZR, "bzr version-info |" or die "Cannot read version info\n";
+while (<BZR>) {
+  chomp;
+  my ($k, $v) = split(/: /,$_,2);
+  $bits{$k} = $v;
+}
+close BZR;
+
+my $year = substr($bits{date},0,4);
+my $month = substr($bits{date},5,2);
+my $day = substr($bits{date},8,2);
+
+open INFO, ">bzr_versioninfo.h" or die "Cannot write version info\n";
+print INFO <<"EOF";
+#define bzr_version_revno "$bits{revno}"
+#define bzr_version_nick "$bits{'branch-nick'}"
+#define bzr_version_day "$day"
+#define bzr_version_month "$month"
+#define bzr_version_year "$year"
+EOF
+close INFO;

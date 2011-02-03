@@ -21,7 +21,8 @@ SOURCES += roisetguard.cpp
 HEADERS += panelhistory.h
 SOURCES += panelhistory.cpp
 HEADERS += scripts.h
-SOURCES += scripts.cpp 
+SOURCES += scripts.cpp
+HEADERS += ../bzr_versioninfo.h
  
 LIBS += -L../base -L../gfx -L../xml -L../gui
 LIBS += -lvscope-base -lvscope-gfx -lvscope-xml -lvscope-gui
