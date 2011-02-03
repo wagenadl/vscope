@@ -20,8 +20,10 @@
 #define PAR_OUTRATE "acqEphys/acqFreq"
 // Alternative: "stimEphys/outrate"
 
-MGAuto::Channel::Channel(QString cid, QString ctyp, QString ctiny) {
-  id = cid;
+MGAuto::Channel::Channel(QDomElement elt) {
+  id = c.attribute("ch");
+  QString ctyp = c.attribute("typ");
+  QString ctype = c.attribute("tiny");
   label = id;
   if (ctyp=="ai") {
     typ=AI;
@@ -74,8 +76,7 @@ MGAuto::MGAuto(QWidget *parent, QDomElement conf, QString myname):
       for (QDomElement c=elt.firstChildElement("graph");
 	   !c.isNull(); c=c.nextSiblingElement("graph")) 
 	if (Channel::available(c.attribute("ch"), c.attribute("typ"))) 
-	  pool.push_back(Channel(c.attribute("ch"), c.attribute("typ"),
-				 c.attribute("tiny")));
+	  pool.push_back(Channel(c));
       ok=true;
     }
   }

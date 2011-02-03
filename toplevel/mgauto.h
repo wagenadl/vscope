@@ -19,7 +19,7 @@ class MGAuto: public MultiGraph {
 public:
   class Channel {
   public:
-    Channel(QString id, QString typ, QString tiny);
+    Channel(QDomElement elt);
     static bool available(QString id, QString typ);
   public:
     enum Type { AI, AO, DI, DO };

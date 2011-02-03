@@ -14,7 +14,11 @@
     <!-- Use of this enum is deprecated.
 	 New code should use the (connections).
          This enum will automatically be filled with the data from
-         (connections). -->
+         (connections).
+         Note that Param's "enum" and "set" types still need the enum,
+         and this is not changeable. Perhaps I should decouple the numeric
+         enum value from the line in the future. Or I should move to "string"
+         and "stringset" for the relevant params. -->
   </enum>
 
   <enum id="AOCHAN">
