@@ -360,11 +360,19 @@ int ParamTree::report(int level, int maxelts) const {
   return maxelts;
 }
 
-//uint64_t ParamTree::checksum() {
-//  uint64_t sum=0;
-//  throw Exception("ParamTree","checksum() not yet implemented");
-//  return sum;
-//}
+bool ParamTree::enabled(QString path) const {
+  QStringList bits = path.split("/");
+  QString p0 = "";
+  while (!bits.isEmpty()) {
+    p0 += bits.takeFirst();
+    p0 += "/";
+    QString p_en = p0 + "enable";
+    Param const *p = findp(p_en);
+    if (p && !p->toBool())
+      return false;
+  }
+  return true;
+}
 
 ParamTree::ParamTree(ParamTree &other): base(other.base) {
   construct();

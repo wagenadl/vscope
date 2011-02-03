@@ -16,6 +16,7 @@
 #include <acq/trialdata.h>
 #include <acq/ephysout.h>
 #include <base/dbg.h>
+#include <xml/attribute.h>
 
 #define PAR_OUTRATE "acqEphys/acqFreq"
 // Alternative: "stimEphys/outrate"
@@ -53,6 +54,8 @@ MGAuto::Channel::Channel(QDomElement elt) {
 		    "constructor");
 
   tiny = ctiny=="yes" || ctiny=="true";
+
+  if_enabled = xmlAttribute(e, "if_enabled", "");
 }
 
 bool MGAuto::Channel::available(QString cid, QString ctyp) {
@@ -99,6 +102,9 @@ void MGAuto::rebuild() {
   for (QList<Channel>::iterator i=pool.begin(); i!=pool.end(); ++i) {
     QString id = (*i).id;
     int chn = (*i).chn;
+    if (!Globals::ptree->enabled((*i).if_enabled))
+      continue;
+    
     switch ((*i).typ) {
     case Channel::AI:
       if (Globals::trove->trial().analogData() &&
@@ -109,28 +115,10 @@ void MGAuto::rebuild() {
       }
       break;
     case Channel::AO:
-      if (Globals::ptree->find(QString("stimEphys/channel:%1/enable")
-			       .arg(id)).toBool())
-	newset.insert(id);
-      break;
     case Channel::DI:
+    case Channel::DO:
       newset.insert(id); // digital inputs are always enabled
       break;
-    case Channel::DO:
-      if (id.left(2)=="DO") {
-	// numbered output channel
-	if (Globals::ptree->find(QString("stimEphys/channel:%1/enable")
-					 .arg(id)).toBool())
-	  newset.insert(id);
-      } else {
-	// non-DOx channels
-	if (Globals::trove->trial().digitalStimuli()) {
-	  uint32_t mask = Globals::trove->trial().digitalStimuli()->getMask();
-	  uint32_t one = 1;
-	  if (mask & (one<<chn))
-	    newset.insert(id);
-	}
-      }
     }
   }
 

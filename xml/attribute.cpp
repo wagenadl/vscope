@@ -11,9 +11,9 @@ QString xmlAttribute(QDomElement e, QString tag,
     throw Exception(issuer,errmsg);
 }
 
-QString xmlAttribute(QDomElement e, QString tag) {
+QString xmlAttribute(QDomElement e, QString tag, QString dflt) {
   if (e.hasAttribute(tag))
     return e.attribute(tag);
   else
-    return "";
+    return dflt;
 }

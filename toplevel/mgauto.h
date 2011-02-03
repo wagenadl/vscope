@@ -21,6 +21,9 @@ public:
   public:
     Channel(QDomElement elt);
     static bool available(QString id, QString typ);
+    /*:F available
+     *:D Returns true iff this channel exists in the AICHAN/DIGILINES enums.
+     */
   public:
     enum Type { AI, AO, DI, DO };
     QString id;
@@ -30,6 +33,7 @@ public:
     bool tiny;
     bool isOut;
     bool isDigi;
+    QString if_enabled;
   };
 public:
   MGAuto(QWidget *parent, QDomElement conf, QString myname);

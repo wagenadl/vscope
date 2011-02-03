@@ -18,9 +18,10 @@ extern QString xmlAttribute(QDomElement e, QString tag,
  *:R Value of attribute.
 */
 
-extern QString xmlAttribute(QDomElement e, QString tag);
+extern QString xmlAttribute(QDomElement e, QString tag, QString dflt="");
 /*:F xmlAttribute
- *:D If the element 'e' has attribute 'tag', return its value, else return "".
+ *:D If the element 'e' has attribute 'tag', return its value, else return
+     default value.
  *:R Value of attribute or the empty string.
 */
 

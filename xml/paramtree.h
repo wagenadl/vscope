@@ -8,8 +8,6 @@
 
 #include <QDomElement>
 
-#define PTREE_PATHSEP '/'
-
 class ParamTree {
   /*:C ParamTree
    *:D A ParamTree represents a tree of parameters as defined by a <params>
@@ -91,12 +89,14 @@ public:
    *:A path: slash- and colon-separated path of the item.
    *:N Throws an exception if not found.
    */
-  //uint64_t checksum();
-  /*:F checksum
-   *:D Calculates a number that is (hopefully) unique to the current set
-       of values.
-   *:N I am not a specialist in this business, so I am far from sure the
-       hashing is a good one.
+  bool enabled(QString path) const;
+  /*:F enabled
+   *:D Returns true if the path is enabled. A path is considered enabled
+       unless PATH/enable is false or any "enable" parameter above PATH
+       is false. For instance "stimEphys/channel:DO3" is enabled if
+       stimEphys/enable is true and stimEphys/channel:DO3/enable is true.
+   *:N This function does not check if PATH is legitimate and returns true
+       for paths that have no enable flag or that do not exist at all.
   */
 protected:
   ParamTree(QDomElement doc, QString elt);
