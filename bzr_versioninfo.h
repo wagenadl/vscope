@@ -1,4 +1,4 @@
-#define bzr_version_revno "53"
+#define bzr_version_revno "54"
 #define bzr_version_nick "dw"
 #define bzr_version_day "03"
 #define bzr_version_month "02"

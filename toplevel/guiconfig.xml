@@ -1088,9 +1088,7 @@
         <item value="DO2Mon" label="DO2"/>
         <item value="DO3Mon" label="DO3"/>
 
-        <item value="VideoResp" label="VResp"/>
         <item value="VideoFrame" label="VFrame"/>
-        <item value="VideoCmdMon" label="VCmd"/>
         <item value="VideoLightMon" label="VLight"/>
 
         <!--item value="ExcShtrMon" label="ExcShtr"/-->
@@ -1236,9 +1234,7 @@
   <graph ch="ExtVB3" typ="ai"/>
   <graph ch="ExtVB4" typ="ai"/>
   <graph ch="VideoFrame" typ="di" tiny="yes"/>
-  <graph ch="VideoResp" typ="di" tiny="yes"/>
   <graph ch="VideoLightMon" typ="di" tiny="yes"/>
-  <graph ch="VideoCmdMon" typ="di" tiny="yes"/>
 </multigraph>
 
 <aliases>
