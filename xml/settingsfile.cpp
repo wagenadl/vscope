@@ -10,7 +10,7 @@
 void SettingsFile::save(QString fn, ParamTree const *src) {
   XML xml(0,"vsdscopeSettings");
   src->write(xml.root());
-  Connections::writeXML(xml.root());
+  // Connections::writeXML(xml.root());
   QDomElement e=xml.append("date");
   e.setAttribute("modified",QDateTime::currentDateTime().toString());
   xml.write(fn);
@@ -19,5 +19,5 @@ void SettingsFile::save(QString fn, ParamTree const *src) {
 void SettingsFile::load(QString fn, ParamTree *dst) {
   XML xml(fn);
   dst->read(xml.root());
-  Connections::readXML(xml.root());
+  // Connections::readXML(xml.root());
 } 

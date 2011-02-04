@@ -83,8 +83,8 @@ void TrialData::generalPrep(ParamTree const *ptree) {
 
   QDomElement settings = xml->append("settings");
   ptree->write(settings);
-  QDomElement connections = xml->append("connections");
-  Connections::writeXML(connections);
+  //QDomElement connections = xml->append("connections");
+  //Connections::writeXML(connections);
 
   QDomElement info = xml->append("info");
   info.setAttribute("expt",exptname);
