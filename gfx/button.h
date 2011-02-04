@@ -4,17 +4,16 @@
 
 #define BUTTON_H
 
-// Defaults for Button; can be overridden after construction.
-#define BUTTON_FontSize 13
-#define BUTTON_FontFamily "Arial Rounded MT"
-#define BUTTON_Width 80
-#define BUTTON_Height 27
-#define BUTTON_Foreground "black"
-#define BUTTON_Background "#eeeecc"
-
 #include <QLabel>
 #include <QTime>
 #include <QTimer>
+
+extern int BUTTON_FontSize;
+extern char const *BUTTON_FontFamily;
+extern int BUTTON_Width;
+extern int BUTTON_Height;
+extern char const *BUTTON_Foreground;
+extern char const *BUTTON_Background;
 
 class Button: public QLabel {
   /*:C Button

@@ -172,8 +172,8 @@ int main(int argc, char **argv) {
     app.setStyle(new QPlastiqueStyle);
 
     QFont f = app.font();
-    f.setFamily("Arial Rounded MT");
-    f.setPixelSize(13);
+    f.setFamily(BUTTON_FontFamily);
+    f.setPixelSize(15);
     app.setFont(f);
 
     QString fpath = getenv("HOME");

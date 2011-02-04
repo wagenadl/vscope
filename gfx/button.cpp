@@ -9,6 +9,14 @@
 #include <QPainter>
 #include <QEvent>
 
+// Defaults for Button; can be overridden after construction.
+int BUTTON_FontSize = 13;
+char const *BUTTON_FontFamily = "Verdana";
+int BUTTON_Width = 80;
+int BUTTON_Height = 27;
+char const *BUTTON_Foreground = "black";
+char const *BUTTON_Background = "#eeeecc";
+
 static QColor deeper(QColor const &a, double amt=2) {
   int h, s, v;
   a.getHsv(&h,&s,&v);
