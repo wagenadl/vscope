@@ -202,3 +202,7 @@ void FileChooser::clickedUp() {
 void FileChooser::setBackground(QColor bg) {
   list->setBackground(bg);
 }
+
+class Button *FileChooser::buttonp(QString fn) {
+  return list->buttonp(fn);
+}

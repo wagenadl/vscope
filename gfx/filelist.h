@@ -39,6 +39,11 @@ public:
   void populate(class QDir const &src, QStringList lst);
   int indexOf(QString partialfn); // returns the index of the first entry matching partialfn, or -1
   void setBackground(QColor bg);
+  class Button *buttonp(QString fn);
+  /*:F buttonp
+   *:D Returns a pointer to the button that represents the given filename,
+       or null if not found.
+  */
 protected:
   virtual bool includeFileHook(class QDir const &dir, QString fn);
   /*:F includeFileHook

@@ -96,6 +96,7 @@ void FileList::populate(QDir const &src, QStringList fns) {
       children.push_back(b);
       b->setBackground(bg);
       //b->setVisualType(Button::VTAction);
+      b->setVisualType(Button::VTVarValue);
       b->show();
       connect(b,SIGNAL(activated(QString,QString)),
 	      this,SLOT(buttonClicked(QString,QString)));
@@ -136,8 +137,17 @@ int FileList::indexOf(QString partialfn) {
 void FileList::setBackground(QColor bg0) {
   bg = bg0;
   for (QVector<Button *>::iterator i=children.begin();
+       i!=children.end(); ++i) {
+    // (*i)->setBackground(bg);
+  }
+}
+
+Button *FileList::buttonp(QString s) {
+  for (QVector<Button *>::iterator i=children.begin();
        i!=children.end(); ++i) 
-    (*i)->setBackground(bg);
+    if ((*i)->text() == s)
+      return *i;
+  return 0;
 }
 
 bool FileList::includeDirHook(QDir const &, QString s) {

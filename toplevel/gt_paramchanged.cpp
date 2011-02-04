@@ -25,6 +25,7 @@
 #include <acq/datatrove.h>
 #include <toplevel/scripts.h>
 #include <gui/xmlpage.h>
+#include <toplevel/savedsettings.h>
 
 static void setRefTrace() {
   int typ = Globals::ptree->find("analysis/refType").toInt();
@@ -74,8 +75,9 @@ void gt_slots::paramchanged(QString p, QString val) {
     dbg("param changed %s -> %s\n",qPrintable(p),qPrintable(val));
     // Most parameters' side effects go in the following switch.
 
-    if (p!="savedSettings/_name") 
-      Globals::ptree->find("savedSettings/_name").set("Modified");
+    if (p!="savedSettings/_name") {
+      Globals::savedSettings->anythingChanged();
+    }
     
     if (p=="maintenance/liveEphys/timeBase") {
       if (Globals::liveephys)

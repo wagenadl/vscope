@@ -57,6 +57,7 @@ void SavedSettings::showEvent(class QShowEvent *e) {
 }
 
 void SavedSettings::loadSettings(QString fn) {
+  QString bfn = fn;
   dbg("loadSettings %s",qPrintable(fn));
   if (!fn.startsWith("/"))
     fn = Globals::ptree->find("_filePath").toString()
@@ -72,9 +73,29 @@ void SavedSettings::loadSettings(QString fn) {
       setname = setname.mid(lastslash+1);
     setname = setname.left(setname.length()-4); // drop the ".xml";
     Globals::exptlog->markLoadSettings(setname);
+    visualdeselect();
+    Button *b = buttonp(bfn);
+    if (b) 
+      b->setSelected(true);
+    lastsel = bfn;
   } catch (Exception const &e) {
     GUIExc::report(e,"SavedSettings::loadSettings");
   }
+}
+
+void SavedSettings::anythingChanged() {
+  Globals::ptree->find("savedSettings/_name").set("Modified");
+  visualdeselect();
+}
+
+void SavedSettings::visualdeselect() {
+  if (lastsel=="")
+    return;
+  
+  Button *b = buttonp(lastsel);
+  if (b) 
+    b->setSelected(false);
+  lastsel = "";
 }
 
 void SavedSettings::prepareSave() {

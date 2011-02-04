@@ -31,6 +31,10 @@ public:
   int countColumns() const;
   int countItems() const;
   void setBackground(QColor bg);
+  class Button *buttonp(QString fn);
+  /*:F buttonp
+   *:D Returns the button associated with the given filename, or null.
+   */
 signals:
   void clickedItem(QString fn);
   /*:S clickedItem

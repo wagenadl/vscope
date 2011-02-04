@@ -183,7 +183,7 @@
     <category id="liveEphys">
       <param id="timeBase" type="time" default="100 ms" min="10 ms" max="1 s"/>
       <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
-      <param id="diChannels" type="set" enum="DIGILINES" default="FrameOx FrameCc VideoResp VideoFrame"/>
+      <param id="diChannels" type="set" enum="DIGILINES" default="FrameOx FrameCc"/>
       <param id="vcoSource" type="enum" enum="AICHAN" default="off"/>
     </category>
     <category id="checkDaq"/>

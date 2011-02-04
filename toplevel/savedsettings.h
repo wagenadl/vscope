@@ -15,13 +15,17 @@ public slots:
   void loadSettings(QString fn);
   void saveSettings(QString fn);
   void prepareSave();
+  void anythingChanged();
 protected:
   virtual void showEvent(class QShowEvent *);
+private:
+  void visualdeselect();
 signals:
   void selected(QString fn);
 private:
   class FileDlgKey *savedlg;
   class QFrame *saveframe;
+  QString lastsel;
 };
 
 #endif
