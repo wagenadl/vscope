@@ -102,26 +102,26 @@ namespace Connections {
     for (QDomElement e=doc.firstChildElement("aichannel");
          !e.isNull(); e=e.nextSiblingElement("aichannel")) {
       QString id = xmlAttribute(e,"id");
-      AIChannel *aic = new AIChannel(id);
-      aimap[id] = aic;
-      if (e.hasAttribute("ground"))
-        aic->ground = e.attribute("ground");
       if (e.hasAttribute("line")) {
+	AIChannel *aic = new AIChannel(id);
+	aimap[id] = aic;
+	if (e.hasAttribute("ground"))
+	  aic->ground = e.attribute("ground");
 	aic->line = e.attribute("line").toInt();
 	ai->add(id, aic->line);
+	if (e.hasAttribute("range")) {
+	  Param p("voltage");
+	  p.set(e.attribute("range"));
+	  aic->range = p.toDouble()/1000; // convert mV to V.
+	}
+	if (e.hasAttribute("scale")) {
+	  Param p("double");
+	  p.set(e.attribute("scale"));
+	  aic->scale = p.toDouble();
+	}
+	if (e.hasAttribute("unit"))
+	  aic->unit = e.attribute("unit");
       }
-      if (e.hasAttribute("range")) {
-        Param p("voltage");
-        p.set(e.attribute("range"));
-        aic->range = p.toDouble()/1000; // convert mV to V.
-      }
-      if (e.hasAttribute("scale")) {
-        Param p("double");
-        p.set(e.attribute("scale"));
-        aic->scale = p.toDouble();
-      }
-      if (e.hasAttribute("unit"))
-        aic->unit = e.attribute("unit");
     }
   }
 
@@ -149,14 +149,14 @@ namespace Connections {
     for (QDomElement e=doc.firstChildElement("dichannel");
          !e.isNull(); e=e.nextSiblingElement("dichannel")) {
       QString id = xmlAttribute(e,"id");
-      DigiChannel *dig = new DigiChannel(id);
-      digimap[id]=dig;
       if (e.hasAttribute("line")) {
+	DigiChannel *dig = new DigiChannel(id);
+	digimap[id]=dig;
 	dig->line = e.attribute("line").toInt();
 	dio->add(id,dig->line);
+	dig->in = true;
+	dig->out = false;
       }
-      dig->in = true;
-      dig->out = false;
     }
   }
 
@@ -165,14 +165,14 @@ namespace Connections {
     for (QDomElement e=doc.firstChildElement("dochannel");
          !e.isNull(); e=e.nextSiblingElement("dochannel")) {
       QString id = xmlAttribute(e,"id");
-      DigiChannel *dig = new DigiChannel(id);
-      digimap[id]=dig;
       if (e.hasAttribute("line")) {
+	DigiChannel *dig = new DigiChannel(id);
+	digimap[id]=dig;
 	dig->line = e.attribute("line").toInt();
 	dio->add(id,dig->line);
+	dig->in = false;
+	dig->out = true;
       }
-      dig->in = false;
-      dig->out = true;
     }
   }
 
