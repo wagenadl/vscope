@@ -18,6 +18,10 @@ public:
    *:R True if successful. If not, a GUI warning is emitted and the
        "Enable" button is switched off.
    */
+  void reset(class xmlGui *gui, class ParamTree *ptree);
+  /*:F reset
+   *:D Rebuilds gui and prog from ptree.
+   */
   bool changeEnable(class xmlGui *gui, class ParamTree *ptree);
   bool changeProgram(class xmlGui *gui, class ParamTree *ptree);
   bool changeParam(class xmlGui *gui, class ParamTree *ptree, QString parid);

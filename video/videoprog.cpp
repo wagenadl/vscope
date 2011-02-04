@@ -32,8 +32,8 @@ bool VideoProg::enabled(ParamTree *ptree) const {
 }
 
 void VideoProg::reset(ParamTree *ptree) {
+  isuptodate = false;
   if (enabled(ptree)) {
-    isuptodate = false;
     ensureSettings(ptree);
   }
 }

@@ -35,6 +35,13 @@ bool VideoGUI::openPage(xmlGui *gui, ParamTree *ptree) {
   return true;
 }  
 
+void VideoGUI::reset(xmlGui *gui, ParamTree *ptree) {
+  if (!vprog.ok()) 
+    return;
+  ensureGUI(gui, ptree);
+  vprog.reset(ptree);
+}
+
 bool VideoGUI::changeEnable(xmlGui *gui, ParamTree *ptree) {
   Dbg() << "VideoGUI::changeEnable";
   if (!vprog.ok()) 
