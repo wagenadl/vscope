@@ -121,6 +121,7 @@ namespace Connections {
 	}
 	if (e.hasAttribute("unit"))
 	  aic->unit = e.attribute("unit");
+	Dbg() << "Connections: aimap["<<id<<"] has line="<<aimap[id]->line;
       }
     }
   }
@@ -199,13 +200,16 @@ namespace Connections {
       throw Exception("Connections","No <connections> element","read");
 
     readAIChannels(doc);
+    Dbg() << "Connections: done reading AI channels. size="<<aimap.size();
     readDIChannels(doc);
     readDOChannels(doc);
     readCameras(doc);
+    Dbg() << "Connections: done reading xml. aimap.size="<<aimap.size();
   }
 
   
   AIChannel const *findpAI(QString id) {
+    Dbg() << "findpAI("<<id<<"). contains="<<aimap.contains(id)<<" size="<<aimap.size();
     if (aimap.contains(id))
       return aimap[id];
     else
