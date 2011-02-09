@@ -37,7 +37,7 @@ bool VideoGUI::openPage(xmlGui *gui, ParamTree *ptree) {
 
 bool VideoGUI::reset(xmlGui *gui, ParamTree *ptree) {
   if (!vprog.ok()) 
-    return;
+    return false;
   try {
     ensureGUI(gui, ptree);
     vprog.reset(ptree);
