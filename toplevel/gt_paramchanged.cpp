@@ -51,7 +51,7 @@ static void setRefTrace() {
 }
 
 void gt_slots::everythingChanged() {
-  Globals::videogui->changeEnable(Globals::gui, Globals::ptree);
+  Globals::videogui->reset(Globals::gui, Globals::ptree);
   Globals::trial->prepare(Globals::ptree);
   Globals::mgintra->rebuild();
   Globals::mgextra->rebuild();

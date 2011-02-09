@@ -35,11 +35,17 @@ bool VideoGUI::openPage(xmlGui *gui, ParamTree *ptree) {
   return true;
 }  
 
-void VideoGUI::reset(xmlGui *gui, ParamTree *ptree) {
+bool VideoGUI::reset(xmlGui *gui, ParamTree *ptree) {
   if (!vprog.ok()) 
     return;
-  ensureGUI(gui, ptree);
-  vprog.reset(ptree);
+  try {
+    ensureGUI(gui, ptree);
+    vprog.reset(ptree);
+  } catch (Exception const &e) {
+    failure(e, gui, ptree);
+    return false;
+  }
+  return true;
 }
 
 bool VideoGUI::changeEnable(xmlGui *gui, ParamTree *ptree) {
