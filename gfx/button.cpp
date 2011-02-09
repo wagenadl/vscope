@@ -10,8 +10,8 @@
 #include <QEvent>
 
 // Defaults for Button; can be overridden after construction.
-int BUTTON_FontSize = 13;
-char const *BUTTON_FontFamily = "Verdana";
+int BUTTON_FontSize = 14;
+char const *BUTTON_FontFamily = "Arial";
 int BUTTON_Width = 80;
 int BUTTON_Height = 27;
 char const *BUTTON_Foreground = "black";

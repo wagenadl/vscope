@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
 
     QFont f = app.font();
     f.setFamily(BUTTON_FontFamily);
-    f.setPixelSize(15);
+    f.setPixelSize(BUTTON_FontSize);
     app.setFont(f);
 
     QString fpath = getenv("HOME");
