@@ -18,6 +18,7 @@
 #include <toplevel/gt_slots.h>
 #include <gui/guiexc.h>
 #include <xml/settingsfile.h>
+#include <toplevel/mainwindow.h>
 
 SavedSettings::SavedSettings(QWidget *parent): FileChooser(parent) {
   savedlg = 0;

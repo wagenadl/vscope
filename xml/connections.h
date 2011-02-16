@@ -56,6 +56,7 @@ namespace Connections {
     bool isdonor;
     bool isacceptor;
     int order;
+    bool exists;
   };
   
   extern void readXML(QDomElement doc);
@@ -88,14 +89,26 @@ namespace Connections {
    *:D Returns a reference to a camera definition given an ID.
    *:R Throws an exception if not found.
    */
+  extern void markCameraExists(QString id, bool exists=true);
   QStringList allCams();
   /*:F allCams
-   *:D Returns a list of all camera IDs.
-   *:N The order of this list is not defined. Specifically, it may not
-       correspond to the CAMERAS enum
+   *:D Returns a list of all camera IDs, even nonexisting cameras.
+   *:N The order of this list is as per their "order" xml attribute.
   */
   QStringList donorCams();
-      
+  /*:F donorCams
+   *:D Returns a list of all camera IDs that have their "role" set to "donor".
+   *:N The order of this list is as per their "order" xml attribute.
+  */
+  QString leaderCamera();
+  /*:F leaderCamera
+   *:D Returns the ID of the "leader" camera. Cameras are considered in this
+       order: 1. existing donor cameras
+              2. existing other cameras
+	      3. non-existing donor cameras
+	      4. non-existing other cameras
+  */
+  
   DigiChannel const *findpDig(QString id);
   /*:F findpDig
    *:D Returns a pointer to a digital line definition given an ID.

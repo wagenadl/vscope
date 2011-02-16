@@ -106,7 +106,6 @@ for my $line (@loglines) {
     # Let's print a date unless it is the first date
     writeout();
     writedate($dat) unless $dat eq $firstdate;
-    print OUT "\n\\newdate{$dat}\n\n"
   }
   if ($msg =~ /^Trial (\d+): (.*)/) {
     writeout("Trial");
@@ -214,7 +213,7 @@ sub writeinfo {
   return unless @infoaccum;
   for (@infoaccum) {
     s/^Parameter change/Parameter change:/;
-    s/$/./ unless /[:;.,?!][]})'"]*$/;
+    s/$/./ unless /[:;.,?!][]})'"]*\s*$/;
   }
   print OUT "<div class=\"info\">" if $html;
   print OUT "\\leftskip=.5cm\\infoface\\rule{0pt}{6.2pt}" unless $html;
@@ -437,6 +436,15 @@ padding: 8px;
 .exptlink:hover {
   color: red; text-decoration: none;
 }
+.newdate {
+  color: #007700;
+  font-size: 13px;
+  margin-top: 10px;
+margin-left: -13px;
+}
+.triangle {
+ vertical-align: 15%;
+}
 </style>
 <title>Log for expt.
 EOF
@@ -500,7 +508,7 @@ EOF
 sub writedate {
   my $dat = shift;
   if ($html) {
-    print OUT "\n<div class=\"newdate\">$dat</div>\n\n";
+    print OUT "\n<div class=\"newdate\"><span class=\"triangle\">&#9654;</span> $dat</div>\n\n";
   } else {
     print OUT "\n\\newdate{$dat}\n\n"
   }

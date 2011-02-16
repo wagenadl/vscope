@@ -15,6 +15,7 @@
 #include <gui/xmlbutton.h>
 #include <toplevel/vscopegui.h>
 #include <toplevel/scripts.h>
+#include <toplevel/mainwindow.h>
 
 static void dimple(QString p) {
   xmlButton *b = Globals::gui->findpButton(p);

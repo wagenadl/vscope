@@ -62,9 +62,9 @@ bool CamPool::haveAll(QStringList const &cams) {
     for (int i=0; i<nCameras(); i++)
       Dbg() << "  Camera #" << i << ": '" << cameras[i]->getID()
 	    << "' (#" << cameras[i]->getSerialNumber() << ")";
-    for (QStringList::const_iterator i=cams.begin(); i!=cams.end(); ++i) {
-      Dbg() << "CamPool looking for '" << *i << "'";
-      if (!byId.contains(*i))
+    foreach (QString s, cams) {
+      Dbg() << "CamPool looking for '" << s << "'";
+      if (!byId.contains(s))
 	return false;
     }
     return true;

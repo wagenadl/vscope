@@ -8,7 +8,7 @@
 VSDGraph::VSDGraph(QWidget *parent): LineGraph(parent) {
   trcDonor = trcAcceptor = trcRatio = 0;
 
-  QString id_donor = Connections::donorCams().first();
+  QString id_donor = Connections::leaderCamera();
   QString id_acceptor = Connections::findCam(id_donor).partnerid;
   bool has_partner = !id_acceptor.isEmpty();
   

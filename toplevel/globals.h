@@ -15,7 +15,7 @@ public:
   static class vscopeGui *gui; // defined in main.cpp
   static class gt_slots *gtslots; // defined in main.cpp
 
-  static class QWidget *mainwindow;
+  static class MainWindow *mainwindow;
   static class QWidget *leftplace;  // defined in main.cpp
   static class QWidget *rightplace; // defined in main.cpp
   

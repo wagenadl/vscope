@@ -14,6 +14,7 @@
 #include <base/dbg.h>
 #include "vscopegui.h"
 #include <xml/enumerator.h>
+#include <toplevel/mainwindow.h>
 
 ExptLog::ExptLog(QObject *parent): QObject(parent) {
   noteEditor = 0;

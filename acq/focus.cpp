@@ -49,7 +49,7 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
 
 void Focus::setCams(QString idA) {
   if (idA=="")
-    idA = Connections::donorCams().first();
+    idA = Connections::leaderCamera();
 
   bool wasactive = isActive;
   if (wasactive)

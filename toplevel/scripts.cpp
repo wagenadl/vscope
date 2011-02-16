@@ -18,6 +18,7 @@
 #include <toplevel/acquire.h>
 #include <toplevel/savedsettings.h>
 #include <toplevel/gt_slots.h>
+#include <toplevel/mainwindow.h>
 
 Scripts::Scripts(QWidget *parent): QWidget(parent) {
   QSize s = parent ? parent->size() : QSize(500,400);

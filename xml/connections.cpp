@@ -140,6 +140,7 @@ namespace Connections {
       cammap[id]=cam;
       camorder[order] = id;
       cam->order = order;
+      cam->exists = false;
       cam->serno = e.attribute("serno");
       cam->partnerid = e.attribute("partnerid");
       cam->xpix = e.attribute("xpix").toInt();
@@ -249,6 +250,11 @@ namespace Connections {
     throw Exception("Connections",
   		  "There is no camera named '" + id + "'","findCam");
   }
+
+  void markCameraExists(QString id, bool exists) {
+    if (cammap.contains(id))
+      cammap[id]->exists = exists;
+  }
   
   QStringList allCams() {
     QStringList sl;
@@ -264,6 +270,21 @@ namespace Connections {
 	sl.append(id);
     return sl;
   }
+
+  QString leaderCamera() {
+    foreach (QString id, camorder.values()) 
+      if (cammap[id]->isdonor && cammap[id]->exists)
+	return id;
+    foreach (QString id, camorder.values()) 
+      if (cammap[id]->exists)
+	return id;
+    foreach (QString id, camorder.values()) 
+      if (cammap[id]->isdonor)
+	return id;
+    foreach (QString id, camorder.values()) 
+      return id;
+    return "";
+  }	
   
   DigiChannel const *findpDig(QString id) {
     if (digimap.contains(id))

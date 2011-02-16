@@ -26,6 +26,7 @@
 #include <video/videoprog.h>
 #include <acq/datatrove.h>
 #include <QDir>
+#include <toplevel/mainwindow.h>
 
 Acquire::Acquire() {
   connect(Globals::trial,SIGNAL(ended(QString,QString)),

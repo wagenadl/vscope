@@ -110,10 +110,12 @@ void VSDTraces::deleteROI(int id) {
 
 void VSDTraces::newCCDData(bool dontTell) {
   dbg("vsdtraces: newccddata");
-  QString id_donor = Connections::donorCams().first();
+  QString id_donor = Connections::leaderCamera();
   QString id_acceptor = Connections::findCam(id_donor).partnerid;
+  bool has_partner = !id_acceptor.isEmpty();
+  
   CCDData const *don = Globals::trove->trial().ccdData(id_donor);
-  CCDData const *acc = id_acceptor.isEmpty() ? 0
+  CCDData const *acc = has_partner ? 0
     : Globals::trove->trial().ccdData(id_acceptor);
   timing.setFrames(don->getNFrames());
   timing.setTiming(don->getT0(), don->getDT());

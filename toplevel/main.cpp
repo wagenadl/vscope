@@ -1,6 +1,5 @@
 // main.cpp
 
-
 #include "vscopegui.h"
 #include "globals.h"
 #include "gt_slots.h"
@@ -26,6 +25,7 @@
 #include <base/roiset3data.h>
 #include <toplevel/roisetguard.h>
 #include <toplevel/panelhistory.h>
+#include <toplevel/mainwindow.h>
 #include <toplevel/scripts.h>
 #include <daq/daqbase.h>
 #include <pvp/campool.h>
@@ -69,7 +69,7 @@
 vscopeGui *Globals::gui;
 gt_slots *Globals::gtslots;
 
-QWidget *Globals::mainwindow;
+MainWindow *Globals::mainwindow;
 QWidget *Globals::leftplace;
 QWidget *Globals::rightplace;
 
@@ -171,137 +171,131 @@ void setFlips() {
   }
 }
 
-int main(int argc, char **argv) {
-  GUIExc::setArgs(argc, argv);
-  QApplication app(argc, argv);
-  try {
-    checkTypes();
-    app.setStyle(new QPlastiqueStyle);
+void setupAppStyle(QApplication &app) {
+  app.setStyle(new QPlastiqueStyle);
+  
+  QFont f = app.font();
+  f.setFamily(BUTTON_FontFamily);
+  f.setPixelSize(BUTTON_FontSize);
+  app.setFont(f);
+}  
 
-    QFont f = app.font();
-    f.setFamily(BUTTON_FontFamily);
-    f.setPixelSize(BUTTON_FontSize);
-    app.setFont(f);
+void setupParsAndConns() {
+  QString fpath = getenv("HOME");
+  char const *envpath = getenv("VSCOPEPATH");
+  if (envpath)
+    fpath = envpath;
+  else
+    fpath = fpath + "/vsddata";
 
-    QString fpath = getenv("HOME");
-    char const *envpath = getenv("VSCOPEPATH");
-    if (envpath)
-      fpath = envpath;
-    else
-      fpath = fpath + "/vsddata";
+  QString parafn = fpath + "/_settings/_parameters.xml";
+  if (true || !QFile::exists(parafn))
+    parafn = ":/parameters.xml";
+  Dbg() << "Reading parameters from: " << parafn;
+  XML paramsDoc(parafn);
+  QDomElement pars = paramsDoc.root();
+  QDomElement e_path = pars.firstChildElement("filepath");
+  if (!envpath && !e_path.isNull())
+    fpath = e_path.attribute("p");
+  
+  if (!envpath)
+    fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
+	    qPrintable(fpath));
+  
+  QString connfn = fpath + "/_settings/_connections.xml";
+  if (!QFile::exists(connfn))
+    connfn = ":/connections.xml";
+  Dbg() << "Reading connections from: " << connfn;
+  XML connDoc(connfn);
+  QDomElement cons = connDoc.root();
+  
+  Enumerator::readAll(pars);
+  Enumerator::readAll(cons); // This must happen before ptree is init'ed
+  Connections::readXML(connDoc.root());
+  Globals::ptree = new ParamTree(pars);
+  Globals::ptree->find("_filePath").set(fpath);
+}
 
-    QString parafn = fpath + "/_settings/_parameters.xml";
-    if (true || !QFile::exists(parafn))
-      parafn = ":/parameters.xml";
-    Dbg() << "Reading parameters from: " << parafn;
-    XML paramsDoc(parafn);
-    QDomElement pars = paramsDoc.root();
-    QDomElement e_path = pars.firstChildElement("filepath");
-    if (!envpath && !e_path.isNull())
-      fpath = e_path.attribute("p");
+void setupDefaultSettings() {
+  QString settingsfn = Globals::ptree->find("_filePath").toString()
+    + "/_settings/Default.xml";
+  if (QFile::exists(settingsfn)) {
+    Dbg() << "Reading settings from: " << settingsfn;
+    XML valuesDoc(settingsfn);
+    QDomElement vals = valuesDoc.root();
+    Globals::ptree->read(vals);
+  }
+}
 
-    if (!envpath)
-      fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
-	      qPrintable(fpath));
+void setupExptName() {
+  QString fpath = Globals::ptree->find("_filePath").toString();
+  QString exptname = QDateTime::currentDateTime().toString("yyMMdd");
+  QString addn = "";
+  int adno=0;
+  QDir d;
+  while (d.exists(fpath + "/" + exptname + addn)) 
+    addn = num2az(++adno);
+  Globals::ptree->find("acquisition/_exptname").set(exptname + addn);
+  if (!dbgfile)
+    dbgfile = new DbgFile();
+  dbgfile->setDir(fpath + "/" + exptname + addn);
+}
 
-    QString connfn = fpath + "/_settings/_connections.xml";
-    if (!QFile::exists(connfn))
-      connfn = ":/connections.xml";
-    Dbg() << "Reading connections from: " << connfn;
-    XML connDoc(connfn);
-    QDomElement cons = connDoc.root();
+void setupDAQ() {
+  Enumerator *daqenum = Enumerator::find("DAQDEV");
+  unsigned int daqtype = daqenum->has("TYPE")
+    ? daqenum->lookup("TYPE") : 0;
+  unsigned int daqserno = daqenum->has("SERNO")
+    ? daqenum->lookup("SERNO") : 0;
+  QString id = DAQDevice::search(daqtype, daqserno);
+  DAQDevice::addAlias(id, "");
+}  
 
-    Enumerator::readAll(pars);
-    Enumerator::readAll(cons); // This must happen before ptree is init'ed
-    Connections::readXML(connDoc.root());
+QDomElement setupGUI() {
+  QString fpath = Globals::ptree->find("_filePath").toString();
+  QString guifn = fpath + "/_settings/_guiconfig.xml";
+  if (!QFile::exists(guifn))
+    guifn = ":/guiconfig.xml";
+  Dbg() << "Reading gui config from: " << guifn;
+  XML guiConfigDoc(guifn);
+  QDomElement guiConf = guiConfigDoc.root();
+  Aliases::read(guiConf);
+  return guiConf;
+}
 
-    Globals::ptree = new ParamTree(pars);
-    Globals::trove = new DataTrove(Globals::ptree);
-    Globals::ptree->find("_filePath").set(fpath);
+void setupCams() {
+  setFlips();
+  CamPool();
+  QStringList sz = Connections::allCams();
+  foreach (QString id, sz) {
+    QString serno = Connections::findCam(id).serno;
+    CamPool::rename(serno, id);
+    Connections::markCameraExists(id, CamPool::findp(id));
+  }
+}
 
-    GUIExc::setParamTree(Globals::ptree);
-    GUIExc::setSettingsDir(fpath + "/_settings");
+void setupMainWindow(QApplication &app) {
+  Globals::mainwindow = new MainWindow(app);
+  Globals::leftplace = makeBanner1(Globals::mainwindow);
+  Globals::leftplace->setGeometry(0,0,512,Globals::mainwindow->basey());
+  Globals::rightplace = makeBanner2(Globals::mainwindow);
+  Globals::rightplace->setGeometry(512,0,512,Globals::mainwindow->basey());
+}  
 
-    setFlips();
-    
-    QString settingsfn = fpath + "/_settings/Default.xml";
-    if (QFile::exists(settingsfn)) {
-      Dbg() << "Reading settings from: " << settingsfn;
-      XML valuesDoc(settingsfn);
-      QDomElement vals = valuesDoc.root();
-      Globals::ptree->read(vals);
-    }
-
-    Taperbank::initialize(fpath + "/_tapers");
-    CohData::setFrameLine(Enumerator::find("DIGILINES")->lookup("FrameCc"));
-    
-    QString exptname = QDateTime::currentDateTime().toString("yyMMdd");
-    QString addn = "";
-    int adno=0;
-    QDir d;
-    while (d.exists(fpath + "/" + exptname + addn)) 
-      addn = num2az(++adno);
-    Globals::ptree->find("acquisition/_exptname").set(exptname + addn);
-    if (!dbgfile)
-      dbgfile = new DbgFile();
-    dbgfile->setDir(fpath + "/" + exptname + addn);
-
-    Enumerator *daqenum = Enumerator::find("DAQDEV");
-    unsigned int daqtype = daqenum->has("TYPE")
-      ? daqenum->lookup("TYPE") : 0;
-    unsigned int daqserno = daqenum->has("SERNO")
-      ? daqenum->lookup("SERNO") : 0;
-    QString id = DAQDevice::search(daqtype, daqserno);
-    DAQDevice::addAlias(id, "");
-
-    QString guifn = fpath + "/_settings/_guiconfig.xml";
-    if (!QFile::exists(guifn))
-      guifn = ":/guiconfig.xml";
-    Dbg() << "Reading gui config from: " << guifn;
-    XML guiConfigDoc(guifn);
-    QDomElement guiConf = guiConfigDoc.root();
-    Aliases::read(guiConf);
-    
-    CamPool();
-    QStringList sz = Connections::allCams();
-    for (QStringList::iterator i=sz.begin(); i!=sz.end(); ++i) {
-      QString serno = Connections::findCam(*i).serno;
-      CamPool::rename(serno,*i);
-    }
-    
-    QWidget mw(0);
-    Globals::mainwindow=&mw;
-    mw.setWindowTitle("VScope");
-    int deskw = app.desktop()->width();
-    int deskh = app.desktop()->height();
-    dbg("Desktop size is %i x %i\n",deskw,deskh);
-    int winh=768;
-    if (deskw>1050 && deskh>=800) {
-      mw.setGeometry(deskw/2-512,deskh/2-384,1024,winh);
-    } else {
-      winh=deskh;
-      mw.setWindowState(Qt::WindowFullScreen);
-    }
-    int basey = winh-256;
-
-    Globals::leftplace = makeBanner1(&mw);
-    Globals::leftplace->setGeometry(0,0,512,basey);
-    Globals::rightplace = makeBanner2(&mw);
-    Globals::rightplace->setGeometry(512,0,512,basey);
-
-    foreach (QString id, Connections::allCams()) {
-      ROIImage *img = new ROIImage(Globals::leftplace);
-      Globals::ccdw[id] = img;
-      img->setROIs(&Globals::trove->rois());
-      img->setGeometry(0,0,512,basey);
-      ROIImage::ShowMode sm =
+void setupCCDImages() {
+  foreach (QString id, Connections::allCams()) {
+    ROIImage *img = new ROIImage(Globals::leftplace);
+    Globals::ccdw[id] = img;
+    img->setROIs(&Globals::trove->rois());
+    img->setGeometry(0,0,512,Globals::mainwindow->basey());
+    ROIImage::ShowMode sm =
 	ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs").toInt());
-      img->showROIs(sm);
-      img->hide();
-    }
+    img->showROIs(sm);
+    img->hide();
+  }
 
-    foreach (QString id1, Connections::allCams()) {
-      foreach (QString id2, Connections::allCams()) {
+  foreach (QString id1, Connections::allCams()) {
+    foreach (QString id2, Connections::allCams()) {
 	if (id1!=id2) {
 	  QObject::connect(Globals::ccdw[id1], SIGNAL(shareZoom(bool,QRect)),
 			   Globals::ccdw[id2], SLOT(sharedZoom(bool,QRect)));
@@ -312,159 +306,226 @@ int main(int argc, char **argv) {
 	  QObject::connect(Globals::ccdw[id1], SIGNAL(deletedROI(int)),
 			   Globals::ccdw[id2], SLOT(acceptROIdelete(int)));
 	}
-      }
     }
-    foreach (QString id, Connections::allCams()) {
-      QObject::connect(Globals::ccdw[id], SIGNAL(editedROI(int)),
+  }
+  foreach (QString id, Connections::allCams()) {
+    QObject::connect(Globals::ccdw[id], SIGNAL(editedROI(int)),
 		       Globals::trove, SLOT(saveROIs()));
-      QObject::connect(Globals::ccdw[id], SIGNAL(deletedROI(int)),
+    QObject::connect(Globals::ccdw[id], SIGNAL(deletedROI(int)),
 		       Globals::trove, SLOT(saveROIs()));
-    }
+  }
+}
 
-    Globals::vsdtraces = new VSDTraces(Globals::rightplace);
-    Globals::vsdtraces->newROIs(&Globals::trove->rois());
-    Globals::vsdtraces->setGeometry(0,0,512,basey);
-    Globals::vsdtraces->
-      setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
+void setupVSDTraces() {
+  Globals::vsdtraces = new VSDTraces(Globals::rightplace);
+  Globals::vsdtraces->newROIs(&Globals::trove->rois());
+  Globals::vsdtraces->setGeometry(0,0,512,Globals::mainwindow->basey());
+  Globals::vsdtraces->
+    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
 				    .toInt()));
-    Globals::vsdtraces->
-      setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach")
+  Globals::vsdtraces->
+    setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach")
 				    .toInt()));
-    QObject::connect(Globals::vsdtraces,SIGNAL(roisChanged()),
-                     Globals::trove,SLOT(saveROIs()));
-    Globals::vsdtraces->hide();
+  QObject::connect(Globals::vsdtraces,SIGNAL(roisChanged()),
+                   Globals::trove,SLOT(saveROIs()));
+  Globals::vsdtraces->hide();
 
-    Globals::coherence = new Coherence(Globals::vsdtraces, 0,
+  foreach (QString id, Connections::allCams()) {
+    QObject::connect(Globals::ccdw[id], SIGNAL(editedROI(int)),
+		     Globals::vsdtraces, SLOT(editROI(int)));
+    QObject::connect(Globals::ccdw[id], SIGNAL(selectedROI(int)),
+		     Globals::vsdtraces, SLOT(selectROI(int)));
+    QObject::connect(Globals::ccdw[id], SIGNAL(deletedROI(int)),
+		     Globals::vsdtraces, SLOT(deleteROI(int)));
+  }
+}
+
+void setupMGAuto(QDomElement &guiConf) {
+  Globals::mgintra = new MGAuto(Globals::leftplace,guiConf,"intra");
+  Globals::mgintra->setGeometry(0,0,512,Globals::mainwindow->basey());
+  Globals::mgintra->hide();
+  
+  Globals::mgextra = new MGAuto(Globals::rightplace,guiConf,"extra");
+  Globals::mgextra->setGeometry(0,0,512,Globals::mainwindow->basey());
+  Globals::mgextra->hide();
+  
+  Globals::mgstim = new MGAuto(Globals::leftplace,guiConf,"stim");
+  Globals::mgstim->setGeometry(0,0,512,Globals::mainwindow->basey());
+  Globals::mgstim->hide();
+}
+
+void setupFocus() {
+  try {
+    Globals::focus = new Focus(Globals::mainwindow);
+    Globals::focus->setGeometry(0,0,1024,Globals::mainwindow->basey());
+    Globals::focus->hide();
+  } catch (...) {
+    Dbg() << "Focus not available without cameras";
+    Globals::focus=0;
+  }
+}
+
+void setupCoherence() {
+  Globals::coherence = new Coherence(Globals::vsdtraces, 0,
 				       Globals::rightplace);
-    Globals::coherence->setGeometry(0,0,512,basey);
-    Globals::coherence->
-      setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
+  Globals::coherence->setGeometry(0,0,512,Globals::mainwindow->basey());
+  Globals::coherence->
+    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
 				    .toInt()));
-    Globals::coherence->
-      setShowMode(ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs")
+  Globals::coherence->
+    setShowMode(ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs")
 				    .toInt()));
-    Globals::coherence->hide();
+  Globals::coherence->hide();
 
-    Globals::cohgraph = new CohGraph(Globals::vsdtraces,
+  Globals::cohgraph = new CohGraph(Globals::vsdtraces,
 				     Globals::coherence->getData(),
 				     Globals::rightplace);
-    Globals::cohgraph->setGeometry(0,0,512,basey);
-    Globals::cohgraph->
-      setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
-				    .toInt()));
-    Globals::cohgraph->hide();
+  Globals::cohgraph->setGeometry(0,0,512,Globals::mainwindow->basey());
+  Globals::cohgraph->
+    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
+				  .toInt()));
+  Globals::cohgraph->hide();
+  
+  foreach (QString id, Connections::allCams()) {
+    QObject::connect(Globals::ccdw[id], SIGNAL(shareZoom(bool, QRect)),
+		     Globals::coherence, SLOT(sharedZoom(bool, QRect)));
+    QObject::connect(Globals::coherence, SIGNAL(shareZoom(bool, QRect)),
+		     Globals::ccdw[id], SLOT(sharedZoom(bool, QRect)));
+  }
+}
+ 
+void setupAcquisition(QDomElement &guiConf) {
+  Globals::acquire = new Acquire();
+  Globals::contacq = new ContAcq();
+ 
+  Globals::liveephys = new LiveEPhys(Globals::mainwindow,guiConf);
+  Globals::liveephys->setGeometry(0,0,1024,Globals::mainwindow->basey());
+  Globals::liveephys->hide();
+}
 
-    foreach (QString id, Connections::allCams()) {
-      QObject::connect(Globals::ccdw[id], SIGNAL(editedROI(int)),
-		       Globals::vsdtraces, SLOT(editROI(int)));
-      QObject::connect(Globals::ccdw[id], SIGNAL(selectedROI(int)),
-		       Globals::vsdtraces, SLOT(selectROI(int)));
-      QObject::connect(Globals::ccdw[id], SIGNAL(deletedROI(int)),
-		       Globals::vsdtraces, SLOT(deleteROI(int)));
+void setupTimeButtons() {
+  Globals::walltime =
+    new TimeButton(0,
+		   &Globals::gui->findButton("acquisition/_walltime"));
+  Globals::exptelapsed =
+    new TimeButton(0,
+		   &Globals::gui->findButton("acquisition/_exptelapsed"));
+  Globals::trialelapsed =
+    new TimeButton(0,
+		   &Globals::gui->findButton("acquisition/_trialelapsed"));
+  Globals::walltime->showWallTime();
+}  
 
-      QObject::connect(Globals::ccdw[id], SIGNAL(shareZoom(bool, QRect)),
-		       Globals::coherence, SLOT(sharedZoom(bool, QRect)));
-      QObject::connect(Globals::coherence, SIGNAL(shareZoom(bool, QRect)),
-		       Globals::ccdw[id], SLOT(sharedZoom(bool, QRect)));
-    }
-    
+void reportCameraSituation() {
+  QStringList allCams = Connections::allCams();
+  Dbg() << "Looking for cameras: " << allCams.join(", ") << ".";
+  
+  QStringList okCams;
+  QStringList missingCams;
+  foreach (QString s, allCams) {
+    if (CamPool::findp(s))
+      okCams.append(s);
+    else
+      missingCams.append(s);
+  }
+
+  if (!okCams.isEmpty())
+    Dbg() << "Found camera(s): " << okCams.join(", ") << ".";
+  if (!missingCams.isEmpty())
+    Dbg() << "Missing camera(s): " << missingCams.join(", ") << ".";
+  
+#ifndef vsdLINUX
+  if (okCams.isEmpty()) {
+  #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
+    GUIExc::warn("Cameras not available. Acquisition will take black frames.");
+  #else
+    GUIExc::warn("Cameras not available. No CCD data will be acquired.");
+  #endif
+  } else if (!missingCams.isEmpty()) {
+    GUIExc::warn("Found camera(s): " + okCams.join(", ")
+		 + ",  but missing camera(s): " + missingCams.join(", ")
+		 + ".");
+  }
+#endif
+}
+
+void reportDAQSituation() {
+  if (!DAQDevice::find().ok()) {
+    QString msg = checkdaq();
+#ifdef vsdLINUX
+    Dbg() << "DAQ not available.";
+#else
+    GUIExc::warn(msg + "\n"
+		 + "Please adjust TYPE and/or SERNO in the DAQDEV enum "
+		 + "in 'connections.xml'. "
+		 + "Acquisition will NOT work otherwise.");
+#endif
+  }
+}
+
+int main(int argc, char **argv) {
+  GUIExc::setArgs(argc, argv);
+  QApplication app(argc, argv);
+  try {
+    checkTypes();
+    setupAppStyle(app);
+    setupParsAndConns();
+
+    QString fpath = Globals::ptree->find("_filePath").toString();
+    Globals::trove = new DataTrove(Globals::ptree);
+    GUIExc::setParamTree(Globals::ptree);
+    GUIExc::setSettingsDir(fpath + "/_settings");
+
+    setupDefaultSettings();
+
+    Taperbank::initialize(fpath + "/_tapers");
+    CohData::setFrameLine(Enumerator::find("DIGILINES")
+			  ->lookup("Frame" + Connections::leaderCamera()));
+    setupExptName();
+    setupDAQ();
+    QDomElement guiConf = setupGUI();
+    setupCams();
+
+    setupMainWindow(app);
+    setupCCDImages();
+
     Globals::videogui = new VideoGUI(VideoProg::find());
 
     Globals::trial = new Trial(&Globals::trove->trial());
     Globals::trial->prepare(Globals::ptree);
 
-    Globals::contacq = new ContAcq();
+    setupMGAuto(guiConf);
+    setupAcquisition(guiConf);
+    Globals::savedSettings = new SavedSettings(Globals::mainwindow);
+    setupFocus();
 
-    Globals::mgintra = new MGAuto(Globals::leftplace,guiConf,"intra");
-    Globals::mgintra->setGeometry(0,0,512,basey);
-    Globals::mgintra->hide();
-
-    Globals::mgextra = new MGAuto(Globals::rightplace,guiConf,"extra");
-    Globals::mgextra->setGeometry(0,0,512,basey);
-    Globals::mgextra->hide();
-
-    Globals::mgstim = new MGAuto(Globals::leftplace,guiConf,"stim");
-    Globals::mgstim->setGeometry(0,0,512,basey);
-    Globals::mgstim->hide();
-
-    Globals::acquire = new Acquire();
-
-    Globals::liveephys = new LiveEPhys(&mw,guiConf);
-    Globals::liveephys->setGeometry(0,0,1024,basey);
-    Globals::liveephys->hide();
-
-    Globals::savedSettings = new SavedSettings(&mw);
-
-    try {
-      Globals::focus = new Focus(&mw);
-      Globals::focus->setGeometry(0,0,1024,basey);
-      Globals::focus->hide();
-    } catch (...) {
-      Dbg() << "Focus not available without cameras";
-      Globals::focus=0;
-    }
-
-    Globals::gui = new vscopeGui(&mw,Globals::ptree,guiConf);
+    Globals::gui = new vscopeGui(Globals::mainwindow, Globals::ptree,guiConf);
     Globals::gtslots = new gt_slots(Globals::gui);
 
-    Globals::walltime =
-      new TimeButton(0,
-		     &Globals::gui->findButton("acquisition/_walltime"));
-    Globals::exptelapsed =
-      new TimeButton(0,
-		     &Globals::gui->findButton("acquisition/_exptelapsed"));
-    Globals::trialelapsed =
-      new TimeButton(0,
-		     &Globals::gui->findButton("acquisition/_trialelapsed"));
-    Globals::walltime->showWallTime();
+    setupTimeButtons();
 
-    Globals::gui->rootPage().setGeometry(0,basey,1024,256);
+    Globals::gui->rootPage().setGeometry(0,Globals::mainwindow->basey(),
+					 1024,256);
     Globals::gui->open();
 
     if (Globals::focus)
       Globals::focus->contactButtons(Globals::gui);
 
-    Globals::blackout = new Blackout(&mw);
+    Globals::blackout = new Blackout(Globals::mainwindow);
     Globals::blackout->hide();
 
-    Globals::exptlog = new ExptLog(&mw);
+    Globals::exptlog = new ExptLog(Globals::mainwindow);
 
     Globals::panelHistory = new PanelHistory();
     Globals::panelHistory->makeButtons();
 
     Globals::scripts = new Scripts(&Globals::gui->findPage("scripts"));
     
-    //// test code follows
-    //Trial trial(Globals::connections,Globals::cameras);
-    //trial.prepare(Globals::ptree);
-    //trial.write(".");
-    //trial.read(".","081024","001", Globals::ptree);
-    //// end of test code
+    Globals::mainwindow->show();
 
-    mw.show();
-
-    if (!CamPool::haveAll(Connections::allCams())) {
-#ifdef vsdLINUX
-      Dbg() << "Cameras not available.";
-#else
-#if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
-      GUIExc::warn("Cameras not available. Acquisition will take black frames.");
-#else
-      GUIExc::warn("Cameras not available. No CCD data will be acquired.");
-#endif
-#endif
-    }
-    if (!DAQDevice::find().ok()) {
-      QString msg = checkdaq();
-#ifdef vsdLINUX
-      Dbg() << "DAQ not available.";
-#else
-      GUIExc::warn(msg + "\n"
-		   + "Please adjust TYPE and/or SERNO in the DAQDEV enum "
-		   + "in 'connections.xml'. "
-		   + "Acquisition will NOT work otherwise.");
-#endif
-    }
+    reportCameraSituation();
+    reportDAQSituation();
+    
     return app.exec();
   } catch (Exception const &e) {
     Warning() << "Exception caught in main.";
