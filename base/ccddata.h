@@ -29,8 +29,8 @@ public:
        will not release any unneeded space unless FREE is set to true.
    *:A True if reallocation occurred.
    */
-  uint16_t const *frameData(int frame=0) const;
-  uint16_t *frameData(int frame=0);
+  uint16_t const *frameData(int frame=-1) const;
+  uint16_t *frameData(int frame=-1);
   int getSerPix() const { return serpix; }
   int getParPix() const { return parpix; }
   int getNFrames() const { return nframes; }

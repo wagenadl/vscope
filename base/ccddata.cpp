@@ -38,13 +38,17 @@ CCDData::~CCDData() {
 }
 
 uint16_t *CCDData::frameData(int frame) {
-  if (frame<0 || frame>=nframes)
+  if (frame<0)
+    return data;
+  if (frame>=nframes)
     throw Exception("CCDData","Bad frame number","frameData");
   return data + frame*framepix;
 }
 
 uint16_t const *CCDData::frameData(int frame) const {
-  if (frame<0 || frame>=nframes)
+  if (frame<0)
+    return data;
+  if (frame>=nframes)
     throw Exception("CCDData","Bad frame number","frameData");
   return data + frame*framepix;
 }

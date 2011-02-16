@@ -190,12 +190,9 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
   QString brightMsg = "Pixel values:";
   bool first = true;
   for (int k=0; k<K; k++) {
-    if (!src[k])
+    if (!src[k] || src[k]->getNFrames()==0)
       continue;
-    uint16_t const *dat = src[k]->frameData(0);
-    if (!dat)
-      continue;
-    
+    uint16_t const *dat = src[k]->frameData();
     int nser = src[k]->getSerPix();
     int npar = src[k]->getParPix();
     imgs[k]->adjustedRange(dat,nser,npar);
