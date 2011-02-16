@@ -76,6 +76,8 @@ double const *ROI3Data::dataRatio() {
 
   if (!datRatio) {
     nRatio = datDonor.getNFrames();
+    if (nRatio==0)
+      return 0;
     datRatio = memalloc<double>(nRatio, "ROI3Data");
   }
 

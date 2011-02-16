@@ -192,10 +192,15 @@ double const *ROIData::getRaw() {
     return 0;
 
   int len = getNFrames();
+  
   if (dataRaw && lengthRaw!=len) {
     delete [] dataRaw;
     dataRaw=0;
   }
+
+  if (len==0)
+    return 0;
+
   if (!dataRaw) {
     dataRaw = memalloc<double>(len, "ROIData");
     lengthRaw = len;

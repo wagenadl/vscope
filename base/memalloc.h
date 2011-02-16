@@ -38,11 +38,11 @@ template <class X> inline X *memalloc(int n, QString requestor) {
     if (n<=0)
       throw MemExc(requestor +
 		   ": Requesting non-positive amount of memory" +
-		   QString(" (%1x%2 bytes).").arg(n).arg(sizeof(X)));
+		   QString(" (%1 x %2 bytes).").arg(n).arg(sizeof(X)));
     if (n*sizeof(X) > MEMALLOC_MAXBYTES)
       throw MemExc(requestor +
 		   ": Requesting unreasonable amount of memory" +
-		   QString(" (%1x%2 bytes).").arg(n).arg(sizeof(X)) +
+		   QString(" (%1 x %2 bytes).").arg(n).arg(sizeof(X)) +
 		   " Change MEMALLOC_MAXBYTES in memalloc.h if you disagree.");
     return new X[n];
   } catch (...) {
