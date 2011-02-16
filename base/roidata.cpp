@@ -185,6 +185,7 @@ void ROIData::makeXYRRABitmap() {
 }
 
 double const *ROIData::getRaw() {
+  Dbg() << "ROIData::getRaw("<<this<<")";
   if (validRaw)
     return dataRaw;
 
@@ -215,7 +216,7 @@ double const *ROIData::getRaw() {
   int xl_eff = flipX ? W - 1 - xl : xl;
   int xmul = flipX ? -1 : 1;
 
-  dbg("flipx=%i flipy=%i xl_eff=%i",flipX,flipY,xl_eff);
+  dbg("ROIData(%p): flipx=%i flipy=%i xl_eff=%i",this,flipX,flipY,xl_eff);
   
   int w_eff = w;
   if (flipX) {
@@ -268,6 +269,8 @@ double const *ROIData::getRaw() {
     }
     dataRaw[n] = sum/sum1;
   }
+
+  Dbg() << "ROIData: returning dataRaw=" << dataRaw;
 
   validRaw = true;
   return dataRaw;
