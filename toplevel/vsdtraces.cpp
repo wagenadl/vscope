@@ -119,8 +119,11 @@ void VSDTraces::newCCDData(bool dontTell) {
     ? Globals::trove->trial().ccdData(id_acceptor)
     : 0;
   Dbg() << "don="<<don<<" acc="<<acc;
+  Dbg() << "nfr"<<don->getNFrames();
   timing.setFrames(don->getNFrames());
+  Dbg() <<"hello";
   timing.setTiming(don->getT0(), don->getDT());
+  Dbg() <<"world";
   Dbg() << "VSDTraces:: don nfr=" << timing.nframes()
 	<< " t0=" << timing.t0_ms() << " dt=" << timing.dt_ms();
   selected->setData(don, acc);
