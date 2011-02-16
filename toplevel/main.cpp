@@ -488,7 +488,9 @@ int main(int argc, char **argv) {
 
     setupMainWindow(app);
     setupCCDImages();
-
+    setupVSDTraces();
+    setupCoherence();
+    
     Globals::videogui = new VideoGUI(VideoProg::find());
 
     Globals::trial = new Trial(&Globals::trove->trial());
