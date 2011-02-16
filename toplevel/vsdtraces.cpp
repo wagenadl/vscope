@@ -113,10 +113,12 @@ void VSDTraces::newCCDData(bool dontTell) {
   QString id_donor = Connections::leaderCamera();
   QString id_acceptor = Connections::findCam(id_donor).partnerid;
   bool has_partner = !id_acceptor.isEmpty();
-  
+  Dbg() << "donor: " << id_donor << "; acceptor: " << id_acceptor << ".";
   CCDData const *don = Globals::trove->trial().ccdData(id_donor);
-  CCDData const *acc = has_partner ? 0
-    : Globals::trove->trial().ccdData(id_acceptor);
+  CCDData const *acc = has_partner
+    ? Globals::trove->trial().ccdData(id_acceptor)
+    : 0;
+  Dbg() << "don="<<don<<" acc="<<acc;
   timing.setFrames(don->getNFrames());
   timing.setTiming(don->getT0(), don->getDT());
   Dbg() << "VSDTraces:: don nfr=" << timing.nframes()
