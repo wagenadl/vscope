@@ -153,6 +153,7 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::acquire->setContEphys();
     } else if (p=="acquisition/_dummy") {
       bool dummy = Globals::ptree->find(p).toBool();
+      Globals::trove->setDummy(dummy);
       xmlButton *b = Globals::gui->findpButton(p);
       b->setForeground(dummy ? QColor("#ff0000") : QColor("#000000"));
       b->setText(dummy ? "DUMMY" : "Dummy");

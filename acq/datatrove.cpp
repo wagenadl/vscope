@@ -45,12 +45,23 @@ void DataTrove::read(QString dir, QString exptname, QString trialid) {
 }
 
 void DataTrove::write(QString dir) {
-  trial_->write(dir);
   savedir = dir;
+
+  if (dummy) {
+    Dbg() << "DataTrove::write: not saving: dummy";
+    return;
+  }
+
+  trial_->write(dir);
   saveROIs();
 }
 
 void DataTrove::saveROIs() {
+  if (dummy) {
+    Dbg() << "DataTrove::saveROIs: not saving: dummy";
+    return;
+  }
+  
   Dbg() << "DataTrove::saveROIs" << trial_->exptName() << "/" << trial_->trialID();
   if (savedir.isNull()) {
     warn("DataTrove::saveROIs: not saving - no directory set");

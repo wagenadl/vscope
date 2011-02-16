@@ -151,12 +151,6 @@ void Acquire::closeDialog() {
 }
 
 void Acquire::saveData() {
-  bool dummy = Globals::ptree->find("acquisition/_dummy").toBool();
-  if (dummy) {
-    dbg("acquire::savedata: not saving data: dummy trial");
-    return;
-  }
-  QString filePath = Globals::ptree->find("_filePath").toString();
   try {
     Globals::trove->write(filePath);
   } catch (Exception const &e) {

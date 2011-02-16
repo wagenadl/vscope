@@ -15,8 +15,13 @@ public:
   virtual ~DataTrove();
 public slots:
   void read(QString dir, QString exptname, QString trialid);
-  void write(QString dir);
+  void write(QString dir); // does nothing if dummy is set
   void saveROIs(); // only works after write().
+  void setDummy(bool dummy);
+  /*:F setDummy
+   *:D If set, saving is disabled and the write() and saveROIs() slots do
+       nothing.
+  */
 public:
   // class ParamTree &ptree() { return *ptree_; }
   class TrialData &trial() { return *trial_; }
@@ -32,6 +37,7 @@ private:
 private:
   bool ownptree;
   QString savedir;
+  bool dummy;
 private: // not implemented
   DataTrove(DataTrove const &);
   DataTrove &operator=(DataTrove const &);
