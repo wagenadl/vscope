@@ -180,29 +180,31 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     btn.push_back(&Globals::gui->findButton("acquisition/_camvals" + id));
 
   QVector<CCDData const *> src;
-  for (int k=0; k<K; k++) {
-    src.push_back(Globals::trove->trial().ccdData(camname[k]));
-    if (!src[k] || src[k]->getNFrames()==0) {
-      dbg("Acquire::displayCCD: no data");
-      return;
-    }
-  }
+  foreach (QString id, camname)
+    src.push_back(Globals::trove->trial().ccdData(id));
 
   QVector<Connections::CamCon const *> cams;
   foreach (QString id, camname)
-    cams.push_back(&Connections::findCam(id));
+    cams.push_back(Connections::findpCam(id));
 
   QString brightMsg = "Pixel values:";
+  bool first = true;
   for (int k=0; k<K; k++) {
+    if (!src[k])
+      continue;
     uint16_t const *dat = src[k]->frameData(0);
+    if (!dat)
+      continue;
+    
     int nser = src[k]->getSerPix();
     int npar = src[k]->getParPix();
     imgs[k]->adjustedRange(dat,nser,npar);
     imgs[k]->newImage(dat,nser,npar,cams[k]->flipx, cams[k]->flipy);
-    if (k==0) {
+    if (first) {
       Globals::coherence->adjustedRange(dat,nser,npar);
       Globals::coherence->newImage(dat,nser,npar,
-				   cams[k]->flipx, cams[k]->flipy);
+  				   cams[k]->flipx, cams[k]->flipy);
+      first = false;
     }
     uint16_t min = 65535;
     uint16_t max = 0;
@@ -210,12 +212,12 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     uint16_t const *ptr = dat;
     for (int p=0; p<npar; p++) {
       for (int s=0; s<nser; s++) {
-	uint16_t v = *ptr++;
-	if (v<min)
-	  min=v;
-	if (v>max)
-	  max=v;
-	sum+=v;
+  	uint16_t v = *ptr++;
+  	if (v<min)
+  	  min=v;
+  	if (v>max)
+  	  max=v;
+  	sum+=v;
       }
     }
     double avg = double(sum)/nser/npar;
