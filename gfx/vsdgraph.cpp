@@ -3,31 +3,45 @@
 #include "vsdgraph.h"
 #include <base/ccddata.h>
 #include <base/dbg.h>
+#include <xml/connections.h>
 
 VSDGraph::VSDGraph(QWidget *parent): LineGraph(parent) {
+  trcDonor = trcAcceptor = trcRatio = 0;
+
+  QString id_donor = Connections::donorCams().first();
+  QString id_acceptor = Connections::findCam(id_donor).partnerid;
+  bool has_partner = !id_acceptor.isEmpty();
+  
   trcDonor = new TraceInfo(TraceInfo::dataDouble);
-  trcAcceptor = new TraceInfo(TraceInfo::dataDouble);
-  trcRatio = new TraceInfo(TraceInfo::dataDouble);
+  
+  addTrace(id_donor,trcDonor);
+  setTraceLabel(id_donor,id_donor);
+  setTracePen(id_donor, QColor("#00ccff")); // blue-green
 
-  addTrace("cc",trcDonor);
-  addTrace("ox",trcAcceptor);
-  addTrace("rat",trcRatio);
-  setTraceLabel("cc","cc");
-  setTraceLabel("ox","ox");
-  setTraceLabel("rat","ratio");
-  setTracePen("cc",QColor("#00ccff")); // blue-green
-  setTracePen("ox",QColor("#ff8800")); // orange
-  setTracePen("rat",QColor("#000000")); // black
-
+  if (has_partner) {
+    trcAcceptor = new TraceInfo(TraceInfo::dataDouble);
+    addTrace(id_acceptor,trcAcceptor);
+    setTraceLabel(id_acceptor,id_acceptor);
+    setTracePen(id_acceptor,QColor("#ff8800")); // orange
+    
+    trcRatio = new TraceInfo(TraceInfo::dataDouble);
+    addTrace("rat",trcRatio);
+    setTraceLabel("rat","Ratio");
+    setTracePen("rat",QColor("#000000")); // black
+  }
+  
   autoSetXRange();
   //  setAutoRepaint(false);
 }
 
 VSDGraph::~VSDGraph() {
-  traces.clear(); // make sure the linegraph destructor won't mess with our data,
-  delete trcRatio;
-  delete trcAcceptor;
-  delete trcDonor;
+  traces.clear(); // make sure the linegraph destructor won't mess with our data
+  if (trcRatio)
+    delete trcRatio;
+  if (trcAcceptor)
+    delete trcAcceptor;
+  if (trcDonor)
+    delete trcDonor;
 }
 
 void VSDGraph::setROI(XYRRA el) {
@@ -42,9 +56,9 @@ void VSDGraph::setROI(class PolyBlob const *pb) {
 
 void VSDGraph::setData(CCDData const *donor,
 		       CCDData const *acceptor) {
-  data.setData(donor,acceptor);
-  t0_ms = donor->getT0();
-  dt_ms = donor->getDT();
+  data.setData(donor, acceptor);
+  t0_ms = donor ? donor->getT0() : 0;
+  dt_ms = donor ? donor->getDT() : 1;
   if (isXRangeAuto())
     setXRange(Range(t0_ms/1e3,t0_ms/1e3+dt_ms/1e3*data.getNFrames()),true);
   update();
@@ -57,28 +71,31 @@ void VSDGraph::setDebleach(ROIData::Debleach d) {
 
 void VSDGraph::paintEvent(class QPaintEvent *e) {
   try {
-  bool autoRP = getAutoRepaint();
-  if (autoRP)
-    setAutoRepaint(false);
-  // Ensure that our data are up-to-date
-  TraceInfo::DataPtr p;
-  p.dp_double = data.dataDonor();
-  trcDonor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-  p.dp_double = data.dataAcceptor();
-  trcAcceptor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-  p.dp_double = data.dataRatio();
-  trcRatio->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-
-  //dbg("VSDGraph::paintEvent. t0=%g dt=%g n=%i",t0_ms,dt_ms,data.getNFrames());
-  
-  // Following is not really great, I think it may mess up zoom, but
-  // where else can I reasonably do this?
-  autoSetYRange(0.05,0.10);
-  
-  // Let LineGraph draw our stuff.
-  LineGraph::paintEvent(e);
-  if (autoRP)
-    setAutoRepaint(true);
+    bool autoRP = getAutoRepaint();
+    if (autoRP)
+      setAutoRepaint(false);
+    // Ensure that our data are up-to-date
+    TraceInfo::DataPtr p;
+    p.dp_double = data.dataDonor();
+    if (trcDonor)
+      trcDonor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
+    p.dp_double = data.dataAcceptor();
+    if (trcAcceptor)
+      trcAcceptor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
+    p.dp_double = data.dataRatio();
+    if (trcRatio)
+      trcRatio->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
+    
+    //dbg("VSDGraph::paintEvent. t0=%g dt=%g n=%i",t0_ms,dt_ms,data.getNFrames());
+    
+    // Following is not really great, I think it may mess up zoom, but
+    // where else can I reasonably do this?
+    autoSetYRange(0.05,0.10);
+    
+    // Let LineGraph draw our stuff.
+    LineGraph::paintEvent(e);
+    if (autoRP)
+      setAutoRepaint(true);
   } catch (...) {
     dbg("exception caught in vsdgraph::paintevent");
   }

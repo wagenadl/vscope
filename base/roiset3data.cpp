@@ -21,8 +21,8 @@ void ROISet3Data::setData(CCDData const *donor,
 			  CCDData const *acceptor) {
   lastDonor = donor;       // For the benefit of
   lastAcceptor = acceptor; //    future ROIs.
-  for (QMap<int,ROI3Data *>::iterator i=data.begin(); i!=data.end(); ++i) 
-    i.value()->setData(donor,acceptor);
+  foreach (ROI3Data *rd, data.values())
+    rd->setData(donor, acceptor);
   t0_ms = donor->getT0();
   dt_ms = donor->getDT();
 }
@@ -40,8 +40,8 @@ bool ROISet3Data::haveData(int id) const {
 
 void ROISet3Data::setDebleach(ROIData::Debleach d) {
  lastDebleach = d;
- for (QMap<int,ROI3Data *>::iterator i=data.begin(); i!=data.end(); ++i) 
-   i.value()->setDebleach(d);
+ foreach (ROI3Data *rd, data.values())
+   rd->setDebleach(d);
 }
 
 void ROISet3Data::setROI(int id, XYRRA el) {
@@ -71,8 +71,8 @@ void ROISet3Data::removeROI(int id) {
 }
 
 void ROISet3Data::clearROIs() {
-  for (QMap<int,ROI3Data *>::iterator i=data.begin(); i!=data.end(); ++i) 
-    delete i.value();
+  foreach (ROI3Data *rd, data.values())
+    delete rd;
   data.clear();
 }
 

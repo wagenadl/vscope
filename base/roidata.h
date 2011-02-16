@@ -1,3 +1,4 @@
+
 // roidata.h
 
 #ifndef ROIDATA_H
@@ -90,6 +91,7 @@ public:
    *:R Normalized debleached data in percent.
    */
   int getNFrames() const;
+  bool haveData() const;
 private:
   void ensureBitmap();
   void makePolyBitmap();

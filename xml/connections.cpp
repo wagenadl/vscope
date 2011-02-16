@@ -12,6 +12,7 @@ namespace Connections {
   QMap<QString,AIChannel *> aimap;
   QMap<QString,DigiChannel *> digimap;
   QMap<QString,CamCon *> cammap;
+  QMap<int, QString> camorder;
 
   AIChannel::AIChannel(QString id): id(id) {
     line = -1;
@@ -23,7 +24,7 @@ namespace Connections {
   
   CamCon::CamCon(QString id): id(id) {
     serno="-";
-    partnerid="-";
+    partnerid="";
     flipx = flipy = false;
     xpix = ypix = 512;
     focusexp_ms = 100;
@@ -58,6 +59,7 @@ namespace Connections {
       QDomElement e = doc.ownerDocument().createElement("camera");
       doc.appendChild(e);
       e.setAttribute("id",cam.id);
+      e.setAttribute("order",cam.order);
       e.setAttribute("partnerid",cam.partnerid);
       e.setAttribute("serno",cam.serno);
       e.setAttribute("xpix",QString::number(cam.xpix));
@@ -66,6 +68,9 @@ namespace Connections {
       e.setAttribute("flipy",cam.flipy?"yes":"no");
       Param expo("time"); expo.setDouble(cam.focusexp_ms);
       e.setAttribute("focusexpose",expo.toString());
+      e.setAttribute("role", cam.isdonor ? "donor"
+		     : cam.isacceptor ? "acceptor"
+		     : "");
     }
   }
 
@@ -121,7 +126,7 @@ namespace Connections {
 	}
 	if (e.hasAttribute("unit"))
 	  aic->unit = e.attribute("unit");
-	Dbg() << "Connections: aimap["<<id<<"] has line="<<aimap[id]->line;
+	//Dbg() << "Connections: aimap["<<id<<"] has line="<<aimap[id]->line;
       }
     }
   }
@@ -130,8 +135,11 @@ namespace Connections {
     for (QDomElement e=doc.firstChildElement("camera");
          !e.isNull(); e=e.nextSiblingElement("camera")) {
       QString id = xmlAttribute(e,"id");
+      int order = xmlAttribute(e,"order").toInt(0);
       CamCon *cam = new CamCon(id);
       cammap[id]=cam;
+      camorder[order] = id;
+      cam->order = order;
       cam->serno = e.attribute("serno");
       cam->partnerid = e.attribute("partnerid");
       cam->xpix = e.attribute("xpix").toInt();
@@ -142,6 +150,9 @@ namespace Connections {
       cam->flipy = flipy=="true" || flipy=="on" || flipy=="yes";
       Param expo("time"); expo.set(e.attribute("focusexpose"));
       cam->focusexp_ms = expo.toDouble();
+      QString role = e.attribute("role");
+      cam->isdonor = role=="donor";
+      cam->isacceptor = role=="acceptor";
     }
   }
 
@@ -200,16 +211,16 @@ namespace Connections {
       throw Exception("Connections","No <connections> element","read");
 
     readAIChannels(doc);
-    Dbg() << "Connections: done reading AI channels. size="<<aimap.size();
+    //Dbg() << "Connections: done reading AI channels. size="<<aimap.size();
     readDIChannels(doc);
     readDOChannels(doc);
     readCameras(doc);
-    Dbg() << "Connections: done reading xml. aimap.size="<<aimap.size();
+    //Dbg() << "Connections: done reading xml. aimap.size="<<aimap.size();
   }
 
   
   AIChannel const *findpAI(QString id) {
-    Dbg() << "findpAI("<<id<<"). contains="<<aimap.contains(id)<<" size="<<aimap.size();
+    //Dbg() << "findpAI("<<id<<"). contains="<<aimap.contains(id)<<" size="<<aimap.size();
     if (aimap.contains(id))
       return aimap[id];
     else
@@ -241,9 +252,16 @@ namespace Connections {
   
   QStringList allCams() {
     QStringList sl;
-    for (QMap<QString,CamCon *>::const_iterator k=cammap.begin();
-         k!=cammap.end(); k++)
-      sl.append(k.key());
+    foreach (QString id, camorder.values())
+      sl.append(id);
+    return sl;
+  }
+
+  QStringList donorCams() {
+    QStringList sl;
+    foreach (QString id, camorder.values()) 
+      if (cammap[id]->isdonor)
+	sl.append(id);
     return sl;
   }
   

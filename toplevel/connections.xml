@@ -28,11 +28,6 @@
     <item tag="VidY" value="3"/>
   </enum>
 
-  <enum id="CAMERAS">
-    <item tag="Cc" value="0"/>
-    <item tag="Ox" value="1"/>
-  </enum>
-
   <enum id="DIGILINES">
   </enum>
 </enums>
@@ -78,11 +73,11 @@
   <aichannel id="ExtVB4" line="23"
      ground="RSE" range="5V" unit="V" scale="1"/>
 
-  <camera id="Cc" serno="A08F101002" 
+  <camera id="Cc" serno="A08F101002" role="donor" order="0"
      xpix="512" ypix="512"
      flipx="false" flipy="true" 
      focusexpose="200 ms" partnerid="Ox"/>  <!-- back -->
-  <camera id="Ox" serno="A08B101016" 
+  <camera id="Ox" serno="A08B101016" role="acceptor" order="1"
      xpix="512" ypix="512"
      flipx="false" flipy="false"
      focusexpose="3 ms" partnerid="Cc"/>  <!-- top -->

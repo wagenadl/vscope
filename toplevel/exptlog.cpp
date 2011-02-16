@@ -223,9 +223,9 @@ void ExptLog::makeConnections() {
   buts.append("acquisition/_ccvals");
   buts.append("acquisition/_oxvals");
   foreach (QString s, buts) {
-    connect(Globals::gui->findpButton(s),
-	    SIGNAL(doubleClicked(QString,QString)),
-	    this,
-	    SLOT(acceptDoubleClick(QString,QString)));
+    Button *b = Globals::gui->findpButton(s);
+    if (b)
+      connect(b, SIGNAL(doubleClicked(QString,QString)),
+	    this, SLOT(acceptDoubleClick(QString,QString)));
   }
 }

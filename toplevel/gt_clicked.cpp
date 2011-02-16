@@ -31,14 +31,14 @@ void gt_slots::clicked(QString p) {
     } else if (p=="minimize") {
       Globals::mainwindow->setWindowState(Qt::WindowMinimized);
     } else if (p=="analysis/zoomIn") {
-      Globals::coumarinw->zoomIn();
-      // Globals::oxonolw->zoomIn() will be called through shareZoom
+      Globals::ccdw.values().first()->zoomIn();
+      // others will be called through shareZoom
     } else if (p=="analysis/zoomOut") {
-      Globals::coumarinw->zoomOut();
-      // Globals::oxonolw->zoomOut() will be called through shareZoom
+      Globals::ccdw.values().first()->zoomOut();
+      // others will be called through shareZoom
     } else if (p=="analysis/roiDelete") {
-      Globals::coumarinw->deleteROI();
-      // oxonolw will receive acceptROIdelete.
+      Globals::ccdw.values().first()->deleteROI();
+      // others will receive acceptROIdelete.
     } else if (p=="maintenance/liveEphys/autoRange") {
       if (Globals::liveephys)
         Globals::liveephys->autoRange();
@@ -59,11 +59,11 @@ void gt_slots::clicked(QString p) {
       Globals::exptelapsed->setFormat("Since Click:\n%1");
       Globals::exptelapsed->startCountUp();
       Globals::exptlog->addNote("Timer reset");
-    } else if (p.startsWith("acquisition/_ccvals/")) {
-      Globals::coumarinw->recolor(p.split("/").last());
-      Globals::acquire->redisplayCCD();
-    } else if (p.startsWith("acquisition/_oxvals/")) {
-      Globals::oxonolw->recolor(p.split("/").last());
+    } else if (p.startsWith("acquisition/_camvals")) {
+      QStringList bits = p.split("/");
+      QString leaf = bits.takeLast();
+      QString id = bits.last().mid(8);
+      Globals::ccdw[id]->recolor(leaf);
       Globals::acquire->redisplayCCD();
     } else if (p=="scripts/load") {
       Globals::scripts->prepareLoad();

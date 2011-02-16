@@ -49,7 +49,7 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
 
 void Focus::setCams(QString idA) {
   if (idA=="")
-    idA = Enumerator::find("CAMERAS")->reverseLookup(0);
+    idA = Connections::donorCams().first();
 
   bool wasactive = isActive;
   if (wasactive)
@@ -58,7 +58,9 @@ void Focus::setCams(QString idA) {
   Dbg() << "Focus::setCams("<<idA<<")";
   
   Connections::CamCon const *ccA = Connections::findpCam(idA);
-  Connections::CamCon const *ccB = ccA ? Connections::findpCam(ccA->partnerid) : 0;
+  Connections::CamCon const *ccB = ccA
+    ? Connections::findpCam(ccA->partnerid)
+    : 0;
   Dbg() << "  Focus: ccA=" << ccA << ". ccB=" << ccB;
 
   flipXA = ccA ? ccA->flipx : false;

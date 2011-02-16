@@ -89,6 +89,7 @@ public:
        I'm not sure this is a great idea if we are not debleaching, but
        it was the easiest way to code this. (Otherwise, when does debleaching
        get done exactly?)
+   *:N If we don't have acceptor data, this returns donor data w/o ratioing.
   */
 private:
   void copy(ROI3Data const &other);

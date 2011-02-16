@@ -17,6 +17,7 @@
 #include <xml/enumerator.h>
 #include <base/ccddata.h>
 #include <acq/datatrove.h>
+#include <xml/connections.h>
 
 VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent), timing(0) {
   roiset=0;
@@ -109,14 +110,17 @@ void VSDTraces::deleteROI(int id) {
 
 void VSDTraces::newCCDData(bool dontTell) {
   dbg("vsdtraces: newccddata");
-  CCDData const *don = Globals::trove->trial().ccdData("Cc");
-  CCDData const *acc = Globals::trove->trial().ccdData("Ox");
+  QString id_donor = Connections::donorCams().first();
+  QString id_acceptor = Connections::findCam(id_donor).partnerid;
+  CCDData const *don = Globals::trove->trial().ccdData(id_donor);
+  CCDData const *acc = id_acceptor.isEmpty() ? 0
+    : Globals::trove->trial().ccdData(id_acceptor);
   timing.setFrames(don->getNFrames());
   timing.setTiming(don->getT0(), don->getDT());
   Dbg() << "VSDTraces:: don nfr=" << timing.nframes()
 	<< " t0=" << timing.t0_ms() << " dt=" << timing.dt_ms();
-  selected->setData(don,acc);
-  allgraph->setData(don,acc);
+  selected->setData(don, acc);
+  allgraph->setData(don, acc);
   if (!dontTell) {
     dbg("vsdtraces:newccddata: emitting datachanged");
     emit dataChanged();

@@ -60,8 +60,8 @@ void gt_slots::everythingChanged() {
 
   ROIImage::ShowMode sm =
     ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs").toInt());
-  Globals::coumarinw->showROIs(sm);
-  Globals::oxonolw->showROIs(sm);
+  foreach (ROIImage *img, Globals::ccdw.values())
+    img->showROIs(sm);
   Globals::coherence->setShowMode(sm);
   Globals::vsdtraces->
     setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach").toInt()));
@@ -102,8 +102,8 @@ void gt_slots::paramchanged(QString p, QString val) {
     } else if (p=="analysis/showROIs") {
       ROIImage::ShowMode sm =
 	ROIImage::ShowMode(Globals::ptree->find(p).toInt());
-      Globals::coumarinw->showROIs(sm);
-      Globals::oxonolw->showROIs(sm);
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->showROIs(sm);
       Globals::coherence->setShowMode(sm);
     } else if (p=="analysis/debleach") {
       Globals::vsdtraces->

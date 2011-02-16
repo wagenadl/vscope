@@ -66,6 +66,9 @@ double const *ROI3Data::dataRatio() {
   if (valid)
     return datRatio;
 
+  if (!datAcceptor.haveData())
+    return dataDonor();
+
   if (datRatio && nRatio!=datDonor.getNFrames()) {
     delete [] datRatio;
     datRatio = 0;

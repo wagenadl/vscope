@@ -73,8 +73,7 @@ QWidget *Globals::mainwindow;
 QWidget *Globals::leftplace;
 QWidget *Globals::rightplace;
 
-ROIImage *Globals::oxonolw;
-ROIImage *Globals::coumarinw;
+QMap<QString, ROIImage *> Globals::ccdw;
 VSDTraces *Globals::vsdtraces;
 Coherence *Globals::coherence;
 CohGraph *Globals::cohgraph;
@@ -158,10 +157,18 @@ QWidget *makeBanner2(QWidget *parent) {
 }
 
 void setFlips() {
-  Connections::CamCon const &donCam = Connections::findCam("Cc");
-  Connections::CamCon const &accCam = Connections::findCam("Ox");
-  ROI3Data::setFlip(donCam.flipx, donCam.flipy,
-		    accCam.flipx, accCam.flipy);
+  QString id_donor = Connections::donorCams().first();
+  QString id_acceptor = Connections::findCam(id_donor).partnerid;
+  Connections::CamCon const &donCam = Connections::findCam(id_donor);
+  if (id_acceptor.isEmpty()) {
+    // only one camera
+    ROI3Data::setFlip(donCam.flipx, donCam.flipy, false, false);
+  } else {
+    // two cameras
+    Connections::CamCon const &accCam = Connections::findCam(id_acceptor);
+    ROI3Data::setFlip(donCam.flipx, donCam.flipy,
+		      accCam.flipx, accCam.flipy);
+  }
 }
 
 int main(int argc, char **argv) {
@@ -281,37 +288,38 @@ int main(int argc, char **argv) {
     Globals::leftplace->setGeometry(0,0,512,basey);
     Globals::rightplace = makeBanner2(&mw);
     Globals::rightplace->setGeometry(512,0,512,basey);
-    
-    Globals::coumarinw = new ROIImage(Globals::leftplace);
-    Globals::oxonolw = new ROIImage(Globals::rightplace);
-    Globals::coumarinw->setROIs(&Globals::trove->rois());
-    Globals::oxonolw->setROIs(&Globals::trove->rois());
-    Globals::coumarinw->setGeometry(0,0,512,basey);
-    Globals::oxonolw->setGeometry(0,0,512,basey);
-    { ROIImage::ShowMode sm =
+
+    foreach (QString id, Connections::allCams()) {
+      ROIImage *img = new ROIImage(Globals::leftplace);
+      Globals::ccdw[id] = img;
+      img->setROIs(&Globals::trove->rois());
+      img->setGeometry(0,0,512,basey);
+      ROIImage::ShowMode sm =
 	ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs").toInt());
-      Globals::coumarinw->showROIs(sm);
-      Globals::oxonolw->showROIs(sm);
+      img->showROIs(sm);
+      img->hide();
     }
-    Globals::coumarinw->hide();
-    Globals::oxonolw->hide();
 
-    #define conn(s,d,si,sl) \
-        QObject::connect(Globals::s,SIGNAL(si), \
-    		     Globals::d,SLOT(sl));
-    #define connmut(s,d,si,sl)			\
-        conn(s,d,si,sl); conn(d,s,si,sl);
-    #define conn2(s1,s2,d, si,sl) \
-        conn(s1,d,si,sl); \
-        conn(s2,d,si,sl);
-
-    connmut(oxonolw, coumarinw, shareZoom(bool,QRect), sharedZoom(bool,QRect));
-    connmut(oxonolw, coumarinw, selectedROI(int), acceptROIselect(int));
-    connmut(oxonolw, coumarinw, editedROI(int), acceptROIedit(int));
-    connmut(oxonolw, coumarinw, deletedROI(int), acceptROIdelete(int));
-
-    conn2(oxonolw, coumarinw, trove, editedROI(int),saveROIs());
-    conn2(oxonolw, coumarinw, trove, deletedROI(int),saveROIs());
+    foreach (QString id1, Connections::allCams()) {
+      foreach (QString id2, Connections::allCams()) {
+	if (id1!=id2) {
+	  QObject::connect(Globals::ccdw[id1], SIGNAL(shareZoom(bool,QRect)),
+			   Globals::ccdw[id2], SLOT(sharedZoom(bool,QRect)));
+	  QObject::connect(Globals::ccdw[id1], SIGNAL(selectedROI(int)),
+			   Globals::ccdw[id2], SLOT(acceptROIselect(int)));
+	  QObject::connect(Globals::ccdw[id1], SIGNAL(editedROI(int)),
+			   Globals::ccdw[id2], SLOT(acceptROIedit(int)));
+	  QObject::connect(Globals::ccdw[id1], SIGNAL(deletedROI(int)),
+			   Globals::ccdw[id2], SLOT(acceptROIdelete(int)));
+	}
+      }
+    }
+    foreach (QString id, Connections::allCams()) {
+      QObject::connect(Globals::ccdw[id], SIGNAL(editedROI(int)),
+		       Globals::trove, SLOT(saveROIs()));
+      QObject::connect(Globals::ccdw[id], SIGNAL(deletedROI(int)),
+		       Globals::trove, SLOT(saveROIs()));
+    }
 
     Globals::vsdtraces = new VSDTraces(Globals::rightplace);
     Globals::vsdtraces->newROIs(&Globals::trove->rois());
@@ -345,13 +353,20 @@ int main(int argc, char **argv) {
       setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
 				    .toInt()));
     Globals::cohgraph->hide();
-    
-    conn2(oxonolw, coumarinw, vsdtraces, editedROI(int),editROI(int));
-    conn2(oxonolw, coumarinw, vsdtraces, selectedROI(int),selectROI(int));
-    conn2(oxonolw, coumarinw, vsdtraces, deletedROI(int),deleteROI(int));
 
-    connmut(oxonolw, coherence, shareZoom(bool,QRect), sharedZoom(bool,QRect));
-    connmut(coumarinw, coherence, shareZoom(bool,QRect), sharedZoom(bool,QRect));
+    foreach (QString id, Connections::allCams()) {
+      QObject::connect(Globals::ccdw[id], SIGNAL(editedROI(int)),
+		       Globals::vsdtraces, SLOT(editROI(int)));
+      QObject::connect(Globals::ccdw[id], SIGNAL(selectedROI(int)),
+		       Globals::vsdtraces, SLOT(selectROI(int)));
+      QObject::connect(Globals::ccdw[id], SIGNAL(deletedROI(int)),
+		       Globals::vsdtraces, SLOT(deleteROI(int)));
+
+      QObject::connect(Globals::ccdw[id], SIGNAL(shareZoom(bool, QRect)),
+		       Globals::coherence, SLOT(sharedZoom(bool, QRect)));
+      QObject::connect(Globals::coherence, SIGNAL(shareZoom(bool, QRect)),
+		       Globals::ccdw[id], SLOT(sharedZoom(bool, QRect)));
+    }
     
     Globals::videogui = new VideoGUI(VideoProg::find());
 
@@ -385,7 +400,7 @@ int main(int argc, char **argv) {
       Globals::focus->setGeometry(0,0,1024,basey);
       Globals::focus->hide();
     } catch (...) {
-      fprintf(stderr,"Focus not available without cameras\n");
+      Dbg() << "Focus not available without cameras";
       Globals::focus=0;
     }
 
@@ -430,7 +445,7 @@ int main(int argc, char **argv) {
 
     if (!CamPool::haveAll(Connections::allCams())) {
 #ifdef vsdLINUX
-      fprintf(stderr,"Cameras not available.\n");
+      Dbg() << "Cameras not available.";
 #else
 #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
       GUIExc::warn("Cameras not available. Acquisition will take black frames.");
@@ -442,7 +457,7 @@ int main(int argc, char **argv) {
     if (!DAQDevice::find().ok()) {
       QString msg = checkdaq();
 #ifdef vsdLINUX
-      fprintf(stderr,"DAQ not available.\n");
+      Dbg() << "DAQ not available.";
 #else
       GUIExc::warn(msg + "\n"
 		   + "Please adjust TYPE and/or SERNO in the DAQDEV enum "

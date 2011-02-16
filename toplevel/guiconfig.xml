@@ -910,15 +910,15 @@
     <button id="autoRun"  label="Auto Run&#xA;Disabled" type="bool" bg="#9977ff"/>
     <group id="a">
       <button id="trialPeriod" label="Trial period:&#xA;%1" bg="#44ffaa"/>
-      <button id="_ccvals" label="Coumarin:&#xA;%1" x="1.05" y="0" bg="#8888ff" value="-/-/-"/>
-      <button id="_oxvals" label="Oxonol:&#xA;%1" x="2.05" y="0" bg="#ff8888" value="-/-/-"/>
+      <button id="_camvalsCc" label="Coumarin:&#xA;%1" x="1.05" y="0" bg="#8888ff" value="-/-/-"/>
+      <button id="_camvalsOx" label="Oxonol:&#xA;%1" x="2.05" y="0" bg="#ff8888" value="-/-/-"/>
     </group>
 
     <button id="_walltime" label="%1" x="2.05" y="2" bg="#99aa99"/>
     <button id="_exptelapsed" label="Since Start:&#xA;%1" bg="#88bb88"/>
     <button id="_trialelapsed" label="Since Last:&#xA;%1" bg="#77cc77"/>
 
-    <page id="_ccvals">
+    <page id="_camvalsCc">
       <button id="blackPlus" label="More black"/>
       <button id="blackMin" label="Less black"/>
       <button id="whitePlus" label="More white"/>
@@ -926,7 +926,7 @@
       <button id="reset" label="Reset"/>
     </page>
 
-    <page id="_oxvals">
+    <page id="_camvalsOx">
       <button id="blackPlus" label="More black"/>
       <button id="blackMin" label="Less black"/>
       <button id="whitePlus" label="More white"/>

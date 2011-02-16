@@ -53,6 +53,9 @@ namespace Connections {
     int xpix, ypix; // number of pixels in full frame
     bool flipx, flipy; // true if this image should be flipped
     double focusexp_ms;
+    bool isdonor;
+    bool isacceptor;
+    int order;
   };
   
   extern void readXML(QDomElement doc);
@@ -86,6 +89,13 @@ namespace Connections {
    *:R Throws an exception if not found.
    */
   QStringList allCams();
+  /*:F allCams
+   *:D Returns a list of all camera IDs.
+   *:N The order of this list is not defined. Specifically, it may not
+       correspond to the CAMERAS enum
+  */
+  QStringList donorCams();
+      
   DigiChannel const *findpDig(QString id);
   /*:F findpDig
    *:D Returns a pointer to a digital line definition given an ID.

@@ -7,6 +7,7 @@
 #include <base/minmax.h>
 #include <xml/enumerator.h>
 #include <xml/paramtree.h>
+#include <xml/connections.h>
 
 #define PAR_OUTRATE "acqEphys/acqFreq"
 
@@ -18,22 +19,28 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
 
   int shtrline = lines->lookup("ExcShtr",-1);
   int illumline = lines->lookup("ExcLight",-1);
-  int trigccline = lines->lookup("TrigCc");
-  int trigoxline = lines->lookup("TrigOx");
+  QMap<QString,int> trigcamlines;
+  QStringList camnames = Connections::allCams();
+  foreach (QString id, camnames) 
+    trigcamlines[id] = lines->lookup("Trig" + id);
 
   if (shtrline>=0)
     ddata->addLine(shtrline);
   if (illumline>=0)
     ddata->addLine(illumline);
-  ddata->addLine(trigccline);
-  ddata->addLine(trigoxline);
+  foreach (int l, trigcamlines.values()) 
+    ddata->addLine(l);
 
   uint32_t one = 1;
 
   uint32_t shtrval = (shtrline>=0) ? (one<<shtrline) : 0;
   uint32_t illumval = (illumline>=0) ? (one<<illumline) : 0;
-  uint32_t trigccval = one<<trigccline;
-  uint32_t trigoxval = one<<trigoxline;
+  uint32_t trigallval = 0;
+  QMap<QString, uint32_t> trigcamvals;
+  foreach (QString id, trigcamlines.keys()) {
+    trigcamvals[id] = one<<trigcamlines[id];
+    trigallval |= one<<trigcamlines[id];
+  }
 
   int nscans = timing.neededScans();
   
@@ -85,6 +92,6 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
 	data[i] |= shtrval;
     if (n==0 || (timing.trigEach() && n>0)) 
       for (int i=framestart; i<trigend; i++)
-	data[i] |= trigccval|trigoxval;
+	data[i] |= trigallval;
   }     
 }

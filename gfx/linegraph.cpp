@@ -438,19 +438,21 @@ void LineGraph::paintXAxis(QPainter &p) {
 
   // draw major x ticks & labels
   double dx_ = getXTicks();
-  int prec = reasonablePrecision(dx_);
-  for (double x = computeFirstXTick(); x<=x1; x+=dx_) {
-    int scrx = dataToScreenX(x);
-    if (axisTickLength)
-      p.drawLine(scrx,scry,scrx,scry-axisTickLength-1);
-    if (xtickLabelsShown) {
-      QString s = QString::number(double(x),'f',prec);
-      QRect r1 = QRect(scrx-100,0,200,scry-axisTickLength-labelVTickSpace);
-      QRect br1 = p.boundingRect(r1, Qt::AlignHCenter | Qt::AlignBottom, s);
-      if (br1.right()<br.left()-2 && br1.left()>axisTickLength) {
-	p.setPen(axisTextColor);
-	p.drawText(r1, Qt::AlignHCenter | Qt::AlignBottom, s);
-	p.setPen(axisPen);
+  if (dx_>0) {
+    int prec = reasonablePrecision(dx_);
+    for (double x = computeFirstXTick(); x<=x1; x+=dx_) {
+      int scrx = dataToScreenX(x);
+      if (axisTickLength)
+	p.drawLine(scrx,scry,scrx,scry-axisTickLength-1);
+      if (xtickLabelsShown) {
+	QString s = QString::number(double(x),'f',prec);
+	QRect r1 = QRect(scrx-100,0,200,scry-axisTickLength-labelVTickSpace);
+	QRect br1 = p.boundingRect(r1, Qt::AlignHCenter | Qt::AlignBottom, s);
+	if (br1.right()<br.left()-2 && br1.left()>axisTickLength) {
+	  p.setPen(axisTextColor);
+	  p.drawText(r1, Qt::AlignHCenter | Qt::AlignBottom, s);
+	  p.setPen(axisPen);
+	}
       }
     }
   }
@@ -488,20 +490,22 @@ void LineGraph::paintYAxis(QPainter &p) {
 
   // draw major y ticks & labels
   double dy_ = getYTicks();
-  int prec = reasonablePrecision(dy_);
-  for (double y = computeFirstYTick(); y<=y1; y+=dy_) {
-    int scry = dataToScreenY(y);
-    if (axisTickLength)
-      p.drawLine(scrx,scry,scrx+axisTickLength,scry);
-    if (ytickLabelsShown) {
-      QString s = QString::number(double(y),'f',prec);
-      QRect r1 = QRect(scrx+axisTickLength+labelHTickSpace,scry-100,100,200);
-      QRect br1 = p.boundingRect(r1, Qt::AlignLeft | Qt::AlignVCenter, s);
-      if (br1.top()>br.bottom() &&
-	  br1.bottom()<contentsHeight()-0*axisTickLength) {
-	p.setPen(axisTextColor);
-	p.drawText(r1, Qt::AlignLeft | Qt::AlignVCenter, s);
-	p.setPen(axisPen);
+  if (dy_>0) {
+    int prec = reasonablePrecision(dy_);
+    for (double y = computeFirstYTick(); y<=y1; y+=dy_) {
+      int scry = dataToScreenY(y);
+      if (axisTickLength)
+	p.drawLine(scrx,scry,scrx+axisTickLength,scry);
+      if (ytickLabelsShown) {
+	QString s = QString::number(double(y),'f',prec);
+	QRect r1 = QRect(scrx+axisTickLength+labelHTickSpace,scry-100,100,200);
+	QRect br1 = p.boundingRect(r1, Qt::AlignLeft | Qt::AlignVCenter, s);
+	if (br1.top()>br.bottom() &&
+	    br1.bottom()<contentsHeight()-0*axisTickLength) {
+	  p.setPen(axisTextColor);
+	  p.drawText(r1, Qt::AlignLeft | Qt::AlignVCenter, s);
+	  p.setPen(axisPen);
+	}
       }
     }
   }

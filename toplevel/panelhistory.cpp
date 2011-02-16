@@ -187,18 +187,16 @@ int PanelHistory::weakest(QString where) /*const*/ {
 
 QWidget *PanelHistory::childWidget(QString what) {
   QWidget *child = 0;
-  if (what=="VSDCc")
-    child = Globals::coumarinw;
-  else if (what=="VSDOx")
-    child = Globals::oxonolw;
+  if (what=="VSDTraces")
+    child = Globals::vsdtraces;
+  else if (what.startsWith("VSD"))
+    child = Globals::ccdw[what.mid(3)];
   else if (what=="EphysInt")
     child = Globals::mgintra;
   else if (what=="EphysExt")
     child = Globals::mgextra;
   else if (what=="Stimuli")
     child = Globals::mgstim;
-  else if (what=="VSDTraces")
-    child = Globals::vsdtraces;
   else if (what=="Coherence")
     child = Globals::coherence;
   else if (what=="CohGraph")

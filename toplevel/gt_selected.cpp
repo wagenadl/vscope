@@ -32,32 +32,32 @@ void gt_slots::selected(QString p) {
     else if (p=="maintenance/focus/viewDiff" && Globals::focus) 
       Globals::focus->setViewMode(Focus::ViewDiff);
     else if (p=="analysis/zoom") {
-      Globals::coumarinw->setModeZoom();
-      Globals::oxonolw->setModeZoom();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeZoom();
     } else if (p=="analysis/roiBlob") {
-      Globals::coumarinw->setModeBlobROI();
-      Globals::oxonolw->setModeBlobROI();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeBlobROI();
     } else if (p=="analysis/roiSelect") {
-      Globals::coumarinw->setModeSelectROI();
-      Globals::oxonolw->setModeSelectROI();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeSelectROI();
     } else if (p=="analysis/roiAdd") {
-      Globals::coumarinw->setModeAddROI();
-      Globals::oxonolw->setModeAddROI();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeAddROI();
     } else if (p=="analysis/roiDelete") {
-      Globals::coumarinw->setModeDelROI();
-      Globals::oxonolw->setModeDelROI();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeDelROI();
     } else if (p=="analysis/roiMove") {
-      Globals::coumarinw->setModeMoveROI();
-      Globals::oxonolw->setModeMoveROI();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeMoveROI();
     } else if (p=="analysis/roiResize") {
-      Globals::coumarinw->setModeResizeROI();
-      Globals::oxonolw->setModeResizeROI();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeResizeROI();
     } else if (p=="analysis/roiRotate") {
-      Globals::coumarinw->setModeRotateROI();
-      Globals::oxonolw->setModeRotateROI();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeRotateROI();
     } else if (p=="analysis/roiRotSize") {
-      Globals::coumarinw->setModeRotSizeROI();
-      Globals::oxonolw->setModeRotSizeROI();
+      foreach (ROIImage *img, Globals::ccdw.values())
+	img->setModeRotSizeROI();
     }
   } catch (Exception const &e) {
     report(e,"select button");

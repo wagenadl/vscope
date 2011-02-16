@@ -9,14 +9,11 @@
 #include <base/exception.h>
 #include <pvp/campool.h>
 #include "dutycyclelimit.h"
-#include <xml/enumerator.h>
-
+ 
 CCDAcq::CCDAcq() {
-  Enumerator *camenum = Enumerator::find("CAMERAS");
+  QStringList cams = Connections::allCams();
   ncams=0;
-  for (int k=camenum->getSmallestValue();
-       k<=camenum->getLargestValue(); k++) {
-    QString id = camenum->reverseLookup(k);
+  foreach (QString id, cams) {
     camids.append(id);
     caminfo.append(Connections::findpCam(id));
     camidx[id]=ncams;

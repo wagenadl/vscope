@@ -31,10 +31,7 @@ TrialData::TrialData() {
   ddataIn = new DigitalData(1024);
   ddataOut = new DigitalData(1024);
 
-  Enumerator *camenum = Enumerator::find("CAMERAS");
-  for (int k=camenum->getSmallestValue();
-       k<=camenum->getLargestValue(); k++) {
-    QString camid = camenum->reverseLookup(k);
+  foreach (QString camid, Connections::allCams()) {
     camidx[camid] = ccddata.size();
     camids.append(camid);
     CCDData *d = new CCDData();

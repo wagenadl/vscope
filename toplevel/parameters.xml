@@ -165,8 +165,8 @@
     <param id="contEphys" type="bool" default="false"/>
     <param id="_dummy" type="bool" default="false"/>
     <param id="trialPeriod" type="time" default="300 s" min="1 s" max="1000 h"/>
-    <category id="_ccvals"/>
-    <category id="_oxvals"/>
+    <category id="_camvalsCc"/>
+    <category id="_camvalsOx"/>
   </category>
   <category id="analysis">
     <param id="refType" type="enum" enum="REFTYPE" default="Analog"/>

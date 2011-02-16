@@ -169,18 +169,21 @@ void Acquire::redisplayCCD() {
 
 void Acquire::displayCCD(bool writePixStatsToLog) {
   dbg("acquire:displayccd");
-  int K=2;
-  QVector<QString> camname;
-  camname.push_back("Cc");
-  camname.push_back("Ox");
-  QVector<ROIImage *> imgs;
-  imgs.push_back(Globals::coumarinw);
-  imgs.push_back(Globals::oxonolw);
-  QVector<xmlButton *> btn;
-  btn.push_back(&Globals::gui->findButton("acquisition/_ccvals"));
-  btn.push_back(&Globals::gui->findButton("acquisition/_oxvals"));
 
-  QVector<CCDData const *>src;
+  QVector<QString> camname;
+  foreach (QString id, Connections::allCams())
+    camname.push_back(id);
+  int K = camname.size();
+  
+  QVector<ROIImage *> imgs;
+  foreach (QString id, camname)
+    imgs.push_back(Globals::ccdw[id]);
+
+  QVector<xmlButton *> btn;
+  foreach (QString id, camname)
+    btn.push_back(&Globals::gui->findButton("acquisition/_camvals" + id));
+
+  QVector<CCDData const *> src;
   for (int k=0; k<K; k++) {
     src.push_back(Globals::trove->trial().ccdData(camname[k]));
     if (!src[k] || src[k]->getNFrames()==0) {
@@ -190,8 +193,8 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
   }
 
   QVector<Connections::CamCon const *> cams;
-  for (int k=0; k<K; k++)
-    cams.push_back(&Connections::findCam(camname[k]));
+  foreach (QString id, camname)
+    cams.push_back(&Connections::findCam(id));
 
   QString brightMsg = "Pixel values:";
   for (int k=0; k<K; k++) {
@@ -272,8 +275,8 @@ void Acquire::loadData(QString xmlfn) {
     GUIExc::report(e,"load data");
   }
 
-  Globals::coumarinw->setROIs(&Globals::trove->rois());
-  Globals::oxonolw->setROIs(&Globals::trove->rois());
+  foreach (ROIImage *img, Globals::ccdw.values())
+    img->setROIs(&Globals::trove->rois());
   Globals::vsdtraces->newROIs(&Globals::trove->rois(), true);
   
   Globals::ptree->find("acquisition/_exptname").set(exptbit);

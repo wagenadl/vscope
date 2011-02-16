@@ -37,12 +37,8 @@ Trial::Trial(TrialData *d): dat(d) {
 
   ccdacq = new CCDAcq();
 
-  Enumerator *camenum = Enumerator::find("CAMERAS");
-  for (int k=camenum->getSmallestValue();
-       k<=camenum->getLargestValue(); k++) {
-    QString camid = camenum->reverseLookup(k);
+  foreach (QString camid, Connections::allCams()) 
     ccdacq->setDest(camid, dat->ccdData(camid));;
-  }
 
   prep=false;
   active=false;

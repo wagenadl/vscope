@@ -11,6 +11,14 @@
 class Focus: public QFrame {
   Q_OBJECT;
 public:
+  /*
+    The current version of Focus is perfectly happy to have 0, 1, or 2 cameras.
+    However, if it has two cameras, it requires that they have the same size.
+    Throwing a "Pixel count mismatch" exception may be avoided in the future
+    if I implement a way to map fields of view of two cameras onto each other.
+    At a minimum, that would require new "scale", "shiftx", and "shifty"
+    variables in the cameras' Connections information.
+   */
   enum ViewMode {
     ViewAll,
     ViewA,
