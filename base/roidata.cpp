@@ -185,7 +185,7 @@ void ROIData::makeXYRRABitmap() {
 }
 
 double const *ROIData::getRaw() {
-  Dbg() << "ROIData::getRaw("<<this<<")";
+  Dbg() << "ROIData::getRaw("<<this<<"). validraw="<<validRaw<<" dataraw="<<dataRaw<<" source="<<source;
   if (validRaw)
     return dataRaw;
 

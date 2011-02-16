@@ -10,7 +10,7 @@
 template <class X> Range ti_minmax(X const*xx, int N, int step) {
   // For arbitrary data type X, returns the min and max of N elements
 
-  if (N==0) 
+  if (N==0 || !xx) 
     return Range();
 
   X min=xx[0];
@@ -32,7 +32,7 @@ template <class X> Range ti_minmax99(X const*xx, int N, int step,
   // of N elements.
   // Note that this is slower than ti_minmax, since it needs to copy the
   // data for the purpose of nth_element. Still, it is linear time.
-  if (N==0)
+  if (N==0 || !xx)
     return Range();
 
   if (frc0<=0 && (frc1<=0 || frc1>=1))
@@ -76,7 +76,7 @@ template <class X> void ti_trueblue(X const *data,
 				    double *outmin, double *outmax) {
   //dbg("ti_trueblue datax0=%g datadx=%g dataN=%i  x0=%g dx=%g M=%i",
   //    datax0,datadx,dataN, x0,dx,M);
-  if (dataN==0) {
+  if (dataN==0 || !data) {
     for (int m=0; m<M; m++) {
       outmin[m]=numbers.inf;
       outmax[m]=-numbers.inf;
@@ -120,7 +120,7 @@ void ti_trueblue_binary(uint32_t const *data, uint32_t bit,
   uint32_t mask = one<<bit;
   //dbg("ti_trueblue datax0=%g datadx=%g dataN=%i  x0=%g dx=%g M=%i",
   //    datax0,datadx,dataN, x0,dx,M);
-  if (dataN==0) {
+  if (dataN==0 || !data) {
     for (int m=0; m<M; m++) {
       outmin[m]=numbers.inf;
       outmax[m]=-numbers.inf;
@@ -239,7 +239,8 @@ Range TraceInfo::range() const {
   return r;
 }
 
-Range TraceInfo::zoomrange99(double x0, double x1, double frc0, double frc1) const {
+Range TraceInfo::zoomrange99(double x0, double x1,
+			     double frc0, double frc1) const {
   if (N==0 || datadx==0)
     return Range();
   int n0 = int((x0-datax0)/datadx);
@@ -260,6 +261,10 @@ Range TraceInfo::range99(double frc0, double frc1) const {
 }
 
 double TraceInfo::getDatum(int n) const {
+  if (!dataptr.dp_int32) {
+    Dbg() << "getDatum on null data";
+    return 0;
+  }
   if (n<0 || n>=N)
     return 0; // really might throw an exception?
   switch (datatype) {
