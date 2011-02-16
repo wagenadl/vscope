@@ -152,6 +152,7 @@ void Acquire::closeDialog() {
 
 void Acquire::saveData() {
   try {
+    QString filePath = Globals::ptree->find("_filePath").toString();
     Globals::trove->write(filePath);
   } catch (Exception const &e) {
     GUIExc::report(e,"Acquire");

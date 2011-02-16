@@ -56,6 +56,10 @@ void DataTrove::write(QString dir) {
   saveROIs();
 }
 
+void DataTrove::setDummy(bool d) {
+  dummy = d;
+}
+
 void DataTrove::saveROIs() {
   if (dummy) {
     Dbg() << "DataTrove::saveROIs: not saving: dummy";
