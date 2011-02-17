@@ -11,6 +11,10 @@
 #include <base/polyblob.h>
 
 class ROISet {
+  /*:C ROISet
+   *:D This is the list of ROI definitions. It does not contain data for
+       any particular actual image.
+  */
 public:
   ROISet();
   ~ROISet();

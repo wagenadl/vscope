@@ -36,8 +36,9 @@ private: friend class ROIData;
 
 class ROIData: public ROIData_ {
   /*:C ROIData
-   *:D Maintains a bitmap for a ROI so that average data can be quickly
-       extracted from that same ROI in multiple sets of images.
+   *:D Data from a specific image for a given ROI.
+   *:N This class maintains a bitmap for the ROI so that average data
+       can be quickly extracted from that same ROI in multiple images.
    *:N This class can handle both xyrra-style (elliptic) and polyblob-style
        (polygonal) ROIs.
   */

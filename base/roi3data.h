@@ -22,8 +22,8 @@ protected:
 class ROI3Data: private ROI3Data_ {
   /*:C ROI3Data
    *:D ROI3Data contains the time-dependent average fluorescence in a ROI.
-       It contains the data for the donor (i.e., coumarin) and the acceptor
-       (i.e., oxonol) as well as the ratio of the two.
+       It contains the data for the donor (e.g, coumarin) and the acceptor
+       (e.g., oxonol) as well as the ratio of the two.
        The class is smart, in that setROI() and setData() do not actually
        cause computation of the trace; this is only done when the results
        are requested through dataDonor() and friends.

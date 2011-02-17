@@ -18,6 +18,10 @@ public:
 };
 
 class ROISet3Data: private ROISet3Data_ {
+  /*:C ROISet3Data
+   *:D ROISet3Data maintains a collection of ROI3Datas, i.e., data extracted
+       from a number of ROIs in a particular (donor,acceptor) image pair.
+  */
 public:
   ROISet3Data();
   virtual ~ROISet3Data();

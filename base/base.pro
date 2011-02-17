@@ -12,7 +12,6 @@ HEADERS += base26.h \
 	   minmax.h \
            numbers.h \
            range.h \
-	   roiname.h \
 	   xyrra.h \
            types.h \
  	   solvep.h \
@@ -28,7 +27,6 @@ SOURCES += base26.cpp \
            dbg.cpp \
 	   exception.cpp \
            numbers.cpp \
-           roiname.cpp \
            xyrra.cpp \
 	   types.cpp \
            solvep.cpp \
