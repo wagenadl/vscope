@@ -160,7 +160,10 @@ int CCDAcq::nPixelsSoFar(QString camid) {
 }
 
 bool CCDAcq::hasEnded() {
-  dbg("ccdacq: hasended? npix: %8i %8i",nPixelsSoFar(camids[0]),nPixelsSoFar(camids[1]));
+  QString npix="";
+  foreach (QString id, camids) 
+    npix += QString(" %1:%2").arg(id).arg(nPixelsSoFar(id));
+  Dbg() << "ccdacq: hasended? npix: " << npix;
   dbg("ccdacq::hasended actv=%i done=%i good=%i",isActive,isDone,isGood);
   if (!isActive)
     return isDone;

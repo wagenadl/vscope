@@ -4,6 +4,7 @@
 #include <base/ccddata.h>
 #include <base/dbg.h>
 #include <xml/connections.h>
+#include <gfx/colors.h>
 
 VSDGraph::VSDGraph(QWidget *parent): LineGraph(parent) {
   trcDonor = trcAcceptor = trcRatio = 0;
@@ -19,13 +20,13 @@ VSDGraph::VSDGraph(QWidget *parent): LineGraph(parent) {
   
   addTrace(id_donor,trcDonor);
   setTraceLabel(id_donor,id_donor);
-  setTracePen(id_donor, QColor("#00ccff")); // blue-green
+  setTracePen(id_donor, Colors::find("CCD"+id_donor,"black"));
 
   if (has_partner) {
     trcAcceptor = new TraceInfo(TraceInfo::dataDouble);
     addTrace(id_acceptor,trcAcceptor);
     setTraceLabel(id_acceptor,id_acceptor);
-    setTracePen(id_acceptor,QColor("#ff8800")); // orange
+    setTracePen(id_acceptor,Colors::find("CCD"+id_acceptor,"black"));
     
     trcRatio = new TraceInfo(TraceInfo::dataDouble);
     addTrace("rat",trcRatio);

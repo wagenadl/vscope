@@ -41,6 +41,7 @@
 #include <gui/timebutton.h>
 #include <gfx/roiimage.h>
 #include <gfx/multigraph.h>
+#include <gfx/colors.h>
 
 #include <acq/liveephys.h>
 #include <acq/focus.h>
@@ -157,7 +158,7 @@ QWidget *makeBanner2(QWidget *parent) {
 }
 
 void setFlips() {
-  QString id_donor = Connections::donorCams().first();
+  QString id_donor = Connections::leaderCamera();
   QString id_acceptor = Connections::findCam(id_donor).partnerid;
   Connections::CamCon const &donCam = Connections::findCam(id_donor);
   if (id_acceptor.isEmpty()) {
@@ -260,6 +261,7 @@ QDomElement setupGUI() {
   XML guiConfigDoc(guifn);
   QDomElement guiConf = guiConfigDoc.root();
   Aliases::read(guiConf);
+  new Colors(guiConf);
   return guiConf;
 }
 

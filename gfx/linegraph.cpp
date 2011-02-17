@@ -4,6 +4,7 @@
 #include <base/memalloc.h>
 #include <base/numbers.h>
 #include <base/minmax.h>
+#include <gfx/colors.h>
 #include <math.h>
 
 #include <QPainter>
@@ -17,10 +18,10 @@
 #include <QMouseEvent>
 
 LineGraph::LineGraph(QWidget *parent): QFrame(parent),
-				       axisPen(QColor("#888888")),
-				       lastTracePen(QColor("black")),
-				       backgroundColor("white"),
-				       axisTextColor("#880000"),
+				       axisPen(Colors::find("axisPen")),
+				       lastTracePen(Colors::find("tracePen")),
+				       backgroundColor(Colors::find("graphBg")),
+				       axisTextColor(Colors::find("axisText")),
 				       axisTickLength(6),
 				       axisMinorTickLength(2),
 				       x0(-.2), x1(1.2),

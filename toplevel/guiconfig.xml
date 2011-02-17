@@ -1288,4 +1288,13 @@
   <alias id="VideoTrig" label="VTrig"/>
 </aliases>
 
+<colors>
+  <color id="CCDCc" value="#00ccff"/>
+  <color id="CCDOx" value="#ff8800"/>
+  <color id="axisPen" value="#888888"/>
+  <color id="tracePen" value="black"/>
+  <color id="axisText" value="#880000"/>
+  <color id="graphBg" value="white"/>
+</colors>
+
 </vsdscopeGUIConfig>
