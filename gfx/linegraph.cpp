@@ -144,13 +144,8 @@ Range LineGraph::computeXRange() const {
 
 Range LineGraph::computeYRange(double frc) const {
   Range yy;
-  for (Traces::const_iterator i=traces.constBegin();
-       i!=traces.constEnd(); ++i) {
-    TraceInfo const *ti = i.value();
-    Range y1 = ti->zoomrange99(x0,x1,frc);
-    yy.include(y1.min);
-    yy.include(y1.max);
-  }
+  foreach (TraceInfo const *ti, traces) 
+    yy.expand(ti->zoomrange99(x0,x1,frc));
   return yy;
 }
 
@@ -529,6 +524,7 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
       Dbg() << "LineGraph:: nothing to plot (N="<<N<<")";
       return;
     }
+    dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
     int x0pix = int(contentsX0()+(ti->getX0()-x0)/dx_per_pix);
     double dxpix = ti->getDX()/dx_per_pix;
     QVector<QPoint> pts(N);

@@ -34,6 +34,12 @@ public:
     if (x>max)
       max=x;
   }
+  void expand(Range const &r) {
+    if (r.empty())
+      return;
+    include(r.min);
+    include(r.max);
+  }
   bool empty() const { return max<min; }
   /*:F empty
    *:D Returns true if the interval is empty.
