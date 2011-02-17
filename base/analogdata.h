@@ -67,13 +67,6 @@ public:
    *:A int index: index within the scan.
     :  int channel: physical channel to associate with that index.
   */
-  void defineChannels(uint32_t channelMask) throw(Exception);
-  /*:F void defineChannels(unsigned long channelMask)
-   *:D Specifies mapping for all channels at once, using a mask.
-   *:A unsigned long channelMask: set bits indicate channels to include.
-   *:N Using this function, physical channels will be used in numeric order.
-       If you need arbitrary order, use defineChannel() instead.
-  */
   void read(FILE *in) throw(Exception);
   /*:F void read(FILE *in)
    *:D Reads back data written by write().

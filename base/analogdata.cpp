@@ -134,19 +134,6 @@ void AnalogData::defineChannel(int index, int channel) throw(Exception) {
   channel2index[channel] = index;
 }
 
-void AnalogData::defineChannels(uint32_t channelMask) throw(Exception) {
-  int count=0;
-  for (int n=0; n<MAXCHANNELS; n++) {
-    if (channelMask & (1<<n)) {
-      index2channel[count] = n;
-      channel2index[n] = count;
-      ++count;
-    }
-  }
-  if (count!=nchannels)
-    throw Exception("AnalogData", "Channel definition mask has incorrect channel count");
-}  
-
 QMap<int,double> AnalogData::writeInt16(QString ofn) throw(Exception) {
   dbg("adata:writeint16. ofn=%s",qPrintable(ofn));
   dbg("  nch=%i nsc=%i",nchannels,nscans);
