@@ -199,8 +199,11 @@ double const *ROIData::getRaw() {
     dataRaw=0;
   }
 
-  if (len==0)
+  Dbg() << "ROIData:: len="<<len;
+  if (len==0) {
+    validRaw = true;
     return 0;
+  }
 
   if (!dataRaw) {
     dataRaw = memalloc<double>(len, "ROIData");
@@ -277,7 +280,7 @@ double const *ROIData::getRaw() {
 }
 
 double const *ROIData::getDebleachedDFF() {
-  //  dbg("getDebleachedDFF. valid=%c",validDebleached?'y':'n');
+  dbg("getDebleachedDFF. valid=%c",validDebleached?'y':'n');
   if (validDebleached)
     return dataDebleached;
 
