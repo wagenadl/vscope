@@ -513,6 +513,7 @@ void LineGraph::paintYAxis(QPainter &p) {
 
 void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 
+  Dbg() << "LineGraph("<<this<<"): ti="<<ti;
   int M = contentsWidth(); // number of pixels
   if (M==0)
     return;
@@ -539,16 +540,16 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
     double *yy_max = memalloc<double>(M, "Linegraph");
     ti->trueBlue(x0,dx_per_pix,M, yy_min,yy_max);
   
-    //dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
-    //dbg("  trace %p: x0=%g dx=%g dp=%p N=%i step=%i\n",
-    //         ti,ti->datax0,ti->datadx,ti->dataptr.dp_none,ti->N,ti->step);
+    dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
+    dbg("  trace %p: x0=%g dx=%g dp=%p N=%i step=%i\n",
+             ti,ti->datax0,ti->datadx,ti->dataptr.dp_none,ti->N,ti->step);
   
     double summin=0, summax=0;
     for (int m=0; m<M; m++) {
       summin+=yy_min[m];
       summax+=yy_max[m];
     }
-    //dbg(" avgmin=%g avgmax=%g\n",summin/M,summax/M);
+    dbg(" avgmin=%g avgmax=%g\n",summin/M,summax/M);
     
     int m0=0, m1=M;
     for (int m=0; m<M; m++) {
@@ -561,7 +562,7 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
         }
       }
     }
-    // dbg("linegraph: m0=%i m1=%i",m0,m1);
+     dbg("linegraph: m0=%i m1=%i",m0,m1);
     M=m1-m0;
     if (M<=0) {
       Dbg() << "Linegraph: nothing to plot (M="<<M<<")";
