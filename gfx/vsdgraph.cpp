@@ -11,6 +11,9 @@ VSDGraph::VSDGraph(QWidget *parent): LineGraph(parent) {
   QString id_donor = Connections::leaderCamera();
   QString id_acceptor = Connections::findCam(id_donor).partnerid;
   bool has_partner = !id_acceptor.isEmpty();
+
+  Dbg() << "VSDGraph: id_donor="<<id_donor;
+  Dbg() << "VSDGraph: id_acceptor="<<id_acceptor;
   
   trcDonor = new TraceInfo(TraceInfo::dataDouble);
   
@@ -82,11 +85,12 @@ void VSDGraph::paintEvent(class QPaintEvent *e) {
     p.dp_double = data.dataAcceptor();
     if (trcAcceptor)
       trcAcceptor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-    p.dp_double = data.dataRatio();
+    p.dp_double = (data.dataDonor() && data.dataAcceptor())
+      ? data.dataRatio() : 0;
     if (trcRatio)
       trcRatio->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
     
-    //dbg("VSDGraph::paintEvent. t0=%g dt=%g n=%i",t0_ms,dt_ms,data.getNFrames());
+    dbg("VSDGraph::paintEvent. t0=%g dt=%g n=%i",t0_ms,dt_ms,data.getNFrames());
     
     // Following is not really great, I think it may mess up zoom, but
     // where else can I reasonably do this?
