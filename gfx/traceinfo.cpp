@@ -184,7 +184,7 @@ void TraceInfo::setData(double datax0_, double datadx_,
   datax0 = datax0_;
   datadx = datadx_;
   dataptr = dp_;
-  N = N_;
+  N = dataptr.dp_none ? N_ : 0;
   step = step_;
   //  dbg("TraceInfo(%p)::setData x0=%g dx=%g dp=%p N=%i step=%i\n",
   //	  this,datax0,datadx,dataptr.dp_none,N,step);
