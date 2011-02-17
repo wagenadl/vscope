@@ -11,6 +11,10 @@
 DataTrove::DataTrove(ParamTree *ptree): QObject() {
   ptree_ = ptree;
   ownptree = false;
+  constructData();
+}
+
+void DataTrove::constructData() {
   trial_ = new TrialData();
   rois_ = new ROISet();
   roidata_ = new ROISet3Data();
@@ -21,10 +25,7 @@ DataTrove::DataTrove(ParamTree *ptree): QObject() {
 DataTrove::DataTrove(QDomElement elt): QObject() {
   ptree_ = new ParamTree(elt);
   ownptree = true;
-  trial_ = new TrialData();
-  rois_ = new ROISet();
-  roidata_ = new ROISet3Data();
-  cohdata_ = new CohData();
+  constructData();
 }
 
 DataTrove::~DataTrove() {

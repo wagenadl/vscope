@@ -35,6 +35,8 @@ private:
   class ROISet3Data *roidata_;
   class CohData *cohdata_;
 private:
+  void constructData();
+private:
   bool ownptree;
   QString savedir;
   bool dummy;
