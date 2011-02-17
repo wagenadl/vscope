@@ -96,7 +96,7 @@ void ROIData::setROI(PolyBlob const *roi0) {
 }
 
 bool ROIData::haveData() const {
-  return source ? true : false;
+  return (source && source->getNFrames()) ? true : false;
 }
 
 int ROIData::getNFrames() const {

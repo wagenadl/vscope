@@ -3,6 +3,7 @@
 #include "roi3data.h"
 #include <base/ccddata.h>
 #include <base/memalloc.h>
+#include <base/dbg.h>
 
 bool ROI3Data_::donorflipx = false;
 bool ROI3Data_::donorflipy = false;
@@ -63,6 +64,7 @@ double const *ROI3Data::dataAcceptor() {
 }
 
 double const *ROI3Data::dataRatio() {
+  Dbg() << "ROI3Data::dataRatio";
   if (valid)
     return datRatio;
 
