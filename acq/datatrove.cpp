@@ -41,19 +41,16 @@ void DataTrove::read(QString dir, QString exptname, QString trialid) {
   trial_->read(dir, exptname, trialid, ptree_);
   rois_->load(QString("%1/%2/%3-rois.xml")
 	      .arg(dir).arg(exptname).arg(trialid));
-  savedir = dir;
   Dbg() << "DataTrove::read" << trial_->exptName() << "/" << trial_->trialID();
 }
 
-void DataTrove::write(QString dir) {
-  savedir = dir;
-
+void DataTrove::write() {
   if (dummy) {
     Dbg() << "DataTrove::write: not saving: dummy";
     return;
   }
 
-  trial_->write(dir);
+  trial_->write();
   saveROIs();
 }
 
@@ -68,13 +65,11 @@ void DataTrove::saveROIs() {
   }
   
   Dbg() << "DataTrove::saveROIs" << trial_->exptName() << "/" << trial_->trialID();
-  if (savedir.isNull()) {
-    warn("DataTrove::saveROIs: not saving - no directory set");
-    return;
-  }
   try {
     rois_->save(QString("%1/%2/%3-rois.xml")
-		.arg(savedir).arg(trial_->exptName()).arg(trial_->trialID()));
+		.arg(trial_->filePath())
+		.arg(trial_->exptName())
+		.arg(trial_->trialID()));
   } catch (Exception const &e) {
     e.report();
     warn("DataTrove::saveROIs: not saved - exception");

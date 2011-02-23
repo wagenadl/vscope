@@ -147,55 +147,59 @@ void ExptLog::newExptName() {
 	  + Globals::ptree->find("acquisition/_exptname").toString());
 }
 
-void ExptLog::markTrial(bool snap) {
+void ExptLog::markSnap(QString trialno) {
+  activate();
+  addNote(QString("Trial %1: %2").arg(trialno).arg("Snapshot"));
+  suppressFurtherROI = false;
+}
+  
+
+void ExptLog::markTrial(QString trialno) {
   Dbg() <<"markTrial";
   activate();
-  int trialno = Globals::ptree->find("acquisition/_trialno").toInt();
-  QString typ;
-  if (snap) {
-    typ = "Snapshot";
-  } else {
-    bool hasvsd =  Globals::ptree->find("acqCCD/enable").toBool();
-    bool hasstim = Globals::ptree->find("stimEphys/enable").toBool();
-    if (hasstim) {
-      hasstim = false;
-      Enumerator const *e = Enumerator::find("STIMCHS");
-      QStringList chs = e->getAllTags();
-      foreach (QString s, chs) {
-	if (Globals::ptree->find(QString("stimEphys/channel:%1/enable").arg(s))
-	    .toBool()) {
-	  hasstim = true;
-	  break;
-	}
+
+  bool hasvsd =  Globals::ptree->find("acqCCD/enable").toBool();
+  bool hasstim = Globals::ptree->find("stimEphys/enable").toBool();
+  bool hasvid =  Globals::ptree->find("stimVideo/enable").toBool();
+
+  if (hasstim) {
+    Enumerator const *e = Enumerator::find("STIMCHS");
+    QStringList chs = e->getAllTags();
+    hasstim = false;
+    foreach (QString s, chs) {
+      if (Globals::ptree->find(QString("stimEphys/channel:%1/enable").arg(s))
+	  .toBool()) {
+	hasstim = true;
+	break;
       }
     }
-    bool hasvid =  Globals::ptree->find("stimVideo/enable").toBool();
-    if (hasvsd)
-      typ = "E'phys. + vsd";
-    else
-      typ = "E'phys.";
-    if (hasstim) {
-      typ += " with e'phys.";
-      if (hasvid)
-	typ += " and video";
-      typ += " stimuli";
-    } else if (hasvid) {
-      typ += " with video stimuli";
-    }
   }
-  addNote(QString("Trial %1: %2").arg(trialno,3,10,QChar('0')).arg(typ));
+
+  QString typ;
+  if (hasvsd)
+    typ = "E'phys. + vsd";
+  else
+    typ = "E'phys.";
+
+  if (hasstim) {
+    typ += " with e'phys.";
+    if (hasvid)
+      typ += " and video";
+    typ += " stimuli";
+  } else if (hasvid) {
+    typ += " with video stimuli";
+  }
+  addNote(QString("Trial %1: %2").arg(trialno).arg(typ));
   suppressFurtherROI = false;
 }
 
-void ExptLog::markContEphys(bool start_not_stop) {
+void ExptLog::markContEphys(QString trialno) {
   activate();
-  if (start_not_stop) {
-    int trialno = Globals::ptree->find("acquisition/_trialno").toInt();
-    addNote(QString("Start of continuous e'phys., recording as Trial %1")
-	    .arg(trialno,3,10,QChar('0')));
-  } else {
-    addNote("End of continuous e'phys.");
-  }
+  addNote("Start of continuous e'phys., recording as Trial " + trialno);
+}
+
+void ExptLog::markContEphysEnds() {
+  addNote("End of continuous e'phys.");
 }
   
 void ExptLog::changeSetting(QString label, QString value) {

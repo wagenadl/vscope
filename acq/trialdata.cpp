@@ -68,13 +68,13 @@ CCDData *TrialData::ccdData(QString camid) {
     return 0;
 }
 
-void TrialData::generalPrep(ParamTree const *ptree) {
+QString TrialData::generalPrep(ParamTree const *ptree) {
   if (xml)
     delete xml;
 
+  fpath = ptree->find("_filePath").toString();
   exptname = ptree->find("acquisition/_exptname").toString();
-  int trialno = ptree->find("acquisition/_trialno").toInt();
-  trialid = QString("%1").arg(trialno,int(3),int(10),QChar('0'));
+  trialid = trialname(ptree);
 
   xml = new XML(0,"vsdscopeTrial");
 
@@ -119,43 +119,49 @@ void TrialData::generalPrep(ParamTree const *ptree) {
     ccd.setAttribute("rate", ptree->find("acqCCD/rate").toString());
     ccd.setAttribute("delay", ptree->find("acqCCD/delay").toString());
   }
+  prep = true;
+  return trialid;
 }
 
-void TrialData::prepare(ParamTree const *ptree) {
+QString TrialData::prepare(ParamTree const *ptree) {
   snap=false;
   contEphys = ptree->find("acquisition/contEphys").toBool();
   /* contEphys tracks whether continuous e'phys acq is simultaneously
      happening (in "ContAcq"). We are *not* doing that ourselves here. */
   do_ccd = ptree->find("acqCCD/enable").toBool();
-  generalPrep(ptree);
-  prep = true;
+  return generalPrep(ptree);
 }
 
-void TrialData::prepareSnapshot(ParamTree const *ptree) {
+QString TrialData::prepareSnapshot(ParamTree const *ptree) {
   snap=true;
   do_ccd = true;
-  generalPrep(ptree);
-  prep = true;
+  return generalPrep(ptree);
 }
 
-QString TrialData::write(QString dir) const {
-  if (!xml)
-    throw Exception("Trial","Cannot write - not prepared");
-
-  QDir d; d.mkpath(QString("%1/%2").arg(dir).arg(exptname));
-
-  int append=0;
-  QString trialname = trialid;
+QString TrialData::trialname(ParamTree const *ptree) {
+  QString fp = ptree->find("_filePath").toString();
+  QString expt = ptree->find("acquisition/_exptname").toString();
+  int t = ptree->find("acquisition/_trialno").toInt();
+  QString tnum = QString("%1").arg(t,int(3),int(10),QChar('0'));
+  QString tname = tnum;
+  int append = 0;
   while (true) {
-    QString testname = QString("%1/%2/%3.xml").
-      arg(dir).arg(exptname).arg(trialname);
-    if (QFile(testname).exists())
-      trialname = trialid+num2az(++append);
+    QString fn = QString("%1/%2/%3.xml").
+      arg(fp).arg(expt).arg(tname);
+    if (QFile(fn).exists())
+      tname = tnum+num2az(++append);
     else
       break;
   }
+  return tname;
+}
 
-  QString base = QString("%1/%2/%3").arg(dir).arg(exptname).arg(trialname);
+QString TrialData::write() const {
+  if (!xml)
+    throw Exception("Trial","Cannot write - not prepared");
+
+  QDir d; d.mkpath(QString("%1/%2").arg(fpath).arg(exptname));
+  QString base = QString("%1/%2/%3").arg(fpath).arg(exptname).arg(trialid);
   if (!snap && !contEphys) {
     writeAnalog(base);
     writeDigital(base);
@@ -167,7 +173,7 @@ QString TrialData::write(QString dir) const {
 
   // xml
   xml->write(base + ".xml");
-  return trialname;
+  return trialid;
 }
 
 static double getScale(QString str) {
@@ -189,6 +195,7 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
 		     ParamTree *ptree_dest) {
   prep=false;
 
+  fpath = dir;
   exptname = exptname0;
   trialid = trialid0;
   QString base = QString("%1/%2/%3").arg(dir).arg(exptname0).arg(trialid0);
