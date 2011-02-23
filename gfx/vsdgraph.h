@@ -18,8 +18,7 @@ class VSDGraph: public LineGraph {
 public:
   VSDGraph(QWidget *parent);
   virtual ~VSDGraph();
-  void setROI(XYRRA el);
-  void setROI(class PolyBlob const *pb);
+  void setROI(class ROICoords const *roi);
   void setData(class CCDData const *donor, class CCDData const *acceptor);
   void setDebleach(ROIData::Debleach d);
 protected:

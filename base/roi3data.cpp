@@ -24,15 +24,9 @@ ROI3Data::~ROI3Data() {
     delete [] datRatio;
 }
 
-void ROI3Data::setROI(XYRRA el) {
-  datDonor.setROI(el);
-  datAcceptor.setROI(el);
-  valid = false;
-}
-
-void ROI3Data::setROI(class PolyBlob const *pb) {
-  datDonor.setROI(pb);
-  datAcceptor.setROI(pb);
+void ROI3Data::setROI(ROICoords const *roi) {
+  datDonor.setROI(roi);
+  datAcceptor.setROI(roi);
   valid = false;
 }
 
@@ -68,8 +62,12 @@ double const *ROI3Data::dataRatio() {
   if (valid)
     return datRatio;
 
-  if (!datAcceptor.haveData())
+  if (!datDonor.haveData() && !datAcceptor.haveData())
+    return 0;
+  else if (!datAcceptor.haveData())
     return dataDonor();
+  else if (!datDonor.haveData())
+    return dataAcceptor();
 
   if (datRatio && nRatio!=datDonor.getNFrames()) {
     delete [] datRatio;

@@ -5,8 +5,7 @@
 
 #define ROIDATA_H
 
-#include <base/xyrra.h>
-#include <base/polyblob.h>
+#include <base/roicoords.h>
 
 class ROIData_ {
 public:
@@ -22,10 +21,8 @@ private: friend class ROIData;
   bool validRaw;
   bool validDebleached;
   class CCDData const *source;
-  XYRRA roi;
-  PolyBlob const *roip;
-  bool usePolyNotXyrra;
-  class BlobROI *blobROI; // we do not own this!
+  ROICoords const *roi;
+  class BlobROI *blobROI;
   bool validBlobROI;
   bool *bitmap;
   bool validBitmap;
@@ -52,17 +49,12 @@ public:
    *:D Specifies how DebleachedDFF gets calculated.
    *:N This does not cause immediate recomputation.
    */
-  void setROI(XYRRA const &roi);
+  void setROI(ROICoords const *roi);
   /*:F setROI
    *:D Redefines which portion of the CCD image we care about.
        This does not cause recomputation and is thus trivially fast.
-  */
-  void setROI(PolyBlob const *pb);
-  /*:F setROI
-   *:D Redefines which portion of the CCD image we care about.
-       This does not cause recomputation and is thus trivially fast.
-   *:N The blob is not copied, and must remain available until the next
-       call to a setROI.
+   *:N The ROI is not copied, and must remain available until the next
+       call to setROI.
   */
   void setData(class CCDData const *source);
   /*:F setData
@@ -97,6 +89,7 @@ private:
   void ensureBitmap();
   void makePolyBitmap();
   void makeXYRRABitmap();
+  void makeNullBitmap();
 private:
   void copy(ROIData const &other);
 };

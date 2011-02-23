@@ -19,9 +19,7 @@ class VSDAllGraph: public LineGraph {
 public:
   VSDAllGraph(class ROISet3Data *rs3d, QWidget *parent=0);
   virtual ~VSDAllGraph();
-  void setROI(int id, XYRRA el);
-  void setROI(int id, class PolyBlob const *pb);
-  void removeROI(int id);
+  void changeROI(int id);
   void selectROI(int id);
   void clearROIs();
   void setData(class CCDData const *donor, class CCDData const *acceptor);
@@ -34,7 +32,7 @@ private:
   void newOffsets(); // recalculates the y offsets of each trace
   void setROIbase(int id);
 private:
-  class ROISet3Data *data;
+  class ROISet3Data *data; // we do not own this
   QMap<int, class TraceInfo *> traces;
   int selectedId;
 private:

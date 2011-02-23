@@ -5,7 +5,7 @@
 #define ROI3DATA_H
 
 #include <QObject>
-#include <base/xyrra.h>
+#include <base/roicoords.h>
 #include <base/roidata.h>
 
 class ROI3Data_ {
@@ -33,12 +33,7 @@ public:
   virtual ~ROI3Data();
   ROI3Data(ROI3Data const &other);
   ROI3Data &operator=(ROI3Data const &other);
-  void setROI(XYRRA el);
-  /*:F setROI
-   *:D Redefines which portion of the CCD image we care about.
-       This does not cause recomputation and is thus trivially fast.
-  */
-  void setROI(class PolyBlob const *pb);
+  void setROI(ROICoords const *roi);
   /*:F setROI
    *:D Redefines which portion of the CCD image we care about.
        This does not cause recomputation and is thus trivially fast.
@@ -47,6 +42,9 @@ public:
   /*:F setData
    *:D Redefines what CCD images we are working with.
        This does not cause recomputation and is thus trivially fast.
+   *:N It is OK for either data pointer to be zero. In that case, the "ratio"
+       will simply equal the other pointer. If both are zero, the "ratio"
+       data will always be zero.
   */
   static void setFlip(bool donorflipx, bool donorflipy,
 	       bool acceptorflipx, bool acceptorflipy);

@@ -48,16 +48,10 @@ VSDGraph::~VSDGraph() {
     delete trcDonor;
 }
 
-void VSDGraph::setROI(XYRRA el) {
-  data.setROI(el);
+void VSDGraph::setROI(ROICoords const *roi) {
+  data.setROI(roi);
   update();
 }
-
-void VSDGraph::setROI(class PolyBlob const *pb) {
-  data.setROI(pb);
-  update();
-}
-
 void VSDGraph::setData(CCDData const *donor,
 		       CCDData const *acceptor) {
   data.setData(donor, acceptor);

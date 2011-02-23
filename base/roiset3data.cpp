@@ -6,7 +6,8 @@
 #include <base/ccddata.h>
 #include <base/dbg.h>
 
-ROISet3Data::ROISet3Data() {
+ROISet3Data::ROISet3Data(ROISet const *rs) {
+  roiset = rs;
   lastDonor = lastAcceptor = 0;
   lastDebleach = ROIData::None;
 }
@@ -44,52 +45,45 @@ void ROISet3Data::setDebleach(ROIData::Debleach d) {
    rd->setDebleach(d);
 }
 
-void ROISet3Data::setROI(int id, XYRRA el) {
-  setROIbase(id);
-  data[id]->setROI(el);
-}
-
-void ROISet3Data::setROI(int id, class PolyBlob const *pb) {
-  setROIbase(id);
-  data[id]->setROI(pb);
-}
-
-void ROISet3Data::setROIbase(int id) {
-  if (!data.contains(id)) {
-    ROI3Data *dat = new ROI3Data();
-    data.insert(id,dat);
-    dat->setDebleach(lastDebleach);
-    dat->setData(lastDonor,lastAcceptor);
+void ROISet3Data::changeROI(int id) {
+  if (roiset && roiset->contains(id)) {
+    if (!data.contains(id)) {
+      ROI3Data *dat = new ROI3Data();
+      data.insert(id,dat);
+      dat->setDebleach(lastDebleach);
+      dat->setData(lastDonor,lastAcceptor);
+    }
+    data[id]->setROI(&roiset->get(id));
+  } else {
+    if (data.contains(id)) {
+      delete data[id];
+      data.remove(id);
+    }
   }
 }
 
-void ROISet3Data::removeROI(int id) {
-  if (data.contains(id)) {
-    delete data[id];
-    data.remove(id);
+void ROISet3Data::changeROIs() {
+  if (roiset) {
+    foreach (int id, roiset->ids()) 
+      changeROI(id);
+  } else {
+    foreach (ROI3Data *rd, data.values())
+      delete rd;
+    data.clear();
   }
-}
-
-void ROISet3Data::clearROIs() {
-  foreach (ROI3Data *rd, data.values())
-    delete rd;
-  data.clear();
 }
 
 ROISet3Data::ROISet3Data(ROISet3Data const &other): ROISet3Data_(other) {
-  copy(other);
-}
-
-void ROISet3Data::copy(ROISet3Data const &other) {
-  for (QMap<int, ROI3Data *>::iterator i=data.begin(); i!=data.end(); ++i) 
-    if (*i) 
-      *i = new ROI3Data(*other.getData(i.key()));
+  foreach (int id, data.keys())
+    data[id] = new ROI3Data(*data[id]); // make a deep copy
 }
 
 ROISet3Data &ROISet3Data::operator=(ROISet3Data const &other) {
-  clearROIs();
+  foreach (ROI3Data *rd, data.values())
+    delete rd;
   *(ROISet3Data_*)this = other;
-  copy(other);
+  foreach (int id, data.keys())
+    data[id] = new ROI3Data(*data[id]); // make a deep copy
   return *this;
 }
 

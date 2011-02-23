@@ -5,7 +5,7 @@
 #define ROISET3DATA_H
 
 #include <QMap>
-#include <base/xyrra.h>
+#include <base/roiset.h>
 #include <base/roidata.h>
 #include <base/roi3data.h>
 
@@ -15,6 +15,7 @@ public:
   double t0_ms, dt_ms;
   class CCDData const *lastDonor, *lastAcceptor;
   ROIData::Debleach lastDebleach;
+  ROISet const *roiset;
 };
 
 class ROISet3Data: private ROISet3Data_ {
@@ -23,23 +24,18 @@ class ROISet3Data: private ROISet3Data_ {
        from a number of ROIs in a particular (donor,acceptor) image pair.
   */
 public:
-  ROISet3Data();
+  ROISet3Data(ROISet const *coordset);
   virtual ~ROISet3Data();
   ROISet3Data(ROISet3Data const &other);
   ROISet3Data &operator=(ROISet3Data const &other);
-  void setROI(int id, XYRRA el);
-  void setROI(int id, class PolyBlob const *pb);
-  void removeROI(int id);
-  void clearROIs();
+  void changeROI(int id);
+  void changeROIs();
   void setData(class CCDData const *donor, class CCDData const *acceptor);
   void setDebleach(ROIData::Debleach d);
   class ROI3Data *getData(int id) const;
   bool haveData(int id) const;
   double getT0_ms() const { return t0_ms; } // only valid after setData
   double getDT_ms() const { return dt_ms; }
-private:
-  void setROIbase(int id);
-  void copy(ROISet3Data const &other);
 };
 
 #endif

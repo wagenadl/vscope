@@ -7,8 +7,7 @@
 #include <QDomElement>
 #include <QSet>
 #include <QMap>
-#include <base/xyrra.h>
-#include <base/polyblob.h>
+#include <base/roicoords.h>
 
 class ROISet {
   /*:C ROISet
@@ -16,15 +15,12 @@ class ROISet {
        any particular actual image.
   */
 public:
-  ROISet();
+  ROISet(QString dfltcam="");
   ~ROISet();
-  void set(int id, XYRRA const &roi);
-  void set(int id, PolyBlob const &roip); // this makes a copy
-  PolyBlob &newblob(int id);
-  PolyBlob &newblob(int id, int log2n);
-  XYRRA get(int id) const; // throws exception if not found
-  PolyBlob const &getp(int id) const; // throws exception if not found (!)
-  PolyBlob &getp(int id); // throws exception if not found
+  ROICoords &insert(int id, QString campair=QString());
+  ROICoords const &get(int id) const; // throws exception if not found
+  ROICoords &get(int id); // throws exception if not found
+  QString const &cam(int id) const;
   double centerX(int id) const;
   double centerY(int id) const;
   bool inside(int id, double x, double y, double marg) const;
@@ -37,11 +33,13 @@ public:
   void read(QDomElement src);
   void load(QString fn);
   QSet<int> const &ids() const;
+  QSet<int> idsForCam(QString cam) const;
   void clear();
 private:
   QSet<int> allids;
-  QMap<int, XYRRA> emap;
-  QMap<int, PolyBlob> pmap;
+  QMap<int, QString> cams;
+  QMap<int, ROICoords> map;
+  QString dfltcam;
 };
 
 #endif

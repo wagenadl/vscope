@@ -179,10 +179,10 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 	break;
       case SM_Outlines: case SM_Full:
 	if (roiset->isXYRRA(id)) {
-	  XYRRA el = imageToScreen(roiset->get(id));
+	  XYRRA const &el = imageToScreen(roiset->get(id).xyrra());
 	  el.paint(&p);
 	} else if (roiset->isPoly(id)) {
-	  PolyBlob const &pb = roiset->getp(id);
+	  PolyBlob const &pb = roiset->get(id).blob();
 	  pb.paint(&p, z.ax,z.bx, z.ay,z.by);
 	} else {
 	  // unknown ROI style

@@ -22,7 +22,7 @@ inline int rangelimit(int x, int min, int max) {
 ROIData::ROIData() {
   dataRaw = 0;
   dataDebleached = 0;
-  roip = 0;
+  roi = 0;
   blobROI = 0;
   lengthRaw = 0;
   lengthDebleached = 0;
@@ -30,7 +30,6 @@ ROIData::ROIData() {
   validDebleached = false;
   validBitmap = false;
   validBlobROI = false;
-  usePolyNotXyrra = false;
   source = 0;
   bitmap = 0;
   debleach = None;
@@ -77,18 +76,8 @@ void ROIData::setData(CCDData const *source0) {
   validDebleached = false;
 }
 
-void ROIData::setROI(XYRRA const &roi0) {
+void ROIData::setROI(ROICoords const *roi0) {
   roi = roi0;
-  usePolyNotXyrra = false;
-  validBlobROI = false;
-  validBitmap = false;
-  validRaw = false;
-  validDebleached = false;
-}
-
-void ROIData::setROI(PolyBlob const *roi0) {
-  roip = roi0;
-  usePolyNotXyrra = true;
   validBlobROI = false;
   validBitmap = false;
   validRaw = false;
@@ -113,23 +102,36 @@ void ROIData::ensureBitmap() {
   if (validBitmap)
     return;
 
-  if (usePolyNotXyrra)
+  if (roi && roi->isBlob())
     makePolyBitmap();
-  else
+  else if (roi && roi->isXYRRA())
     makeXYRRABitmap();
+  else 
+    makeNullBitmap();
+}
+
+void ROIData::makeNullBitmap() {
+  Dbg() << "ROIData: Caution: no data, making null bitmap";
+  w=h=1;
+  if (bitmap)
+    delete bitmap;
+  bitmap = memalloc<bool>(w*h, "ROIData");
+  bitmap[0] = false;
+  validBitmap = true;
 }
 
 void ROIData::makePolyBitmap() {
+  // This crashes horribly if ROI is not Blob
   if (blobROI) 
     delete blobROI;
-  blobROI = new BlobROI(*roip);
+  blobROI = new BlobROI(roi->blob());
   validBlobROI = true;
   xl = blobROI->bitmapX0();
   yt = blobROI->bitmapY0();
   int w1 = blobROI->bitmapW();
   int h1 = blobROI->bitmapH();
   npix = blobROI->nPixels();
-  //dbg("xl=%i yt=%i w1=%i h1=%i npix=%i w=%i h=%i",xl,yt,w1,h1,npix,w,h);
+
   if (w1!=w || h1!=h) {
     if (bitmap)
       delete bitmap;
@@ -148,7 +150,9 @@ void ROIData::makePolyBitmap() {
 }      
 
 void ROIData::makeXYRRABitmap() {
-  QRectF bb = roi.bbox();
+  // This crashes horribly if ROI is not XYRRA
+  XYRRA const &xyrra = roi->xyrra();
+  QRectF bb = xyrra.bbox();
   int maxx = source ? source->getSerPix() : 0;
   int maxy = source ? source->getParPix() : 0;
   xl = rangelimit(floori(bb.left()),0,maxx);
@@ -166,16 +170,16 @@ void ROIData::makeXYRRABitmap() {
   if (!bitmap) 
     bitmap = memalloc<bool>(w*h, "ROIData");
   bool *ptr = bitmap;
-  double cs = cos(roi.a);
-  double sn = sin(roi.a);
+  double cs = cos(xyrra.a);
+  double sn = sin(xyrra.a);
   npix = 0;
   for (int y=yt; y<yb; y++) {
-    double dy = y-roi.y0;
+    double dy = y-xyrra.y0;
     for (int x=xl; x<xr; x++) {
-      double dx = x-roi.x0;
+      double dx = x-xyrra.x0;
       double xi = dx*cs + dy*sn;
       double eta = -dx*sn + dy*cs;
-      bool isInside = sq(xi)/sq(roi.R) + sq(eta)/sq(roi.r) < 1;
+      bool isInside = sq(xi)/sq(xyrra.R) + sq(eta)/sq(xyrra.r) < 1;
       *ptr++ = isInside;
       if (isInside)
 	npix++;

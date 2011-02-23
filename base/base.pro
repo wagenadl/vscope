@@ -21,7 +21,8 @@ HEADERS += base26.h \
 	roiset.h roiset3data.h \
 	analogdata.h digitaldata.h \
 	xml.h unitqty.h xyabc.h \
-        ccdtiming.h
+        ccdtiming.h \
+        roicoords.h
 	   
 SOURCES += base26.cpp \
            dbg.cpp \
@@ -36,7 +37,8 @@ SOURCES += base26.cpp \
 	roiset.cpp roiset3data.cpp \
 	analogdata.cpp digitaldata.cpp \
 	xml.cpp unitqty.cpp xyabc.cpp \
-        ccdtiming.cpp memalloc.cpp
+        ccdtiming.cpp memalloc.cpp \
+        roicoords.cpp
 
 
 

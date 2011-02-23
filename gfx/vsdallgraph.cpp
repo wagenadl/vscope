@@ -47,57 +47,40 @@ void VSDAllGraph::setDebleach(ROIData::Debleach d) {
   update();
 }
 
-void VSDAllGraph::setROI(int id, XYRRA el) {
-  data->setROI(id, el);
-  setROIbase(id);
-  update();
-}
-
-void VSDAllGraph::setROI(int id, class PolyBlob const *pb) {
-  data->setROI(id, pb);
-  setROIbase(id);
-  update();
-}
-
-void VSDAllGraph::setROIbase(int id) {
-  if (!traces.contains(id)) {
-    traces[id] = new TraceInfo(TraceInfo::dataDouble);
-    QString sid = num2az(id);
-    addTrace(sid,traces[id]);
-    setTraceLabel(sid,sid);
-    setTracePen(sid,QColor("#000000"));
-    newOffsets();
-  }
-}
-
-void VSDAllGraph::removeROI(int id) {
-  removeTrace(num2az(id));
-  if (traces.contains(id)) {
-    delete traces[id];
+void VSDAllGraph::changeROI(int id) {
+  if (data->haveData(id)) {
+    if (!traces.contains(id)) {
+      traces[id] = new TraceInfo(TraceInfo::dataDouble);
+      QString sid = num2az(id);
+      addTrace(sid,traces[id]);
+      setTraceLabel(sid,sid);
+      setTracePen(sid,QColor("#000000"));
+    }
+  } else {
+    if (traces.contains(id))
+      delete traces[id];
     traces.remove(id);
   }
-  data->removeROI(id);
   newOffsets();
   update();
 }
 
 void VSDAllGraph::clearROIs() {
+  // This probably won't last
   for (QMap<int,TraceInfo *>::iterator i=traces.begin();
        i!=traces.end(); ++i) {
     int id = i.key();
     removeTrace(num2az(id));
     delete i.value();
   }
-  data->clearROIs();
   traces.clear();
   update();
 }
 
 void VSDAllGraph::newOffsets() {
   double offset=TRACE_DY*traces.size();
-  
-  for (QMap<int,TraceInfo*>::iterator i=traces.begin(); i!=traces.end(); ++i)
-    i.value()->setOffset(offset-=TRACE_DY);
+  foreach (TraceInfo *tr, traces.values()) 
+    tr->setOffset(offset-=TRACE_DY);
 }
 
 void VSDAllGraph::selectROI(int id) {
