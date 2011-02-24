@@ -15,7 +15,7 @@ public:
   virtual ~DataTrove();
 public slots:
   void read(QString dir, QString exptname, QString trialid);
-  void write(QString dir); // does nothing if dummy is set
+  void write(); // does nothing if dummy is set
   void saveROIs(); // only works after write().
   void setDummy(bool dummy);
   /*:F setDummy
@@ -26,19 +26,18 @@ public:
   // class ParamTree &ptree() { return *ptree_; }
   class TrialData &trial() { return *trial_; }
   class ROISet &rois() { return *rois_; }
-  class ROISet3Data &roidata() { return *roidata_; }
+  class ROIData3Set &roidata() { return *roidata_; }
   class CohData &cohdata() { return *cohdata_; }
 private:
   class ParamTree *ptree_;
   class TrialData *trial_;
   class ROISet *rois_;
-  class ROISet3Data *roidata_;
+  class ROIData3Set *roidata_;
   class CohData *cohdata_;
 private:
   void constructData();
 private:
   bool ownptree;
-  QString savedir;
   bool dummy;
 private: // not implemented
   DataTrove(DataTrove const &);

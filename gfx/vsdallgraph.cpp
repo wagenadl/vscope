@@ -2,7 +2,7 @@
 
 #include "vsdallgraph.h"
 #include <base/roi3data.h>
-#include <base/roiset3data.h>
+#include <base/roidata3set.h>
 #include <base/roidata.h>
 #include <base/ccddata.h>
 #include <base/dbg.h>
@@ -12,15 +12,14 @@
 
 const double TRACE_DY = 0.2; // That's the spacing between traces in percents
 
-VSDAllGraph::VSDAllGraph(ROISet3Data *data, QWidget *parent):
+VSDAllGraph::VSDAllGraph(ROIData3Set *data, QWidget *parent):
   LineGraph(parent), data(data) {
   autoSetXRange();
 }
 
 VSDAllGraph::~VSDAllGraph() {
-  for (QMap<int, TraceInfo *>::iterator i=traces.begin();
-       i!=traces.end(); ++i) 
-    delete i.value();
+  foreach (TraceInfo *tr, traces.values())
+    delete tr;
 }
 
 void VSDAllGraph::setData(CCDData const *donor,

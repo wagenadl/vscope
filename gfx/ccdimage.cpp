@@ -25,10 +25,10 @@ CCDImage::CCDImage(QWidget *parent): QWidget(parent) {
   gamma_table = 0;
   adjust_black = adjust_white = 0;
   rebuildGammaTable();
-  hasZoom = false;
   rubberband = 0;
   recolor("reset");
   createTestImage();
+  resetZoom();
 }
 
 CCDImage::~CCDImage() {
@@ -205,45 +205,34 @@ void CCDImage::setZoom(QRect const &z) {
   //  hasZoom = false;
   //} else {
   zoomRect = z;
-  hasZoom = true;
   constrainZoom();
-  //}
   update();
-  emit shareZoom(hasZoom,zoomRect);
+  emit newZoom(zoomRect);
 }
 
 void CCDImage::resetZoom() {
-  hasZoom = false;
+  zoomRect = QRect(0,0,image.width(),image.height());
   update();
-  emit shareZoom(hasZoom,zoomRect);
+  emit newZoom(zoomRect);
 }
 
 void CCDImage::zoomIn(int x0, int y0) {
   dbg("ccdimage: zoomin(%i,%i)",x0,y0);
   // zoom in to given point
-  int w,h;
-  if (hasZoom) {
-    w = zoomRect.width();
-    h = zoomRect.height();
-  } else {
-    w = image.width();
-    h = image.height();
-  }
+  int w = zoomRect.width();
+  int h = zoomRect.height();
   setZoom(QRect(x0-w/4,y0-h/4,w/2,h/2));
 }
 
 void CCDImage::zoomIn() {
   dbg("ccdimage: zoomin");
-  QRect r = hasZoom ? zoomRect
-    : QRect(0,0,image.width(),image.height());
+  QRect r = zoomRect;
   int w = r.width();
   int h = r.height();
   setZoom(QRect(r.left()+w/4,r.top()+h/4,w/2,h/2));
 }  
 
 void CCDImage::zoomOut() {
-  if (!hasZoom)
-    return;
   QRect z = zoomRect;
   //  dbg("zoomOut(%p) l=%i t=%i r=%i b=%i im=%ix%i",this,
   //      z.left(),z.top(),z.right(),z.bottom(),image.width(),image.height());
@@ -253,8 +242,6 @@ void CCDImage::zoomOut() {
 }
 
 void CCDImage::constrainZoom() {
-  if (!hasZoom)
-    return;
   int iw = image.width();
   int ih = image.height();
   int zw = zoomRect.width();
@@ -275,31 +262,28 @@ void CCDImage::constrainZoom() {
     zx=0;
   else if (zx+zw > iw)
     zx = iw-zw;
-  if (zx+zw>iw)
-    hasZoom=false;
 
   if (zy<0)
     zy=0;
   else if (zy+zh > ih)
     zy = ih-zh;
-  if (zy+zh>ih)
-    hasZoom=false;
-
-  zoomRect = QRect(zx,zy,zw,zh);
+  
+  if (zx+zw>iw || zy+zh>ih)
+    zoomRect = QRect(0,0,image.width(),image.height());
+  else
+    zoomRect = QRect(zx,zy,zw,zh);
 }
 
-void CCDImage::sharedZoom(bool has, QRect rect) {
-  //  dbg("ccdimage(%p):sharedzoom %i",this,has);
-  hasZoom = has;
+void CCDImage::updateZoom(QRect rect) {
   zoomRect = rect;
   update();
 }
 
 CCDImage::ZoomInfo CCDImage::makeZoomInfo() {
   ZoomInfo z;
-  QRect zr = safeZoomRect();
+  QRect zr = zoomRect;
 
-  /* We have to do the zoom transformation if hasZoom is true.
+  /* We have to do the zoom transformation.
      Screen coordinates (0,0)-(w,h) correspond to
        (zoomRect.left(),zoomRect.top())-
          (zoomRect.right()+1,zoomRect.bottom()+1).
@@ -319,25 +303,21 @@ CCDImage::ZoomInfo CCDImage::makeZoomInfo() {
 
   z.ax = double(width()) / zr.width();
   z.ay = double(height()) / zr.height();
-  /* Note that we always zoom with ratio preserved, thus ax = ay, but
-     this is more general.
-  */
   z.bx = -z.ax*zr.left();
   z.by = -z.ay*zr.top();
   return z;
-  }
-
+}
 
 void CCDImage::paintEvent(class QPaintEvent *) {
   QPainter p(this);
   QRect r = rect(); // (0,0,width,height) of this widget
   constrainZoom();
 
-  if (hasZoom)
+  if (zoomRect==r)
+    p.drawImage(r,image);
+  else
     p.drawImage(r,image,zoomRect,
 		Qt::DiffuseDither|Qt::ColorOnly|Qt::PreferDither);
-  else
-    p.drawImage(r,image);
 }
 
 void CCDImage::mousePressEvent(QMouseEvent *e) {
@@ -365,7 +345,7 @@ void CCDImage::mouseReleaseEvent(QMouseEvent *e) {
   dbg("release l=%i t=%i r=%i b=%i",
       r.left(),r.top(),r.right(),r.bottom());
   if (r.width()<5 && r.height()<5) {
-    r = hasZoom ? zoomRect : rect();
+    r = imageToScreen(zoomRect);
     r = QRect(clickPoint.x()-r.width()/4,
 	      clickPoint.y()-r.height()/4,
 	      r.width()/2,
@@ -398,19 +378,12 @@ void CCDImage::mouseDoubleClickEvent(QMouseEvent *) {
 
 void CCDImage::overwriteImage(QImage img) {
   image = img;
+  constrainZoom();
   update();
 }
 
-QRect CCDImage::safeZoomRect() const {
-  if (hasZoom)
-    return zoomRect;
-  else
-    return QRect(0,0,image.width(),image.height());
-}
-
-
 XYRRA CCDImage::imageToScreen(XYRRA el) const {
-  QRect r = safeZoomRect();
+  QRect r = zoomRect;
   double ax = double(width()) / r.width();
   double ay = double(height()) / r.height();
   double bx = -ax*r.left();
@@ -426,7 +399,7 @@ XYRRA CCDImage::imageToScreen(XYRRA el) const {
 }
 
 QRect CCDImage::imageToScreen(QRect xy) const {
-  QRect r = safeZoomRect();
+  QRect r = zoomRect;
   double ax = double(width()) / r.width();
   double ay = double(height()) / r.height();
   double bx = -ax*r.left();
@@ -436,7 +409,7 @@ QRect CCDImage::imageToScreen(QRect xy) const {
 }
 
 QPoint CCDImage::imageToScreen(QPointF xy) const {
-  QRect r = safeZoomRect();
+  QRect r = zoomRect;
   double ax = double(width()) / r.width();
   double ay = double(height()) / r.height();
   double bx = -ax*r.left();
@@ -444,10 +417,8 @@ QPoint CCDImage::imageToScreen(QPointF xy) const {
   return QPoint(roundi(ax*xy.x()+bx), roundi(ay*xy.y()+by));
 }
 
-
-
 double CCDImage::imageToScreen(double len) const {
-  QRect r = safeZoomRect();
+  QRect r = zoomRect;
   double ax = double(width()) / r.width();
   double ay = double(height()) / r.height();
   len *= sqrt(ax*ay);
@@ -455,7 +426,7 @@ double CCDImage::imageToScreen(double len) const {
 }
 
 XYRRA CCDImage::screenToImage(XYRRA el) const {
-  QRect r = safeZoomRect();
+  QRect r = zoomRect;
   /* As in paintEvent, we write x_screen = a*x_image + bx, thus
      x_image = (x_screen-bx)/a. */
   double ax = double(width()) / r.width();
@@ -473,7 +444,7 @@ XYRRA CCDImage::screenToImage(XYRRA el) const {
 }
 
 QPointF CCDImage::screenToImage(QPoint xy) const {
-  QRect r = safeZoomRect();
+  QRect r = zoomRect;
   double ax = double(width()) / r.width();
   double ay = double(height()) / r.height();
   double bx = -ax*r.left();
@@ -482,7 +453,7 @@ QPointF CCDImage::screenToImage(QPoint xy) const {
 }
 
 QRect CCDImage::screenToImage(QRect r) const {
-  QRect zr = safeZoomRect();
+  QRect zr = zoomRect;
   double ax = double(width()) / zr.width();
   double ay = double(height()) / zr.height();
   /* Since we preserve aspect ratio in zoom, a=ax=ay by definition. */
@@ -493,10 +464,9 @@ QRect CCDImage::screenToImage(QRect r) const {
 }
 
 double CCDImage::screenToImage(double len) const {
-  QRect r = safeZoomRect();
+  QRect r = zoomRect;
   double ax = double(width()) / r.width();
   double ay = double(height()) / r.height();
   len /= sqrt(ax*ay);
   return len;
 }
-

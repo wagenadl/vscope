@@ -10,6 +10,8 @@
 class ROICoords {
 public:
   ROICoords();
+  ROICoords(PolyBlob const &blob);
+  ROICoords(XYRRA const &xyrra);
   ~ROICoords();
   ROICoords(QDomElement doc);
   ROICoords &operator=(XYRRA const &xyrra);

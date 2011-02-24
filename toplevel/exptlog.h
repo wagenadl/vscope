@@ -17,8 +17,10 @@ public slots:
   void prepareUserNote();
   void addNote(QString s, bool nodate=false);
   void newExptName();
-  void markTrial(bool snap);
-  void markContEphys(bool start_not_stop);
+  void markTrial(QString trialno);
+  void markSnap(QString trialno);
+  void markContEphys(QString trialno);
+  void markContEphysEnds();
   void markLoadSettings(QString s);
   void changeSetting(QString label, QString value);
   void changeROI();

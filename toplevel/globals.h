@@ -19,7 +19,7 @@ public:
   static class QWidget *leftplace;  // defined in main.cpp
   static class QWidget *rightplace; // defined in main.cpp
   
-  static QMap<QString, class ROIImage *> ccdw;   // defined in main.cpp
+  static class ROIImages *ccdw;   // defined in main.cpp
   static class VSDTraces *vsdtraces; // defined in main.cpp
   static class Coherence *coherence; // defined in main.cpp
   static class CohGraph *cohgraph; // defined in main.cpp

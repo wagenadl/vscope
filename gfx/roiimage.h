@@ -6,6 +6,7 @@
 
 #include <gfx/ccdimage.h>
 #include <QDomElement>
+#include <base/roicoords.h>
 
 class ROIImage: public CCDImage {
   /*:C ROIImage
@@ -20,6 +21,18 @@ public:
     SM_Outlines,
     SM_IDs,
     SM_Full,
+  };
+  enum ClickMode {
+    CM_None=0,
+    CM_Zoom,
+    CM_SelectROI=100,
+    CM_AddROI,
+    CM_DelROI,
+    CM_MoveROI,
+    CM_ResizeROI,
+    CM_RotateROI,
+    CM_RotSizeROI,
+    CM_BlobROI,
   };
 public:
   ROIImage(QWidget *parent);
@@ -38,51 +51,15 @@ public:
    *:N We don't make a copy and may be modifying the set upon user
        interaction.
    */
- protected:
-  enum ClickMode {
-    CM_None=0,
-    CM_Zoom,
-    CM_SelectROI=100,
-    CM_AddROI,
-    CM_DelROI,
-    CM_MoveROI,
-    CM_ResizeROI,
-    CM_RotateROI,
-    CM_RotSizeROI,
-    CM_BlobROI,
-  };
 public slots:
-  void setModeZoom();
-  void setModeSelectROI();
-  void setModeAddROI();
-  void setModeDelROI();
-  void setModeMoveROI();
-  void setModeResizeROI();
-  void setModeRotateROI();
-  void setModeRotSizeROI();
-  void setModeBlobROI();
-  void deleteAllROIs();
-  void deleteROI(int id);
-  void deleteROI();
-  /*:F deleteROI
-   *:D Deletes the currently selected ROI or a specified ROI and emit a
-       roiDeleted signal.
-  */
+  void setMode(ClickMode cm);
   void showROIs(ShowMode sm);
   /*:F showROIs
    *:D Enables plotting of ROIs on top of the image
    */
-  void acceptROIselect(int id);
-  /*:F acceptROIselect
-   *:D Slot to receive selectedROI signals from a partner CCDImage.
-   */
-  void acceptROIedit(int id);
-  /*:F acceptROIedit
-   *:D Slot to receive editedROI signals from a partner CCDImage.
-   */
-  void acceptROIdelete(int id);
-  /*:F acceptROIdelete
-   *:D Slot to receive deletedROI signals from a partner CCDImage.
+  void updateSelection(int id);
+  /*:F updateSelection
+   *:D Slot to receive newSelection() signals from a partner image.
    */
   virtual void setZoom(QRect const &zoom);
   /*:F setZoom
@@ -98,32 +75,20 @@ public slots:
   /*:F zoomIn
    *:D Zooms in 2x from the current view, recentering on selected ROI if any.
   */       
-  virtual void sharedZoom(bool,QRect);
-  /*:F sharedZoom
+  virtual void updateZoom(QRect);
+  /*:F updateZoom
    *:D Updates this image's zoom settings without emitting a shareZoom signal.
        This is typically the recipient of a shareZoom from another image.
   */
  signals:
-  void selectedROI(int id);
-  /*:S selectedROI
+  void newSelection(int id);
+  /*:S newSelection
    *:D Emitted whenever a new ROI is selected.
-   */
-  void editedROI(int id);
-  /*:S editedROI
-   *:D Emitted whenever a ROI has been edited by the user.
-   */
-  void deletedROI(int id);
-  /*:S deletedROI
-   *:D Emitted whenever a ROI has been deleted by the user.
    */
 private:
   void showSelectedID(bool show=true);
   void hideSelectedID();
 protected:
-  int ensureIdNew(int id=1);
-  /*:F ensureIdNew
-   *:D Returns ID if ID is not currently in use, otherwise returns a new ID.
-   */
   virtual void mousePressEvent(class QMouseEvent *);
   /*:F mousePressEvent
    *:D Response to mouse click depends on current click mode.
@@ -149,13 +114,18 @@ protected:
   */
   virtual void resizeEvent(class QResizeEvent *);
   int findNearestROI(QPoint xy, double marg=0); // xy, marg in screen coords!
-  void selectNearestROI(QPoint xy, double marg=0); // xy, marg in screen coords
+  void selectNearestROI(QPoint xy, double marg=0);
+  /*:F selectNearestROI
+   *:D Selects the ROI nearest xy. If none, do nothing.
+   *:N xy and marg are in screen coords.
+   */
 private:
   void recalcEllipse();
   /*:F recalcEllipse
    *:D Sets the shape of the ellipse to match the currently selected
        ROI properly adjusted for our zoom level.
   */
+  void select(int id);
 public:
   int currentROI() const { return selectedroi; }
 protected:
@@ -165,9 +135,8 @@ protected:
   class Ellipse *ellipse; // used for current XYRRA ROI
   class VisiBlob *visiblob; // used for current PolyBlob ROI
   class ROISet *roiset;
-  bool selectedIDShown;
   static class ROISet *dummyrois;
-  int justcreatedroi;
+  ROICoords *editing;
 };
 
 #endif

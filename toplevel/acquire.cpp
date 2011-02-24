@@ -60,11 +60,10 @@ void Acquire::acqFrame() {
   }
   
   type = FRAME;
-  Globals::trial->prepareSnapshot(Globals::ptree);
+  QString trialid = Globals::trial->prepareSnapshot(Globals::ptree);
   if (!dummy) {
-    Globals::exptlog->markTrial(true);
-    Globals::contacq->markTrial(Globals::ptree->find("acquisition/_trialno")
-				.toInt());
+    Globals::exptlog->markSnap(trialid);
+    Globals::contacq->markTrial(trialid);
   }
   Globals::trial->start();
   if (dummy)
@@ -87,11 +86,10 @@ void Acquire::acqTrial() {
   }
   
   type = TRIAL;
-  Globals::trial->prepare(Globals::ptree);
+  QString trialid = Globals::trial->prepare(Globals::ptree);
   if (!dummy) {
-    Globals::exptlog->markTrial(false);
-    Globals::contacq->markTrial(Globals::ptree->find("acquisition/_trialno")
-				.toInt());
+    Globals::exptlog->markTrial(trialid);
+    Globals::contacq->markTrial(trialid);
   }
   Globals::trial->start();
   if (dummy)
@@ -152,8 +150,7 @@ void Acquire::closeDialog() {
 
 void Acquire::saveData() {
   try {
-    QString filePath = Globals::ptree->find("_filePath").toString();
-    Globals::trove->write(filePath);
+    Globals::trove->write();
   } catch (Exception const &e) {
     GUIExc::report(e,"Acquire");
   }
@@ -337,10 +334,9 @@ void Acquire::setContEphys() {
       return;
     }
     incTrialNo();
-    Globals::exptlog->markContEphys(true);
+    QString trialname = Globals::contacq->prepare(Globals::ptree);
+    Globals::exptlog->markContEphys(trialname);
     Globals::gui->open(); // make sure updated trial number visible.
-    Globals::contacq->prepare(Globals::ptree,
-			      Globals::ptree->find("_filePath").toString());
     Globals::contacq->start();
   } else {
     if (!Globals::contacq->isActive()) {
@@ -348,7 +344,7 @@ void Acquire::setContEphys() {
       return;
     }
     Globals::contacq->stop();
-    Globals::exptlog->markContEphys(false);
+    Globals::exptlog->markContEphysEnds();
   }
 }
 

@@ -7,7 +7,7 @@
 #include <base/roiset.h>
 #include <QString>
 
-class ROISetGuard: public QObject, public ROISet {
+class ROISetGuard: public ROISet {
   /*:C ROISetGuard
    *:D Wrapper around ROISet that can automatically save
    */

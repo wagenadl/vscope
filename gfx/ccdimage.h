@@ -14,8 +14,7 @@ class CCDImage_ {
   protected:
   QImage image; // currently displayed image
   uint16_t min, max; // color map ranges
-  QRect zoomRect; // current zoom, or undefined if not zoomed in
-  bool hasZoom; // are we at all zoomed in?
+  QRect zoomRect; // current zoom, in image coords
   class QRubberBand *rubberband; // used during zoom dragging
   QPoint clickPoint; // location of most recent mouse press
   double adjust_black, adjust_white;
@@ -87,9 +86,8 @@ public slots:
   */
   virtual void setZoom(QRect const &zoom);
   /*:F setZoom
-   *:D Zooms in to the given rectangle within the image. Note that if this
-       rectangle has a different aspect ratio than the image, ROIs may be
-       plotted incorrectly.
+   *:D Zooms in to the given rectangle within the image.
+   *:N Rectangle is in image coordinates.
   */
   virtual void resetZoom();
   /*:F resetZoom
@@ -102,20 +100,23 @@ public slots:
   virtual void zoomIn(int x0, int y0);
   /*:F zoomIn
    *:D Zooms in 2x from the current view, recentered on (x0,y0).
+   *:N x0,y0 in image coordinates
   */       
   virtual void zoomOut();
   /*:F zoomOut
    *:D Zooms out 2x from the current view or back to viewing the whole image.
    */
-  virtual void sharedZoom(bool,QRect);
-  /*:F sharedZoom
+  virtual void updateZoom(QRect);
+  /*:F updateZoom
    *:D Updates this image's zoom settings without emitting a shareZoom signal.
        This is typically the recipient of a shareZoom from another image.
+   *:N Rectangle must be in image coordinates
   */
 signals:
-  void shareZoom(bool, QRect);
-  /*:S shareZoom
+  void newZoom(QRect);
+  /*:S newZoom
    *:D Emitted whenever our zoom is explicitly changed. See sharedZoom.
+   *:N Rectangle is in image coordinates.
    */
 protected:
   void createTestImage();
@@ -159,10 +160,10 @@ protected:
   double screenToImage(double length) const; // approx!
   double imageToScreen(double length) const; // approx!
   void rebuildGammaTable();
-  QRect safeZoomRect() const;
 public:
   QImage currentImage() const { return image; }
   void overwriteImage(QImage img);
+  QRect currentZoom() const { return zoomRect; }
 protected:
   class ZoomInfo {
   public:

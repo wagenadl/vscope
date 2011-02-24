@@ -9,6 +9,16 @@ ROICoords::ROICoords() {
   dataBlob = 0;
 }
 
+ROICoords::ROICoords(XYRRA const &xyrra) {
+  dataXYRRA = new XYRRA(xyrra);
+  dataBlob = 0;
+}
+
+ROICoords::ROICoords(PolyBlob const &blob) {
+  dataBlob = new PolyBlob(blob);
+  dataXYRRA = 0;
+}
+
 ROICoords::~ROICoords() {
   if (dataXYRRA)
     delete dataXYRRA;

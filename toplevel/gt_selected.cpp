@@ -31,34 +31,24 @@ void gt_slots::selected(QString p) {
       Globals::focus->setViewMode(Focus::ViewZoom);
     else if (p=="maintenance/focus/viewDiff" && Globals::focus) 
       Globals::focus->setViewMode(Focus::ViewDiff);
-    else if (p=="analysis/zoom") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeZoom();
-    } else if (p=="analysis/roiBlob") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeBlobROI();
-    } else if (p=="analysis/roiSelect") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeSelectROI();
-    } else if (p=="analysis/roiAdd") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeAddROI();
-    } else if (p=="analysis/roiDelete") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeDelROI();
-    } else if (p=="analysis/roiMove") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeMoveROI();
-    } else if (p=="analysis/roiResize") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeResizeROI();
-    } else if (p=="analysis/roiRotate") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeRotateROI();
-    } else if (p=="analysis/roiRotSize") {
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->setModeRotSizeROI();
-    }
+    else if (p=="analysis/zoom") 
+      Globals::ccdw->setMode(ROIImage::CM_Zoom);
+    else if (p=="analysis/roiBlob") 
+      Globals::ccdw->setMode(CM_BlobROI);
+    else if (p=="analysis/roiSelect") 
+      Globals::ccdw->setMode(CM_SelectROI);
+    else if (p=="analysis/roiAdd") 
+      Globals::ccdw->setMode(CM_AddROI);
+    else if (p=="analysis/roiDelete") 
+      Globals::ccdw->setMode(CM_DelROI);
+    else if (p=="analysis/roiMove") 
+      Globals::ccdw->setMode(CM_MoveROI);
+    else if (p=="analysis/roiResize") 
+      Globals::ccdw->setMode(CM_ResizeROI);
+    else if (p=="analysis/roiRotate") 
+      Globals::ccdw->setMode(CM_RotateROI);
+    else if (p=="analysis/roiRotSize") 
+      Globals::ccdw->setMode(CM_RotSizeROI);
   } catch (Exception const &e) {
     report(e,"select button");
   }

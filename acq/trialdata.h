@@ -13,9 +13,9 @@ class TrialData {
 public:
   TrialData();
   virtual ~TrialData();
-  void prepare(class ParamTree const *ptree);
-  void prepareSnapshot(class ParamTree const *ptree);
-  virtual QString write(QString dir) const;
+  QString prepare(class ParamTree const *ptree);
+  QString prepareSnapshot(class ParamTree const *ptree);
+  virtual QString write() const;
   /*:F write
    *:R Actual trial name, which may differ from trialno if there was a
        pre-existing file. When that happens, letters are added to the
@@ -40,10 +40,20 @@ public:
   bool isCCD() const { return do_ccd; }
   bool hasContEPhys() const { return contEphys; }
   bool isEPhys() const { return !snap && !contEphys; }
+  QString filePath() const { return fpath; }
   QString exptName() const { return exptname; }
   QString trialID() const { return trialid; }
 private:
-  void generalPrep(class ParamTree const *ptree);
+  static QString trialname(class ParamTree const *tree);
+  /*:F trialname
+   *:D Determine actual trial name to be used to save data. This may differ
+       from the trial number in the ptree if a file preexists, in which case
+       letters are added to the file name.
+  */  
+  QString generalPrep(class ParamTree const *ptree);
+  /*:F generalPrep
+   *:R Actual trial name (as per trialname()).
+   */
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;
@@ -60,6 +70,7 @@ private:
   class AnalogData *adataIn, *adataOut;
   class DigitalData *ddataIn, *ddataOut;
   // identification
+  QString fpath;
   QString exptname;
   QString trialid;
   // status

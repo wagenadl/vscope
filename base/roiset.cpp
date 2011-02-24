@@ -5,15 +5,17 @@
 #include <base/xml.h>
 
 ROISet::ROISet(QString cam): dfltcam(cam) {
+  lastid = 0;
 }
 
 ROISet::~ROISet() {
 }
 
-ROICoords &ROISet::insert(int id, QString cam) {
+int ROISet::newROI(QString cam) {
+  int id = ++lastid;
   allids.insert(id);
   cams[id] = cam.isEmpty() ? dfltcam : cam;
-  return map[id]; 
+  return id;
 }
 
 QString const &ROISet::cam(int id) const {
@@ -33,12 +35,19 @@ ROICoords const &ROISet::get(int id) const {
 		    QString("No ROI with ID=%1").arg(id),"get");
 }
 
-ROICoords &ROISet::get(int id) {
+ROICoords &ROISet::checkout(int id) {
   if (map.contains(id))
     return map[id];
   else
     throw Exception("ROISet",
 		    QString("No ROI with ID=%1").arg(id),"get");
+}
+
+void ROISet::checkin(int id) {
+  emit changed(id);
+}
+
+void ROISet::cancel(int) {
 }
 
 bool ROISet::contains(int id) const {
@@ -54,9 +63,12 @@ bool ROISet::isPoly(int id) const {
 }
 
 void ROISet::remove(int id) {
+  if (!allids.contains(id))
+    return;
   allids.remove(id);
   cams.remove(id);
   map.remove(id);
+  emit changed(id);
 }
 
 void ROISet::write(QDomElement dst) const {
@@ -71,13 +83,16 @@ void ROISet::write(QDomElement dst) const {
 }
 
 void ROISet::read(QDomElement src) {
-  clear();
+  clearNoSignal();
   bool ok;
+  lastid = 0;
   for (QDomElement e=src.firstChildElement("roi");
        !e.isNull(); e=e.nextSiblingElement("roi")) {
     int id = e.attribute("id").toInt(&ok);
     if (!ok)
       throw Exception("ROISet","Cannot read id from xml");
+    if (id>=lastid)
+      lastid = id;
     allids.insert(id);
     if (e.hasAttribute("cam"))
       cams[id] = e.attribute("cam");
@@ -85,6 +100,7 @@ void ROISet::read(QDomElement src) {
       cams[id] = dfltcam;
     map[id].read(e);
   }
+  emit changedAll();
 }
 
 QSet<int> const &ROISet::ids() const {
@@ -99,9 +115,16 @@ QSet<int> ROISet::idsForCam(QString cam) const {
   return ids;
 }
 
-void ROISet::clear() {
+void ROISet::clearNoSignal() {
   map.clear();
+  cams.clear();
   allids.clear();
+  lastid = 0;
+}
+
+void ROISet::clear() {
+  clearNoSignal();
+  emit changedAll();
 }
 
 double ROISet::centerX(int id) const {
@@ -136,3 +159,16 @@ void ROISet::load(QString fn) {
   read(roidoc);
 }
   
+ROIWriter::ROIWriter(ROISet &rs, int id):
+  roi(rs.checkout(id)), rs(rs), id(id)  {
+  canceled = false;
+}
+
+void ROIWriter::cancel() {
+  canceled = true;
+}
+
+ROIWriter::~ROIWriter() {
+  if (!canceled)
+    rs.checkin(id);
+}

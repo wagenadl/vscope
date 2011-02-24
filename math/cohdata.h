@@ -13,7 +13,7 @@
 class CohData_ {
 private: friend class CohData;
   class ROISet const *roiset; // we do not own this
-  class ROISet3Data *rs3d; // we do not own this
+  class ROIData3Set *rs3d; // we do not own this
   class AnalogData const *adata; // we do not own this
   class DigitalData const *ddata; // we do not own this
   CCDTiming timing;
@@ -43,7 +43,7 @@ public:
 public:
   void newROISet(class ROISet const *roiset);
   void newEPhys(class AnalogData const *ad, class DigitalData const *dd);
-  void newCCDData(class ROISet3Data *rs3d);
+  void newCCDData(class ROIData3Set *rs3d);
   void newTiming(CCDTiming const &timing);
   void setRefTrace(int achn);
   void setRefDigi(int digiline);

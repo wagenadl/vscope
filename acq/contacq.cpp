@@ -73,14 +73,14 @@ ContAcq::~ContAcq() {
   delete xml;
 }
 
-void ContAcq::prepare(class ParamTree *ptree, QString dir) {
+QString ContAcq::prepare(class ParamTree *ptree) {
   dbg("ContAcq::prepare");
   if (active)
     throw Exception("ContAcq","Cannot prepare while active");
   ephysacq->prepare(ptree);
 
   dummy = ptree->find("acquisition/_dummy").toBool();
-
+  QString dir = ptree->find("acquisition/_filePath").toString();
   exptname = ptree->find("acquisition/_exptname").toString();
   int trialno = ptree->find("acquisition/_trialno").toInt();
   trialid = QString("%1").arg(trialno,int(3),int(10),QChar('0'));
@@ -184,6 +184,7 @@ void ContAcq::prepare(class ParamTree *ptree, QString dir) {
     xml->write(xmlfn);
   
   prep=true;
+  return trialname;
 }
 
 void ContAcq::start() {
@@ -209,9 +210,9 @@ void ContAcq::stop() {
   }
 
   if (ephysacq) {
+    ephysacq->setDataAvFcn(0,0);
     if (ephysacq->isActive())
       ephysacq->abort();
-    ephysacq->setDataAvFcn(0,0);
   }
 
   if (analogStream) {
@@ -324,10 +325,10 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
   emit dataSaved(analogscans, digitalscans);
 }
 
-void ContAcq::markTrial(int trialno) {
+void ContAcq::markTrial(QString trialno) {
   if (active) {
     QDomElement e = xml->append("trial",info_elt);
-    e.setAttribute("id",QString("%1").arg(trialno,int(3),int(10),QChar('0')));
+    e.setAttribute("id",trialno);
     e.setAttribute("ascan",QString::number(analogFileOffset));
     e.setAttribute("dscan",QString::number(digitalFileOffset));
     if (!dummy)

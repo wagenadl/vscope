@@ -1,7 +1,7 @@
 // cohdata.cpp
 
 #include "cohdata.h"
-#include <base/roiset3data.h>
+#include <base/roidata3set.h>
 #include <math/cohest.h>
 #include <math/psdest.h>
 #include <base/roiset.h>
@@ -50,7 +50,7 @@ void CohData::newROISet(ROISet const *r) {
   invalidate();
 }
 
-void CohData::newCCDData(class ROISet3Data /*const*/ *dat) {
+void CohData::newCCDData(class ROIData3Set /*const*/ *dat) {
   /* Conceptually const, but we may be the one to trigger recalculation */
   rs3d = dat;
   invalidate();

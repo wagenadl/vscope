@@ -13,7 +13,10 @@ class ContAcq: public QObject {
 public:
   ContAcq();
   virtual ~ContAcq();
-  void prepare(class ParamTree *ptree, QString dir);
+  QString prepare(class ParamTree *ptree);
+  /*:F prepare
+   *:R Returns actual trial name (which may have a letter appended).
+   */
 public: // information
   class AnalogData *adata() const { return active ? adataIn : 0; }
   class DigitalData *ddata() const { return active ? ddataIn : 0; }
@@ -22,7 +25,7 @@ public: // information
 public slots:
   void start();
   void stop();
-  void markTrial(int trialno);
+  void markTrial(QString trialno);
 private:
   void dataAvailable(int analogscans, int digitalscans);
   static void dataAvFcn(int analogscans, int digitalscans, void *aux);
