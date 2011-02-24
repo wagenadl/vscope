@@ -42,8 +42,15 @@ Acquire::~Acquire() {
 }
 
 void Acquire::incTrialNo() {
-  Param &trialno = Globals::ptree->find("acquisition/_trialno");
-  trialno.setInt(trialno.toInt()+1);
+  Param &ptrial = Globals::ptree->find("acquisition/_trialno");
+  QString fpath = Globals::ptree->find("acquisition/_filePath").toString();
+  QString expt = Globals::ptree->find("acquisition/_exptname").toString();
+  int trialno = ptrial.toInt() + 1;
+  while (QFile(QString("%1/%2/%3.xml").
+	       arg(fpath).arg(expt).arg(trialno,int(3),int(10),QChar('0')))
+	 .exists())
+    trialno++;
+  ptrial.setInt(trialno);
 }
 
 void Acquire::acqFrame() {
