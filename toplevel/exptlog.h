@@ -17,9 +17,9 @@ public slots:
   void prepareUserNote();
   void addNote(QString s, bool nodate=false);
   void newExptName();
-  void markTrial(QString trialno);
-  void markSnap(QString trialno);
-  void markContEphys(QString trialno);
+  void markTrial();
+  void markSnap();
+  void markContEphys();
   void markContEphysEnds();
   void markLoadSettings(QString s);
   void changeSetting(QString label, QString value);
@@ -29,6 +29,8 @@ private slots:
   void acceptUserNote(QString);
   void cancelUserNote();
   void acceptDoubleClick(QString but, QString txt);
+public:
+  static QString trialID();
 private:
   class TextEntry *noteEditor;
   QStringList backlog;

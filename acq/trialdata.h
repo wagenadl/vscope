@@ -9,13 +9,14 @@
 #include <QString>
 #include <base/xml.h>
 #include <acq/ccdtimingdetail.h>
+#include <base/transform.h>
 
 class TrialData {
 public:
   TrialData();
   virtual ~TrialData();
-  QString prepare(class ParamTree const *ptree);
-  QString prepareSnapshot(class ParamTree const *ptree);
+  void prepare(class ParamTree const *ptree);
+  void prepareSnapshot(class ParamTree const *ptree);
   virtual QString write() const;
   /*:F write
    *:R Actual trial name, which may differ from trialno if there was a
@@ -32,7 +33,7 @@ public:
   class XML const *getXML() const { return xml; } // only useful after read() or write()
   class AnalogData  *analogData()  { return adataIn; }
   class DigitalData  *digitalData()  { return ddataIn; }
-  class CCDData  *ccdData(QString camid) ;
+  class CCDData  *ccdData(QString camid);
   class AnalogData  *analogStimuli()  { return adataOut; }
   class DigitalData  *digitalStimuli()  { return ddataOut; }
   class XML *getXML() { return xml; } // only useful after read() or write()
@@ -45,17 +46,10 @@ public:
   QString exptName() const { return exptname; }
   QString trialID() const { return trialid; }
   CCDTimingDetail const &timing() const { return timing_; }
+  Transform const &ccdPlacement(QString camid) const;
 private:
   static QString trialname(class ParamTree const *tree);
-  /*:F trialname
-   *:D Determine actual trial name to be used to save data. This may differ
-       from the trial number in the ptree if a file preexists, in which case
-       letters are added to the file name.
-  */  
-  QString generalPrep(class ParamTree const *ptree);
-  /*:F generalPrep
-   *:R Actual trial name (as per trialname()).
-   */
+  void generalPrep(class ParamTree const *ptree);
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;
@@ -69,6 +63,7 @@ private:
   QMap<QString, int> camidx;
   QVector<QString> camids;
   QVector<CCDData *> ccddata;
+  QVector<Transform> ccdplace;
   class AnalogData *adataIn, *adataOut;
   class DigitalData *ddataIn, *ddataOut;
   // identification
@@ -84,6 +79,8 @@ private:
   // xml stuff
   class XML *xml;
   CCDTimingDetail timing_;
+private:
+  Transform camPlace(ParamTree const *ptree, QString camid); // this calculates it from scratch
 private:
   // not implemented
   TrialData(TrialData const &);

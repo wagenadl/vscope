@@ -71,6 +71,7 @@ namespace Connections {
       e.setAttribute("role", cam.isdonor ? "donor"
 		     : cam.isacceptor ? "acceptor"
 		     : "");
+      cam.placement.write(e);
     }
   }
 
@@ -154,6 +155,11 @@ namespace Connections {
       QString role = e.attribute("role");
       cam->isdonor = role=="donor";
       cam->isacceptor = role=="acceptor";
+      QDomElement t = e.firstChildElement("transform");
+      if (t.isNull())
+	cam->placement = Transform();
+      else
+	cam->placement.read(t);
     }
   }
 
@@ -249,6 +255,22 @@ namespace Connections {
       return *cam;
     throw Exception("Connections",
   		  "There is no camera named '" + id + "'","findCam");
+  }
+
+  CamPair camPair(QString id) {
+    CamPair p;
+    CamCon const &me = findCam(id);
+    if (me.partnerid.isEmpty()) {
+      p.donor = id;
+      p.acceptor = "";
+    } else if (me.isdonor) {
+      p.donor = id;
+      p.acceptor = me.partnerid;
+    } else {
+      p.donor = me.partnerid;
+      p.acceptor = id;
+    }
+    return p;
   }
 
   void markCameraExists(QString id, bool exists) {

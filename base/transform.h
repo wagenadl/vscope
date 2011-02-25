@@ -6,11 +6,15 @@
 
 #include <QRect>
 #include <QRectF>
+#include <QDomElement>
 
 class Transform {
 public:
   Transform();
   Transform &operator=(Transform const &);
+  Transform(QDomElement const &);
+  void read(QDomElement const &);
+  void write(QDomElement &) const;
 public:
   static Transform unit();
   static Transform scaling(double x, double y);

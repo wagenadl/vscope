@@ -45,7 +45,8 @@ void DataTrove::read(QString dir, QString exptname, QString trialid) {
   trial_->read(dir, exptname, trialid, ptree_);
   rois_->load(QString("%1/%2/%3-rois.xml")
 	      .arg(dir).arg(exptname).arg(trialid));
-  Dbg() << "DataTrove::read" << trial_->exptName() << "/" << trial_->trialID();
+  Dbg() << "DataTrove::read: "
+	<< trial_->exptName() << "/" << trialid;
   dummy = d;
 }
 

@@ -40,3 +40,10 @@ int CCDConfig::getPixPerFrame() const {
 int CCDConfig::getTotalPix() const {
   return getPixPerFrame() * nframes;
 }
+
+Transform CCDConfig::placement() const {
+  Transform t;
+  t.scale(binning.sbin, binning.pbin);
+  t.translate(region.smin, region.pmin);
+  return t;
+}

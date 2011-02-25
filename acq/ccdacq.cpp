@@ -38,7 +38,7 @@ bool CCDAcq::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
   try {
     CCDConfig cfg;
     
-    // I am calling ser=x, par=y. This may not be the right thing.
+    // I am calling ser=x, par=y.
     QRect reg(ptree->find("acqCCD/region").toRect());
     cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
     QRect bin(ptree->find("acqCCD/binning").toRect());
@@ -201,4 +201,13 @@ void CCDAcq::setDest(QString camid, CCDData *destforid) {
   dest[camidx[camid]] = destforid;
 }
 
-  
+Transform CCDAcq::placement(QString id) const {
+  if (camidx.contains(id)) {
+    int idx = camidx[id];
+    Transform t = caminfo[idx]->placement;
+    return t(ccdcfg[idx].placement());
+  } else {
+    Dbg() << "CCDAcq::placement: Warning: no info for " << id;
+    return Transform();
+  }
+}

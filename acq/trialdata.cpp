@@ -61,6 +61,13 @@ CCDData const *TrialData::ccdData(QString camid) const {
     return 0;
 }
 
+Transform const &TrialData::ccdPlacement(QString camid) const {
+  if (camidx.contains(camid))
+    return ccdplace[camidx[camid]];
+  else
+    return Transform();
+}
+
 CCDData *TrialData::ccdData(QString camid) {
   if (camidx.contains(camid))
     return ccddata[camidx[camid]];
@@ -68,7 +75,7 @@ CCDData *TrialData::ccdData(QString camid) {
     return 0;
 }
 
-QString TrialData::generalPrep(ParamTree const *ptree) {
+void TrialData::generalPrep(ParamTree const *ptree) {
   if (xml)
     delete xml;
 
@@ -118,44 +125,47 @@ QString TrialData::generalPrep(ParamTree const *ptree) {
     QDomElement ccd = xml->append("ccd");
     ccd.setAttribute("rate", ptree->find("acqCCD/rate").toString());
     ccd.setAttribute("delay", ptree->find("acqCCD/delay").toString());
+    ccdplace.clear();
+    foreach (QString id, camids)
+      ccdplace.append(camPlace(ptree, id));
   }
   prep = true;
-  return trialid;
 }
 
-QString TrialData::prepare(ParamTree const *ptree) {
+Transform TrialData::camPlace(ParamTree const *ptree, QString camid) {
+  if (!camidx.contains(camid)) {
+    Dbg() << "TrialData::CamPlace: no data for camera " << camid;
+    return Transform();
+  }
+  QRect reg(ptree->find("acqCCD/region").toRect());
+  QRect bin(ptree->find("acqCCD/binning").toRect());
+  Transform t0 = Connections::findCam(camid).placement;
+  Transform t1;
+  t1.scale(bin.width(),bin.height());
+  t1.translate(reg.left(),reg.top());
+  return t0(t1);
+}
+
+void TrialData::prepare(ParamTree const *ptree) {
   snap=false;
   timing_.prepTrial(ptree);
   contEphys = ptree->find("acquisition/contEphys").toBool();
   /* contEphys tracks whether continuous e'phys acq is simultaneously
      happening (in "ContAcq"). We are *not* doing that ourselves here. */
   do_ccd = ptree->find("acqCCD/enable").toBool();
-  return generalPrep(ptree);
+  generalPrep(ptree);
 }
 
-QString TrialData::prepareSnapshot(ParamTree const *ptree) {
+void TrialData::prepareSnapshot(ParamTree const *ptree) {
   snap=true;
   timing_.prepSnap(ptree);
   do_ccd = true;
-  return generalPrep(ptree);
+  generalPrep(ptree);
 }
 
 QString TrialData::trialname(ParamTree const *ptree) {
-  QString fp = ptree->find("_filePath").toString();
-  QString expt = ptree->find("acquisition/_exptname").toString();
   int t = ptree->find("acquisition/_trialno").toInt();
-  QString tnum = QString("%1").arg(t,int(3),int(10),QChar('0'));
-  QString tname = tnum;
-  int append = 0;
-  while (true) {
-    QString fn = QString("%1/%2/%3.xml").
-      arg(fp).arg(expt).arg(tname);
-    if (QFile(fn).exists())
-      tname = tnum+num2az(++append);
-    else
-      break;
-  }
-  return tname;
+  return QString("%1").arg(t,int(3),int(10),QChar('0'));
 }
 
 QString TrialData::write() const {
@@ -320,6 +330,7 @@ void TrialData::writeCCD(QString base) const {
     Connections::CamCon const &c = Connections::findCam(camids[k]);
     cam.setAttribute("flipx",c.flipx?"yes":"no");
     cam.setAttribute("flipy",c.flipy?"yes":"no");
+    ccdplace[k].write(cam);
   }
 }
 
@@ -399,6 +410,8 @@ void TrialData::readCCD(XML &myxml, QString base) {
   if (delay_ms>0 || rate_hz>0) {
     ; // actually, I should compare these against the ptree.
   }
+  // I also should compare placement against the data already loaded from
+  // the ptree in prepare()
   
   QVector<QString> camsstored;
   camsstored.fill("",ncam);
@@ -434,6 +447,7 @@ void TrialData::readCCD(XML &myxml, QString base) {
       int nser = ccddata[k]->getSerPix();
       int npar = ccddata[k]->getParPix();
       int frpix = nser*npar;
+      Dbg() << "trialdata: reading ccd #"<<idx<<"("<<k<<"): "<<nfrm<<"*"<<nser<<"x"<<npar;
       for (int fr=0; fr<nfrm; fr++) 
 	if (ccdf.read((char *)ccddata[k]->frameData(fr),2*frpix)!=2*frpix)
 	  throw Exception("Trial","Cannot read CCD data","read");
@@ -560,6 +574,8 @@ void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
     
     ccddata[k]->reshape(nser, npar, nfrm);
     ccddata[k]->setTimeBase(ccd_delay_s*1e3,1e3/ccd_rate_Hz);
+
+    Dbg() << "trialdata:readnewccd("<<k<<"): "<<nfrm<<"*"<<nser<<"x"<<npar;
     
     //if (nfrm!=ccddata[k]->getNFrames())
     //  throw Exception("Trial",

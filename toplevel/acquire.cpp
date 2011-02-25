@@ -43,7 +43,7 @@ Acquire::~Acquire() {
 
 void Acquire::incTrialNo() {
   Param &ptrial = Globals::ptree->find("acquisition/_trialno");
-  QString fpath = Globals::ptree->find("acquisition/_filePath").toString();
+  QString fpath = Globals::ptree->find("_filePath").toString();
   QString expt = Globals::ptree->find("acquisition/_exptname").toString();
   int trialno = ptrial.toInt() + 1;
   while (QFile(QString("%1/%2/%3.xml").
@@ -67,10 +67,10 @@ void Acquire::acqFrame() {
   }
   
   type = FRAME;
-  QString trialid = Globals::trial->prepareSnapshot(Globals::ptree);
+  Globals::trial->prepareSnapshot(Globals::ptree);
   if (!dummy) {
-    Globals::exptlog->markSnap(trialid);
-    Globals::contacq->markTrial(trialid);
+    Globals::exptlog->markSnap();
+    Globals::contacq->markTrial(Globals::exptlog->trialID());
   }
   Globals::trial->start();
   if (dummy)
@@ -93,10 +93,10 @@ void Acquire::acqTrial() {
   }
   
   type = TRIAL;
-  QString trialid = Globals::trial->prepare(Globals::ptree);
+  Globals::trial->prepare(Globals::ptree);
   if (!dummy) {
-    Globals::exptlog->markTrial(trialid);
-    Globals::contacq->markTrial(trialid);
+    Globals::exptlog->markTrial();
+    Globals::contacq->markTrial(ExptLog::trialID());
   }
   Globals::trial->start();
   if (dummy)
@@ -200,7 +200,9 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     int nser = src[k]->getSerPix();
     int npar = src[k]->getParPix();
     imgs[k]->adjustedRange(dat,nser,npar);
+    Dbg() << "Acquire: new image for camera " << camname[k] << ": " << dat;
     imgs[k]->newImage(dat,nser,npar,cams[k]->flipx, cams[k]->flipy);
+    imgs[k]->placeImage(Globals::trove->trial().ccdPlacement(camname[k]));
     if (first) {
       Globals::coherence->adjustedRange(dat,nser,npar);
       Globals::coherence->newImage(dat,nser,npar,
@@ -337,8 +339,8 @@ void Acquire::setContEphys() {
       return;
     }
     incTrialNo();
-    QString trialname = Globals::contacq->prepare(Globals::ptree);
-    Globals::exptlog->markContEphys(trialname);
+    Globals::contacq->prepare(Globals::ptree);
+    Globals::exptlog->markContEphys();
     Globals::gui->open(); // make sure updated trial number visible.
     Globals::contacq->start();
   } else {

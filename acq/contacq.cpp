@@ -80,7 +80,7 @@ QString ContAcq::prepare(class ParamTree *ptree) {
   ephysacq->prepare(ptree);
 
   dummy = ptree->find("acquisition/_dummy").toBool();
-  QString dir = ptree->find("acquisition/_filePath").toString();
+  QString dir = ptree->find("_filePath").toString();
   exptname = ptree->find("acquisition/_exptname").toString();
   int trialno = ptree->find("acquisition/_trialno").toInt();
   trialid = QString("%1").arg(trialno,int(3),int(10),QChar('0'));

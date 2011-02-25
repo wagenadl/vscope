@@ -27,6 +27,12 @@ CCDImage::CCDImage(QWidget *parent):
   rebuildGammaTable();
   rubberband = 0;
   recolor("reset");
+  canvasRect = rect();
+  setAutoFillBackground(true);
+  QPalette p = palette();
+  p.setColor(QPalette::Window, QColor("#333333"));
+  setPalette(p);
+  Dbg() << "CCDImage: CanvasRect is " << canvasRect;
   createTestImage();
   resetZoom();
 }
@@ -38,7 +44,7 @@ CCDImage::~CCDImage() {
 
 void CCDImage::setCanvas(QRect r) {
   canvasRect = r;
-  constrainZoom();
+  resetZoom();
   update();
 }
 
@@ -70,7 +76,9 @@ void CCDImage::rebuildGammaTable() {
 static int ccdTestImageCounter = 0;
 
 void CCDImage::createTestImage() {
-  image = QImage(canvasRect.width(),canvasRect.height(),QImage::Format_RGB32);
+  int wid = canvasRect.width();
+  int hei = canvasRect.height();
+  image = QImage(wid, hei, QImage::Format_RGB32);
   // I could use Indexed8 if that's faster.
   uint32_t *dst = (uint32_t*)image.bits();
   int phase1 = ccdTestImageCounter*138;
@@ -79,11 +87,11 @@ void CCDImage::createTestImage() {
   for (int i=0; i<256; i++)
     costbl[i] = uint8_t(127+127*cos(i*6.2832/256));
   ccdTestImageCounter++;
-  for (int y=0; y<512; y++) {
-    for (int x=0; x<512; x++) {
-      uint8_t rd = costbl[int(256*2*y/512+phase1)%256];
-      uint8_t gr = costbl[int(256*3*x/512+phase2)%256];
-      uint8_t bl = costbl[int(256*2*y/512+256*3*x/512+phase1+phase2)%256];
+  for (int y=0; y<hei; y++) {
+    for (int x=0; x<wid; x++) {
+      uint8_t rd = costbl[int(256*2*y/hei+phase1)%256];
+      uint8_t gr = costbl[int(256*3*x/wid+phase2)%256];
+      uint8_t bl = costbl[int(256*2*y/hei+256*3*x/wid+phase1+phase2)%256];
       *dst++ = (rd<<16) + (gr<<8) + bl + 0xff000000;
     }
   }
@@ -303,11 +311,16 @@ void CCDImage::paintEvent(class QPaintEvent *) {
   QRect r = rect(); // (0,0,width,height) of this widget
   constrainZoom();
 
-  if (zoomRect==r)
-    p.drawImage(r,image);
-  else
-    p.drawImage(r,image,img2cnv.inverse()(zoomRect),
-		Qt::DiffuseDither|Qt::ColorOnly|Qt::PreferDither);
+  Dbg() << "CCDImage::paintEvent. imgrect=" << image.rect()
+	<< " zoomrect=" << zoomRect
+	<< " canvasrect=" << canvasRect
+	<< " rect=" << r;
+
+  //  if (zoomRect==r)
+  //    p.drawImage(r,image);
+  //  else
+  p.drawImage(r,image,img2cnv.inverse()(zoomRect),
+	      Qt::DiffuseDither|Qt::ColorOnly|Qt::PreferDither);
 }
 
 void CCDImage::mousePressEvent(QMouseEvent *e) {

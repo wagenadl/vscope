@@ -53,6 +53,10 @@ ROIImage::~ROIImage() {
     delete editing;
 }  
 
+void ROIImage::setCamPair(CamPair const &cp) {
+  campair = cp;
+}
+
 ROISet *ROIImage::getROIs() const {
   return roiset;
 }
@@ -131,7 +135,7 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
       p.drawEllipse(xy0,2,2);
 
     if (showOutline) {
-      ROICoords roi=roiset->get(id);
+      ROICoords const &roi = roiset->get(id);
       if (roi.isXYRRA()) 
 	roi.xyrra().transformed(canvasToScreen()).paint(&p);
       else if (roi.isBlob()) 

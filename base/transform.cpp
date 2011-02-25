@@ -2,10 +2,43 @@
 
 #include "transform.h"
 #include <math.h>
+#include <base/exception.h>
 
 Transform::Transform() {
   ax=ay=1;
   bx=by=0;
+}
+
+Transform::Transform(QDomElement const &e) {
+  read(e);
+}
+
+void Transform::read(QDomElement const &e) {
+  if (e.isNull())
+    throw Exception("Transform","Cannot read null element");
+  if (e.tagName()=="transform") {
+    ax = e.attribute("ax").toDouble(0);
+    bx = e.attribute("bx").toDouble(0);
+    ay = e.attribute("ay").toDouble(0);
+    by = e.attribute("by").toDouble(0);
+  } else {
+    read(e.firstChildElement("transform"));
+  }
+}
+
+void Transform::write(QDomElement &e) const {
+  if (e.isNull())
+    throw Exception("Transform","Cannot write to null element");
+  if (e.tagName()=="transform") {
+    e.setAttribute("ax",QString("%1").arg(ax));
+    e.setAttribute("bx",QString("%1").arg(bx));
+    e.setAttribute("ay",QString("%1").arg(ay));
+    e.setAttribute("by",QString("%1").arg(by));
+  } else {
+    QDomElement x = e.ownerDocument().createElement("transform");
+    e.appendChild(x);
+    write(x);
+  }
 }
 
 Transform &Transform::operator=(Transform const &t) {

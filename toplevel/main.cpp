@@ -247,6 +247,7 @@ void setupCCDImages() {
   Globals::ccdw = new ROIImages(QRect(0,0,512,512));
   foreach (QString id, Connections::allCams()) {
     ROIImage *img = new ROIImage(Globals::leftplace);
+    img->setCamPair(Connections::camPair(id));
     Globals::ccdw->add(id, img);
     img->setGeometry(0,0,512,Globals::mainwindow->basey());
     img->hide();

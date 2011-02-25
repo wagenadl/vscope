@@ -12,10 +12,12 @@ public:
   ROICoords();
   ROICoords(PolyBlob const &blob);
   ROICoords(XYRRA const &xyrra);
+  ROICoords(ROICoords const &roi);
   ~ROICoords();
   ROICoords(QDomElement doc);
   ROICoords &operator=(XYRRA const &xyrra);
   ROICoords &operator=(PolyBlob const &blob);
+  ROICoords &operator=(ROICoords const &roi);
   void makeBlob(int log2n=6);
   void makeXYRRA();
   bool isXYRRA() const;

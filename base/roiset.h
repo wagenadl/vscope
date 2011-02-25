@@ -9,17 +9,7 @@
 #include <QMap>
 #include <base/roicoords.h>
 #include <QObject>
-
-class CamPair {
-public:
-  CamPair() { donor=acceptor=""; }
-public:
-  QString donor;
-  QString acceptor;
-  bool operator==(CamPair const &other) const {
-    return donor==other.donor && acceptor==other.acceptor;
-  }
-};
+#include <base/campair.h>
 
 class ROISet: public QObject {
   /*:C ROISet

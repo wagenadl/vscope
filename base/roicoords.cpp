@@ -19,6 +19,30 @@ ROICoords::ROICoords(PolyBlob const &blob) {
   dataXYRRA = 0;
 }
 
+ROICoords::ROICoords(ROICoords const &roi) {
+  dataBlob = 0;
+  dataXYRRA = 0;
+  if (roi.dataBlob)
+    dataBlob = new PolyBlob(*roi.dataBlob);
+  if (roi.dataXYRRA)
+    dataXYRRA = new XYRRA(*roi.dataXYRRA);
+}
+
+ROICoords &ROICoords::operator=(ROICoords const &roi) {
+  if (dataBlob)
+    delete dataBlob;
+  dataBlob = 0;
+  if (dataXYRRA)
+    delete dataXYRRA;
+  dataXYRRA = 0;
+  if (roi.dataBlob)
+    dataBlob = new PolyBlob(*roi.dataBlob);
+  if (roi.dataXYRRA)
+    dataXYRRA = new XYRRA(*roi.dataXYRRA);
+  return *this;
+}
+
+
 ROICoords::~ROICoords() {
   if (dataXYRRA)
     delete dataXYRRA;
