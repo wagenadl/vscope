@@ -8,8 +8,6 @@
 
 VisiBlob::VisiBlob(QWidget *parent): QWidget(parent) {
   pb = 0;
-  ax = 1; bx = 0;
-  ay = 1; by = 0;
   newpoly = 0;
   indrag = false;
   setEnabled(false);
@@ -32,11 +30,9 @@ void VisiBlob::setShape(PolyBlob *pb0, bool redraw) {
     update();
 }
 
-void VisiBlob::setZoom(double ax0, double bx0, double ay0, double by0) {
-  ax = ax0;
-  bx = bx0;
-  ay = ay0;
-  by = by0;
+void VisiBlob::setTransform(Transform const &t0) {
+  t = t0;
+  tinv = t.inverse();
   update();
 }
 
@@ -46,7 +42,7 @@ void VisiBlob::paintEvent(class QPaintEvent *) {
   if (newpoly)
     pntr.drawPolyline(*newpoly);
   else if (pb)
-    pb->paint(&pntr, ax,bx, ay,by);
+    pb->paint(&pntr, t);
 }
 
 void VisiBlob::startCreate(PolyBlob *dest, QMouseEvent *e) {
@@ -67,12 +63,11 @@ void VisiBlob::drag(QMouseEvent *e) {
     newpoly->push_back(QPointF(e->x(),e->y()));
     break;
   case DISTORT:
-    pb->adjust((e->x()-bx)/ax, (e->y()-by)/ay, false);
+    pb->adjust(tinv(e->pos()), false);
     break;
   case MOVE:
     // dbg("Move!");
-    pb->recenter(startBlob.x() + (e->x()-startScreen.x())/ax,
-		 startBlob.y() + (e->y()-startScreen.y())/ay);
+    pb->recenter(startBlob + tinv(e->pos()-startScreen));
     break;
   }
   update();
@@ -87,8 +82,9 @@ bool VisiBlob::complete(QMouseEvent *) {
     double *xx = memalloc<double>(k, "VisiBlob");
     double *yy = memalloc<double>(k, "VisiBlob");
     for (int i=0; i<k; i++) {
-      xx[i] = ((*newpoly)[i].x()-bx)/ax;
-      yy[i] = ((*newpoly)[i].y()-by)/ay;
+      QPointF xy = t((*newpoly)[i]);
+      xx[i] = xy.x();
+      yy[i] = xy.y();
     }
     pb->build(k, xx, yy);
     delete newpoly;
@@ -111,7 +107,7 @@ void VisiBlob::startAdjust(class QMouseEvent *e) {
     return;
   dragtype = DISTORT;
   indrag = true;
-  pb->adjust((e->x()-bx)/ax, (e->y()-by)/ay, true);
+  pb->adjust(tinv(e->pos()), true);
 }
 
 void VisiBlob::startMove(QMouseEvent *e) {

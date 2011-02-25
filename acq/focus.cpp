@@ -112,26 +112,23 @@ void Focus::setViewMode(enum Focus::ViewMode vm) {
 }
 
 void Focus::newViewMode() {
+  left->resetZoom();
+  right->resetZoom();
   switch (viewMode) {
   case ViewAll:
-    left->resetZoom();
-    right->resetZoom();
     break;
   case ViewA:
-    left->resetZoom();
-    right->setZoom(QRect(192,192,128,128));
+    right->zoomIn();
     break;
   case ViewB:
-    left->setZoom(QRect(192,192,128,128));
-    right->resetZoom();
+    left->zoomIn();
     break;
   case ViewZoom:
-    left->setZoom(QRect(192,192,128,128));
-    right->setZoom(QRect(192,192,128,128));
+    left->zoomIn();
+    right->zoomIn();
     break;
   case ViewDiff:
-    left->resetZoom();
-    right->setZoom(QRect(192,192,128,128));
+    right->zoomIn();
     break;
   }
   autoRange();

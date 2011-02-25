@@ -19,6 +19,8 @@ void DataTrove::constructData() {
   rois_ = new ROISet();
   roidata_ = new ROIData3Set(rois_);
   cohdata_ = new CohData();
+  QObject::connect(rois_, SIGNAL(changed(int)), SLOT(saveROIs()));
+  QObject::connect(rois_, SIGNAL(changedAll), SLOT(saveROIs()));
 }
 
 
@@ -38,10 +40,13 @@ DataTrove::~DataTrove() {
 }
 
 void DataTrove::read(QString dir, QString exptname, QString trialid) {
+  bool d = dummy;
+  dummy = true; // prevent immediate resaving of rois
   trial_->read(dir, exptname, trialid, ptree_);
   rois_->load(QString("%1/%2/%3-rois.xml")
 	      .arg(dir).arg(exptname).arg(trialid));
   Dbg() << "DataTrove::read" << trial_->exptName() << "/" << trial_->trialID();
+  dummy = d;
 }
 
 void DataTrove::write() {

@@ -6,7 +6,8 @@
 
 class CCDTiming {
 public:
-  explicit CCDTiming(double fs_hz=0);
+  CCDTiming();
+  void reset();
   void setRate(double fs_hz);
   void setFrames(int nframes);
   void setTiming(double t0_ms, double dt_ms, double duty_pct=100);

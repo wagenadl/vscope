@@ -125,6 +125,7 @@ QString TrialData::generalPrep(ParamTree const *ptree) {
 
 QString TrialData::prepare(ParamTree const *ptree) {
   snap=false;
+  timing_.prepTrial(ptree);
   contEphys = ptree->find("acquisition/contEphys").toBool();
   /* contEphys tracks whether continuous e'phys acq is simultaneously
      happening (in "ContAcq"). We are *not* doing that ourselves here. */
@@ -134,6 +135,7 @@ QString TrialData::prepare(ParamTree const *ptree) {
 
 QString TrialData::prepareSnapshot(ParamTree const *ptree) {
   snap=true;
+  timing_.prepSnap(ptree);
   do_ccd = true;
   return generalPrep(ptree);
 }

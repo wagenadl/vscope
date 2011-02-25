@@ -12,7 +12,7 @@
 #include <toplevel/coherence.h>
 #include <toplevel/cohgraph.h>
 #include <toplevel/exptlog.h>
-#include <gfx/roiimage.h>
+#include <gfx/roiimages.h>
 
 PanelHistory::PanelHistory() {
   busy = false;
@@ -190,7 +190,7 @@ QWidget *PanelHistory::childWidget(QString what) {
   if (what=="VSDTraces")
     child = Globals::vsdtraces;
   else if (what.startsWith("VSD"))
-    child = Globals::ccdw[what.mid(3)];
+    child = Globals::ccdw->get(what.mid(3));
   else if (what=="EphysInt")
     child = Globals::mgintra;
   else if (what=="EphysExt")

@@ -9,7 +9,9 @@
 
 class CCDTimingDetail: public CCDTiming {
 public:
-  CCDTimingDetail(ParamTree const *ptree, bool snap);
+  CCDTimingDetail();
+  void prepTrial(ParamTree const *ptree);
+  void prepSnap(ParamTree const *ptree);
   int neededScans() const { return nscans; }
   /*:F neededScans
    *:D Calculates the minimum length a ddata structure should have to
@@ -22,6 +24,8 @@ public:
   int shtrPostScans() const { return shtrpostscans; }
   int preHeatFrames() const { return preheat_frames; }
   bool trigEach() const { return trig_each; }
+private:
+  void generalPrep(ParamTree const *ptree);
 private:
   bool is_snap;
   int nscans; // Total number of scans in trial

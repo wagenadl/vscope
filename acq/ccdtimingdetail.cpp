@@ -8,9 +8,12 @@
 
 #define PAR_OUTRATE "acqEphys/acqFreq"
 
-CCDTimingDetail::CCDTimingDetail(ParamTree const *ptree, bool snap) {
+CCDTimingDetail::CCDTimingDetail() {
+  nscans = 0;
+}
+
+void CCDTimingDetail::generalPrep(ParamTree const *ptree) {
   setRate(ptree->find(PAR_OUTRATE).toDouble());
-  is_snap = snap;
   double outrate_hz = fs_hz();
 
   bool enableCCD = is_snap ? true : ptree->find("acqCCD/enable").toBool();
@@ -54,3 +57,16 @@ CCDTimingDetail::CCDTimingDetail(ParamTree const *ptree, bool snap) {
   nscans = floori(trial_ms * outrate_hz/1000);
   preheat_frames = is_snap ? 0 : floori(preheat_ms/frame_ms+.0001);
 }
+
+void CCDTimingDetail::prepTrial(ParamTree const *ptree) {
+  reset();
+  is_snap = false;
+  generalPrep(ptree);
+}
+ 
+void CCDTimingDetail::prepSnap(ParamTree const *ptree) {
+  reset();
+  is_snap = true;
+  generalPrep(ptree);
+}
+ 

@@ -4,41 +4,40 @@
 
 #define GLOBALS_H
 
-#include <QMap>
-#include <QString>
+#include <QRect>
 
 class Globals {
 public:
-  static class ParamTree *ptree; // defined in main.cpp
-  static class DataTrove *trove; // defined in main.cpp
+  static class ParamTree *ptree; 
+  static class DataTrove *trove; 
 
-  static class vscopeGui *gui; // defined in main.cpp
-  static class gt_slots *gtslots; // defined in main.cpp
+  static class vscopeGui *gui; 
+  static class gt_slots *gtslots; 
 
   static class MainWindow *mainwindow;
-  static class QWidget *leftplace;  // defined in main.cpp
-  static class QWidget *rightplace; // defined in main.cpp
+  static class QWidget *leftplace;  
+  static class QWidget *rightplace; 
   
-  static class ROIImages *ccdw;   // defined in main.cpp
-  static class VSDTraces *vsdtraces; // defined in main.cpp
-  static class Coherence *coherence; // defined in main.cpp
-  static class CohGraph *cohgraph; // defined in main.cpp
+  static class ROIImages *ccdw;   
+  static class VSDTraces *vsdtraces; 
+  static class Coherence *coherence; 
+  static class CohGraph *cohgraph; 
 
-  static class MGAuto *mgintra; // defined in main.cpp
-  static class MGAuto *mgextra; // defined in main.cpp
-  static class MGAuto *mgstim; // defined in main.cpp
+  static class MGAuto *mgintra; 
+  static class MGAuto *mgextra; 
+  static class MGAuto *mgstim; 
   
-  static class LiveEPhys *liveephys; // defined in main.cpp
-  static class Focus *focus; // defined in main.cpp
-  static class VideoGUI *videogui; // defined in main.cpp
-  static class ContAcq *contacq; // defined in main.cpp
+  static class LiveEPhys *liveephys; 
+  static class Focus *focus; 
+  static class VideoGUI *videogui; 
+  static class ContAcq *contacq; 
 
-  static class Trial *trial; // defined in main.cpp
-  static class Acquire *acquire; // defined in main.cpp
+  static class Trial *trial; 
+  static class Acquire *acquire; 
 
-  static class SavedSettings *savedSettings; // defined in main.cpp
+  static class SavedSettings *savedSettings; 
 
-  static class Blackout *blackout; // defined in main.cpp
+  static class Blackout *blackout; 
 
   static class TimeButton *walltime, *trialelapsed, *exptelapsed;
 
@@ -47,6 +46,7 @@ public:
   static class ExptLog *exptlog;
 
   static class PanelHistory *panelHistory;
+
 };
 
 #endif

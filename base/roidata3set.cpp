@@ -27,16 +27,37 @@ void ROIData3Set::setData(CCDData const *donor,
 			  CCDData const *acceptor) {
   d.lastDonor = donor;       // For the benefit of
   d.lastAcceptor = acceptor; //    future ROIs.
+  updateData();
+}
+
+void ROIData3Set::updateData() {
+  if (!d.lastDonor)
+    return;
   foreach (ROI3Data *rd, d.data.values())
-    rd->setData(donor, acceptor);
-  d.t0_ms = donor->getT0();
-  d.dt_ms = donor->getDT();
+    rd->setData(d.lastDonor, d.lastAcceptor);
+  d.t0_ms = d.lastDonor->getT0();
+  d.dt_ms = d.lastDonor->getDT();
+  d.nframes = d.lastDonor->getNFrames();
   emit changedAll();
 }
 
 ROI3Data *ROIData3Set::getData(int id) const {
   if (d.data.contains(id))
     return d.data[id];
+  else
+    throw Exception("ROIData3Set","Request for unknown ID");
+}
+
+ROICoords const &ROIData3Set::getCoords(int id) const {
+  if (d.roiset->contains(id))
+    return d.roiset->get(id);
+  else
+    throw Exception("ROIData3Set","Request for unknown ID");
+}
+
+CamPair const &ROIData3Set::getCam(int id) const {
+  if (d.roiset->contains(id))
+    return d.roiset->cam(id);
   else
     throw Exception("ROIData3Set","Request for unknown ID");
 }
@@ -52,33 +73,39 @@ void ROIData3Set::setDebleach(ROIData::Debleach db) {
   emit changedAll();
 }
 
+QList<int> ROIData3Set::allIDs() const {
+  return d.data.keys();
+}
+
 void ROIData3Set::changeROI(int id) {
-  if (d.roiset && d.roiset->contains(id)) {
-    if (!d.data.contains(id)) {
+  changeROIcore(id);
+  emit changedOne(id);
+}
+
+void ROIData3Set::changeROIcore(int id) {
+  bool exists = d.roiset && d.roiset->contains(id);
+  bool existed = d.data.contains(id);
+  if (exists) {
+    if (!existed) {
       ROI3Data *dat = new ROI3Data();
       d.data.insert(id,dat);
       dat->setDebleach(d.lastDebleach);
       dat->setData(d.lastDonor,d.lastAcceptor);
     }
     d.data[id]->setROI(&d.roiset->get(id));
-  } else {
-    if (d.data.contains(id)) {
-      delete d.data[id];
-      d.data.remove(id);
-    }
   }
-  emit changedOne(id);
+  if (existed && !exists) {
+    delete d.data[id];
+    d.data.remove(id);
+  }
 }
 
 void ROIData3Set::changeROIs() {
-  if (d.roiset) {
-    foreach (int id, d.roiset->ids()) 
-      changeROI(id);
-  } else {
-    foreach (ROI3Data *rd, d.data.values())
-      delete rd;
-    d.data.clear();
-  }
+  QSet<int> ids = QSet<int>::fromList(d.data.keys());
+  if (d.roiset)
+    ids += d.roiset->ids();
+  foreach (int id, ids)
+    changeROIcore(id);
   emit changedAll();
 }
 

@@ -19,18 +19,19 @@ class VSDAllGraph: public LineGraph {
 public:
   VSDAllGraph(class ROIData3Set *rs3d, QWidget *parent=0);
   virtual ~VSDAllGraph();
-  void changeROI(int id);
-  void selectROI(int id);
-  void clearROIs();
-  void setData(class CCDData const *donor, class CCDData const *acceptor);
-  void setDebleach(ROIData::Debleach d);
   class ROI3Data *getData(int id);
   bool haveData(int id) const;
+public slots:
+  void updateSelection(int id);
+  void updateData();
+private slots:
+  void updateROI(int id);
+  void updateROIs();
 protected:
   virtual void paintEvent(class QPaintEvent *);
 private:
+  void updateROIcore(int id);
   void newOffsets(); // recalculates the y offsets of each trace
-  void setROIbase(int id);
 private:
   class ROIData3Set *data; // we do not own this
   QMap<int, class TraceInfo *> traces;

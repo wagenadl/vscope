@@ -3,7 +3,7 @@
 #include "gt_slots.h"
 #include <QApplication>
 #include <toplevel/globals.h>
-#include <gfx/roiimage.h>
+#include <gfx/roiimages.h>
 #include <QStringList>
 #include <toplevel/vscopegui.h>
 #include <gui/xmlbutton.h>
@@ -34,21 +34,21 @@ void gt_slots::selected(QString p) {
     else if (p=="analysis/zoom") 
       Globals::ccdw->setMode(ROIImage::CM_Zoom);
     else if (p=="analysis/roiBlob") 
-      Globals::ccdw->setMode(CM_BlobROI);
+      Globals::ccdw->setMode(ROIImage::CM_BlobROI);
     else if (p=="analysis/roiSelect") 
-      Globals::ccdw->setMode(CM_SelectROI);
+      Globals::ccdw->setMode(ROIImage::CM_SelectROI);
     else if (p=="analysis/roiAdd") 
-      Globals::ccdw->setMode(CM_AddROI);
+      Globals::ccdw->setMode(ROIImage::CM_AddROI);
     else if (p=="analysis/roiDelete") 
-      Globals::ccdw->setMode(CM_DelROI);
+      Globals::ccdw->setMode(ROIImage::CM_DelROI);
     else if (p=="analysis/roiMove") 
-      Globals::ccdw->setMode(CM_MoveROI);
+      Globals::ccdw->setMode(ROIImage::CM_MoveROI);
     else if (p=="analysis/roiResize") 
-      Globals::ccdw->setMode(CM_ResizeROI);
+      Globals::ccdw->setMode(ROIImage::CM_ResizeROI);
     else if (p=="analysis/roiRotate") 
-      Globals::ccdw->setMode(CM_RotateROI);
+      Globals::ccdw->setMode(ROIImage::CM_RotateROI);
     else if (p=="analysis/roiRotSize") 
-      Globals::ccdw->setMode(CM_RotSizeROI);
+      Globals::ccdw->setMode(ROIImage::CM_RotSizeROI);
   } catch (Exception const &e) {
     report(e,"select button");
   }

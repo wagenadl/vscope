@@ -18,7 +18,7 @@
 #include <toplevel/panelhistory.h>
 #include <video/videolight.h>
 #include <gui/videogui.h>
-#include <gfx/roiimage.h>
+#include <gfx/roiimages.h>
 #include <toplevel/coherence.h>
 #include <toplevel/cohgraph.h>
 #include <xml/enumerator.h>
@@ -26,6 +26,7 @@
 #include <toplevel/scripts.h>
 #include <gui/xmlpage.h>
 #include <toplevel/savedsettings.h>
+#include <base/roidata3set.h>
 
 static void setRefTrace() {
   int typ = Globals::ptree->find("analysis/refType").toInt();
@@ -60,11 +61,11 @@ void gt_slots::everythingChanged() {
 
   ROIImage::ShowMode sm =
     ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs").toInt());
-  foreach (ROIImage *img, Globals::ccdw.values())
-    img->showROIs(sm);
+  Globals::ccdw->showROIs(sm);
   Globals::coherence->setShowMode(sm);
-  Globals::vsdtraces->
-    setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach").toInt()));
+  Globals::trove->roidata().
+    setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach").
+				  toInt()));
   Globals::acquire->newTrialPeriod();
   Globals::acquire->setContEphys();
   Globals::acquire->setAutoRun();
@@ -102,11 +103,10 @@ void gt_slots::paramchanged(QString p, QString val) {
     } else if (p=="analysis/showROIs") {
       ROIImage::ShowMode sm =
 	ROIImage::ShowMode(Globals::ptree->find(p).toInt());
-      foreach (ROIImage *img, Globals::ccdw.values())
-	img->showROIs(sm);
+      Globals::ccdw->showROIs(sm);
       Globals::coherence->setShowMode(sm);
     } else if (p=="analysis/debleach") {
-      Globals::vsdtraces->
+      Globals::trove->roidata().
 	setDebleach(ROIData::Debleach(Globals::ptree->find(p).toInt()));
     } else if (p=="acquisition/trialPeriod") {
       Globals::acquire->newTrialPeriod();

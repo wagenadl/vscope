@@ -14,6 +14,7 @@ struct ROIData3Set_Data {
 public:
   QMap<int, class ROI3Data *> data;
   double t0_ms, dt_ms;
+  int nframes;
   class CCDData const *lastDonor, *lastAcceptor;
   ROIData::Debleach lastDebleach;
   ROISet const *roiset;
@@ -31,17 +32,25 @@ public:
   ROIData3Set(ROIData3Set const &other);
   ROIData3Set &operator=(ROIData3Set const &other);
   class ROI3Data *getData(int id) const;
+  ROICoords const &getCoords(int id) const;
+  CamPair const &getCam(int id) const;
+  ROISet const *getROISet() const { return d.roiset; }
   bool haveData(int id) const;
   double getT0_ms() const { return d.t0_ms; } // only valid after setData
-  double getDT_ms() const { return d.dt_ms; }
+  double getDT_ms() const { return d.dt_ms; } // ditto
+  double getNFrames() const { return d.nframes; } // ditto
+  QList<int> allIDs() const;
 public slots:
   void changeROI(int id);
   void changeROIs();
   void setData(class CCDData const *donor, class CCDData const *acceptor);
+  void updateData();
   void setDebleach(ROIData::Debleach d);
 signals:
   void changedOne(int id);
   void changedAll();
+private:
+  void changeROIcore(int id);
 private:
   ROIData3Set_Data d;
 };

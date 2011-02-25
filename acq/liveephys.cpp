@@ -149,8 +149,7 @@ void LiveEPhys::addedData() {
        i!=aitraces.end(); ++i) {
     int cno = i.key();
     TraceInfo *tr=i.value();
-    TraceInfo::DataPtr dp;
-    dp.dp_double = data->channelData(cno);
+    DataPtr dp(data->channelData(cno));
     //dbg("  dataav cno=%i dp=%p",cno,dp.dp_none);
     tr->setData(t0,dt_s, dp, data->getNumScans(),data->getNumChannels());
   }
@@ -274,7 +273,7 @@ void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
     	l,cno,qPrintable(cid),chmask.testBit(cno));
     if (chmask.testBit(cno)) {
       LineGraph *lg = new LineGraph(cc); // cc becomes owner
-      TraceInfo *tr = new TraceInfo(TraceInfo::dataDouble); // aitraces becomes owner
+      TraceInfo *tr = new TraceInfo(); // aitraces becomes owner
       dbg("  addchannels cid=%s cno=%i lg=%p tr=%p",qPrintable(cid),cno,lg,tr);
       addChannel(cno, cid);
       cc->addGraph(cid, lg, isChannelTiny(cid));
@@ -427,10 +426,9 @@ void LiveEPhys::newTimebase() {
   dbg("Liveephys::settimebase acqfreqhz=%g timebases=%g nscans=%i dts=%g\n",
       acqfreq_hz, timebase_s, nscans, dt_s);
 
-  TraceInfo::DataPtr dp; dp.dp_none = 0;
   for (QMap<int,TraceInfo *>::iterator i=aitraces.begin();
        i!=aitraces.end(); ++i)
-    i.value()->setData(0,dt_s, dp,0);
+    i.value()->setData(0,dt_s, DataPtr(), 0);
   
   if (data)
     delete data;

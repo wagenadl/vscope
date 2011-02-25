@@ -159,18 +159,7 @@ void ti_trueblue_binary(uint32_t const *data, uint32_t bit,
   }
 }
 
-TraceInfo::TraceInfo(DataType dt): datatype(dt) {
-  dataptr.dp_none=0;
-  datax0=0;
-  datadx=1;
-  N=0;
-  step=1;
-  scale=1;
-  offset=0;
-}
-
-TraceInfo::TraceInfo(DataType dt, int bit): datatype(dt), bit(bit) {
-  dataptr.dp_none=0;
+TraceInfo::TraceInfo() {
   datax0=0;
   datadx=1;
   N=0;
@@ -184,10 +173,8 @@ void TraceInfo::setData(double datax0_, double datadx_,
   datax0 = datax0_;
   datadx = datadx_;
   dataptr = dp_;
-  N = dataptr.dp_none ? N_ : 0;
+  N = dataptr.ptr.dp_none ? N_ : 0;
   step = step_;
-  //  dbg("TraceInfo(%p)::setData x0=%g dx=%g dp=%p N=%i step=%i\n",
-  //	  this,datax0,datadx,dataptr.dp_none,N,step);
 }
 
 void TraceInfo::setScaleFactor(double sf) {
@@ -200,34 +187,34 @@ void TraceInfo::setOffset(double of) {
 
 Range TraceInfo::range() const {
   Range r;
-  switch (datatype) {
-  case dataNone:
+  switch (dataptr.typ) {
+  case DataPtr::dataNone:
     return r;
-  case dataInt8:
-    r = ti_minmax(dataptr.dp_int8, N, step);
+  case DataPtr::dataInt8:
+    r = ti_minmax(dataptr.ptr.dp_int8, N, step);
     break;
-  case dataUInt8:
-    r = ti_minmax(dataptr.dp_uint8, N, step);
+  case DataPtr::dataUInt8:
+    r = ti_minmax(dataptr.ptr.dp_uint8, N, step);
     break;
-  case dataInt16:
-    r =  ti_minmax(dataptr.dp_int16, N, step);
+  case DataPtr::dataInt16:
+    r =  ti_minmax(dataptr.ptr.dp_int16, N, step);
     break;
-  case dataUInt16:
-    r = ti_minmax(dataptr.dp_uint16, N, step);
+  case DataPtr::dataUInt16:
+    r = ti_minmax(dataptr.ptr.dp_uint16, N, step);
     break;
-  case dataInt32:
-    r = ti_minmax(dataptr.dp_int32, N, step);
+  case DataPtr::dataInt32:
+    r = ti_minmax(dataptr.ptr.dp_int32, N, step);
     break;
-  case dataUInt32:
-    r = ti_minmax(dataptr.dp_uint32, N, step);
+  case DataPtr::dataUInt32:
+    r = ti_minmax(dataptr.ptr.dp_uint32, N, step);
     break;
-  case dataFloat:
-    r = ti_minmax(dataptr.dp_float, N, step);
+  case DataPtr::dataFloat:
+    r = ti_minmax(dataptr.ptr.dp_float, N, step);
     break;
-  case dataDouble:
-    r = ti_minmax(dataptr.dp_double, N, step);
+  case DataPtr::dataDouble:
+    r = ti_minmax(dataptr.ptr.dp_double, N, step);
     break;
-  case dataBinary:
+  case DataPtr::dataBinary:
     r = Range(0,1);
     break;
   default:
@@ -261,35 +248,35 @@ Range TraceInfo::range99(double frc0, double frc1) const {
 }
 
 double TraceInfo::getDatum(int n) const {
-  if (!dataptr.dp_int32) {
+  if (!dataptr.ptr.dp_none) {
     Dbg() << "getDatum on null data";
     return 0;
   }
   if (n<0 || n>=N)
     return 0; // really might throw an exception?
-  switch (datatype) {
-  case dataNone:
+  switch (dataptr.typ) {
+  case DataPtr::dataNone:
     return 0;
-  case dataInt8:
-    return dataptr.dp_int8[n*step]*scale+offset;
-  case dataUInt8:
-    return dataptr.dp_uint8[n*step]*scale+offset;
-  case dataInt16:
-    return dataptr.dp_int16[n*step]*scale+offset;
-  case dataUInt16:
-    return dataptr.dp_uint16[n*step]*scale+offset;
-  case dataInt32:
-    return dataptr.dp_int32[n*step]*scale+offset;
-  case dataUInt32:
-    return dataptr.dp_uint32[n*step]*scale+offset;
-  case dataFloat:
-    return dataptr.dp_float[n*step]*scale+offset;
-  case dataDouble:
-    return dataptr.dp_double[n*step]*scale+offset;
-  case dataBinary: {
+  case DataPtr::dataInt8:
+    return dataptr.ptr.dp_int8[n*step]*scale+offset;
+  case DataPtr::dataUInt8:
+    return dataptr.ptr.dp_uint8[n*step]*scale+offset;
+  case DataPtr::dataInt16:
+    return dataptr.ptr.dp_int16[n*step]*scale+offset;
+  case DataPtr::dataUInt16:
+    return dataptr.ptr.dp_uint16[n*step]*scale+offset;
+  case DataPtr::dataInt32:
+    return dataptr.ptr.dp_int32[n*step]*scale+offset;
+  case DataPtr::dataUInt32:
+    return dataptr.ptr.dp_uint32[n*step]*scale+offset;
+  case DataPtr::dataFloat:
+    return dataptr.ptr.dp_float[n*step]*scale+offset;
+  case DataPtr::dataDouble:
+    return dataptr.ptr.dp_double[n*step]*scale+offset;
+  case DataPtr::dataBinary: {
     uint32_t one = 1;
-    uint32_t msk = one<<bit;
-    return (dataptr.dp_binary[n*step] & msk) ? (scale+offset) : offset; }
+    uint32_t msk = one<<dataptr.bit;
+    return (dataptr.ptr.dp_binary[n*step] & msk) ? (scale+offset) : offset; }
   default:
     return 0;
   }
@@ -298,34 +285,34 @@ double TraceInfo::getDatum(int n) const {
     
 Range TraceInfo::range99(int n0, int n1, double frc0, double frc1) const {
   Range r;
-  switch (datatype) {
-  case dataNone:
+  switch (dataptr.typ) {
+  case DataPtr::dataNone:
     return r;
-  case dataInt8:
-    r = ti_minmax99(dataptr.dp_int8+n0*step, n1-n0, step, frc0, frc1);
+  case DataPtr::dataInt8:
+    r = ti_minmax99(dataptr.ptr.dp_int8+n0*step, n1-n0, step, frc0, frc1);
     break;
-  case dataUInt8:
-    r = ti_minmax99(dataptr.dp_uint8+n0*step, n1-n0, step, frc0, frc1);
+  case DataPtr::dataUInt8:
+    r = ti_minmax99(dataptr.ptr.dp_uint8+n0*step, n1-n0, step, frc0, frc1);
     break;
-  case dataInt16:
-    r = ti_minmax99(dataptr.dp_int16+n0*step, n1-n0, step, frc0, frc1);
+  case DataPtr::dataInt16:
+    r = ti_minmax99(dataptr.ptr.dp_int16+n0*step, n1-n0, step, frc0, frc1);
     break;
-  case dataUInt16:
-    r = ti_minmax99(dataptr.dp_uint16+n0*step, n1-n0, step, frc0, frc1);
+  case DataPtr::dataUInt16:
+    r = ti_minmax99(dataptr.ptr.dp_uint16+n0*step, n1-n0, step, frc0, frc1);
     break;
-  case dataInt32:
-    r = ti_minmax99(dataptr.dp_int32+n0*step, n1-n0, step, frc0, frc1);
+  case DataPtr::dataInt32:
+    r = ti_minmax99(dataptr.ptr.dp_int32+n0*step, n1-n0, step, frc0, frc1);
     break;
-  case dataUInt32:
-    r = ti_minmax99(dataptr.dp_uint32+n0*step, n1-n0, step, frc0, frc1);
+  case DataPtr::dataUInt32:
+    r = ti_minmax99(dataptr.ptr.dp_uint32+n0*step, n1-n0, step, frc0, frc1);
     break;
-  case dataFloat:
-    r = ti_minmax99(dataptr.dp_float+n0*step, n1-n0, step, frc0, frc1);
+  case DataPtr::dataFloat:
+    r = ti_minmax99(dataptr.ptr.dp_float+n0*step, n1-n0, step, frc0, frc1);
     break;
-  case dataDouble:
-    r = ti_minmax99(dataptr.dp_double+n0*step, n1-n0, step, frc0, frc1);
+  case DataPtr::dataDouble:
+    r = ti_minmax99(dataptr.ptr.dp_double+n0*step, n1-n0, step, frc0, frc1);
     break;
-  case dataBinary:
+  case DataPtr::dataBinary:
     r = Range(0,1);
   default:
     fprintf(stderr,"Warning: TraceInfo::range99: unknown data type\n");
@@ -341,48 +328,48 @@ void TraceInfo::trueBlue(double x0, double dx, int M,
   //dbg("TraceInfo(%p)::trueblue dp=%p\n      datax0=%hg datadx=%hg dataN=%i step=%i\n      x0=%hg dx=%hg M=%i",
   //    this,dataptr.dp_none,datax0,datadx,N,step, x0,dx,M);
 
-  switch (datatype) {
+  switch (dataptr.typ) {
     break;
-  case dataNone:
+  case DataPtr::dataNone:
     for (int m=0; m<M; m++) {
       outmin[m]=numbers.inf;
       outmax[m]=-numbers.inf;
     }
     return;
-  case dataInt8:
-    ti_trueblue(dataptr.dp_int8, datax0, datadx, N, step,
+  case DataPtr::dataInt8:
+    ti_trueblue(dataptr.ptr.dp_int8, datax0, datadx, N, step,
 		x0, dx, M, outmin, outmax);
     break;
-  case dataUInt8:
-    ti_trueblue(dataptr.dp_uint8, datax0, datadx, N, step,
+  case DataPtr::dataUInt8:
+    ti_trueblue(dataptr.ptr.dp_uint8, datax0, datadx, N, step,
 		x0, dx, M, outmin, outmax);
     break;
-  case dataInt16:
-    ti_trueblue(dataptr.dp_int16, datax0, datadx, N, step,
+  case DataPtr::dataInt16:
+    ti_trueblue(dataptr.ptr.dp_int16, datax0, datadx, N, step,
 		x0, dx, M, outmin, outmax);
     break;
-  case dataUInt16:
-    ti_trueblue(dataptr.dp_uint16, datax0, datadx, N, step,
+  case DataPtr::dataUInt16:
+    ti_trueblue(dataptr.ptr.dp_uint16, datax0, datadx, N, step,
 		x0, dx, M, outmin, outmax);
     break;
-  case dataInt32:
-    ti_trueblue(dataptr.dp_int32, datax0, datadx, N, step,
+  case DataPtr::dataInt32:
+    ti_trueblue(dataptr.ptr.dp_int32, datax0, datadx, N, step,
 		x0, dx, M, outmin, outmax);
     break;
-  case dataUInt32:
-    ti_trueblue(dataptr.dp_uint32, datax0, datadx, N, step,
+  case DataPtr::dataUInt32:
+    ti_trueblue(dataptr.ptr.dp_uint32, datax0, datadx, N, step,
 		x0, dx, M, outmin, outmax);
     break;
-  case dataFloat:
-    ti_trueblue(dataptr.dp_float, datax0, datadx, N, step,
+  case DataPtr::dataFloat:
+    ti_trueblue(dataptr.ptr.dp_float, datax0, datadx, N, step,
 		x0, dx, M, outmin, outmax);
     break;
-  case dataDouble:
-    ti_trueblue(dataptr.dp_double, datax0, datadx, N, step,
+  case DataPtr::dataDouble:
+    ti_trueblue(dataptr.ptr.dp_double, datax0, datadx, N, step,
 		x0, dx, M, outmin, outmax);
     break;
-  case dataBinary:
-    ti_trueblue_binary(dataptr.dp_binary, bit,
+  case DataPtr::dataBinary:
+    ti_trueblue_binary(dataptr.ptr.dp_binary, dataptr.bit,
 		       datax0, datadx, N, step,
 		       x0, dx, M, outmin, outmax);
     break;

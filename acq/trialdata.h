@@ -8,6 +8,7 @@
 #include <QVector>
 #include <QString>
 #include <base/xml.h>
+#include <acq/ccdtimingdetail.h>
 
 class TrialData {
 public:
@@ -43,6 +44,7 @@ public:
   QString filePath() const { return fpath; }
   QString exptName() const { return exptname; }
   QString trialID() const { return trialid; }
+  CCDTimingDetail const &timing() const { return timing_; }
 private:
   static QString trialname(class ParamTree const *tree);
   /*:F trialname
@@ -81,6 +83,7 @@ private:
                   // concurrently with this trial.
   // xml stuff
   class XML *xml;
+  CCDTimingDetail timing_;
 private:
   // not implemented
   TrialData(TrialData const &);

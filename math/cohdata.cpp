@@ -29,6 +29,7 @@ CohData::CohData() {
   rs3d=0;
   adata=0;
   ddata=0;
+  timing0 = 0;
   valid=false;
 }
 
@@ -37,12 +38,6 @@ CohData::~CohData() {
     delete cohest;
   if (psdest)
     delete psdest;
-}
-
-void CohData::newTiming(CCDTiming const &t) {
-  dbg("cohdata::newtiming");
-  timing = t;
-  invalidate();
 }
 
 void CohData::newROISet(ROISet const *r) {
@@ -54,6 +49,10 @@ void CohData::newCCDData(class ROIData3Set /*const*/ *dat) {
   /* Conceptually const, but we may be the one to trigger recalculation */
   rs3d = dat;
   invalidate();
+}
+
+void CohData::newTiming(class CCDTiming const *t) {
+  timing0 = t;
 }
 
 void CohData::newEPhys(AnalogData const *ad, DigitalData const *dd) {
@@ -103,6 +102,11 @@ bool CohData::validate() {
 
   coh_mag.clear();
   coh_pha.clear();
+
+  if (timing0)
+    timing = *timing0;
+  else
+    timing.reset();
 
   if (timing.nframes()<=1) {
     dbg("cohdata::validate: not enough frames: n=%i",timing.nframes());

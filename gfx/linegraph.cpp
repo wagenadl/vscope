@@ -536,17 +536,6 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
     double *yy_min = memalloc<double>(M, "Linegraph");
     double *yy_max = memalloc<double>(M, "Linegraph");
     ti->trueBlue(x0,dx_per_pix,M, yy_min,yy_max);
-  
-    dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
-    dbg("  trace %p: x0=%g dx=%g dp=%p N=%i step=%i\n",
-             ti,ti->datax0,ti->datadx,ti->dataptr.dp_none,ti->N,ti->step);
-  
-    double summin=0, summax=0;
-    for (int m=0; m<M; m++) {
-      summin+=yy_min[m];
-      summax+=yy_max[m];
-    }
-    dbg(" avgmin=%g avgmax=%g\n",summin/M,summax/M);
     
     int m0=0, m1=M;
     for (int m=0; m<M; m++) {

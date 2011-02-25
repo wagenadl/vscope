@@ -28,7 +28,9 @@ public:
   void write(QDomElement doc) const;
   double centerX() const;
   double centerY() const;
+  QPointF center() const;
   bool inside(double x, double y, double marg) const;
+  bool inside(QPointF xy, double marg) const;
 private:
   XYRRA *dataXYRRA;
   PolyBlob *dataBlob;

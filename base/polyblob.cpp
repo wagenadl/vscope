@@ -13,6 +13,7 @@
 #include <QPainter>
 #include <base/dbg.h>
 #include <base/memalloc.h>
+#include <base/transform.h>
 
 #define POLYBLOB_SCALE  50.0
 
@@ -395,14 +396,17 @@ void PolyBlob::read(QDomElement doc) {
   recalc_center();
 }
 
-void PolyBlob::paint(QPainter *pntr,
-		     double ax, double bx,
-		     double ay, double by) const {
-  //dbg("PolyBlob::paint");
+void PolyBlob::paint(QPainter *pntr) const {
   QPolygonF poly(n);
   for (int i=0; i<n; i++)
-    poly[i]=QPointF(x50[i]/POLYBLOB_SCALE * ax + bx,
-		    y50[i]/POLYBLOB_SCALE * ay + by);
+    poly[i]=QPointF(x50[i]/POLYBLOB_SCALE, y50[i]/POLYBLOB_SCALE);
+  pntr -> drawPolygon(poly);
+}
+
+void PolyBlob::paint(QPainter *pntr, Transform const &t) const {
+  QPolygonF poly(n);
+  for (int i=0; i<n; i++)
+    poly[i]=t(QPointF(x50[i]/POLYBLOB_SCALE, y50[i]/POLYBLOB_SCALE));
   pntr -> drawPolygon(poly);
 }
 
@@ -419,3 +423,43 @@ double PolyBlob::greatestRadius() const {
   }
   return sqrt(r250) / POLYBLOB_SCALE;
 }
+
+void PolyBlob::set(int i, QPointF xy) {
+  set(i, xy.x(), xy.y());
+}
+
+void PolyBlob::adjust(QPointF xy, bool first) {
+  adjust(xy.x(), xy.y(), first);
+}
+
+void PolyBlob::reshape(QPointF xy1, QPointF xy2) {
+  reshape(xy1.x(), xy1.y(), xy2.x(), xy2.y());
+}
+
+void PolyBlob::reshape(QLineF xy12) {
+  reshape(xy12.p1(), xy12.p2());
+}
+
+void PolyBlob::recenter(QPointF p) {
+  recenter(p.x(), p.y());
+}
+
+double PolyBlob::distToCenter(QPointF xy) const {
+  return distToCenter(xy.x(), xy.y());
+}
+
+double PolyBlob::distToEdge(QPointF xy) const {
+  return distToEdge(xy.x(), xy.y());
+}
+
+bool PolyBlob::inside(QPointF xy, double margin) const {
+  return inside(xy.x(), xy.y(), margin);
+}
+
+double PolyBlob::weight(QPointF xy, double margin) const {
+  return weight(xy.x(), xy.y(), margin);
+}
+
+
+
+  

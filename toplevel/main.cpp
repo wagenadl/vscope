@@ -23,7 +23,6 @@
 #include <base/exception.h>
 #include <base/types.h>
 #include <base/roidata3set.h>
-#include <toplevel/roisetguard.h>
 #include <toplevel/panelhistory.h>
 #include <toplevel/mainwindow.h>
 #include <toplevel/scripts.h>
@@ -67,47 +66,6 @@
 #include <acq/ccdacq.h>
 
 #include <QTextEdit>
-
-vscopeGui *Globals::gui;
-gt_slots *Globals::gtslots;
-
-MainWindow *Globals::mainwindow;
-QWidget *Globals::leftplace;
-QWidget *Globals::rightplace;
-
-ROIImages *Globals::ccdw;
-VSDTraces *Globals::vsdtraces;
-Coherence *Globals::coherence;
-CohGraph *Globals::cohgraph;
-
-MGAuto *Globals::mgintra;
-MGAuto *Globals::mgextra;
-MGAuto *Globals::mgstim;
-
-LiveEPhys *Globals::liveephys;
-Focus *Globals::focus;
-
-Trial *Globals::trial;
-ContAcq *Globals::contacq;
-Acquire *Globals::acquire;
-VideoGUI *Globals::videogui;
-
-SavedSettings *Globals::savedSettings;
-
-TimeButton *Globals::walltime;
-TimeButton *Globals::exptelapsed;
-TimeButton *Globals::trialelapsed;
-
-Blackout *Globals::blackout;
-
-ExptLog *Globals::exptlog;
-
-ParamTree *Globals::ptree;
-DataTrove *Globals::trove;
-
-Scripts *Globals::scripts;
-
-PanelHistory *Globals::panelHistory;
 
 extern QString checkdaq();
 extern QStringList checkcam();
@@ -286,10 +244,10 @@ void setupMainWindow(QApplication &app) {
 }  
 
 void setupCCDImages() {
-  Globals::ccdw = new ROIImages();
+  Globals::ccdw = new ROIImages(QRect(0,0,512,512));
   foreach (QString id, Connections::allCams()) {
     ROIImage *img = new ROIImage(Globals::leftplace);
-    (*Globals::ccdw)[id] = img;
+    Globals::ccdw->add(id, img);
     img->setGeometry(0,0,512,Globals::mainwindow->basey());
     img->hide();
   }
@@ -297,51 +255,26 @@ void setupCCDImages() {
   ROIImage::ShowMode sm =
     ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs").toInt());
   Globals::ccdw->showROIs(sm);
-
-  foreach (QString id1, Connections::allCams()) {
-    foreach (QString id2, Connections::allCams()) {
-	if (id1!=id2) {
-	  QObject::connect((*Globals::ccdw)[id1], SIGNAL(shareZoom(bool,QRect)),
-			   (*Globals::ccdw)[id2], SLOT(sharedZoom(bool,QRect)));
-	  QObject::connect((*Globals::ccdw)[id1], SIGNAL(selectedROI(int)),
-			   (*Globals::ccdw)[id2], SLOT(acceptROIselect(int)));
-	  QObject::connect((*Globals::ccdw)[id1], SIGNAL(editedROI(int)),
-			   (*Globals::ccdw)[id2], SLOT(acceptROIedit(int)));
-	  QObject::connect((*Globals::ccdw)[id1], SIGNAL(deletedROI(int)),
-			   (*Globals::ccdw)[id2], SLOT(acceptROIdelete(int)));
-	}
-    }
-  }
-  foreach (QString id, Connections::allCams()) {
-    QObject::connect((*Globals::ccdw)[id], SIGNAL(editedROI(int)),
-		       Globals::trove, SLOT(saveROIs()));
-    QObject::connect((*Globals::ccdw)[id], SIGNAL(deletedROI(int)),
-		       Globals::trove, SLOT(saveROIs()));
-  }
 }
 
 void setupVSDTraces() {
   Globals::vsdtraces = new VSDTraces(Globals::rightplace);
-  Globals::vsdtraces->newROIs(&Globals::trove->rois());
   Globals::vsdtraces->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::vsdtraces->
     setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
-				    .toInt()));
-  Globals::vsdtraces->
-    setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach")
-				    .toInt()));
-  QObject::connect(Globals::vsdtraces,SIGNAL(roisChanged()),
-                   Globals::trove,SLOT(saveROIs()));
+				.toInt()));
   Globals::vsdtraces->hide();
 
-  foreach (QString id, Connections::allCams()) {
-    QObject::connect((*Globals::ccdw)[id], SIGNAL(editedROI(int)),
-		     Globals::vsdtraces, SLOT(editROI(int)));
-    QObject::connect((*Globals::ccdw)[id], SIGNAL(selectedROI(int)),
-		     Globals::vsdtraces, SLOT(selectROI(int)));
-    QObject::connect((*Globals::ccdw)[id], SIGNAL(deletedROI(int)),
-		     Globals::vsdtraces, SLOT(deleteROI(int)));
-  }
+  QObject::connect(&Globals::trove->roidata(), SIGNAL(changedOne(int)),
+		   Globals::vsdtraces, SLOT(updateROI(int)));
+  QObject::connect(&Globals::trove->roidata(), SIGNAL(changedAll()),
+		   Globals::vsdtraces, SLOT(updateROIs()));
+  QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
+		   Globals::vsdtraces, SLOT(updateSelection(int)));
+
+  Globals::trove->roidata().
+    setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach")
+				    .toInt()));
 }
 
 void setupMGAuto(QDomElement &guiConf) {
@@ -370,8 +303,8 @@ void setupFocus() {
 }
 
 void setupCoherence() {
-  Globals::coherence = new Coherence(Globals::vsdtraces, 0,
-				       Globals::rightplace);
+  Globals::coherence = new Coherence(0, Globals::rightplace);
+  Globals::coherence->setCanvas(Globals::ccdw->currentCanvas());
   Globals::coherence->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::coherence->
     setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
@@ -381,21 +314,16 @@ void setupCoherence() {
 				    .toInt()));
   Globals::coherence->hide();
 
-  Globals::cohgraph = new CohGraph(Globals::vsdtraces,
-				     Globals::coherence->getData(),
-				     Globals::rightplace);
+  Globals::cohgraph = new CohGraph(Globals::coherence->getData(),
+				   Globals::rightplace);
   Globals::cohgraph->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::cohgraph->
     setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
 				  .toInt()));
   Globals::cohgraph->hide();
-  
-  foreach (QString id, Connections::allCams()) {
-    QObject::connect((*Globals::ccdw)[id], SIGNAL(shareZoom(bool, QRect)),
-		     Globals::coherence, SLOT(sharedZoom(bool, QRect)));
-    QObject::connect(Globals::coherence, SIGNAL(shareZoom(bool, QRect)),
-		     (*Globals::ccdw)[id], SLOT(sharedZoom(bool, QRect)));
-  }
+
+  QObject::connect(Globals::ccdw, SIGNAL(newZoom(QRect)),
+		   Globals::coherence, SLOT(updateZoom(QRect)));
 }
  
 void setupAcquisition(QDomElement &guiConf) {

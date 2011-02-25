@@ -7,6 +7,7 @@
 #include <gfx/ccdimage.h>
 #include <QDomElement>
 #include <base/roicoords.h>
+#include <base/roiset.h>
 
 class ROIImage: public CCDImage {
   /*:C ROIImage
@@ -41,16 +42,17 @@ public:
   /*:F paintEvent
    *:D Redraws the current image and any ROIs
    */
-  class ROISet *getROIs() const;
+  ROISet *getROIs() const;
   /*:F getROIs
    *:D Returns a reference to the current set of ROIs.
    */
-  void setROIs(class ROISet *);
+  void setROIs(ROISet *);
   /*:F setROIs
    *:D Replaces the current set of ROIs.
    *:N We don't make a copy and may be modifying the set upon user
        interaction.
    */
+  void setCamPair(class CamPair const &);
 public slots:
   void setMode(ClickMode cm);
   void showROIs(ShowMode sm);
@@ -134,9 +136,14 @@ protected:
   ShowMode showMode; // how non-selected ROIs are shown
   class Ellipse *ellipse; // used for current XYRRA ROI
   class VisiBlob *visiblob; // used for current PolyBlob ROI
-  class ROISet *roiset;
-  static class ROISet *dummyrois;
+  /* Note that the semantics for XYRRA or Blob ROIs are not the same:
+     VisiBlob automatically updates the underlying data in editing,
+     but Ellipse does not. Also, VisiBlob is transformation aware, but
+     Ellipse is not. */
+  ROISet *roiset;
+  static ROISet *dummyrois;
   ROICoords *editing;
+  CamPair campair;
 };
 
 #endif

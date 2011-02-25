@@ -74,14 +74,12 @@ QString Trial::prepare(ParamTree const *ptree) {
     throw Exception("Trial","Cannot prepare for new trial while active");
 
   QString trialid = dat->prepare(ptree);
-
-  CCDTimingDetail timing(ptree, false);
   
   dbg("trial:prepare contephys=%i. ephysacq=%p",dat->hasContEPhys(),ephysacq);
   if (dat->isCCD())
-    ccdacq->prepare(ptree, timing);
+    ccdacq->prepare(ptree, dat->timing());
   ephysout->setMaster(dat->hasContEPhys() ? 0 : ephysacq);
-  ephysout->prepare(ptree, timing);
+  ephysout->prepare(ptree, dat->timing());
   if (dat->isEPhys())
     ephysacq->prepare(ptree);
   outcomplete = acqcomplete = false;
@@ -96,13 +94,11 @@ QString Trial::prepareSnapshot(ParamTree const *ptree) {
 
   Dbg() << "Trial: preparing data";
   QString trialid = dat->prepareSnapshot(ptree);
-  Dbg() << "Trial: preparing timing";
-  CCDTimingDetail timing(ptree, true);
   Dbg() << "Trial: preparing cameras";
-  bool ccdok = ccdacq->prepare(ptree, timing);
+  bool ccdok = ccdacq->prepare(ptree, dat->timing());
   Dbg() << "Trial: camera status: " << ccdok;
   ephysout->setMaster(0);
-  ephysout->prepareSnap(ptree, timing);
+  ephysout->prepareSnap(ptree, dat->timing());
   outcomplete = acqcomplete = false;
   prep = true;
   return trialid;

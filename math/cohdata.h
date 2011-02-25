@@ -16,7 +16,7 @@ private: friend class CohData;
   class ROIData3Set *rs3d; // we do not own this
   class AnalogData const *adata; // we do not own this
   class DigitalData const *ddata; // we do not own this
-  CCDTiming timing;
+  CCDTiming const *timing0; // we do not own this
 public:
   enum { refANALOG, refDIGITAL, refFIXED } refType;
 private: // friend class CohData;
@@ -44,7 +44,7 @@ public:
   void newROISet(class ROISet const *roiset);
   void newEPhys(class AnalogData const *ad, class DigitalData const *dd);
   void newCCDData(class ROIData3Set *rs3d);
-  void newTiming(CCDTiming const &timing);
+  void newTiming(class CCDTiming const *timing);
   void setRefTrace(int achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
@@ -54,6 +54,7 @@ public:
   double magnitude(int id); // this will validate if needed
   double phase(int id);
   void invalidate();
+  class ROIData3Set *currentData() const { return rs3d; }
 private:
   bool validate();
   void recalcReference();
@@ -62,6 +63,7 @@ private:
   void copy(CohData const &other);
 private:
   static int frameline;
+  CCDTiming timing;
 };
 
 #endif

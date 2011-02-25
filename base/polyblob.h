@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <QDomElement>
 #include <QVector>
+#include <QLineF>
 
 class PolyBlob {
   /*:C PolyBlob
@@ -74,6 +75,7 @@ public:
   /*:F set
    *:D Directly changes one specific vertex.
    */
+  void set(int i, QPointF xy);
   double x(int i) const;
   /*:F x
    *:D Return the x-coordinate of one vertex.
@@ -91,16 +93,21 @@ public:
    *:D Return the y-coordinate of the center of mass of the blob.
    */
   void adjust(double x, double y, bool first);
+  void adjust(QPointF xy, bool first);
   void reshape(double x1, double y1, double x2, double y2);
+  void reshape(QPointF xy1, QPointF xy2);
+  void reshape(QLineF xy12);
   /*:F reshape
    *:D Reshapes the polygon by defining the line segment ((x1,y1)-(x2,y2))
        to be on its boundary.
   */
   void recenter(double x0new, double y0new);
+  void recenter(QPointF xy0new);
   /*:F recenter
    *:D Moves the polygon (as a whole) to a new center.
    */
   double distToCenter(double x, double y) const;
+  double distToCenter(QPointF xy) const;
   /*:F distToCenter
    *:D Returns the distance of the given point to the center of the blob.
    *:N The center of the blob is defined as the average of the positions
@@ -109,6 +116,7 @@ public:
    *:N This function is fast; run time is O(1), i.e., not dependent on log2n.
    */
   double distToEdge(double x, double y) const;
+  double distToEdge(QPointF xy) const;
   /*:F distToEdge
    *:D Returns the distance of the given point to the nearest vertex.
    *:N "Nearest vertex" means the vertex with the closest-matching angle
@@ -129,7 +137,9 @@ public:
    *:N This uses a heuristic based on the "nearest vertex" concept of
        distToEdge().
    */
+  bool inside(QPointF xy, double margin=0) const;
   double weight(double x, double y, double borderwidth) const;
+  double weight(QPointF xy, double borderwidth) const;
   /*:F weight
    *:D Returns the weight (0..1) of a pixel inside or outside the blob.
        Pixels well inside have weight 1, those well outside have weight 0,
@@ -152,13 +162,11 @@ public:
    *:D Returns the log base 2 of the number of points (i.e. vertices)
        in this blob.
    */
-  void paint(class QPainter *pntr, double ax=1, double bx=0,
-	     double ay=1, double by=0) const;
+  void paint(class QPainter *pntr) const;
+  void paint(class QPainter *pntr, class Transform const &t) const;
   /*:F paint
    *:D Renders this polyblob with the current pen onto a drawable using
-       the given painter. Optional arguments represent scale transformation:
-         xscreen = ax * xdata + bx
-         yscreen = ay * ydata + by
+       the given painter.
   */
 private:
   int log2n;

@@ -18,9 +18,13 @@
 #include <base/numbers.h>
 #include <base/base26.h>
 
-ROISet *ROIImage::dummyrois = new ROISet;
+ROISet *ROIImage::dummyrois = new ROISet();
 
 inline double sq(double x) { return x*x; }
+
+inline double euclideanDist2(QPointF p1, QPointF p2) {
+  return sq(p1.x()-p2.x()) + sq(p1.y()-p2.y());
+}
 
 ROIImage::ROIImage(QWidget *parent): CCDImage(parent) {
   clickMode = CM_None;
@@ -54,7 +58,18 @@ ROISet *ROIImage::getROIs() const {
 }
 
 void ROIImage::setROIs(ROISet *rs) {
+  if (roiset!=dummyrois) {
+    disconnect(roiset, SIGNAL(changed(int)), this, SLOT(update()));
+    disconnect(roiset, SIGNAL(changedAll(int)), this, SLOT(update()));
+  }
+  
   roiset = rs ? rs : dummyrois;
+
+  if (roiset!=dummyrois) {
+    connect(roiset, SIGNAL(changed(int)), this, SLOT(update()));
+    connect(roiset, SIGNAL(changedAll(int)), this, SLOT(update()));
+  }
+  
   select(0);
   update();
 }
@@ -83,8 +98,7 @@ void ROIImage::zoomIn() {
       select(0);
   
   if (selectedroi>0) 
-    CCDImage::zoomIn(int(roiset->centerX(selectedroi)),
-		     int(roiset->centerY(selectedroi)));
+    CCDImage::zoomIn(roiset->get(selectedroi).center().toPoint());
   else 
     CCDImage::zoomIn();
 }
@@ -104,8 +118,6 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
     p.setBrush(QColor("#ffff00"));
   QPen basepen = p.pen();
 
-  ZoomInfo z = makeZoomInfo();
-  
   foreach (int id, roiset->ids()) {
     bool showID = showMode==SM_Full || showMode==SM_IDs;
     bool showDot = showMode==SM_Centers && !id==selectedroi;
@@ -114,22 +126,21 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
     if (editing && id==selectedroi)
       showID = showDot = showOutline = false;
 
-    double x0 = z.ax * roiset->centerX(id) + z.bx;
-    double y0 = z.ay * roiset->centerY(id) + z.by;
+    QPointF xy0 = canvasToScreen()(roiset->get(id).center());
     if (showDot) 
-      p.drawEllipse(QPointF(x0,y0),2,2);
+      p.drawEllipse(xy0,2,2);
 
     if (showOutline) {
       ROICoords roi=roiset->get(id);
       if (roi.isXYRRA()) 
-	imageToScreen(roi.xyrra()).paint(&p);
+	roi.xyrra().transformed(canvasToScreen()).paint(&p);
       else if (roi.isBlob()) 
-	roi.blob().paint(&p, z.ax,z.bx, z.ay,z.by);
+	roi.blob().paint(&p, canvasToScreen());
     }
     if (showID) {
       if (id==selectedroi)
 	p.setPen(QColor("#ff0000"));
-      p.drawText(QRectF(x0-1,y0-1,2,2),
+      p.drawText(QRectF(xy0.x()-1,xy0.y()-1,2,2),
 		 Qt::AlignCenter | Qt::TextDontClip,
 		 num2az(id));
       if (id==selectedroi)
@@ -142,6 +153,7 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 void ROIImage::mousePressEvent(QMouseEvent *e) {
   dbg("ROIImage: press (%i,%i) mode=%i\n",e->x(),e->y(),clickMode);
   clickPoint = e->pos();
+  QPointF canvasPoint = canvasToScreen().inverse()(clickPoint);
   switch (clickMode) {
   case CM_Zoom: case CM_None:
     CCDImage::mousePressEvent(e);
@@ -154,7 +166,7 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
     select(0);
     editing = new ROICoords();
     editing->makeXYRRA();
-    editing->xyrra() = XYRRA(clickPoint.x(),clickPoint.y());
+    editing->xyrra() = XYRRA(canvasPoint);
     recalcEllipse();
     ellipse->startCreate(e);
   } break;
@@ -171,20 +183,20 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
   } break;
   case CM_ResizeROI: 
     selectNearestROI(clickPoint,5);
-    if (selectedroi && roiset->isXYRRA(selectedroi)) {
+    if (selectedroi && roiset->get(selectedroi).isXYRRA()) {
       editing = new ROICoords(roiset->get(selectedroi));
       ellipse->startResize(e);
     }
     break;
   case CM_RotateROI: 
     selectNearestROI(clickPoint,5);
-    if (selectedroi && roiset->isXYRRA(selectedroi)) {
+    if (selectedroi && roiset->get(selectedroi).isXYRRA()) {
       ellipse->startRotate(e);
     }
     break;
   case CM_RotSizeROI: 
     selectNearestROI(clickPoint,5);
-    if (selectedroi && roiset->isXYRRA(selectedroi)) {
+    if (selectedroi && roiset->get(selectedroi).isXYRRA()) {
       editing = new ROICoords(roiset->get(selectedroi));
       ellipse->startRotSize(e);
     }
@@ -203,51 +215,43 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
 	   outside of the greatest diameter.
     */
     if (selectedroi) {
-      if (roiset->isPoly(selectedroi)) {
+      if (roiset->get(selectedroi).isBlob()) {
 	// We have a polyblob selection, so either we'll modify the blob,
 	// or we'll deselect.
-	PolyBlob const &roip = roiset->get(selectedroi).blob();
-	ZoomInfo z = makeZoomInfo();
-	double x = (e->x()-z.bx)/z.ax;
-	double y = (e->y()-z.by)/z.ay;
-	double dr0 = roip.distToCenter(x,y);
-	double dr1 = roip.distToEdge(x,y);
-	if (dr0<dr1) {
+	PolyBlob const &blob = roiset->get(selectedroi).blob();
+	QPointF xy = canvasToScreen().inverse()(clickPoint);
+	double dr_center = blob.distToCenter(xy);
+	double dr_edge = blob.distToEdge(xy);
+	if (dr_center<dr_edge) {
 	  // closer to center than to edge -> deselect
-	  dbg("roiimage:blobroi: click by center -> deselect");
   	  select(0);
 	  break; // we won't reselect!
-	} else if (dr0 < roip.greatestRadius() + 2) {
+	} else if (dr_center < blob.greatestRadius() + 2) {
 	  // we're inside the max radius, so let's distort
-	  dbg("roiimage:blobroi: click by edge -> distort");
-	  editing = new ROICoords(roip);
+	  editing = new ROICoords(blob);
+	  visiblob->setTransform(canvasToScreen());
+	  visiblob->show();
 	  visiblob->startAdjust(e);
 	} else {
 	  // we're too far away, so let's deselect, and pos'bly reselect/create
-	  dbg("roiimage:blobroi: click far -> deselect but try s/th else");
 	  select(0); // triggers following if
 	}
       } else {
 	// We have a non-polyblob selection, so let's just deselect
 	// Not sure if this is the most obvious response
-	dbg("roiimage:blobroi: not a polyblob -> deselect");
 	select(0);
 	break;
       }
     }
     if (!selectedroi) {
       // no selection
-      dbg("roiimage:blobroi: click w/o prior selection");
       int id = findNearestROI(clickPoint,0);
       select(id);
-      if (id) {
-	dbg("  -> selected %i",selectedroi);
-      } else {
+      if (!id) {
 	// let's make a new one
 	editing = new ROICoords();
 	editing->makeBlob();
-	ZoomInfo z = makeZoomInfo();
-	visiblob->setZoom(z.ax,z.bx, z.ay,z.by); // make sure we have zoom right
+	visiblob->setTransform(canvasToScreen());
 	visiblob->show();
 	visiblob->startCreate(&editing->blob(), e);
       }
@@ -264,19 +268,19 @@ void ROIImage::selectNearestROI(QPoint xy, double margin) {
 }
 
 int ROIImage::findNearestROI(QPoint xy, double marg) {
-  QPointF xy_ = screenToImage(xy);
+  Transform tinv = canvasToScreen().inverse();
+  QPointF xy_ = tinv(xy);
   int bestid=0;
   double dd;
   foreach (int id, roiset->ids()) {
-    double d = sq(xy_.x()-roiset->centerX(id))
-      +        sq(xy_.y()-roiset->centerY(id));
+    double d = euclideanDist2(xy_, roiset->get(id).center());
     if (bestid==0 || d<dd) {
       bestid = id;
       dd = d;
     }
   }
   if (bestid) 
-    if (roiset->inside(bestid, xy_.x(), xy_.y(), screenToImage(marg)))
+    if (roiset->get(bestid).inside(xy_, tinv.maplength(marg)))
       return bestid;
   return 0;
 }
@@ -290,7 +294,7 @@ void ROIImage::mouseReleaseEvent(QMouseEvent *e) {
     bool toosmall = true;
     if (editing->isXYRRA()) {
       ellipse->complete(e);
-      *editing = screenToImage(ellipse->getShape());
+      *editing = ellipse->getShape().transformed(canvasToScreen().inverse());
       toosmall = editing->xyrra().R < 3 || editing->xyrra().r < 3;
     } else if (editing->isBlob()) {
       visiblob->complete(e);
@@ -300,7 +304,7 @@ void ROIImage::mouseReleaseEvent(QMouseEvent *e) {
       if (selectedroi)
 	roiset->remove(selectedroi);
     } else {
-      int id = selectedroi ? selectedroi : roiset->newROI();
+      int id = selectedroi ? selectedroi : roiset->newROI(campair);
       roiset->checkout(id) = *editing;
       roiset->checkin(id);
       if (id!=selectedroi)
@@ -355,15 +359,14 @@ void ROIImage::resizeEvent(class QResizeEvent *) {
 
 void ROIImage::recalcEllipse() {
   if (editing && editing->isXYRRA()) {
-    ellipse->setShape(imageToScreen(editing->xyrra()));
+    ellipse->setShape(editing->xyrra().transformed(canvasToScreen()));
     ellipse->show();
   } else {
     ellipse->hide();
   }
   if (editing && editing->isBlob()) {
     visiblob->setShape(&editing->blob(), false);
-    ZoomInfo z = makeZoomInfo();
-    visiblob->setZoom(z.ax,z.bx, z.ay,z.by);
+    visiblob->setTransform(canvasToScreen());
     visiblob->show();
   } else {
     visiblob->hide();

@@ -170,41 +170,29 @@ void MGAuto::newtraces() {
   AnalogData const *astim = Globals::trove->trial().analogStimuli();
   DigitalData const *dstim = Globals::trove->trial().digitalStimuli();
   double outrate_hz = Globals::ptree->find(PAR_OUTRATE).toDouble();
-  for (QList<Channel>::iterator i=pool.begin(); i!=pool.end(); ++i) {
-    QString id = (*i).id;
-    int chn = (*i).chn;
-    if (actual.contains(id)) {
-      LineGraph *g = findp(id);
-      TraceInfo *tr;
-      if (traces.contains(id)) {
-	tr = traces[id];
-      } else {
-	if ((*i).isDigi)
-	  tr = new TraceInfo(TraceInfo::dataBinary,chn);
-	else
-	  tr = new TraceInfo(TraceInfo::dataDouble);
-	traces[id] = tr;
-      }
-      TraceInfo::DataPtr dp;
-      switch ((*i).typ) {
+
+  foreach (Channel c, pool) {
+    if (actual.contains(c.id)) {
+      LineGraph *g = findp(c.id);
+      TraceInfo *tr = traces[c.id];
+      if (!tr)	  
+	traces[c.id] = tr = new TraceInfo();
+      switch (c.typ) {
       case Channel::AI:
 	if (aacq) {
-	  dp.dp_double = aacq->channelData(chn);
 	  tr->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
-		      dp,
+		      DataPtr(aacq->channelData(c.chn)),
 		      aacq->getNumScans(),
 		      aacq->getNumChannels());
-	  Connections::AIChannel const &aich =
-	    Connections::findAI(id);
+	  Connections::AIChannel const &aich = Connections::findAI(c.id);
 	  tr->setScaleFactor(aich.scale);
 	  g->setYLabel("("+aich.unit+")");
 	}
 	break;
       case Channel::AO:
 	if (astim) {
-	  dp.dp_double = astim->channelData(chn);
 	  tr->setData(0,1/outrate_hz,
-		      dp,
+		      DataPtr(astim->channelData(c.chn)),
 		      astim->getNumScans(),
 		      astim->getNumChannels());
 	  g->setYLabel("(V)"); // AO always in volts for now
@@ -212,32 +200,28 @@ void MGAuto::newtraces() {
 	break;
       case Channel::DI:
 	if (dacq) {
-	  dp.dp_binary = dacq->allData();
 	  tr->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
-		      dp,
+		      DataPtr(dacq->allData(),c.chn),
 		      dacq->getNumScans());
 	}
 	break;
       case Channel::DO:
 	if (dstim) {
-	  dp.dp_binary = dstim->allData();
 	  tr->setData(0,1/outrate_hz,
-		      dp,
+		      DataPtr(dstim->allData(),c.chn),
 		      dstim->getNumScans());
 	}
 	break;
       }
-      if (tr) {
-	g->addTrace(id,tr);
-	g->autoSetXRange();
-	if ((*i).isDigi) {
-	  g->setYRange(Range(-0.1,1.1));
-	  g->setYTicks(100,100);
-	  g->showYTickLabels(false);
-	} else {
-	  g->autoSetYRange(0.001,0.5);
-	}
-	traces[id] = tr;
+      
+      g->addTrace(c.id, tr);
+      g->autoSetXRange();
+      if (c.isDigi) {
+	g->setYRange(Range(-0.1,1.1));
+	g->setYTicks(100,100);
+	g->showYTickLabels(false);
+      } else {
+	g->autoSetYRange(0.001,0.5);
       }
     }
   }

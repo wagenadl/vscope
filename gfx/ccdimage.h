@@ -9,12 +9,16 @@
 #include <QString>
 #include <base/types.h>
 #include <base/xyrra.h>
+#include <base/transform.h>
 
 class CCDImage_ {
-  protected:
+  public:
   QImage image; // currently displayed image
   uint16_t min, max; // color map ranges
-  QRect zoomRect; // current zoom, in image coords
+  QRect zoomRect; // current zoom, in canvas coords
+  QRect canvasRect; // null means: same as widget
+  Transform img2cnv; // does not reflect zoom
+  Transform cnv2scr; // reflects current zoom
   class QRubberBand *rubberband; // used during zoom dragging
   QPoint clickPoint; // location of most recent mouse press
   double adjust_black, adjust_white;
@@ -51,6 +55,16 @@ public slots:
    *:N You must call autoRange or setRange before first calling newImage,
        because there is no default range.
   */
+  virtual void placeImage(Transform const &t);
+  /*:F placeImage
+   *:D Places the (unzoomed) image at a certain position in the widget's
+       world coordinates.
+   *:N For instance, to place a 256x128 image in the center 256x256 area
+       of a 512x512 canvas, you would say:
+         placeImage(Transform().scale(1,2).translate(128.128)).
+   */
+  virtual void setCanvas(QRect canvasExtent);
+  virtual void resetCanvas();
   virtual void recolor(QString);
   /*:F recolor
    *:D Changes black or white level. The string argument must be one of:
@@ -86,37 +100,38 @@ public slots:
   */
   virtual void setZoom(QRect const &zoom);
   /*:F setZoom
-   *:D Zooms in to the given rectangle within the image.
-   *:N Rectangle is in image coordinates.
+   *:D Zooms in to the given rectangle within the canvas.
+   *:N Rectangle is in canvas coordinates.
   */
   virtual void resetZoom();
   /*:F resetZoom
-   *:D Zooms out to show the entire image
+   *:D Zooms out to show the entire canvas
    */
   virtual void zoomIn();
   /*:F zoomIn
    *:D Zooms in 2x from the current view.
   */       
   virtual void zoomIn(int x0, int y0);
+  virtual void zoomIn(QPoint xy0);
   /*:F zoomIn
    *:D Zooms in 2x from the current view, recentered on (x0,y0).
-   *:N x0,y0 in image coordinates
+   *:N x0,y0 in canvas coordinates
   */       
   virtual void zoomOut();
   /*:F zoomOut
-   *:D Zooms out 2x from the current view or back to viewing the whole image.
+   *:D Zooms out 2x from the current view or back to viewing the whole canvas.
    */
   virtual void updateZoom(QRect);
   /*:F updateZoom
    *:D Updates this image's zoom settings without emitting a shareZoom signal.
        This is typically the recipient of a shareZoom from another image.
-   *:N Rectangle must be in image coordinates
+   *:N Rectangle must be in canvas coordinates
   */
 signals:
   void newZoom(QRect);
   /*:S newZoom
    *:D Emitted whenever our zoom is explicitly changed. See sharedZoom.
-   *:N Rectangle is in image coordinates.
+   *:N Rectangle is in canvas coordinates.
    */
 protected:
   void createTestImage();
@@ -125,7 +140,9 @@ protected:
    */
   void constrainZoom();
   /*:F constrainZoom
-   *:D Makes zoom square and within image. This does *not* emit shareZoom.
+   *:D Makes zoom's aspect ratio match canvas aspect ratio and fit
+       inside canvas.
+   *:N This does *not* emit shareZoom.
    */
   virtual void mousePressEvent(class QMouseEvent *);
   /*:F mousePressEvent
@@ -136,8 +153,8 @@ protected:
   /*:F mouseReleaseEvent
    *:D Response to mouse release depends on current click mode.
        If it is ZOOM, this ends dragging a zoom rectangle. If the rectangle
-         is larger than nothing, we zoom in to the smallest containing
-	 square; otherwise, we simply zoom in 2x on the clicked point.
+       is larger than nothing, we zoom in to the smallest containing
+       square; otherwise, we simply zoom in 2x on the clicked point.
    *:N We take care to ignore release events that are associated with
        double clicks.
   */
@@ -151,27 +168,14 @@ protected:
        If it is ZOOM, we zoom out to show the entire image.
   */
 protected:
-  XYRRA screenToImage(XYRRA el) const;
-  XYRRA imageToScreen(XYRRA el) const;
-  QPointF screenToImage(QPoint xy) const;
-  QPoint imageToScreen(QPointF xy) const;
-  QRect screenToImage(QRect r) const;
-  QRect imageToScreen(QRect r) const;
-  double screenToImage(double length) const; // approx!
-  double imageToScreen(double length) const; // approx!
   void rebuildGammaTable();
 public:
-  QImage currentImage() const { return image; }
-  void overwriteImage(QImage img);
-  QRect currentZoom() const { return zoomRect; }
-protected:
-  class ZoomInfo {
-  public:
-    ZoomInfo() { ax=1; ay=1; bx=0; by=0; }
-    double ax, ay;
-    double bx, by;
-  };
-  ZoomInfo makeZoomInfo();
+  Transform const &imageToCanvas() { return img2cnv; }
+  Transform const &canvasToScreen() { return cnv2scr; }
+  QImage const &currentImage() const { return image; }
+  void overwriteImage(QImage const &img);
+  QRect const &currentZoom() const { return zoomRect; }
+  QRect currentCanvas() const;
 };
 
 #endif

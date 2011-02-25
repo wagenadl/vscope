@@ -16,18 +16,20 @@ class VSDGraph: public LineGraph {
   */
   Q_OBJECT;
 public:
-  VSDGraph(QWidget *parent);
+  VSDGraph(class ROIData3Set *rs3d, QWidget *parent);
   virtual ~VSDGraph();
-  void setROI(class ROICoords const *roi);
-  void setData(class CCDData const *donor, class CCDData const *acceptor);
-  void setDebleach(ROIData::Debleach d);
+public slots:
+  void updateSelection(int id);
+private slots:
+  void updateROIs();
+  void updateROI(int id);
 protected:
   virtual void paintEvent(class QPaintEvent *);
 private:
-  ROI3Data data;
+  ROIData3Set *data; // we don't own this
+private:
   class TraceInfo *trcDonor, *trcAcceptor, *trcRatio;
-  double t0_ms, dt_ms;
-  class ROISet *roiset;
+  int selid;
 };
 
 #endif

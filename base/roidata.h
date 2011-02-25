@@ -55,6 +55,7 @@ public:
        This does not cause recomputation and is thus trivially fast.
    *:N The ROI is not copied, and must remain available until the next
        call to setROI.
+   *:N If ROI is null, all results will be zero.
   */
   void setData(class CCDData const *source);
   /*:F setData

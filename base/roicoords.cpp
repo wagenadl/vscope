@@ -136,6 +136,10 @@ void ROICoords::read(QDomElement doc) {
   }
 }
 
+QPointF ROICoords::center() const {
+  return QPointF(centerX(), centerY());
+}
+
 double ROICoords::centerX() const {
   if (dataXYRRA)
     return dataXYRRA->x0;
@@ -163,3 +167,6 @@ bool ROICoords::inside(double x, double y, double marg) const {
   return false;
 }
  
+bool ROICoords::inside(QPointF xy, double marg) const {
+  return inside(xy.x(), xy.y(), marg);
+}

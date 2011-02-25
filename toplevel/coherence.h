@@ -19,7 +19,7 @@ class Coherence: public CCDImage {
    *:D This class heavily depends on a VSDTraces for its data.
    */
 public:
-  Coherence(class VSDTraces *source, class CohData *dat=0, QWidget *parent=0);
+  Coherence(class CohData *dat=0, QWidget *parent=0);
   virtual ~Coherence();
   virtual void showEvent(class QShowEvent *);
   virtual void paintEvent(class QPaintEvent *);
@@ -38,7 +38,6 @@ private:
 private:
   ROIImage::ShowMode showmode;
 private:
-  class VSDTraces *source;
   class CohData *data;
   bool owndata;
 private: // these will not be implemented

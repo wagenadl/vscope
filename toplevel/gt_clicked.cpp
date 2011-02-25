@@ -3,8 +3,10 @@
 #include "gt_slots.h"
 #include <QApplication>
 #include <toplevel/globals.h>
-#include <gfx/roiimage.h>
+#include <gfx/roiimages.h>
 #include <QWidget>
+#include <acq/datatrove.h>
+#include <base/roiset.h>
 #include <acq/liveephys.h>
 #include <acq/focus.h>
 #include <toplevel/acquire.h>
@@ -32,14 +34,14 @@ void gt_slots::clicked(QString p) {
     } else if (p=="minimize") {
       Globals::mainwindow->setWindowState(Qt::WindowMinimized);
     } else if (p=="analysis/zoomIn") {
-      Globals::ccdw.values().first()->zoomIn();
+      Globals::ccdw->first()->zoomIn();
       // others will be called through shareZoom
     } else if (p=="analysis/zoomOut") {
-      Globals::ccdw.values().first()->zoomOut();
+      Globals::ccdw->first()->zoomOut();
       // others will be called through shareZoom
     } else if (p=="analysis/roiDelete") {
-      Globals::ccdw.values().first()->deleteROI();
-      // others will receive acceptROIdelete.
+      int id = Globals::ccdw->first()->currentROI();
+      Globals::trove->rois().remove(id);
     } else if (p=="maintenance/liveEphys/autoRange") {
       if (Globals::liveephys)
         Globals::liveephys->autoRange();
@@ -64,7 +66,7 @@ void gt_slots::clicked(QString p) {
       QStringList bits = p.split("/");
       QString leaf = bits.takeLast();
       QString id = bits.last().mid(8);
-      Globals::ccdw[id]->recolor(leaf);
+      Globals::ccdw->get(id)->recolor(leaf);
       Globals::acquire->redisplayCCD();
     } else if (p=="scripts/load") {
       Globals::scripts->prepareLoad();

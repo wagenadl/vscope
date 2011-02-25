@@ -4,21 +4,21 @@
 #include <base/dbg.h>
 #include <base/xml.h>
 
-ROISet::ROISet(QString cam): dfltcam(cam) {
+ROISet::ROISet(QObject *p): QObject(p) {
   lastid = 0;
 }
 
 ROISet::~ROISet() {
 }
 
-int ROISet::newROI(QString cam) {
+int ROISet::newROI(CamPair const &cam) {
   int id = ++lastid;
   allids.insert(id);
-  cams[id] = cam.isEmpty() ? dfltcam : cam;
+  cams[id] = cam;
   return id;
 }
 
-QString const &ROISet::cam(int id) const {
+CamPair const &ROISet::cam(int id) const {
   if (cams.contains(id))
     return *cams.find(id);
   else
@@ -26,7 +26,6 @@ QString const &ROISet::cam(int id) const {
 		    QString("No ROI with ID=%1").arg(id),"get");
 }
     
-
 ROICoords const &ROISet::get(int id) const {
   if (map.contains(id))
     return *map.find(id);
@@ -54,14 +53,6 @@ bool ROISet::contains(int id) const {
   return allids.contains(id);
 }
 
-bool ROISet::isXYRRA(int id) const {
-  return contains(id) && map[id].isXYRRA();
-}
-
-bool ROISet::isPoly(int id) const {
-  return contains(id) && map[id].isBlob();
-}
-
 void ROISet::remove(int id) {
   if (!allids.contains(id))
     return;
@@ -77,7 +68,7 @@ void ROISet::write(QDomElement dst) const {
     QDomElement e = doc.createElement("roi");
     dst.appendChild(e);
     e.setAttribute("id",QString("%1").arg(id));
-    e.setAttribute("cam",cams[id]);
+    e.setAttribute("cam",cams[id].donor + ":" + cams[id].acceptor);
     map[id].write(e);
   }
 }
@@ -94,10 +85,14 @@ void ROISet::read(QDomElement src) {
     if (id>=lastid)
       lastid = id;
     allids.insert(id);
-    if (e.hasAttribute("cam"))
-      cams[id] = e.attribute("cam");
-    else
-      cams[id] = dfltcam;
+    cams[id] = CamPair();
+    if (e.hasAttribute("cam")) {
+      QStringList c = e.attribute("cam").split(":");
+      if (c.size()>=2) {
+	cams[id].donor = c[0];
+	cams[id].acceptor = c[1];
+      }
+    }
     map[id].read(e);
   }
   emit changedAll();
@@ -107,7 +102,7 @@ QSet<int> const &ROISet::ids() const {
   return allids;
 }
 
-QSet<int> ROISet::idsForCam(QString cam) const {
+QSet<int> ROISet::idsForCam(CamPair const &cam) const {
   QSet<int> ids;
   foreach (int id, cams.keys()) 
     if (cams[id]==cam)
@@ -127,24 +122,6 @@ void ROISet::clear() {
   emit changedAll();
 }
 
-double ROISet::centerX(int id) const {
-  if (map.contains(id))
-    return map[id].centerX();
-  throw Exception("ROISet","centerX: no data");
-}
-
-double ROISet::centerY(int id) const {
-  if (map.contains(id))
-    return map[id].centerY();
-  throw Exception("ROISet","centerY: no data");
-}
-
-
-bool ROISet::inside(int id, double x, double y, double marg) const {
-  if (map.contains(id))
-    return map[id].inside(x, y, marg);
-  throw Exception("ROISet","inside: no data");
-}
 
 void ROISet::save(QString fn) const {
   XML xml(0,"vsdscopeROIs");

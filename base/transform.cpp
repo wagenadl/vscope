@@ -1,6 +1,7 @@
 // transform.cpp
 
 #include "transform.h"
+#include <math.h>
 
 Transform::Transform() {
   ax=ay=1;
@@ -158,4 +159,47 @@ double Transform::mapx(double x) const {
 
 double Transform::mapy(double y) const {
   return ay*y + by;
+}
+
+double Transform::mapdx(double dx) const {
+  return ax*dx;
+}
+
+double Transform::mapdy(double dy) const {
+  return ay*dy;
+}
+
+double Transform::maplength(double r) const {
+  return r*sqrt(ax*ay);
+}
+
+Transform Transform::inferred(QRect src, QRect dst) {
+  return inferred(QRectF(src), QRectF(dst));
+}
+
+Transform Transform::inferred(QRectF src, QRectF dst) {
+  double x0D = dst.left();
+  double x0S = src.left();
+  double wD = dst.width();
+  double wS = src.width();
+
+  double y0D = dst.top();
+  double y0S = src.top();
+  double hD = dst.height();
+  double hS = src.height();
+
+  
+  /* We want:
+       x0D = ax*x0S + bx
+       wD = ax*wS
+     and same for y.
+     That's really easy!
+  */
+  Transform t;
+  t.ax = wD/wS;
+  t.bx = x0D - t.ax*x0S;
+  t.ay = hD/hS;
+  t.by = y0D - t.ay*y0S;
+  
+  return t;
 }

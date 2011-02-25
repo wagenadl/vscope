@@ -5,37 +5,16 @@
 #include <base/dbg.h>
 #include <xml/connections.h>
 #include <gfx/colors.h>
+#include <base/roidata3set.h>
 
-VSDGraph::VSDGraph(QWidget *parent): LineGraph(parent) {
+VSDGraph::VSDGraph(ROIData3Set *rs3d, QWidget *parent): LineGraph(parent) {
+  data = rs3d;
   trcDonor = trcAcceptor = trcRatio = 0;
-
-  QString id_donor = Connections::leaderCamera();
-  QString id_acceptor = Connections::findCam(id_donor).partnerid;
-  bool has_partner = !id_acceptor.isEmpty();
-
-  Dbg() << "VSDGraph: id_donor="<<id_donor;
-  Dbg() << "VSDGraph: id_acceptor="<<id_acceptor;
-  
-  trcDonor = new TraceInfo(TraceInfo::dataDouble);
-  
-  addTrace(id_donor,trcDonor);
-  setTraceLabel(id_donor,id_donor);
-  setTracePen(id_donor, Colors::find("CCD"+id_donor,"black"));
-
-  if (has_partner) {
-    trcAcceptor = new TraceInfo(TraceInfo::dataDouble);
-    addTrace(id_acceptor,trcAcceptor);
-    setTraceLabel(id_acceptor,id_acceptor);
-    setTracePen(id_acceptor,Colors::find("CCD"+id_acceptor,"black"));
-    
-    trcRatio = new TraceInfo(TraceInfo::dataDouble);
-    addTrace("rat",trcRatio);
-    setTraceLabel("rat","Ratio");
-    setTracePen("rat",QColor("#000000")); // black
-  }
-  
+  selid = 0;
+  trcDonor = new TraceInfo();
+  trcAcceptor = new TraceInfo();
+  trcRatio = new TraceInfo();
   autoSetXRange();
-  //  setAutoRepaint(false);
 }
 
 VSDGraph::~VSDGraph() {
@@ -48,44 +27,66 @@ VSDGraph::~VSDGraph() {
     delete trcDonor;
 }
 
-void VSDGraph::setROI(ROICoords const *roi) {
-  data.setROI(roi);
-  update();
+void VSDGraph::updateROI(int id) {
+  if (id==selid)
+    updateROIs();
 }
-void VSDGraph::setData(CCDData const *donor,
-		       CCDData const *acceptor) {
-  data.setData(donor, acceptor);
-  t0_ms = donor ? donor->getT0() : 0;
-  dt_ms = donor ? donor->getDT() : 1;
+
+void VSDGraph::updateROIs() {
+  double t0_s = data->getT0_ms()/1e3;
+  double dt_s = data->getDT_ms()/1e3;
+  int nfr = data->getNFrames();
   if (isXRangeAuto())
-    setXRange(Range(t0_ms/1e3,t0_ms/1e3+dt_ms/1e3*data.getNFrames()),true);
+    setXRange(Range(t0_s,t0_s+dt_s*nfr),true);
   update();
 }
 
-void VSDGraph::setDebleach(ROIData::Debleach d) {
-  data.setDebleach(d);
-  update();
-}
+void VSDGraph::updateSelection(int id) {
+  if (id==selid)
+    return;
+
+  if (data->haveData(selid)) {
+    CamPair const &cams = data->getCam(selid);
+    addTrace("donor",trcDonor);
+    setTraceLabel("donor",cams.donor);
+    setTracePen("donor", Colors::find("CCD"+cams.donor, "blue"));
+    if (cams.acceptor.isEmpty()) {
+      removeTrace("acceptor");
+      removeTrace("ratio");
+    } else {
+      addTrace("acceptor",trcAcceptor);
+      setTraceLabel("acceptor",cams.acceptor);
+      setTracePen("acceptor",Colors::find("CCD"+cams.acceptor, "red"));
+      addTrace("ratio",trcRatio);
+      setTraceLabel("ratio","Ratio");
+      setTracePen("ratio",QColor("black"));
+    }
+  } else {
+    removeTrace("donor");
+    removeTrace("acceptor");
+    removeTrace("ratio");
+  }
+  updateROIs();
+}  
 
 void VSDGraph::paintEvent(class QPaintEvent *e) {
   try {
     bool autoRP = getAutoRepaint();
     if (autoRP)
       setAutoRepaint(false);
-    // Ensure that our data are up-to-date
-    TraceInfo::DataPtr p;
-    p.dp_double = data.dataDonor();
-    if (trcDonor)
-      trcDonor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-    p.dp_double = data.dataAcceptor();
-    if (trcAcceptor)
-      trcAcceptor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-    p.dp_double = (data.dataDonor() && data.dataAcceptor())
-      ? data.dataRatio() : 0;
-    if (trcRatio)
-      trcRatio->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
+
+    double t0_s = data->getT0_ms()/1e3;
+    double dt_s = data->getDT_ms()/1e3;
     
-    dbg("VSDGraph::paintEvent. t0=%g dt=%g n=%i",t0_ms,dt_ms,data.getNFrames());
+    if (data->haveData(selid)) {
+      ROI3Data *d3 = data->getData(selid);
+      int nfr = d3->getNFrames();
+      trcDonor->setData(t0_s, dt_s, DataPtr(d3->dataDonor()), nfr);
+      if (d3->dataAcceptor()) {
+	trcAcceptor->setData(t0_s, dt_s, DataPtr(d3->dataAcceptor()), nfr);
+	trcRatio->setData(t0_s, dt_s, DataPtr(d3->dataRatio()), nfr);
+      }
+    }
     
     // Following is not really great, I think it may mess up zoom, but
     // where else can I reasonably do this?

@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QPen>
 #include <base/polyblob.h>
+#include <base/transform.h>
 
 class VisiBlob: public QWidget {
   /*:C VisiBlob
@@ -26,8 +27,8 @@ public:
        may be modified.
    *:N Forces redraw unless 2nd arg is false.
    */
-  void setZoom(double ax, double bx, double ay, double by);
-  /*:F setZoom
+  void setTransform(class Transform const &t);
+  /*:F setTransform
    *:D Sets a transformation between blob and screen, straight for use
        by PolyBlob's paint().
    *:N Forces redraw.
@@ -77,7 +78,8 @@ public:
   virtual void mouseDoubleClickEvent(class QMouseEvent *);
 private:
   PolyBlob *pb;
-  double ax, bx, ay, by;
+  Transform t;
+  Transform tinv;
   QPen pen;
   enum DragType {
     CREATE,

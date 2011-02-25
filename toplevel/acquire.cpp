@@ -10,7 +10,7 @@
 #include <base/ccddata.h>
 #include <base/analogdata.h>
 #include <base/digitaldata.h>
-#include <gfx/roiimage.h>
+#include <gfx/roiimages.h>
 #include <base/dbg.h>
 #include <toplevel/vsdtraces.h>
 #include <toplevel/coherence.h>
@@ -21,12 +21,12 @@
 #include <gui/guiexc.h>
 #include <toplevel/exptlog.h>
 #include <base/roiset.h>
-#include <toplevel/roisetguard.h>
 #include <xml/connections.h>
 #include <video/videoprog.h>
 #include <acq/datatrove.h>
 #include <QDir>
 #include <toplevel/mainwindow.h>
+#include <base/roidata3set.h>
 
 Acquire::Acquire() {
   connect(Globals::trial,SIGNAL(ended(QString,QString)),
@@ -42,8 +42,15 @@ Acquire::~Acquire() {
 }
 
 void Acquire::incTrialNo() {
-  Param &trialno = Globals::ptree->find("acquisition/_trialno");
-  trialno.setInt(trialno.toInt()+1);
+  Param &ptrial = Globals::ptree->find("acquisition/_trialno");
+  QString fpath = Globals::ptree->find("acquisition/_filePath").toString();
+  QString expt = Globals::ptree->find("acquisition/_exptname").toString();
+  int trialno = ptrial.toInt() + 1;
+  while (QFile(QString("%1/%2/%3.xml").
+	       arg(fpath).arg(expt).arg(trialno,int(3),int(10),QChar('0')))
+	 .exists())
+    trialno++;
+  ptrial.setInt(trialno);
 }
 
 void Acquire::acqFrame() {
@@ -170,7 +177,7 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
   
   QVector<ROIImage *> imgs;
   foreach (QString id, camname)
-    imgs.push_back(Globals::ccdw[id]);
+    imgs.push_back(Globals::ccdw->get(id));
 
   QVector<xmlButton *> btn;
   foreach (QString id, camname)
@@ -232,8 +239,8 @@ void Acquire::displayEPhys() {
 }
 
 void Acquire::updateVSDTraces() {
-  Globals::vsdtraces->newCCDData(true);
-  Globals::vsdtraces->newEPhys();
+  //  Globals::trove->roidata().updateData();
+  //  Globals::vsdtraces->newEPhys();
 }
 
 
@@ -248,7 +255,7 @@ void Acquire::doneTrial() {
   saveData();
   displayCCD();
   displayEPhys();
-  updateVSDTraces();
+  //  updateVSDTraces();
 }
 
 void Acquire::loadData(QString xmlfn) {
@@ -267,20 +274,16 @@ void Acquire::loadData(QString xmlfn) {
     GUIExc::report(e,"load data");
   }
 
-  foreach (ROIImage *img, Globals::ccdw.values())
-    img->setROIs(&Globals::trove->rois());
-  Globals::vsdtraces->newROIs(&Globals::trove->rois(), true);
-  
   Globals::ptree->find("acquisition/_exptname").set(exptbit);
   Globals::ptree->find("acquisition/_trialno").set(trialbit);
   Globals::ptree->find("acquisition/_dummy").set("true");
   
-  Globals::vsdtraces->
+  Globals::trove->roidata().
     setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach")
 				  .toInt()));
   displayCCD();
   displayEPhys();
-  updateVSDTraces();
+  //  updateVSDTraces();
   Globals::gui->open(); // make sure updated trial number visible.
   
   if (loadframe)

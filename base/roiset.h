@@ -10,6 +10,17 @@
 #include <base/roicoords.h>
 #include <QObject>
 
+class CamPair {
+public:
+  CamPair() { donor=acceptor=""; }
+public:
+  QString donor;
+  QString acceptor;
+  bool operator==(CamPair const &other) const {
+    return donor==other.donor && acceptor==other.acceptor;
+  }
+};
+
 class ROISet: public QObject {
   /*:C ROISet
    *:D This is the list of ROI definitions. It does not contain data for
@@ -17,9 +28,9 @@ class ROISet: public QObject {
   */
   Q_OBJECT;
 public:
-  ROISet(QString dfltcam="");
+  ROISet(QObject *parent=0);
   ~ROISet();
-  int newROI(QString campair=QString());
+  int newROI(CamPair const &campair);
   /*:F newROI
    *:D Creates a new ROI for the given camera pair, and returns the ID.
        Caller probably wants to checkout() the roi right after to define it.
@@ -43,20 +54,15 @@ public:
    *:D Checks a previously checked out ROI back in without emitting a
        changed() signal.
   */
-  QString const &cam(int id) const;
-  double centerX(int id) const;
-  double centerY(int id) const;
-  bool inside(int id, double x, double y, double marg) const;
+  CamPair const &cam(int id) const;
   bool contains(int id) const;
-  bool isXYRRA(int id) const;
-  bool isPoly(int id) const;
   void remove(int id);
   void write(QDomElement dst) const;
   void save(QString fn) const;
   void read(QDomElement src);
   void load(QString fn);
   QSet<int> const &ids() const;
-  QSet<int> idsForCam(QString cam) const;
+  QSet<int> idsForCam(CamPair const &cam) const;
   void clear();
 signals:
   void changed(int id);
@@ -75,9 +81,8 @@ private:
   void clearNoSignal();
 private:
   QSet<int> allids;
-  QMap<int, QString> cams;
+  QMap<int, CamPair> cams;
   QMap<int, ROICoords> map;
-  QString dfltcam;
   int lastid;
 };
 
