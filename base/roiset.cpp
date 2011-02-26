@@ -15,6 +15,7 @@ int ROISet::newROI(CamPair const &cam) {
   int id = ++lastid;
   allids.insert(id);
   cams[id] = cam;
+  map[id] = ROICoords();
   return id;
 }
 

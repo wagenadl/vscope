@@ -19,8 +19,8 @@
 
 PolyBlob::PolyBlob(int log2n): log2n(log2n) {
   n = 1<<log2n;
+  Dbg() << "PolyBlob constructor "<<this<<": n="<<n;
   msk = n-1;
-  //  fprintf(stderr,"log2n=%i n=%i msk=%i\n",log2n,n,msk);
   x50.resize(n);
   y50.resize(n);
   for (int i=0; i<n; i++)
@@ -29,6 +29,35 @@ PolyBlob::PolyBlob(int log2n): log2n(log2n) {
   for (int i=0; i<n; i++)
     y50[i]=0;
   sumy=0;
+}
+
+PolyBlob::PolyBlob(PolyBlob const &other) {
+  Dbg() << "PolyBlob copy constructor" << this << " < " << &other;
+  *this = other;
+  Dbg() << "n="<<n;
+}
+
+PolyBlob::~PolyBlob() {
+  Dbg() << "PolyBlob destructor" << this << "n="<<n;
+}
+
+PolyBlob &PolyBlob::operator=(PolyBlob const &other) {
+  Dbg() << "PolyBlob operator = " << this << " < " << &other << " n="<<other.n;
+  log2n = other.log2n;
+  n = other.n;
+  msk = other.msk;
+  x50 = other.x50;
+  y50 = other.y50;
+  sumx = other.sumx;
+  sumy = other.sumy;
+
+  lastx = other.lastx;
+  lasty = other.lasty;
+  lastr = other.lastr;
+  lastphi = other.lastphi;
+  lastk = other.lastk;
+
+  return *this;
 }
 
 int PolyBlob::write(FILE *ofd) const {
@@ -459,7 +488,3 @@ bool PolyBlob::inside(QPointF xy, double margin) const {
 double PolyBlob::weight(QPointF xy, double margin) const {
   return weight(xy.x(), xy.y(), margin);
 }
-
-
-
-  

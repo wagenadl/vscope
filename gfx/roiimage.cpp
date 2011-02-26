@@ -63,18 +63,24 @@ ROISet *ROIImage::getROIs() const {
 
 void ROIImage::setROIs(ROISet *rs) {
   if (roiset!=dummyrois) {
-    disconnect(roiset, SIGNAL(changed(int)), this, SLOT(update()));
-    disconnect(roiset, SIGNAL(changedAll(int)), this, SLOT(update()));
+    disconnect(roiset, SIGNAL(changed(int)), this, SLOT(updateROIs()));
+    disconnect(roiset, SIGNAL(changedAll(int)), this, SLOT(updateROIs()));
   }
   
   roiset = rs ? rs : dummyrois;
 
   if (roiset!=dummyrois) {
-    connect(roiset, SIGNAL(changed(int)), this, SLOT(update()));
-    connect(roiset, SIGNAL(changedAll(int)), this, SLOT(update()));
+    connect(roiset, SIGNAL(changed(int)), this, SLOT(updateROIs()));
+    connect(roiset, SIGNAL(changedAll(int)), this, SLOT(updateROIs()));
   }
   
   select(0);
+  update();
+}
+
+void ROIImage::updateROIs() {
+  if (selectedroi && !roiset->contains(selectedroi))
+    select(0);
   update();
 }
 
@@ -117,10 +123,7 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
   //  dbg("roiimage:paintevent");
   CCDImage::paintEvent(e);
   QPainter p(this);
-  p.setPen(QColor("#ffff00"));
-  if (showMode==SM_Centers)
-    p.setBrush(QColor("#ffff00"));
-  QPen basepen = p.pen();
+  bool resetPen = true;
 
   foreach (int id, roiset->ids()) {
     bool showID = showMode==SM_Full || showMode==SM_IDs;
@@ -130,6 +133,18 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
     if (editing && id==selectedroi)
       showID = showDot = showOutline = false;
 
+    if (id==selectedroi) {
+      p.setPen(QColor("#ff0000"));
+      if (showMode==SM_Centers)
+	p.setBrush(QColor("#ff0000"));
+      resetPen = true;
+    } else if (resetPen) {
+      p.setPen(QColor("#ffff00"));
+      if (showMode==SM_Centers)
+	p.setBrush(QColor("#ffff00"));
+      resetPen = false;
+    }      
+    
     QPointF xy0 = canvasToScreen()(roiset->get(id).center());
     if (showDot) 
       p.drawEllipse(xy0,2,2);
@@ -142,13 +157,9 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 	roi.blob().paint(&p, canvasToScreen());
     }
     if (showID) {
-      if (id==selectedroi)
-	p.setPen(QColor("#ff0000"));
       p.drawText(QRectF(xy0.x()-1,xy0.y()-1,2,2),
 		 Qt::AlignCenter | Qt::TextDontClip,
 		 num2az(id));
-      if (id==selectedroi)
-	p.setPen(basepen);
     }
   }
   //  dbg("roiimage:paintevent: done with painter");
@@ -156,6 +167,8 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 
 void ROIImage::mousePressEvent(QMouseEvent *e) {
   dbg("ROIImage: press (%i,%i) mode=%i\n",e->x(),e->y(),clickMode);
+  Dbg() << "ROIImage: selectedid="<<selectedroi
+	<< " has="<<roiset->contains(selectedroi);
   clickPoint = e->pos();
   QPointF canvasPoint = canvasToScreen().inverse()(clickPoint);
   switch (clickMode) {
@@ -168,7 +181,9 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
     break;
   case CM_AddROI: { // This adds a XYRRA
     select(0);
+    Dbg() <<"addroi: editing was"<<editing;
     editing = new ROICoords();
+    Dbg() << "addroi: editing="<<editing;
     editing->makeXYRRA();
     editing->xyrra() = XYRRA(canvasPoint);
     recalcEllipse();
@@ -189,12 +204,15 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
     selectNearestROI(clickPoint,5);
     if (selectedroi && roiset->get(selectedroi).isXYRRA()) {
       editing = new ROICoords(roiset->get(selectedroi));
+      recalcEllipse();
       ellipse->startResize(e);
     }
     break;
   case CM_RotateROI: 
     selectNearestROI(clickPoint,5);
     if (selectedroi && roiset->get(selectedroi).isXYRRA()) {
+      editing = new ROICoords(roiset->get(selectedroi));
+      recalcEllipse();
       ellipse->startRotate(e);
     }
     break;
@@ -202,12 +220,14 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
     selectNearestROI(clickPoint,5);
     if (selectedroi && roiset->get(selectedroi).isXYRRA()) {
       editing = new ROICoords(roiset->get(selectedroi));
+      recalcEllipse();
       ellipse->startRotSize(e);
     }
     break;
   case CM_DelROI: {
     selectNearestROI(clickPoint,0);
     roiset->remove(selectedroi);
+    select(0);
   } break;
   case CM_BlobROI: {
     /* From the Matlab version:
@@ -232,8 +252,11 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
 	  break; // we won't reselect!
 	} else if (dr_center < blob.greatestRadius() + 2) {
 	  // we're inside the max radius, so let's distort
+	  Dbg() <<"blobroi1: editing was"<<editing;
 	  editing = new ROICoords(blob);
+	  Dbg() << "blobroi1: editing="<<editing;
 	  visiblob->setTransform(canvasToScreen());
+	  visiblob->setShape(&editing->blob(), false);
 	  visiblob->show();
 	  visiblob->startAdjust(e);
 	} else {
@@ -253,7 +276,9 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
       select(id);
       if (!id) {
 	// let's make a new one
+	Dbg() <<"blobroi: editing was"<<editing;
 	editing = new ROICoords();
+	Dbg() << "blobroi: editing="<<editing;
 	editing->makeBlob();
 	visiblob->setTransform(canvasToScreen());
 	visiblob->show();
@@ -307,21 +332,33 @@ void ROIImage::mouseReleaseEvent(QMouseEvent *e) {
     if (toosmall) {
       if (selectedroi)
 	roiset->remove(selectedroi);
+      Dbg() << "ROIImage:release: too small: roi " << selectedroi << " removed";
     } else {
+      Dbg() << "ROIImage:release: finding roi; selected was " << selectedroi;
       int id = selectedroi ? selectedroi : roiset->newROI(campair);
+      Dbg() << "ROIImage:release: roi = " << id;
       roiset->checkout(id) = *editing;
+      Dbg() << "ROIImage: checked out";
       roiset->checkin(id);
+      Dbg() << "ROIImage: checked in";
+      Dbg() << "ROIImage: selected was " << selectedroi << ", will be " << id;
       if (id!=selectedroi)
 	select(id);
+      Dbg() << "ROIImage: done selection";
     }
+    Dbg() << "ROIImage: Deleting editing "<< editing;
     delete editing;
     editing = 0;
+    Dbg() << "ROIImage: Recalc ellipse";
     recalcEllipse(); // i.e., remove it
+    Dbg() << "ROIImage: Forcing update";
     update();
   }
+  Dbg() << "ROIImage:release done";
 }
 
 void ROIImage::updateSelection(int id) {
+  Dbg() << "Updateselection "<<id;
   selectedroi = roiset->contains(id) ? id : 0;
   update();
 }
@@ -373,6 +410,7 @@ void ROIImage::recalcEllipse() {
     visiblob->setTransform(canvasToScreen());
     visiblob->show();
   } else {
+    visiblob->setShape(0, false);
     visiblob->hide();
   }
 }

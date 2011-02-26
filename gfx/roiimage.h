@@ -63,6 +63,7 @@ public slots:
   /*:F updateSelection
    *:D Slot to receive newSelection() signals from a partner image.
    */
+  void updateROIs();
   virtual void setZoom(QRect const &zoom);
   /*:F setZoom
    *:D Zooms in to the given rectangle within the image. Note that if this

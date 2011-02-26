@@ -26,6 +26,9 @@ public:
   /*:F constructor
    *:D The argument sets the number of vertices to 2^log2n.
    */
+  PolyBlob(PolyBlob const &other);
+  virtual ~PolyBlob();
+  PolyBlob &operator=(PolyBlob const &other);
   PolyBlob(QDomElement doc);
   /*:F constructor
    *:D Data is read from the given xml

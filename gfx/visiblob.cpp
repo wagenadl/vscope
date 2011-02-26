@@ -25,7 +25,11 @@ void VisiBlob::setPen(QPen const &p) {
 }
 
 void VisiBlob::setShape(PolyBlob *pb0, bool redraw) {
+  //if (pb)
+  //  disconnect(pb,SIGNAL(destroyed(QObject*)),this,SLOT(pbDied(QObject*)));
   pb = pb0;
+  //if (pb)
+  //  connect(pb,SIGNAL(destroyed(QObject*)),this,SLOT(pbDied(QObject*)));
   if (redraw)
     update();
 }
@@ -46,7 +50,7 @@ void VisiBlob::paintEvent(class QPaintEvent *) {
 }
 
 void VisiBlob::startCreate(PolyBlob *dest, QMouseEvent *e) {
-  pb = dest;
+  setShape(dest, false);
   if (!pb)
     return;
   dragtype = CREATE;
@@ -134,4 +138,11 @@ void VisiBlob::mouseMoveEvent(class QMouseEvent *) {
 
 void VisiBlob::mouseDoubleClickEvent(class QMouseEvent *) {
   dbg("visiblob: mouse doubleclick");
+}
+
+void VisiBlob::pbDies(QObject *x) {
+  //if (x==pb) {
+  //  Dbg() << "VisiBlob Warning: My blob is dying";
+  //  pb = 0;
+  //}
 }

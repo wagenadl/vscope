@@ -76,6 +76,8 @@ public:
   virtual void mouseReleaseEvent(class QMouseEvent *);
   virtual void mouseMoveEvent(class QMouseEvent *);
   virtual void mouseDoubleClickEvent(class QMouseEvent *);
+private slots:
+  void pbDies(QObject *);
 private:
   PolyBlob *pb;
   Transform t;
