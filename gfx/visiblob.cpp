@@ -86,7 +86,7 @@ bool VisiBlob::complete(QMouseEvent *) {
     double *xx = memalloc<double>(k, "VisiBlob");
     double *yy = memalloc<double>(k, "VisiBlob");
     for (int i=0; i<k; i++) {
-      QPointF xy = t((*newpoly)[i]);
+      QPointF xy = tinv((*newpoly)[i]);
       xx[i] = xy.x();
       yy[i] = xy.y();
     }
