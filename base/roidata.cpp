@@ -8,6 +8,7 @@
 #include <base/exception.h>
 #include <base/blobroi.h>
 #include <base/memalloc.h>
+#include <base/range.h>
 
 inline double sq(double x) { return x*x; }
 
@@ -98,6 +99,13 @@ double ROIData::getT0ms() const {
 
 double ROIData::getDTms() const {
   return source ? source->getDTms() : 0;
+}
+
+Range ROIData::timeRange() const {
+  if (source) 
+    return Range(getT0ms(), getT0ms() + getDTms()*getNFrames());
+  else
+    return Range();
 }
 
 void ROIData::ensureBitmap() {

@@ -41,23 +41,7 @@ void VSDGraph::updateROIs() {
   if (data->haveData(selid)) {
     if (isXRangeAuto()) {
       Dbg() << " autoranging";
-      double t0d = data->getData(selid)->getDonorT0ms()/1e3;
-      double t0a = data->getData(selid)->getAcceptorT0ms()/1e3;
-      double t0r = data->getData(selid)->getRatioT0ms()/1e3;
-      double dtd = data->getData(selid)->getDonorDTms()/1e3;
-      double dta = data->getData(selid)->getAcceptorDTms()/1e3;
-      double dtr = data->getData(selid)->getRatioDTms()/1e3;
-      int nfrd = data->getData(selid)->getDonorNFrames();
-      int nfra = data->getData(selid)->getAcceptorNFrames();
-      int nfrr = data->getData(selid)->getRatioNFrames();
-      Range tt;
-      if (nfrd)
-	tt.expand(Range(t0d, t0d + dtd*nfrd));
-      if (nfra)
-	tt.expand(Range(t0a, t0a + dta*nfra));
-      if (nfrr)
-	tt.expand(Range(t0r, t0r + dtr*nfrr));
-      setXRange(tt, true);
+      setXRange(data->getData(selid)->timeRange(), true);
     }
     update();
   }

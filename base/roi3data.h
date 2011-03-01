@@ -69,6 +69,7 @@ public:
   int getDonorNFrames() const;
   double getDonorT0ms() const;
   double getDonorDTms() const;
+  Range timeRange() const;
   double const *dataDonor();
   /*:F dataDonor
    *:D Returns the debleached and normalized data dF/F of the donor

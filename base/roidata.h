@@ -6,6 +6,7 @@
 #define ROIDATA_H
 
 #include <base/roicoords.h>
+#include <base/range.h>
 
 class ROIData_ {
 public:
@@ -87,6 +88,7 @@ public:
   int getNFrames() const;
   double getT0ms() const;
   double getDTms() const;
+  Range timeRange() const;
   bool haveData() const;
 private:
   void ensureBitmap();

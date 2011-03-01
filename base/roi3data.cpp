@@ -162,5 +162,15 @@ ROI3Data &ROI3Data::operator=(ROI3Data const &other) {
   return *this;
 }
 
-  
-  
+Range ROI3Data::timeRange() const {
+  double t0 = getRatioT0ms()/1e3;
+  double dt = getRatioDTms()/1e3;
+  int nfr = getRatioNFrames();
+  Range tt;
+  if (nfr)
+    tt=Range(t0,t0+dt*nfr);
+  tt.expand(datDonor.timeRange());
+  tt.expand(datAcceptor.timeRange());
+  return tt;
+}
+ 

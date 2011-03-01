@@ -32,6 +32,7 @@ TrialData::TrialData() {
   ddataOut = new DigitalData(1024);
 
   foreach (QString camid, Connections::allCams()) {
+    Dbg() << "TrialData: camidx["<<camid<<"] = " << ccddata.size();
     camidx[camid] = ccddata.size();
     camids.append(camid);
     CCDData *d = new CCDData();
@@ -553,7 +554,7 @@ void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
     QString name = elt.attribute("name");
     if (!camidx.contains(name))
       throw Exception("Trial",
-		      "File contains data from a camera I don't know about",
+		      "File contains data from a camera I don't know about: " + name,
 		      "read");
     int k = camidx[name];
     

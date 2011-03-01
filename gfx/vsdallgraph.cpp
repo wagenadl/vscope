@@ -30,16 +30,12 @@ void VSDAllGraph::updateData() {
   Range tt;
   if (!data)
     return;
-  foreach (int id, data->allIDs()) {
-    tt.expand(() << " isauto? " << isXRangeAuto() 
-	<< " t0="<<data->getRatioT0_ms()/1e3
-	<< " dt="<<data->getRatioT0_ms()/1e3
-	<< " Nfr="<<data->getRatioNFrames();
-  if (isXRangeAuto())
-    setXRange(Range(data->getRatioT0_ms()/1e3,
-		    data->getRatioT0_ms()/1e3
-		    + data->getRatioDT_ms()/1e3*data->getRatioNFrames()),
-	      true);
+  if (isXRangeAuto()) {
+    Range tt;
+    foreach (int id, data->allIDs()) 
+      tt.expand(data->getData(id)->timeRange());
+    setXRange(tt, true);
+  }
   update();
 }
 
@@ -112,8 +108,8 @@ void VSDAllGraph::paintEvent(class QPaintEvent *e) {
     if (!data->haveData(id))
       continue; // this should not happen
     ROI3Data *dat = data->getData(id);
-    trc->setData(data->getT0_ms()/1e3, data->getDT_ms()/1e3,
-		 DataPtr(dat->dataRatio()), dat->getNFrames());
+    trc->setData(dat->getRatioT0ms()/1e3, dat->getRatioDTms()/1e3,
+		 DataPtr(dat->dataRatio()), dat->getRatioNFrames());
   }
   
   // Following is not really great, I think it may mess up zoom, but
