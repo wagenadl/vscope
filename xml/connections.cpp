@@ -306,7 +306,38 @@ namespace Connections {
     foreach (QString id, camorder.values()) 
       return id;
     return "";
-  }	
+  }
+
+  CamPair leaderCamPair() {
+    CamPair cp;
+    foreach (QString id, camorder.values()) {
+      if (cammap[id]->isdonor && cammap[id]->exists) {
+	cp.donor = id;
+	cp.acceptor = cammap[id]->partnerid;
+	return cp;
+      }
+    }
+    foreach (QString id, camorder.values()) {
+      if (cammap[id]->exists) {
+	cp.acceptor = id;
+	cp.donor = cammap[id]->partnerid;
+	return cp;
+      }
+    }
+    foreach (QString id, camorder.values()) {
+      if (cammap[id]->isdonor) {
+	cp.donor = id;
+	cp.acceptor = cammap[id]->partnerid;
+	return cp;
+      }
+    }
+    foreach (QString id, camorder.values()) {
+      cp.acceptor = id;
+      cp.donor = cammap[id]->partnerid;
+      return cp;
+    }
+  }
+   
   
   DigiChannel const *findpDig(QString id) {
     if (digimap.contains(id))

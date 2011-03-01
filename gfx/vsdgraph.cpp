@@ -31,16 +31,16 @@ VSDGraph::~VSDGraph() {
 }
 
 void VSDGraph::updateROI(int id) {
-  Dbg() << "VSDGraph("<<this<<"): updateROI("<<id<<")"; 
+  //Dbg() << "VSDGraph("<<this<<"): updateROI("<<id<<")"; 
   if (id==selid)
     updateROIs();
 }
 
 void VSDGraph::updateROIs() {
-  Dbg() << "VSDGraph("<<this<<"): updateROIs()";
+  //Dbg() << "VSDGraph("<<this<<"): updateROIs()";
   if (data->haveData(selid)) {
     if (isXRangeAuto()) {
-      Dbg() << " autoranging";
+      //Dbg() << " autoranging";
       setXRange(data->getData(selid)->timeRange(), true);
     }
     update();
@@ -48,25 +48,34 @@ void VSDGraph::updateROIs() {
 }
 
 void VSDGraph::updateSelection(int id) {
-  Dbg() << "VSDGraph("<<this<<"): updateSelection("<<id<<") was:"<<selid;
-  if (id==selid)
-    return;
-
+  //Dbg() << "VSDGraph("<<this<<"): updateSelection("<<id<<") was:"<<selid;
+  selid = id;
   if (data->haveData(selid)) {
     CamPair const &cams = data->getCam(selid);
-    addTrace("donor",trcDonor);
-    setTraceLabel("donor",cams.donor);
-    setTracePen("donor", Colors::find("CCD"+cams.donor, "blue"));
-    if (cams.acceptor.isEmpty()) {
-      removeTrace("acceptor");
-      removeTrace("ratio");
+    ROI3Data *d3 = data->getData(selid);
+    bool plotDonor = d3->getDonorNFrames();
+    bool plotAcceptor = d3->getAcceptorNFrames();
+    bool plotRatio = d3->getRatioNFrames() && plotDonor && plotAcceptor;
+    if (plotDonor) {
+      addTrace("donor", trcDonor);
+      setTraceLabel("donor", cams.donor);
+      setTracePen("donor", Colors::find("CCD"+cams.donor, "blue"));
     } else {
-      addTrace("acceptor",trcAcceptor);
-      setTraceLabel("acceptor",cams.acceptor);
-      setTracePen("acceptor",Colors::find("CCD"+cams.acceptor, "red"));
-      addTrace("ratio",trcRatio);
-      setTraceLabel("ratio","Ratio");
-      setTracePen("ratio",QColor("black"));
+      removeTrace("donor");
+    }
+    if (plotAcceptor) {
+      addTrace("acceptor", trcAcceptor);
+      setTraceLabel("acceptor", cams.acceptor);
+      setTracePen("acceptor", Colors::find("CCD"+cams.acceptor, "red"));
+    } else {
+      removeTrace("acceptor");
+    }
+    if (plotRatio) {
+      addTrace("ratio", trcRatio);
+      setTraceLabel("ratio", "Ratio");
+      setTracePen("ratio", QColor("black"));
+    } else {
+      removeTrace("ratio");
     }
   } else {
     removeTrace("donor");
@@ -84,20 +93,24 @@ void VSDGraph::paintEvent(class QPaintEvent *e) {
 
     if (data->haveData(selid)) {
       ROI3Data *d3 = data->getData(selid);
-      trcDonor->setData(d3->getDonorT0ms()/1e3,
-			d3->getDonorDTms()/1e3,
-			DataPtr(d3->dataDonor()),
-			d3->getDonorNFrames());
-      if (d3->dataAcceptor()) {
+      bool plotDonor = d3->getDonorNFrames();
+      bool plotAcceptor = d3->getAcceptorNFrames();
+      bool plotRatio = d3->getRatioNFrames() && plotDonor && plotAcceptor;
+      if (plotDonor)
+	trcDonor->setData(d3->getDonorT0ms()/1e3,
+			  d3->getDonorDTms()/1e3,
+			  DataPtr(d3->dataDonor()),
+			  d3->getDonorNFrames());
+      if (plotAcceptor)
 	trcAcceptor->setData(d3->getAcceptorT0ms()/1e3,
 			     d3->getAcceptorDTms()/1e3,
 			     DataPtr(d3->dataAcceptor()),
 			     d3->getAcceptorNFrames());
-      trcRatio->setData(d3->getRatioT0ms()/1e3,
-			d3->getRatioDTms()/1e3,
-			DataPtr(d3->dataRatio()),
-			d3->getRatioNFrames());
-      }
+      if (plotRatio)
+	trcRatio->setData(d3->getRatioT0ms()/1e3,
+			  d3->getRatioDTms()/1e3,
+			  DataPtr(d3->dataRatio()),
+			  d3->getRatioNFrames());
     }
     
     // Following is not really great, I think it may mess up zoom, but

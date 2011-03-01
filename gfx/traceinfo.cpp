@@ -169,10 +169,10 @@ TraceInfo::TraceInfo() {
 }
 
 void TraceInfo::report() const {
-  Dbg() << "TraceInfo("<<this<<")::report"
-	<<" x0="<<datax0<< " dx="<<datadx
-	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
-	<<" N="<<N<<" step="<<step;
+  //Dbg() << "TraceInfo("<<this<<")::report"
+  //	<<" x0="<<datax0<< " dx="<<datadx
+  //	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
+  //	<<" N="<<N<<" step="<<step;
   if (N) {
     switch (dataptr.typ) {
     case DataPtr::dataDouble: {
@@ -189,7 +189,7 @@ void TraceInfo::report() const {
 	sumx+=x;
 	sumxx+=x*x;
       }
-      Dbg() << " min:"<<mn<<" max:"<<mx<<" avg:"<<sumx/N<< " var:"<<(sumxx-sumx*sumx/N)/N;
+      //Dbg() << " min:"<<mn<<" max:"<<mx<<" avg:"<<sumx/N<< " var:"<<(sumxx-sumx*sumx/N)/N;
     } break;
     default:
       break;
@@ -204,9 +204,9 @@ void TraceInfo::setData(double datax0_, double datadx_,
   dataptr = dp_;
   N = dataptr.ptr.dp_none ? N_ : 0;
   step = step_;
-  Dbg() << "TraceInfo::setData. x0="<<datax0<< " dx="<<datadx
-	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
-	<<" N="<<N<<" step="<<step;
+  //Dbg() << "TraceInfo::setData. x0="<<datax0<< " dx="<<datadx
+  //	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
+  //	<<" N="<<N<<" step="<<step;
 }
 
 void TraceInfo::setScaleFactor(double sf) {
@@ -281,7 +281,7 @@ Range TraceInfo::range99(double frc0, double frc1) const {
 
 double TraceInfo::getDatum(int n) const {
   if (!dataptr.ptr.dp_none) {
-    Dbg() << "getDatum on null data";
+    //Dbg() << "getDatum on null data";
     return 0;
   }
   if (n<0 || n>=N)

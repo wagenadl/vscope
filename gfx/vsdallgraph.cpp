@@ -30,12 +30,12 @@ void VSDAllGraph::updateData() {
   Range tt;
   if (!data)
     return;
-  if (isXRangeAuto()) {
-    Range tt;
-    foreach (int id, data->allIDs()) 
-      tt.expand(data->getData(id)->timeRange());
-    setXRange(tt, true);
-  }
+  if (isXRangeAuto())
+    autoSetXRange();
+  //    Range tt;
+  //    foreach (int id, data->allIDs()) 
+  //      tt.expand(data->getData(id)->timeRange());
+  //    setXRange(tt, true);
   update();
 }
 
@@ -88,13 +88,11 @@ void VSDAllGraph::newOffsets() {
 
 void VSDAllGraph::updateSelection(int id) {
   Dbg() << "VSDAllGraph("<<this<<"): updateSelection("<<id<<") was:"<<selectedId;
-  if (id!=selectedId) {
-    if (selectedId)
-      setTracePen(num2az(selectedId),QColor("#000000"));
-    selectedId = traces.contains(id) ? id : 0;
-    if (selectedId)
-      setTracePen(num2az(selectedId),QColor("#ff0000"));
-  }
+  if (selectedId)
+    setTracePen(num2az(selectedId),QColor("#000000"));
+  selectedId = traces.contains(id) ? id : 0;
+  if (selectedId)
+    setTracePen(num2az(selectedId),QColor("#ff0000"));
   update();
 }
 

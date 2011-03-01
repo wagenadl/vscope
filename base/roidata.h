@@ -7,6 +7,7 @@
 
 #include <base/roicoords.h>
 #include <base/range.h>
+#include <base/transform.h>
 
 class ROIData_ {
 public:
@@ -22,14 +23,16 @@ private: friend class ROIData;
   bool validRaw;
   bool validDebleached;
   class CCDData const *source;
-  ROICoords const *roi;
+  ROICoords const *roi; // in global coordinates
   class BlobROI *blobROI;
   bool validBlobROI;
   bool *bitmap;
   bool validBitmap;
-  int xl, yt, w, h;
+  int xl, yt, w, h; // in image coordinates
   int npix; // number of pixels inside the ROI
   bool flipX, flipY;
+  Transform tinv;
+  bool validTransform;
 };
 
 class ROIData: public ROIData_ {
@@ -91,10 +94,10 @@ public:
   Range timeRange() const;
   bool haveData() const;
 private:
-  void ensureBitmap();
-  void makePolyBitmap();
-  void makeXYRRABitmap();
-  void makeNullBitmap();
+  bool ensureBitmap(); // returns true iff it worked
+  bool makePolyBitmap();
+  bool makeXYRRABitmap();
+  bool makeNullBitmap();
 private:
   void copy(ROIData const &other);
 };

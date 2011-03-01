@@ -21,9 +21,9 @@ MultiGraph::~MultiGraph() {
 }
 
 void MultiGraph::connectZooms() {
-  for (QSet<MultiGraph*>::iterator i=allofus.begin(); i!=allofus.end(); ++i) {
-    connect(*i,SIGNAL(shareZoom(Range)), this,SLOT(sharedZoomRequest(Range)));
-    connect(this,SIGNAL(shareZoom(Range)), *i,SLOT(sharedZoomRequest(Range)));
+  foreach (MultiGraph *mg, allofus) {
+    connect(mg,SIGNAL(shareZoom(Range)), this,SLOT(sharedZoomRequest(Range)));
+    connect(this,SIGNAL(shareZoom(Range)), mg,SLOT(sharedZoomRequest(Range)));
   }
   allofus.insert(this);
 }
@@ -37,25 +37,22 @@ void MultiGraph::setBackgroundColor(QColor const &bg) {
 
 void MultiGraph::addGraph(QString id, LineGraph *lg, bool tiny) {
   //  dbg("mg:add %s->%p",qPrintable(id),lg);
-  bool found=false;
-  for (int n=0; n<graphs.size(); n++) {
-    if (ids[n]==id) {
-      disconnect(graphs[n],SIGNAL(destroyed(QObject)),
-		 this,SLOT(removeGraph(QObject *)));
-      isTiny[n]=tiny;
-      graphs[n]=lg;
-      found = true;
-    }
-  }
-  if (!found) {
+  int n = ids.indexOf(id);
+  if (n>=0) {
+    disconnect(graphs[n], SIGNAL(destroyed(QObject)),
+	       this, SLOT(removeGraph(QObject *)));
+    disconnect(graphs[n], SIGNAL(zoomRequest(Range)),
+	       this, SLOT(zoomRequest(Range)));
+    isTiny[n]=tiny;
+    graphs[n]=lg;
+  } else {
     isTiny.push_back(tiny);
     graphs.push_back(lg);
     ids.push_back(id);
   }
   //dbg("  found=%i",found);
   connect(lg,SIGNAL(destroyed(QObject*)), this,SLOT(removeGraph(QObject *)));
-  connect(lg,SIGNAL(zoomRequest(Range)),
-	  this,SLOT(zoomRequest(Range)));
+  connect(lg,SIGNAL(zoomRequest(Range)), this,SLOT(zoomRequest(Range)));
   
   if (isVisible())
     lg->show();
@@ -63,9 +60,11 @@ void MultiGraph::addGraph(QString id, LineGraph *lg, bool tiny) {
 }
 
 void MultiGraph::clear() {
-  for (int n=0; n<graphs.size(); n++) {
-    disconnect(graphs[n],SIGNAL(destroyed(QObject)),
-	       this,SLOT(removeGraph(QObject *)));
+  foreach (LineGraph *lg, graphs) {
+    disconnect(lg, SIGNAL(destroyed(QObject)),
+	       this, SLOT(removeGraph(QObject *)));
+    disconnect(lg, SIGNAL(zoomRequest(Range)),
+	       this, SLOT(zoomRequest(Range)));
   }
   isTiny.clear();
   graphs.clear();
@@ -74,50 +73,45 @@ void MultiGraph::clear() {
 
 void MultiGraph::deleteAll() {
   //  fprintf(stderr,"MultiGraph::deleteAll n=%i\n",graphs.size());
-  while (graphs.size()>0) 
-    delete graphs[0]; // causes call to removegraph through connection
+  foreach (LineGraph *lg, graphs) 
+    delete lg; // causes call to removegraph through connection
 }
 
 void MultiGraph::removeGraph(QString id) {
   //  fprintf(stderr,"MultiGraph::removeGraph %s.\n",qPrintable(id));
-  for (int n=0; n<graphs.size(); n++) {
-    if (ids[n]==id) {
-      isTiny.remove(n);
-      disconnect(graphs[n],SIGNAL(destroyed(QObject)),
-		 this,SLOT(removeGraph(QObject *)));
-      graphs.remove(n);
-      ids.remove(n);
-      newSize();
-    }
+  int n = ids.indexOf(id);
+  if (n>=0) {
+    disconnect(graphs[n],SIGNAL(destroyed(QObject)),
+	       this,SLOT(removeGraph(QObject *)));
+    disconnect(graphs[n], SIGNAL(zoomRequest(Range)),
+	       this, SLOT(zoomRequest(Range)));
+    graphs.remove(n);
+    ids.remove(n);
+    isTiny.remove(n);
+    newSize();
   }
 }
 
 void MultiGraph::removeGraph(QObject *lg) {
   //  fprintf(stderr,"MultiGraph::removeGraph %p.\n",lg);
-  for (int n=0; n<graphs.size(); n++) {
-    if ((QObject*)(graphs[n])==lg) {
-      isTiny.remove(n);
-      graphs.remove(n);
-      ids.remove(n);
-      newSize();
-    }
+  int n = graphs.indexOf((LineGraph*)lg);
+  if (n>=0) {
+    isTiny.remove(n);
+    graphs.remove(n);
+    ids.remove(n);
+    newSize();
   }
 }
 
 void MultiGraph::deleteGraph(QString id) {
-  for (int n=0; n<graphs.size(); n++) {
-    if (ids[n]==id) {
-      delete graphs[n]; // causes call to removeGraph through connection
-      return;
-    }
-  }
+  int n = ids.indexOf(id);
+  if (n>=0) 
+    delete graphs[n]; // causes call to removeGraph through connection
 }
 
 LineGraph *MultiGraph::findp(QString id) {
-  for (int n=0; n<graphs.size(); n++) 
-    if (ids[n]==id)
-      return graphs[n];
-  return 0;
+  int n = ids.indexOf(id);
+  return n>=0 ? graphs[n] : 0;
 }
 
 LineGraph &MultiGraph::find(QString id) {
@@ -129,10 +123,8 @@ LineGraph &MultiGraph::find(QString id) {
 
 void MultiGraph::paintEvent(class QPaintEvent *) {
   //  fprintf(stderr,"multigraph(%p)::paintevent\n",this);
-  for (int i=0; i<graphs.size(); i++) {
-    //dbg("  mg:paint %i %p",i,graphs[i]);
-    graphs[i]->update();
-  }
+  foreach (LineGraph *lg, graphs)
+    lg->update();
 }
 
 void MultiGraph::resizeEvent(class QResizeEvent *) {
@@ -178,27 +170,19 @@ void MultiGraph::newSize() {
 }
 
 void MultiGraph::zoomRequest(Range xx) {
-  dbg("multigraph(%p): zoomrequest [%g-%g]",this,
-      xx.min,xx.max);
-  if (xx.empty()) {
-    if (graphs.size()>0) {
-      graphs[0]->autoSetXRange();
-      xx = graphs[0]->getXRange();
-    }
-  }
+  //dbg("multigraph(%p): zoomrequest [%g:%g]",this, xx.min,xx.max);
+  if (xx.empty()) 
+    foreach (LineGraph *lg, graphs)
+      xx.expand(lg->computeXRange());
   sharedZoomRequest(xx);
   emit shareZoom(xx);
 }
 
 void MultiGraph::sharedZoomRequest(Range xx) {
-  dbg("multigraph(%p): sharedzoomrequest [%g-%g] ngraphs=%i",
-      this,xx.min,xx.max,
-      graphs.size());
-  for (int n=0; n<graphs.size(); n++)
-    if (xx.empty())
-      graphs[n]->autoSetXRange();
-    else
-      graphs[n]->setXRange(xx);
+  //dbg("multigraph(%p): sharedzoomrequest [%g:%g] ngraphs=%i",
+  //      this,xx.min,xx.max, graphs.size());
+  foreach (LineGraph *lg, graphs)
+    lg->setXRange(xx);
 }
 
 void MultiGraph::setGraphHeight(QString id, int h) {

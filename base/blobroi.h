@@ -5,6 +5,7 @@
 #define BLOBROI_H
 
 #include <base/types.h>
+#include <base/transform.h>
 
 class BlobROI_ {
 protected:
@@ -27,7 +28,7 @@ class BlobROI: private BlobROI_ {
        to rapidly extract pixels from a ccd image.
    */
 public:
-  BlobROI(class PolyBlob const &src, double border=0);
+  BlobROI(class PolyBlob const &src, Transform const &t, double border=0);
   /*:F constructor
    *:D Creates a BlobROI from a PolyBlob, optionally blurring the edge by
        BORDER pixels.
@@ -54,21 +55,6 @@ public:
     double max_;
     friend class BlobROI;
   };
-  Result study(uint16_t const *data, int X, int Y, bool flipY=false) const;
-  /*:F study
-   *:D Applies this ROI to the given image data.
-   */
-  int extract(uint16_t *dst, int dstSize,
-	      uint16_t const *data, int X, int Y, bool flipY=false) const;
-  /*:F extract
-   *:D Extracts all pixels within the ROI and stores their values at DST.
-   *:R Returns the number of pixels extracted.
-   *:N You can know ahead of time how big an array to allocate from
-       nPixels().
-   *:N If the destination size is less than this number, nothing gets
-       extracted, and zero is returned.
-   *:N This ignores border blurring and instead uses hard edges.
-  */
   int nPixels() const;
   /*:F nPixels
    *:D Returns number of pixels to allocate for the destination buffer

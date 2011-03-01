@@ -20,6 +20,10 @@ class ROISet: public QObject {
 public:
   ROISet(QObject *parent=0);
   ~ROISet();
+  void setDefaultCamPair(CamPair const &campair);
+  /*:F setDefaultCamPair
+   *:D Used when reading old xml that doesn't specify a pair
+   */
   int newROI(CamPair const &campair);
   /*:F newROI
    *:D Creates a new ROI for the given camera pair, and returns the ID.
@@ -74,6 +78,7 @@ private:
   QMap<int, CamPair> cams;
   QMap<int, ROICoords> map;
   int lastid;
+  CamPair dfltcam;
 };
 
 class ROIWriter {

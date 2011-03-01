@@ -23,7 +23,7 @@ void DataTrove::constructData() {
   foreach (QString camid, Connections::allCams()) 
     roidata_->setData(camid, trial_->ccdData(camid));
   QObject::connect(rois_, SIGNAL(changed(int)), SLOT(saveROIs()));
-  QObject::connect(rois_, SIGNAL(changedAll), SLOT(saveROIs()));
+  QObject::connect(rois_, SIGNAL(changedAll()), SLOT(saveROIs()));
 }
 
 

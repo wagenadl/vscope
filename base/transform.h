@@ -15,6 +15,8 @@ public:
   Transform(QDomElement const &);
   void read(QDomElement const &);
   void write(QDomElement &) const;
+  bool operator==(Transform const &) const;
+  bool operator!=(Transform const &) const;
 public:
   static Transform unit();
   static Transform scaling(double x, double y);

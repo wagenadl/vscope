@@ -32,10 +32,11 @@ TrialData::TrialData() {
   ddataOut = new DigitalData(1024);
 
   foreach (QString camid, Connections::allCams()) {
-    Dbg() << "TrialData: camidx["<<camid<<"] = " << ccddata.size();
+    //Dbg() << "TrialData: camidx["<<camid<<"] = " << ccddata.size();
     camidx[camid] = ccddata.size();
     camids.append(camid);
     CCDData *d = new CCDData();
+    d->setDataToCanvas(Connections::findCam(camid).placement);
     ccddata.append(d);
   }
 
@@ -217,14 +218,14 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   QDomElement settings = myxml.find("settings");
 
   bool own_ptree_dest = ptree_dest==0;
-  Dbg() << "trialdata::read " << exptname << "/" << trialid << "own_ptree_dest=" <<own_ptree_dest;
+  //Dbg() << "trialdata::read " << exptname << "/" << trialid << "own_ptree_dest=" <<own_ptree_dest;
   
   if (own_ptree_dest)
     ptree_dest = new ParamTree(settings);
   else
     ptree_dest->read(settings);
 
-  dbg("trialdata: read ptree");
+  //dbg("trialdata: read ptree");
   ptree_dest->find("acquisition/_exptname").set(exptname);
   ptree_dest->find("acquisition/_trialno").set(trialid);
   
@@ -449,7 +450,7 @@ void TrialData::readCCD(XML &myxml, QString base) {
       int nser = ccddata[k]->getSerPix();
       int npar = ccddata[k]->getParPix();
       int frpix = nser*npar;
-      Dbg() << "trialdata: reading ccd #"<<idx<<"("<<k<<"): "<<nfrm<<"*"<<nser<<"x"<<npar;
+      //Dbg() << "trialdata: reading ccd #"<<idx<<"("<<k<<"): "<<nfrm<<"*"<<nser<<"x"<<npar;
       for (int fr=0; fr<nfrm; fr++) 
 	if (ccdf.read((char *)ccddata[k]->frameData(fr),2*frpix)!=2*frpix)
 	  throw Exception("Trial","Cannot read CCD data","read");
@@ -475,9 +476,6 @@ void TrialData::readCCDOldStyle(QVector<QString> &camsstored,
   if (!ok)
     throw Exception("Trial",
 		    "Cannot read number of parallel pixels from xml","readOld");
-  
-  for (int k=0; k<ndata; k++) 
-    ccddata[k]->setTimeBase(0,0); // we don't have the data, so make meaningless
   
   // check that dimensions make sense
   if (ccd.attribute("type")!="uint16")
@@ -506,6 +504,12 @@ void TrialData::readCCDOldStyle(QVector<QString> &camsstored,
     throw Exception("Trial",
 		    QString("Camera count mismatch (%1; expected 2)")
 		    .arg(ncam),"readOld");
+  
+  for (int k=0; k<ndata; k++) 
+    ccddata[k]->setTimeBase(0,0); // we don't have the data, so make meaningless
+
+  for (int k=0; k<ndata; k++)
+    ccddata[k]->setDataToCanvas(ccdplace[k]);
   
   // check that camera identities match expectations
   int okmask=0;
@@ -542,7 +546,7 @@ void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
   int ncam = camsstored.size();
   double ccd_rate_Hz = UnitQty::str2num(ccd.attribute("rate"),"Hz");
   double ccd_delay_s = UnitQty::str2num(ccd.attribute("delay"),"s");
-  Dbg() << "Hz=" << ccd_rate_Hz << " delay=" << ccd_delay_s;
+  //Dbg() << "Hz=" << ccd_rate_Hz << " delay=" << ccd_delay_s;
   QSet<int> havecam;
   for (QDomElement elt=ccd.firstChildElement("camera");
        !elt.isNull(); elt=elt.nextSiblingElement("camera")) {
@@ -554,7 +558,8 @@ void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
     QString name = elt.attribute("name");
     if (!camidx.contains(name))
       throw Exception("Trial",
-		      "File contains data from a camera I don't know about: " + name,
+		      "File contains data from a camera I don't know about: "
+		      + name,
 		      "read");
     int k = camidx[name];
     
@@ -576,8 +581,9 @@ void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
     
     ccddata[k]->reshape(nser, npar, nfrm);
     ccddata[k]->setTimeBase(ccd_delay_s*1e3,1e3/ccd_rate_Hz);
+    ccddata[k]->setDataToCanvas(ccdplace[k]);
 
-    Dbg() << "trialdata:readnewccd("<<k<<"): "<<nfrm<<"*"<<nser<<"x"<<npar;
+    //Dbg() << "trialdata:readnewccd("<<k<<"): "<<nfrm<<"*"<<nser<<"x"<<npar;
     
     //if (nfrm!=ccddata[k]->getNFrames())
     //  throw Exception("Trial",

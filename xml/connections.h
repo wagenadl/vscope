@@ -119,6 +119,7 @@ namespace Connections {
 	      3. non-existing donor cameras
 	      4. non-existing other cameras
   */
+  CamPair leaderCamPair();
   
   DigiChannel const *findpDig(QString id);
   /*:F findpDig

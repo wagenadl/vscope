@@ -23,16 +23,18 @@ ROIData3Set::~ROIData3Set() {
 
 
 void ROIData3Set::setData(QString id, CCDData const *data) {
+  Dbg()<<"ROIData3Set("<<this<<"): setdata:"<<id<<"="<<data;
   d.ccdData[id] = data;
 }
 
 void ROIData3Set::updateData() {
-  dbg("ROIData3Set(%p)::updateData",this);
+  dbg("ROIData3Set(%p)::updateData. roiset=%p. n=%i",this,d.roiset,d.data.keys().size());
   if (!d.roiset)
     return;
   foreach (int id, d.data.keys()) {
     ROI3Data *rd = d.data[id];
     CamPair const &cp = d.roiset->cam(id);
+    Dbg() << "RD3S: id="<<id<<" cp.don="<<cp.donor<<" cp.acc="<<cp.acceptor;
     CCDData const *don = 0;
     CCDData const *acc = 0;
     if (d.ccdData.contains(cp.donor))

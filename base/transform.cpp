@@ -13,6 +13,14 @@ Transform::Transform(QDomElement const &e) {
   read(e);
 }
 
+bool Transform::operator==(Transform const &t) const {
+  return ax==t.ax && bx==t.bx && ay==t.ay && by==t.by;
+}
+
+bool Transform::operator!=(Transform const &t) const {
+  return ax!=t.ax || bx!=t.bx || ay!=t.ay || by!=t.by;
+}
+
 void Transform::read(QDomElement const &e) {
   if (e.isNull())
     throw Exception("Transform","Cannot read null element");

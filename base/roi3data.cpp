@@ -37,9 +37,11 @@ void ROI3Data::setData(CCDData const *donor, CCDData const *acceptor) {
   datAcceptor.setData(acceptor);
   // Following is crude. Actually should think about appropriate time
   // if donor and acceptor are not the same.
-  t0Ratio_ms = donor ? getDonorT0ms() : getAcceptorT0ms();
-  dtRatio_ms = donor ? getDonorDTms() : getAcceptorDTms();
-  int newNRatio = donor ? getDonorNFrames() : getAcceptorNFrames();
+  bool useDonor = datDonor.haveData();
+  t0Ratio_ms = useDonor ? getDonorT0ms() : getAcceptorT0ms();
+  dtRatio_ms = useDonor ? getDonorDTms() : getAcceptorDTms();
+  int newNRatio = useDonor ? getDonorNFrames() : getAcceptorNFrames();
+  dbg("R3D(%p):setData(%p,%p) t0=%g dt=%g n=%i",this,donor,acceptor,t0Ratio_ms,dtRatio_ms,newNRatio);
   if (newNRatio != nRatio) {
     if (datRatio)
       delete datRatio;
@@ -105,22 +107,32 @@ double const *ROI3Data::dataAcceptor() {
 
 
 double const *ROI3Data::dataRatio() {
-  Dbg() << "ROI3Data::dataRatio";
+  Dbg() << "ROI3Data::dataRatio valid="<<valid
+	<< " donor.have="<<datDonor.haveData()
+	<< " donor.data="<<dataDonor()
+	<< " donor.n="<<datDonor.getNFrames()
+	<< " acc.have="<<datAcceptor.haveData()
+	<< " acc.data="<<dataAcceptor()
+	<< " acc.n="<<datAcceptor.getNFrames()
+	<< " datRatio="<<datRatio
+	<< " nRatio="<<nRatio;
   if (valid)
     return datRatio;
 
-  if (!datDonor.haveData() && !datAcceptor.haveData())
-    return 0;
-  else if (!datAcceptor.haveData())
-    return dataDonor();
-  else if (!datDonor.haveData())
-    return dataAcceptor();
-
-  if (!datRatio) {
-    if (nRatio==0)
+  if (!datDonor.haveData() || !datAcceptor.haveData()) {
+    if (datDonor.haveData())
+      return dataDonor();
+    else if (datAcceptor.haveData())
+      return dataAcceptor();
+    else
       return 0;
-    datRatio = memalloc<double>(nRatio, "ROI3Data");
   }
+
+  if (nRatio==0)
+    return 0;
+
+  if (!datRatio) 
+    datRatio = memalloc<double>(nRatio, "ROI3Data");
 
   double const *dd = dataDonor();
   double const *da = dataAcceptor();
@@ -129,7 +141,6 @@ double const *ROI3Data::dataRatio() {
     datRatio[n] = dd[n] - da[n];
 
   valid = true;
-
   return datRatio;
 }
 

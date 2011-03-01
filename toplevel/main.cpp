@@ -402,6 +402,7 @@ int main(int argc, char **argv) {
 
     QString fpath = Globals::ptree->find("_filePath").toString();
     Globals::trove = new DataTrove(Globals::ptree);
+    Globals::trove->rois().setDefaultCamPair(Connections::leaderCamPair());
     GUIExc::setParamTree(Globals::ptree);
     GUIExc::setSettingsDir(fpath + "/_settings");
 

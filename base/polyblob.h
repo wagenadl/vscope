@@ -87,6 +87,7 @@ public:
   /*:F y
    *:D Return the y-coordinate of one vertex.
    */
+  QPointF xy(int i) const { return QPointF(x(i), y(i)); }
   double x0() const;
   /*:F x0
    *:D Return the x-coordinate of the center of mass of the blob.
@@ -95,6 +96,7 @@ public:
   /*:F y0
    *:D Return the y-coordinate of the center of mass of the blob.
    */
+  QPointF xy0() const { return QPointF(x0(), y0()); }
   void adjust(double x, double y, bool first);
   void adjust(QPointF xy, bool first);
   void reshape(double x1, double y1, double x2, double y2);

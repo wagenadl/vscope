@@ -36,6 +36,7 @@ ROIData::ROIData() {
   debleach = None;
   flipY = false;
   flipX = false;
+  validTransform = false;
 }
 
 ROIData::~ROIData() {
@@ -72,9 +73,18 @@ void ROIData::setFlip(bool x, bool y) {
   
 
 void ROIData::setData(CCDData const *source0) {
+  if (source && source0)
+    if (source->dataToCanvas() != source0->dataToCanvas())
+      validBlobROI = false;
   source = source0;
   validRaw = false;
   validDebleached = false;
+  if (source) {
+    tinv = source->dataToCanvas().inverse();
+    validTransform = true;
+  } else {
+    validTransform = false;
+  }
 }
 
 void ROIData::setROI(ROICoords const *roi0) {
@@ -108,7 +118,7 @@ Range ROIData::timeRange() const {
     return Range();
 }
 
-void ROIData::ensureBitmap() {
+bool ROIData::ensureBitmap() {
   /* The bitmap holds which pixels are inside the ROI and which are not.
      To avoid wasted effort, we only calculate inside a rectangular
      bounding box.
@@ -116,17 +126,17 @@ void ROIData::ensureBitmap() {
      a soft-edged ROI, but that's a luxury for later.
   */
   if (validBitmap)
-    return;
+    return true;
 
   if (roi && roi->isBlob())
-    makePolyBitmap();
+    return makePolyBitmap();
   else if (roi && roi->isXYRRA())
-    makeXYRRABitmap();
+    return makeXYRRABitmap();
   else 
-    makeNullBitmap();
+    return makeNullBitmap();
 }
 
-void ROIData::makeNullBitmap() {
+bool ROIData::makeNullBitmap() {
   Dbg() << "ROIData: Caution: no data, making null bitmap";
   w=h=1;
   if (bitmap)
@@ -134,13 +144,17 @@ void ROIData::makeNullBitmap() {
   bitmap = memalloc<bool>(w*h, "ROIData");
   bitmap[0] = false;
   validBitmap = true;
+  return true;
 }
 
-void ROIData::makePolyBitmap() {
-  // This crashes horribly if ROI is not Blob
+bool ROIData::makePolyBitmap() {
+  if (!validTransform)
+    return false;
+  if (!roi->isBlob())
+    throw Exception("ROIData", "ROI is not Blob", "makePolyBitmap");
   if (blobROI) 
     delete blobROI;
-  blobROI = new BlobROI(roi->blob());
+  blobROI = new BlobROI(roi->blob(), tinv);
   validBlobROI = true;
   xl = blobROI->bitmapX0();
   yt = blobROI->bitmapY0();
@@ -163,11 +177,16 @@ void ROIData::makePolyBitmap() {
 		    QString("Unexpected bitmap size: %1 instead of %2*%3")
 		    .arg(r).arg(w).arg(h));
   validBitmap = true;
+  return true;
 }      
 
-void ROIData::makeXYRRABitmap() {
-  // This crashes horribly if ROI is not XYRRA
-  XYRRA const &xyrra = roi->xyrra();
+bool ROIData::makeXYRRABitmap() {
+  if (!roi->isXYRRA())
+    throw Exception("ROIData", "ROI is not XYRRA", "makeXYRRABitmap");
+  if (!validTransform)
+    return false;
+  XYRRA xyrra = roi->xyrra();
+  xyrra.transform(tinv);
   QRectF bb = xyrra.bbox();
   int maxx = source ? source->getSerPix() : 0;
   int maxy = source ? source->getParPix() : 0;
@@ -202,6 +221,7 @@ void ROIData::makeXYRRABitmap() {
     }
   }
   validBitmap = true;
+  return true;
 }
 
 double const *ROIData::getRaw() {
@@ -230,7 +250,8 @@ double const *ROIData::getRaw() {
     lengthRaw = len;
   }
 
-  ensureBitmap();
+  if (!ensureBitmap())
+    return 0;
 
   int W = source->getSerPix();
   int H = source->getParPix();
@@ -300,7 +321,7 @@ double const *ROIData::getRaw() {
 }
 
 double const *ROIData::getDebleachedDFF() {
-  dbg("getDebleachedDFF. valid=%c",validDebleached?'y':'n');
+  dbg("getDebleachedDFF. valid=%c n=%i",validDebleached?'y':'n',getNFrames());
   if (validDebleached)
     return dataDebleached;
 
@@ -428,11 +449,15 @@ double const *ROIData::getDebleachedDFF() {
   }
 
   /* The final step is to normalize the debleached data. */
-  double sY=0;
-  for (int n=1; n<len-1; n++)
-    sY+=dataDebleached[n];
+  double sY=0, sYY=0;
+  for (int n=1; n<len-1; n++) {
+    double x = dataDebleached[n];
+    sY+=x;
+    sYY+=x*x;
+  }
   double avg = sY/(len-2);
-  //dbg("sY=%g avg=%g",sY,avg);
+  double var = (sYY-sY*sY/(len-2))/(len-2);
+  dbg("getdebDFF: avg=%g var=%g",sY,avg,var);
 
   for (int n=0; n<len; n++)
     dataDebleached[n] = 100*((dataDebleached[n]/avg) - 1);

@@ -44,7 +44,7 @@ ROICoords &ROISet::checkout(int id) {
 }
 
 void ROISet::checkin(int id) {
-  Dbg() << "ROISet::checkin("<<id<<")";
+  //Dbg() << "ROISet::checkin("<<id<<")";
   emit changed(id);
 }
 
@@ -56,7 +56,7 @@ bool ROISet::contains(int id) const {
 }
 
 void ROISet::remove(int id) {
-  Dbg() << "ROISet::remove("<<id<<")";
+  //Dbg() << "ROISet::remove("<<id<<")";
   if (!allids.contains(id))
     return;
   allids.remove(id);
@@ -77,7 +77,7 @@ void ROISet::write(QDomElement dst) const {
 }
 
 void ROISet::read(QDomElement src) {
-  Dbg() << "ROISet::read";
+  //Dbg() << "ROISet::read";
   clearNoSignal();
   bool ok;
   lastid = 0;
@@ -97,9 +97,15 @@ void ROISet::read(QDomElement src) {
 	cams[id].acceptor = c[1];
       }
     }
+    if (cams[id].donor=="" && cams[id].acceptor=="")
+      cams[id] = dfltcam;
     map[id].read(e);
   }
   emit changedAll();
+}
+
+void ROISet::setDefaultCamPair(CamPair const &cp) {
+  dfltcam = cp;
 }
 
 QSet<int> const &ROISet::ids() const {

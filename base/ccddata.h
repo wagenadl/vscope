@@ -5,6 +5,7 @@
 #define CCDDATA_H
 
 #include <base/types.h>
+#include <base/transform.h>
 
 class CCDData_ {
 protected:
@@ -15,6 +16,7 @@ protected:
   int allocpix;
   uint16_t *data;
   double t0_ms, dt_ms;
+  Transform t;
 };
 
 class CCDData: private CCDData_ {
@@ -29,6 +31,8 @@ public:
        will not release any unneeded space unless FREE is set to true.
    *:A True if reallocation occurred.
    */
+  void setDataToCanvas(Transform const &t);
+  Transform const &dataToCanvas() const { return t; }
   uint16_t const *frameData(int frame=-1) const;
   uint16_t *frameData(int frame=-1);
   int getSerPix() const { return serpix; }
@@ -44,14 +48,6 @@ public:
   double getDTms() const { return dt_ms; }
 private:
   void copy(CCDData const &other);
-private:
-  int serpix;
-  int parpix;
-  int nframes;
-  int framepix;
-  int allocpix;
-  uint16_t *data;
-  double t0_ms, dt_ms;
 };
 
 #endif

@@ -38,9 +38,6 @@ private:
   class TraceInfo *reftrace;
   int selid;
   int refchn;
-private: // we do not own the following
-  class AnalogData const *lastAnalog;
-  class DigitalData const *lastDigital;
 };
 
 #endif
