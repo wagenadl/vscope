@@ -92,6 +92,14 @@ int ROIData::getNFrames() const {
   return source ? source->getNFrames() : 0;
 }
 
+double ROIData::getT0ms() const {
+  return source ? source->getT0ms() : 0;
+}
+
+double ROIData::getDTms() const {
+  return source ? source->getDTms() : 0;
+}
+
 void ROIData::ensureBitmap() {
   /* The bitmap holds which pixels are inside the ROI and which are not.
      To avoid wasted effort, we only calculate inside a rectangular

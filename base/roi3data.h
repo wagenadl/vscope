@@ -14,6 +14,7 @@ protected:
   double *datRatio;
   ROIData::Debleach debleach;
   int nRatio;
+  double t0Ratio_ms, dtRatio_ms;
   bool valid;
   static bool donorflipx, donorflipy;
   static bool acceptorflipx, acceptorflipy;
@@ -59,7 +60,15 @@ public:
    *:D Specifies how we debleach.
        This does not cause recomputation and is thus trivially fast.
    */
-  int getNFrames() const;
+  int getRatioNFrames() const;
+  double getRatioT0ms() const;
+  double getRatioDTms() const;
+  int getAcceptorNFrames() const;
+  double getAcceptorT0ms() const;
+  double getAcceptorDTms() const;
+  int getDonorNFrames() const;
+  double getDonorT0ms() const;
+  double getDonorDTms() const;
   double const *dataDonor();
   /*:F dataDonor
    *:D Returns the debleached and normalized data dF/F of the donor

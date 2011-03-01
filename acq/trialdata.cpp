@@ -475,8 +475,8 @@ void TrialData::readCCDOldStyle(QVector<QString> &camsstored,
     throw Exception("Trial",
 		    "Cannot read number of parallel pixels from xml","readOld");
   
-  //for (int k=0; k<ndata; k++) 
-  //  ccddata[k]->setTimeBase(delay_ms,1e3/rate_hz);
+  for (int k=0; k<ndata; k++) 
+    ccddata[k]->setTimeBase(0,0); // we don't have the data, so make meaningless
   
   // check that dimensions make sense
   if (ccd.attribute("type")!="uint16")

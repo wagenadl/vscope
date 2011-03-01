@@ -13,6 +13,8 @@ bool ROI3Data_::acceptorflipy = false;
 ROI3Data::ROI3Data() {
   datRatio=0;
   nRatio=0;
+  t0Ratio_ms = 0;
+  dtRatio_ms = 0;
   valid=false;
   debleach=ROIData::None;
   datDonor.setFlip(donorflipx, donorflipy);
@@ -33,6 +35,17 @@ void ROI3Data::setROI(ROICoords const *roi) {
 void ROI3Data::setData(CCDData const *donor, CCDData const *acceptor) {
   datDonor.setData(donor);
   datAcceptor.setData(acceptor);
+  // Following is crude. Actually should think about appropriate time
+  // if donor and acceptor are not the same.
+  t0Ratio_ms = donor ? getDonorT0ms() : getAcceptorT0ms();
+  dtRatio_ms = donor ? getDonorDTms() : getAcceptorDTms();
+  int newNRatio = donor ? getDonorNFrames() : getAcceptorNFrames();
+  if (newNRatio != nRatio) {
+    if (datRatio)
+      delete datRatio;
+    datRatio = 0;
+    nRatio = newNRatio;
+  }
   valid = false;
 }
 
@@ -49,13 +62,47 @@ double const *ROI3Data::dataDonor() {
   return datDonor.getDebleachedDFF();
 }
 
-int ROI3Data::getNFrames() const {
+int ROI3Data::getAcceptorNFrames() const {
+  return datAcceptor.getNFrames();
+}
+
+double ROI3Data::getAcceptorT0ms() const {
+  return datAcceptor.getT0ms();
+}
+
+double ROI3Data::getAcceptorDTms() const {
+  return datAcceptor.getDTms();
+}
+
+int ROI3Data::getDonorNFrames() const {
   return datDonor.getNFrames();
+}
+
+double ROI3Data::getDonorT0ms() const {
+  return datDonor.getT0ms();
+}
+
+double ROI3Data::getDonorDTms() const {
+  return datDonor.getDTms();
+}
+
+int ROI3Data::getRatioNFrames() const {
+  return nRatio;
+}
+
+double ROI3Data::getRatioT0ms() const {
+  return t0Ratio_ms;
+}
+
+double ROI3Data::getRatioDTms() const {
+  return dtRatio_ms;
 }
 
 double const *ROI3Data::dataAcceptor() {
   return datAcceptor.getDebleachedDFF();
 }
+
+
 
 double const *ROI3Data::dataRatio() {
   Dbg() << "ROI3Data::dataRatio";
@@ -69,13 +116,7 @@ double const *ROI3Data::dataRatio() {
   else if (!datDonor.haveData())
     return dataAcceptor();
 
-  if (datRatio && nRatio!=datDonor.getNFrames()) {
-    delete [] datRatio;
-    datRatio = 0;
-  }
-
   if (!datRatio) {
-    nRatio = datDonor.getNFrames();
     if (nRatio==0)
       return 0;
     datRatio = memalloc<double>(nRatio, "ROI3Data");

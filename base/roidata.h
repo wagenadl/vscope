@@ -85,6 +85,8 @@ public:
    *:R Normalized debleached data in percent.
    */
   int getNFrames() const;
+  double getT0ms() const;
+  double getDTms() const;
   bool haveData() const;
 private:
   void ensureBitmap();

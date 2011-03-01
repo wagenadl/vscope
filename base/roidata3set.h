@@ -13,8 +13,6 @@
 struct ROIData3Set_Data {
 public:
   QMap<int, class ROI3Data *> data;
-  double t0_ms, dt_ms;
-  int nframes;
   QMap<QString, class CCDData const *> ccdData; // we do not own this
   ROIData::Debleach lastDebleach;
   ROISet const *roiset;
@@ -31,14 +29,11 @@ public:
   virtual ~ROIData3Set();
   ROIData3Set(ROIData3Set const &other);
   ROIData3Set &operator=(ROIData3Set const &other);
-  class ROI3Data *getData(int id) const;
+  class ROI3Data *getData(int id) const; // exception if non-existant
   ROICoords const &getCoords(int id) const;
   CamPair const &getCam(int id) const;
   ROISet const *getROISet() const { return d.roiset; }
   bool haveData(int id) const;
-  double getT0_ms() const { return d.t0_ms; } // only valid after setData
-  double getDT_ms() const { return d.dt_ms; } // ditto
-  double getNFrames() const { return d.nframes; } // ditto
   QList<int> allIDs() const;
   void setData(QString camid, class CCDData const *acceptor); // does not cause updateData. Call updateData directly
 public slots:

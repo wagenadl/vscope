@@ -39,11 +39,9 @@ public:
   void setTimeBase(double t0_ms, double dt_ms);
   /*:F setTimeBase
    *:D Store timing information with the data.
-   *:N This is solely for GUI convenience. We don't use this information
-       ourselves.
   */
-  double getT0() const { return t0_ms; }
-  double getDT() const { return dt_ms; }
+  double getT0ms() const { return t0_ms; }
+  double getDTms() const { return dt_ms; }
 private:
   void copy(CCDData const &other);
 private:

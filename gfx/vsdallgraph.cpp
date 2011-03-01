@@ -27,14 +27,18 @@ VSDAllGraph::~VSDAllGraph() {
 
 void VSDAllGraph::updateData() {
   Dbg() << "VSDAllGraph("<<this<<"): updateData() data="<<data;
-  Dbg() << " isauto? " << isXRangeAuto() 
-	<< " t0="<<data->getT0_ms()/1e3
-	<< " dt="<<data->getT0_ms()/1e3
-	<< " Nfr="<<data->getNFrames();
+  Range tt;
+  if (!data)
+    return;
+  foreach (int id, data->allIDs()) {
+    tt.expand(() << " isauto? " << isXRangeAuto() 
+	<< " t0="<<data->getRatioT0_ms()/1e3
+	<< " dt="<<data->getRatioT0_ms()/1e3
+	<< " Nfr="<<data->getRatioNFrames();
   if (isXRangeAuto())
-    setXRange(Range(data->getT0_ms()/1e3,
-		    data->getT0_ms()/1e3
-		    + data->getDT_ms()/1e3*data->getNFrames()),
+    setXRange(Range(data->getRatioT0_ms()/1e3,
+		    data->getRatioT0_ms()/1e3
+		    + data->getRatioDT_ms()/1e3*data->getRatioNFrames()),
 	      true);
   update();
 }

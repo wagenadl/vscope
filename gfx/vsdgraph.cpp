@@ -37,13 +37,30 @@ void VSDGraph::updateROI(int id) {
 }
 
 void VSDGraph::updateROIs() {
-  Dbg() << "VSDGraph("<<this<<"): updateROIs()"; 
-  double t0_s = data->getT0_ms()/1e3;
-  double dt_s = data->getDT_ms()/1e3;
-  int nfr = data->getNFrames();
-  if (isXRangeAuto())
-    setXRange(Range(t0_s,t0_s+dt_s*nfr),true);
-  update();
+  Dbg() << "VSDGraph("<<this<<"): updateROIs()";
+  if (data->haveData(selid)) {
+    if (isXRangeAuto()) {
+      Dbg() << " autoranging";
+      double t0d = data->getData(selid)->getDonorT0ms()/1e3;
+      double t0a = data->getData(selid)->getAcceptorT0ms()/1e3;
+      double t0r = data->getData(selid)->getRatioT0ms()/1e3;
+      double dtd = data->getData(selid)->getDonorDTms()/1e3;
+      double dta = data->getData(selid)->getAcceptorDTms()/1e3;
+      double dtr = data->getData(selid)->getRatioDTms()/1e3;
+      int nfrd = data->getData(selid)->getDonorNFrames();
+      int nfra = data->getData(selid)->getAcceptorNFrames();
+      int nfrr = data->getData(selid)->getRatioNFrames();
+      Range tt;
+      if (nfrd)
+	tt.expand(Range(t0d, t0d + dtd*nfrd));
+      if (nfra)
+	tt.expand(Range(t0a, t0a + dta*nfra));
+      if (nfrr)
+	tt.expand(Range(t0r, t0r + dtr*nfrr));
+      setXRange(tt, true);
+    }
+    update();
+  }
 }
 
 void VSDGraph::updateSelection(int id) {
@@ -81,16 +98,21 @@ void VSDGraph::paintEvent(class QPaintEvent *e) {
     if (autoRP)
       setAutoRepaint(false);
 
-    double t0_s = data->getT0_ms()/1e3;
-    double dt_s = data->getDT_ms()/1e3;
-    
     if (data->haveData(selid)) {
       ROI3Data *d3 = data->getData(selid);
-      int nfr = d3->getNFrames();
-      trcDonor->setData(t0_s, dt_s, DataPtr(d3->dataDonor()), nfr);
+      trcDonor->setData(d3->getDonorT0ms()/1e3,
+			d3->getDonorDTms()/1e3,
+			DataPtr(d3->dataDonor()),
+			d3->getDonorNFrames());
       if (d3->dataAcceptor()) {
-	trcAcceptor->setData(t0_s, dt_s, DataPtr(d3->dataAcceptor()), nfr);
-	trcRatio->setData(t0_s, dt_s, DataPtr(d3->dataRatio()), nfr);
+	trcAcceptor->setData(d3->getAcceptorT0ms()/1e3,
+			     d3->getAcceptorDTms()/1e3,
+			     DataPtr(d3->dataAcceptor()),
+			     d3->getAcceptorNFrames());
+      trcRatio->setData(d3->getRatioT0ms()/1e3,
+			d3->getRatioDTms()/1e3,
+			DataPtr(d3->dataRatio()),
+			d3->getRatioNFrames());
       }
     }
     

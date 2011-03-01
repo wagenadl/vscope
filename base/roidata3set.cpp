@@ -9,9 +9,6 @@
 ROIData3Set::ROIData3Set(ROISet const *rs) {
   d.roiset = rs;
   d.lastDebleach = ROIData::None;
-  d.t0_ms = 0;
-  d.dt_ms = 1;
-  d.nframes = 0;
 
   connect(rs, SIGNAL(changed(int)),
 	  SLOT(changeROI(int)));
@@ -43,19 +40,6 @@ void ROIData3Set::updateData() {
     if (d.ccdData.contains(cp.acceptor))
       acc = d.ccdData[cp.acceptor];
     rd->setData(don, acc);
-    if (don) {
-      d.t0_ms = don->getT0();
-      d.dt_ms = don->getDT();
-      d.nframes = don->getNFrames();
-    } else if (acc) {
-      d.t0_ms = acc->getT0();
-      d.dt_ms = acc->getDT();
-      d.nframes = acc->getNFrames();
-    } else {
-      d.t0_ms = 0;
-      d.dt_ms = 1;
-      d.nframes = 0;
-    }
   }
   emit changedAll();
 }

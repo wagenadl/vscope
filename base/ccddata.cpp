@@ -11,6 +11,8 @@ CCDData::CCDData(int serpix, int parpix, int nframes):
   allocpix = framepix*nframes;
   data = 0;
   data = memalloc<uint16_t>(allocpix, "CCDData:: constructor");
+  t0_ms = 0;
+  dt_ms = 0; // default value: meaningless on purpose
 }
 
 bool CCDData::reshape(int ser, int par, int nfr, bool free) {
@@ -28,9 +30,6 @@ bool CCDData::reshape(int ser, int par, int nfr, bool free) {
   nframes = nfr;
   return realloc;
 }
-
-    
-      
 
 CCDData::~CCDData() {
   if (data)
