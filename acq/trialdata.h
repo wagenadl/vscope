@@ -11,7 +11,8 @@
 #include <acq/ccdtimingdetail.h>
 #include <base/transform.h>
 
-class TrialData {
+class TrialData: public QObject {
+  Q_OBJECT;
 public:
   TrialData();
   virtual ~TrialData();
@@ -46,7 +47,12 @@ public:
   QString exptName() const { return exptname; }
   QString trialID() const { return trialid; }
   CCDTimingDetail const &timing() const { return timing_; }
-  Transform const &ccdPlacement(QString camid) const;
+  Transform ccdPlacement(QString camid) const;
+  void notifyDataChange(); // call this if you have changed the data
+  // This is required, or no newData() signal will be emitted.
+  // Note that read() automatically causes the signal to be emitted.
+signals:
+  void newData();
 private:
   static QString trialname(class ParamTree const *tree);
   void generalPrep(class ParamTree const *ptree);

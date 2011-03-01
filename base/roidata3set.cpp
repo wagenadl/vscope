@@ -8,8 +8,10 @@
 
 ROIData3Set::ROIData3Set(ROISet const *rs) {
   d.roiset = rs;
-  d.lastDonor = d.lastAcceptor = 0;
   d.lastDebleach = ROIData::None;
+  d.t0_ms = 0;
+  d.dt_ms = 1;
+  d.nframes = 0;
 
   connect(rs, SIGNAL(changed(int)),
 	  SLOT(changeROI(int)));
@@ -23,21 +25,38 @@ ROIData3Set::~ROIData3Set() {
 }
 
 
-void ROIData3Set::setData(CCDData const *donor,
-			  CCDData const *acceptor) {
-  d.lastDonor = donor;       // For the benefit of
-  d.lastAcceptor = acceptor; //    future ROIs.
-  updateData();
+void ROIData3Set::setData(QString id, CCDData const *data) {
+  d.ccdData[id] = data;
 }
 
 void ROIData3Set::updateData() {
-  if (!d.lastDonor)
+  dbg("ROIData3Set(%p)::updateData",this);
+  if (!d.roiset)
     return;
-  foreach (ROI3Data *rd, d.data.values())
-    rd->setData(d.lastDonor, d.lastAcceptor);
-  d.t0_ms = d.lastDonor->getT0();
-  d.dt_ms = d.lastDonor->getDT();
-  d.nframes = d.lastDonor->getNFrames();
+  foreach (int id, d.data.keys()) {
+    ROI3Data *rd = d.data[id];
+    CamPair const &cp = d.roiset->cam(id);
+    CCDData const *don = 0;
+    CCDData const *acc = 0;
+    if (d.ccdData.contains(cp.donor))
+      don = d.ccdData[cp.donor];
+    if (d.ccdData.contains(cp.acceptor))
+      acc = d.ccdData[cp.acceptor];
+    rd->setData(don, acc);
+    if (don) {
+      d.t0_ms = don->getT0();
+      d.dt_ms = don->getDT();
+      d.nframes = don->getNFrames();
+    } else if (acc) {
+      d.t0_ms = acc->getT0();
+      d.dt_ms = acc->getDT();
+      d.nframes = acc->getNFrames();
+    } else {
+      d.t0_ms = 0;
+      d.dt_ms = 1;
+      d.nframes = 0;
+    }
+  }
   emit changedAll();
 }
 
@@ -78,6 +97,7 @@ QList<int> ROIData3Set::allIDs() const {
 }
 
 void ROIData3Set::changeROI(int id) {
+  Dbg() << "ROIData3Set::changeROI("<<id<<")";
   changeROIcore(id);
   emit changedOne(id);
 }
@@ -90,7 +110,14 @@ void ROIData3Set::changeROIcore(int id) {
       ROI3Data *dat = new ROI3Data();
       d.data.insert(id,dat);
       dat->setDebleach(d.lastDebleach);
-      dat->setData(d.lastDonor,d.lastAcceptor);
+      CCDData const *don = 0;
+      CCDData const *acc = 0;
+      CamPair const &cp = d.roiset->cam(id);
+      if (d.ccdData.contains(cp.donor))
+	don = d.ccdData[cp.donor];
+      if (d.ccdData.contains(cp.acceptor))
+	acc = d.ccdData[cp.acceptor];
+      dat->setData(don, acc);
     }
     d.data[id]->setROI(&d.roiset->get(id));
   }
@@ -101,6 +128,7 @@ void ROIData3Set::changeROIcore(int id) {
 }
 
 void ROIData3Set::changeROIs() {
+  Dbg() << "ROIData3Set("<<this<<")::changeROIs()";
   QSet<int> ids = QSet<int>::fromList(d.data.keys());
   if (d.roiset)
     ids += d.roiset->ids();

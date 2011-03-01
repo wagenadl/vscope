@@ -510,21 +510,24 @@ void LineGraph::paintYAxis(QPainter &p) {
 void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 
   Dbg() << "LineGraph("<<this<<"): ti="<<ti;
+  if (ti)
+    ti->report();
   int M = contentsWidth(); // number of pixels
   if (M==0)
     return;
   double dx_per_pix = (x1-x0) / M;
   if (dx_per_pix<=0) {
-    Dbg() << "Linegraph: Badly scaled x-axis in paintTrace: x0=x1="<<x0;
+    Dbg() << "Linegraph: Badly scaled x-axis in paintTrace: x0="<<x0<<" x1="<<x1;
     return;
   }
+  int N = ti->getN();
+  if (N<=0) {
+    Dbg() << "LineGraph:: nothing to plot (N="<<N<<")";
+    return;
+  }
+  Dbg() << "N="<<N<<" M="<<M;
   if (dx_per_pix <= ti->getDX()) {
     // fewer than one data point per pixel
-    int N = ti->getN();
-    if (N<=0) {
-      Dbg() << "LineGraph:: nothing to plot (N="<<N<<")";
-      return;
-    }
     dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
     int x0pix = int(contentsX0()+(ti->getX0()-x0)/dx_per_pix);
     double dxpix = ti->getDX()/dx_per_pix;
@@ -533,6 +536,7 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
       pts[n] = QPoint(x0pix+int(dxpix*n), dataToScreenY(ti->getDatum(n)));
     p.drawPolyline(pts);
   } else {
+    // more than one data point per pixel
     double *yy_min = memalloc<double>(M, "Linegraph");
     double *yy_max = memalloc<double>(M, "Linegraph");
     ti->trueBlue(x0,dx_per_pix,M, yy_min,yy_max);
@@ -548,7 +552,7 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
         }
       }
     }
-     dbg("linegraph: m0=%i m1=%i",m0,m1);
+    dbg("linegraph: m0=%i m1=%i.",m0,m1);
     M=m1-m0;
     if (M<=0) {
       Dbg() << "Linegraph: nothing to plot (M="<<M<<")";
@@ -586,7 +590,8 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 }
 
 void LineGraph::paintEvent(class QPaintEvent *) {
-  //  dbg("linegraph(%p)::paintevent\n",this);
+  dbg("linegraph(%p)::paintevent\n",this);
+  dbg("linegraph: xx=(%g:%g) yy=(%g:%g)",x0,x1,y0,y1);
   QPainter p(this);
   p.setFont(traceFont);
   int dy_legend = p.fontMetrics().lineSpacing();

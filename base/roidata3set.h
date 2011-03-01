@@ -15,7 +15,7 @@ public:
   QMap<int, class ROI3Data *> data;
   double t0_ms, dt_ms;
   int nframes;
-  class CCDData const *lastDonor, *lastAcceptor;
+  QMap<QString, class CCDData const *> ccdData; // we do not own this
   ROIData::Debleach lastDebleach;
   ROISet const *roiset;
 };
@@ -40,10 +40,10 @@ public:
   double getDT_ms() const { return d.dt_ms; } // ditto
   double getNFrames() const { return d.nframes; } // ditto
   QList<int> allIDs() const;
+  void setData(QString camid, class CCDData const *acceptor); // does not cause updateData. Call updateData directly
 public slots:
   void changeROI(int id);
   void changeROIs();
-  void setData(class CCDData const *donor, class CCDData const *acceptor);
   void updateData();
   void setDebleach(ROIData::Debleach d);
 signals:

@@ -105,6 +105,7 @@ public:
        there are no data at all.
        The output is scaled by the current scale factor.
   */
+  void report() const;
 private:
   Range range99(int n0, int n1, double frc0, double frc1) const;
  protected: 

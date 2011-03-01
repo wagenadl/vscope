@@ -76,7 +76,7 @@ void PanelHistory::makeButtons(QString where) {
 }
 
 void PanelHistory::newSelection(QString const &where) {
-  Dbg() << "PanelHistory::newSelection(" << where <<")";
+  //Dbg() << "PanelHistory::newSelection(" << where <<")";
   if (busy) {
     return;
   }
@@ -110,7 +110,7 @@ QString PanelHistory::itemAt(QString const &s) /*const*/ {
 }
 
 void PanelHistory::oldSelection(QString const &p) {
-  Dbg() << "PanelHistory::oldSelection(" << p <<")";
+  //Dbg() << "PanelHistory::oldSelection(" << p <<")";
   if (busy) {
     return;
   }
@@ -239,7 +239,7 @@ void PanelHistory::open(QString where, QString what) {
 
 void PanelHistory::doubleClicked(QString id, QString txt) {
   QString what = itemAt(id);
-  Dbg() << "PanelHistory::doubleClicked("<<id<<","<<txt<<"): " << what;
+  //Dbg() << "PanelHistory::doubleClicked("<<id<<","<<txt<<"): " << what;
   QWidget *child = childWidget(what);
   if (!child) {
     dbg("PanelHistory::doubleClicked: Don't know about %s",qPrintable(what));
@@ -257,7 +257,7 @@ void PanelHistory::doubleClicked(QString id, QString txt) {
   for (int k=0; k<16; k++) 
     gry += (tst.bits()[4*k+0] + tst.bits()[4*k+1]
 	    + tst.bits()[4*k+2])/3.0/256.0;
-  Dbg() << "gry: " << gry;
+  //Dbg() << "gry: " << gry;
   if (gry<8)
     img.invertPixels();
   

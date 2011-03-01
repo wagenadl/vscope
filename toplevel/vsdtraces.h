@@ -26,10 +26,11 @@ public:
   virtual ~VSDTraces();
 public slots:
   void updateSelection(int id);
-  void updateEPhysData();
   void setRefTrace(int chn);
   void setRefDigi(int chn);
   void setRefFreq(double frqhz);
+private slots:
+  void updateEPhysData();
 private:
   class VSDGraph *selected;
   class VSDAllGraph *allgraph;

@@ -266,10 +266,6 @@ void setupVSDTraces() {
 				.toInt()));
   Globals::vsdtraces->hide();
 
-  QObject::connect(&Globals::trove->roidata(), SIGNAL(changedOne(int)),
-		   Globals::vsdtraces, SLOT(updateROI(int)));
-  QObject::connect(&Globals::trove->roidata(), SIGNAL(changedAll()),
-		   Globals::vsdtraces, SLOT(updateROIs()));
   QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
 		   Globals::vsdtraces, SLOT(updateSelection(int)));
 

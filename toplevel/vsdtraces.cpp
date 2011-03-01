@@ -32,6 +32,9 @@ VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent) {
   reftrace = new TraceInfo();
   refgraph->addTrace("ref",reftrace);
   refchn = 0;
+  refgraph->autoSetXRange();
+  refgraph->autoSetYRange();
+  connect(&Globals::trove->trial(), SIGNAL(newData()), SLOT(updateEPhysData()));
 
   allgraph = new VSDAllGraph(&Globals::trove->roidata(), this);
   addGraph("all",allgraph);
@@ -84,7 +87,7 @@ void VSDTraces::updateEPhysData() {
 		    lastAnalog->getNumScans(),
 		    lastAnalog->getNumChannels());
   Range xr = allgraph->getXRange();
-  dbg("  xrange = [%g-%g]",xr.min,xr.max);
+  dbg("  xrange = [%g:%g]",xr.min,xr.max);
   refgraph->setXRange(xr);
   refgraph->autoSetYRange();
   refgraph->update();

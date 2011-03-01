@@ -2,6 +2,7 @@
 
 #include "roiimages.h"
 #include <base/exception.h>
+#include <base/dbg.h>
 
 ROIImages::ROIImages(QRect c): canvas(c) {
   sm = new QSignalMapper(this);
@@ -56,6 +57,7 @@ void ROIImages::setCanvas(QRect const &r) {
 }
 
 void ROIImages::shareZoom(QString id) {
+  Dbg() << "ROIImages::shareZoom from " << id;
   QRect zr = imgs[id]->currentZoom();
   foreach (QString id1, imgs.keys()) {
     if (id1!=id) {
@@ -66,12 +68,14 @@ void ROIImages::shareZoom(QString id) {
 }
 
 void ROIImages::shareSelection(QString id) {
+  Dbg() << "ROIImages::shareSelection from " << id;
   int sel = imgs[id]->currentROI();
   foreach (QString id1, imgs.keys()) {
     if (id1!=id) {
       imgs[id1]->updateSelection(sel);
     }
   }
+  Dbg() << "ROIImages: emitting new selection: " << sel;
   emit newSelection(sel);
 }
 

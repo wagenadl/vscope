@@ -80,8 +80,10 @@ void Trial::prepare(ParamTree const *ptree) {
     ccdacq->prepare(ptree, dat->timing());
   ephysout->setMaster(dat->hasContEPhys() ? 0 : ephysacq);
   ephysout->prepare(ptree, dat->timing());
-  if (dat->isEPhys())
+  if (dat->isEPhys()) {
     ephysacq->prepare(ptree);
+    dat->notifyDataChange(); // it could have been reshaped!
+  }
   outcomplete = acqcomplete = false;
   prep = true;
 }
@@ -171,11 +173,6 @@ void Trial::allEPhysComplete() {
   QDateTime now(QDateTime::currentDateTime());
   info.setAttribute("enddate",now.toString("yyMMdd"));
   info.setAttribute("endtime",now.toString("hhmmss"));
-  completedEvent();
+  dat->notifyDataChange();
   emit ended(dat->exptName(),dat->trialID());
 }
-
-void Trial::completedEvent() {
-  // meant for descendants
-}
-

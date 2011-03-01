@@ -19,7 +19,7 @@
 
 PolyBlob::PolyBlob(int log2n): log2n(log2n) {
   n = 1<<log2n;
-  Dbg() << "PolyBlob constructor "<<this<<": n="<<n;
+  //Dbg() << "PolyBlob constructor "<<this<<": n="<<n;
   msk = n-1;
   x50.resize(n);
   y50.resize(n);
@@ -32,17 +32,17 @@ PolyBlob::PolyBlob(int log2n): log2n(log2n) {
 }
 
 PolyBlob::PolyBlob(PolyBlob const &other) {
-  Dbg() << "PolyBlob copy constructor" << this << " < " << &other;
+  //Dbg() << "PolyBlob copy constructor" << this << " < " << &other;
   *this = other;
-  Dbg() << "n="<<n;
+  //Dbg() << "n="<<n;
 }
 
 PolyBlob::~PolyBlob() {
-  Dbg() << "PolyBlob destructor" << this << "n="<<n;
+  //Dbg() << "PolyBlob destructor" << this << "n="<<n;
 }
 
 PolyBlob &PolyBlob::operator=(PolyBlob const &other) {
-  Dbg() << "PolyBlob operator = " << this << " < " << &other << " n="<<other.n;
+  //Dbg() << "PolyBlob operator = " << this << " < " << &other << " n="<<other.n;
   log2n = other.log2n;
   n = other.n;
   msk = other.msk;

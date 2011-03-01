@@ -23,12 +23,6 @@ public:
   bool isActive() const { return isPrepared() ? active : false; }
   // TrialData const &data() const { return *dat; }
   // TrialData &data() { return *dat; }
-protected:
-  virtual void completedEvent();
-  /*:F completedEvent
-   *:D Called after a trial is complete, just before the "ended" signal
-       is emitted. Descendants can use this to update their state.
-  */
 public slots:
   void start();
   void abort(); // I need to decide about error handling in abort() 

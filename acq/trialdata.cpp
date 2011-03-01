@@ -43,7 +43,6 @@ TrialData::TrialData() {
 }
 
 TrialData::~TrialData() {
-
   for (QVector<CCDData *>::iterator i=ccddata.begin();
        i!=ccddata.end(); ++i) 
     delete *i;
@@ -61,7 +60,7 @@ CCDData const *TrialData::ccdData(QString camid) const {
     return 0;
 }
 
-Transform const &TrialData::ccdPlacement(QString camid) const {
+Transform TrialData::ccdPlacement(QString camid) const {
   if (camidx.contains(camid))
     return ccdplace[camidx[camid]];
   else
@@ -251,6 +250,8 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   if (do_ccd) {
     readCCD(myxml, base);
   }
+
+  emit newData();
 }
 
 void TrialData::writeAnalog(QString base) const {
@@ -600,4 +601,8 @@ void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
     throw Exception("Trial",
 		    QString("Camera count mismatch (%1; expected %2)")
 		    .arg(havecam.size()).arg(ncam));
+}
+
+void TrialData::notifyDataChange() {
+  emit newData();
 }

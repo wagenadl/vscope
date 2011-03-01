@@ -15,6 +15,9 @@ VSDGraph::VSDGraph(ROIData3Set *rs3d, QWidget *parent): LineGraph(parent) {
   trcAcceptor = new TraceInfo();
   trcRatio = new TraceInfo();
   autoSetXRange();
+
+  connect(data, SIGNAL(changedOne(int)), SLOT(updateROI(int)));
+  connect(data, SIGNAL(changedAll()), SLOT(updateROIs()));
 }
 
 VSDGraph::~VSDGraph() {
@@ -28,11 +31,13 @@ VSDGraph::~VSDGraph() {
 }
 
 void VSDGraph::updateROI(int id) {
+  Dbg() << "VSDGraph("<<this<<"): updateROI("<<id<<")"; 
   if (id==selid)
     updateROIs();
 }
 
 void VSDGraph::updateROIs() {
+  Dbg() << "VSDGraph("<<this<<"): updateROIs()"; 
   double t0_s = data->getT0_ms()/1e3;
   double dt_s = data->getDT_ms()/1e3;
   int nfr = data->getNFrames();
@@ -42,6 +47,7 @@ void VSDGraph::updateROIs() {
 }
 
 void VSDGraph::updateSelection(int id) {
+  Dbg() << "VSDGraph("<<this<<"): updateSelection("<<id<<") was:"<<selid;
   if (id==selid)
     return;
 

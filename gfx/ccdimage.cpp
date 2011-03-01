@@ -32,7 +32,7 @@ CCDImage::CCDImage(QWidget *parent):
   QPalette p = palette();
   p.setColor(QPalette::Window, QColor("#333333"));
   setPalette(p);
-  Dbg() << "CCDImage: CanvasRect is " << canvasRect;
+  //Dbg() << "CCDImage: CanvasRect is " << canvasRect;
   createTestImage();
   resetZoom();
 }
@@ -103,12 +103,12 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
   if (image.width()!=X || image.height()!=Y)
     image = QImage(X,Y,QImage::Format_RGB32);
   // I could use Indexed8 if that's faster.
-  Dbg() << "CCDImage::newImage " << data
-	<< " " << X << "x" << Y
-	<< " (" << flipX << "," << flipY << ")";
+  //Dbg() << "CCDImage::newImage " << data
+  //	<< " " << X << "x" << Y
+  //	<< " (" << flipX << "," << flipY << ")";
   uint32_t *dst = (uint32_t *)image.bits();
   int rng = 1 + max - min;
-  Dbg() << "  max="<<max<<" min="<<min<<" rng="<<rng;
+  //Dbg() << "  max="<<max<<" min="<<min<<" rng="<<rng;
   for (int y=0; y<Y; y++) {
     uint16_t const *row = flipY ? (data+(Y-1-y)*X) : data+y*X;
     if (adjust_black>0 || adjust_white>0) {
@@ -311,10 +311,10 @@ void CCDImage::paintEvent(class QPaintEvent *) {
   QRect r = rect(); // (0,0,width,height) of this widget
   constrainZoom();
 
-  Dbg() << "CCDImage::paintEvent. imgrect=" << image.rect()
-	<< " zoomrect=" << zoomRect
-	<< " canvasrect=" << canvasRect
-	<< " rect=" << r;
+  //Dbg() << "CCDImage::paintEvent. imgrect=" << image.rect()
+  //	<< " zoomrect=" << zoomRect
+  //	<< " canvasrect=" << canvasRect
+  //	<< " rect=" << r;
 
   //  if (zoomRect==r)
   //    p.drawImage(r,image);

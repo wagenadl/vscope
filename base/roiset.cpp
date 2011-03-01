@@ -44,6 +44,7 @@ ROICoords &ROISet::checkout(int id) {
 }
 
 void ROISet::checkin(int id) {
+  Dbg() << "ROISet::checkin("<<id<<")";
   emit changed(id);
 }
 
@@ -55,6 +56,7 @@ bool ROISet::contains(int id) const {
 }
 
 void ROISet::remove(int id) {
+  Dbg() << "ROISet::remove("<<id<<")";
   if (!allids.contains(id))
     return;
   allids.remove(id);
@@ -75,6 +77,7 @@ void ROISet::write(QDomElement dst) const {
 }
 
 void ROISet::read(QDomElement src) {
+  Dbg() << "ROISet::read";
   clearNoSignal();
   bool ok;
   lastid = 0;

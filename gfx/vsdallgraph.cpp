@@ -15,6 +15,9 @@ const double TRACE_DY = 0.2; // That's the spacing between traces in percents
 VSDAllGraph::VSDAllGraph(ROIData3Set *data, QWidget *parent):
   LineGraph(parent), data(data) {
   autoSetXRange();
+  connect(data, SIGNAL(changedOne(int)), SLOT(updateROI(int)));
+  connect(data, SIGNAL(changedAll()), SLOT(updateROIs()));
+  connect(data, SIGNAL(changedAll()), SLOT(updateData()));
 }
 
 VSDAllGraph::~VSDAllGraph() {
@@ -23,6 +26,11 @@ VSDAllGraph::~VSDAllGraph() {
 }
 
 void VSDAllGraph::updateData() {
+  Dbg() << "VSDAllGraph("<<this<<"): updateData() data="<<data;
+  Dbg() << " isauto? " << isXRangeAuto() 
+	<< " t0="<<data->getT0_ms()/1e3
+	<< " dt="<<data->getT0_ms()/1e3
+	<< " Nfr="<<data->getNFrames();
   if (isXRangeAuto())
     setXRange(Range(data->getT0_ms()/1e3,
 		    data->getT0_ms()/1e3
@@ -40,6 +48,7 @@ bool VSDAllGraph::haveData(int id) const {
 }
 
 void VSDAllGraph::updateROIs() {
+  Dbg() << "VSDAllGraph("<<this<<"): updateROIs()";
   QSet<int> ids = QSet<int>::fromList(data->allIDs());
   ids += QSet<int>::fromList(traces.keys());
   foreach (int id, ids) 
@@ -65,6 +74,7 @@ void VSDAllGraph::updateROIcore(int id) {
 }  
 
 void VSDAllGraph::updateROI(int id) {
+  Dbg() << "VSDAllGraph("<<this<<"): updateROI("<<id<<")";
   updateROIcore(id);
   newOffsets();
   update();
@@ -77,6 +87,7 @@ void VSDAllGraph::newOffsets() {
 }
 
 void VSDAllGraph::updateSelection(int id) {
+  Dbg() << "VSDAllGraph("<<this<<"): updateSelection("<<id<<") was:"<<selectedId;
   if (id!=selectedId) {
     if (selectedId)
       setTracePen(num2az(selectedId),QColor("#000000"));

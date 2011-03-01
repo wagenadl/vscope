@@ -168,6 +168,35 @@ TraceInfo::TraceInfo() {
   offset=0;
 }
 
+void TraceInfo::report() const {
+  Dbg() << "TraceInfo("<<this<<")::report"
+	<<" x0="<<datax0<< " dx="<<datadx
+	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
+	<<" N="<<N<<" step="<<step;
+  if (N) {
+    switch (dataptr.typ) {
+    case DataPtr::dataDouble: {
+      double mn=dataptr.ptr.dp_double[0];
+      double mx=dataptr.ptr.dp_double[0];
+      double sumx=0;
+      double sumxx=0;
+      for (int n=0; n<N; n++) {
+	double x = dataptr.ptr.dp_double[n*step];
+	if (x<mn)
+	  mn=x;
+	if (x>mx)
+	  mx=x;
+	sumx+=x;
+	sumxx+=x*x;
+      }
+      Dbg() << " min:"<<mn<<" max:"<<mx<<" avg:"<<sumx/N<< " var:"<<(sumxx-sumx*sumx/N)/N;
+    } break;
+    default:
+      break;
+    }
+  }
+}
+
 void TraceInfo::setData(double datax0_, double datadx_,
 			DataPtr dp_, int N_, int step_) {
   datax0 = datax0_;
@@ -175,6 +204,9 @@ void TraceInfo::setData(double datax0_, double datadx_,
   dataptr = dp_;
   N = dataptr.ptr.dp_none ? N_ : 0;
   step = step_;
+  Dbg() << "TraceInfo::setData. x0="<<datax0<< " dx="<<datadx
+	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
+	<<" N="<<N<<" step="<<step;
 }
 
 void TraceInfo::setScaleFactor(double sf) {

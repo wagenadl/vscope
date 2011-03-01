@@ -30,19 +30,23 @@
 
 static void setRefTrace() {
   int typ = Globals::ptree->find("analysis/refType").toInt();
+  Dbg() << "gt_paramchanged::setRefTrace(). typ="<<typ;
   Enumerator *e = Enumerator::find("REFTYPE");
   if (typ==e->lookup("Analog")) {
     int chn = Globals::ptree->find("analysis/refTrace").toInt();
+    Dbg() << "-> analog. chn="<<chn;
     Globals::vsdtraces->setRefTrace(chn);
     Globals::coherence->setRefTrace(chn);
     Globals::cohgraph->setRefTrace(chn);
   } else if (typ==e->lookup("Digital")) {
     int chn = Globals::ptree->find("analysis/refDigi").toInt();
+    Dbg() << "-> digital. chn="<<chn;
     Globals::vsdtraces->setRefDigi(chn);
     Globals::coherence->setRefDigi(chn);
     Globals::cohgraph->setRefDigi(chn);
   } else if (typ==e->lookup("Frequency")) {
     double frqhz = Globals::ptree->find("analysis/refFreq").toDouble();
+    Dbg() << "-> frequency. frq="<<frqhz;
     Globals::vsdtraces->setRefFreq(frqhz);
     Globals::coherence->setRefFreq(frqhz);
     Globals::cohgraph->setRefFreq(frqhz);

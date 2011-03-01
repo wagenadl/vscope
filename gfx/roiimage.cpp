@@ -71,7 +71,7 @@ void ROIImage::setROIs(ROISet *rs) {
 
   if (roiset!=dummyrois) {
     connect(roiset, SIGNAL(changed(int)), this, SLOT(updateROIs()));
-    connect(roiset, SIGNAL(changedAll(int)), this, SLOT(updateROIs()));
+    connect(roiset, SIGNAL(changedAll()), this, SLOT(updateROIs()));
   }
   
   select(0);
@@ -166,9 +166,9 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 }
 
 void ROIImage::mousePressEvent(QMouseEvent *e) {
-  dbg("ROIImage: press (%i,%i) mode=%i\n",e->x(),e->y(),clickMode);
-  Dbg() << "ROIImage: selectedid="<<selectedroi
-	<< " has="<<roiset->contains(selectedroi);
+  //dbg("ROIImage: press (%i,%i) mode=%i\n",e->x(),e->y(),clickMode);
+  //Dbg() << "ROIImage: selectedid="<<selectedroi
+  //	<< " has="<<roiset->contains(selectedroi);
   clickPoint = e->pos();
   QPointF canvasPoint = canvasToScreen().inverse()(clickPoint);
   switch (clickMode) {
@@ -181,9 +181,9 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
     break;
   case CM_AddROI: { // This adds a XYRRA
     select(0);
-    Dbg() <<"addroi: editing was"<<editing;
+    //Dbg() <<"addroi: editing was"<<editing;
     editing = new ROICoords();
-    Dbg() << "addroi: editing="<<editing;
+    //Dbg() << "addroi: editing="<<editing;
     editing->makeXYRRA();
     editing->xyrra() = XYRRA(canvasPoint);
     recalcEllipse();
@@ -252,9 +252,9 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
 	  break; // we won't reselect!
 	} else if (dr_center < blob.greatestRadius() + 2) {
 	  // we're inside the max radius, so let's distort
-	  Dbg() <<"blobroi1: editing was"<<editing;
+	  //Dbg() <<"blobroi1: editing was"<<editing;
 	  editing = new ROICoords(blob);
-	  Dbg() << "blobroi1: editing="<<editing;
+	  //Dbg() << "blobroi1: editing="<<editing;
 	  visiblob->setTransform(canvasToScreen());
 	  visiblob->setShape(&editing->blob(), false);
 	  visiblob->show();
@@ -276,9 +276,9 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
       select(id);
       if (!id) {
 	// let's make a new one
-	Dbg() <<"blobroi: editing was"<<editing;
+	//Dbg() <<"blobroi: editing was"<<editing;
 	editing = new ROICoords();
-	Dbg() << "blobroi: editing="<<editing;
+	//Dbg() << "blobroi: editing="<<editing;
 	editing->makeBlob();
 	visiblob->setTransform(canvasToScreen());
 	visiblob->show();
@@ -332,33 +332,33 @@ void ROIImage::mouseReleaseEvent(QMouseEvent *e) {
     if (toosmall) {
       if (selectedroi)
 	roiset->remove(selectedroi);
-      Dbg() << "ROIImage:release: too small: roi " << selectedroi << " removed";
+      //Dbg() << "ROIImage:release: too small: roi " << selectedroi << " removed";
     } else {
-      Dbg() << "ROIImage:release: finding roi; selected was " << selectedroi;
+      //Dbg() << "ROIImage:release: finding roi; selected was " << selectedroi;
       int id = selectedroi ? selectedroi : roiset->newROI(campair);
-      Dbg() << "ROIImage:release: roi = " << id;
+      //Dbg() << "ROIImage:release: roi = " << id;
       roiset->checkout(id) = *editing;
-      Dbg() << "ROIImage: checked out";
+      //Dbg() << "ROIImage: checked out";
       roiset->checkin(id);
-      Dbg() << "ROIImage: checked in";
-      Dbg() << "ROIImage: selected was " << selectedroi << ", will be " << id;
+      //Dbg() << "ROIImage: checked in";
+      //Dbg() << "ROIImage: selected was " << selectedroi << ", will be " << id;
       if (id!=selectedroi)
 	select(id);
-      Dbg() << "ROIImage: done selection";
+      //Dbg() << "ROIImage: done selection";
     }
-    Dbg() << "ROIImage: Deleting editing "<< editing;
+    //Dbg() << "ROIImage: Deleting editing "<< editing;
     delete editing;
     editing = 0;
-    Dbg() << "ROIImage: Recalc ellipse";
+    //Dbg() << "ROIImage: Recalc ellipse";
     recalcEllipse(); // i.e., remove it
-    Dbg() << "ROIImage: Forcing update";
+    //Dbg() << "ROIImage: Forcing update";
     update();
   }
-  Dbg() << "ROIImage:release done";
+  //Dbg() << "ROIImage:release done";
 }
 
 void ROIImage::updateSelection(int id) {
-  Dbg() << "Updateselection "<<id;
+  //Dbg() << "Updateselection "<<id;
   selectedroi = roiset->contains(id) ? id : 0;
   update();
 }

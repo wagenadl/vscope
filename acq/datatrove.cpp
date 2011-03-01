@@ -7,6 +7,7 @@
 #include <base/roidata3set.h>
 #include <math/cohdata.h>
 #include <base/dbg.h>
+#include <xml/connections.h>
 
 DataTrove::DataTrove(ParamTree *ptree): QObject() {
   ptree_ = ptree;
@@ -19,6 +20,8 @@ void DataTrove::constructData() {
   rois_ = new ROISet();
   roidata_ = new ROIData3Set(rois_);
   cohdata_ = new CohData();
+  foreach (QString camid, Connections::allCams()) 
+    roidata_->setData(camid, trial_->ccdData(camid));
   QObject::connect(rois_, SIGNAL(changed(int)), SLOT(saveROIs()));
   QObject::connect(rois_, SIGNAL(changedAll), SLOT(saveROIs()));
 }
@@ -45,6 +48,7 @@ void DataTrove::read(QString dir, QString exptname, QString trialid) {
   trial_->read(dir, exptname, trialid, ptree_);
   rois_->load(QString("%1/%2/%3-rois.xml")
 	      .arg(dir).arg(exptname).arg(trialid));
+  roidata_->updateData();
   Dbg() << "DataTrove::read: "
 	<< trial_->exptName() << "/" << trialid;
   dummy = d;
