@@ -409,8 +409,6 @@ int main(int argc, char **argv) {
     setupDefaultSettings();
 
     Taperbank::initialize(fpath + "/_tapers");
-    CohData::setFrameLine(Enumerator::find("DIGILINES")
-			  ->lookup("Frame" + Connections::leaderCamera()));
     setupExptName();
     setupDAQ();
     QDomElement guiConf = setupGUI();

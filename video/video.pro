@@ -8,8 +8,8 @@ include(../config.pro)
 HEADERS += videoprog.h   videolight.h   videocommbase.h   videocomm.h   
 SOURCES += videoprog.cpp videolight.cpp videocommbase.cpp
 
-HEADERS += videocmd.h   videoresp.h   videocommaudio.h   
-SOURCES += videocmd.cpp videoresp.cpp videocommaudio.cpp 
+HEADERS += videocmd.h   videoresp.h   
+SOURCES += videocmd.cpp videoresp.cpp 
 
 HEADERS += videocommplugins.h vcplugins.h
 SOURCES += videocommplugins.cpp

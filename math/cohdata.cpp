@@ -21,7 +21,6 @@ void CohData::setFrameLine(int n) {
   frameline = n;
 }
 
-
 CohData::CohData() {
   cohest=0;
   psdest=0;
@@ -29,7 +28,6 @@ CohData::CohData() {
   rs3d=0;
   adata=0;
   ddata=0;
-  timing0 = 0;
   valid=false;
 }
 
@@ -43,16 +41,14 @@ CohData::~CohData() {
 void CohData::newROISet(ROISet const *r) {
   roiset = r;
   invalidate();
+  emit newData();
 }
 
 void CohData::newCCDData(class ROIData3Set /*const*/ *dat) {
   /* Conceptually const, but we may be the one to trigger recalculation */
   rs3d = dat;
   invalidate();
-}
-
-void CohData::newTiming(class CCDTiming const *t) {
-  timing0 = t;
+  emit newData();
 }
 
 void CohData::newEPhys(AnalogData const *ad, DigitalData const *dd) {
@@ -60,6 +56,7 @@ void CohData::newEPhys(AnalogData const *ad, DigitalData const *dd) {
   adata = ad;
   ddata = dd;
   invalidate();
+  emit newData();
 }
 
 void CohData::invalidate() {
@@ -81,19 +78,19 @@ QMap<int, double> const &CohData::phases() {
 double CohData::magnitude(int id) {
   if (!valid)
     magnitudes();
-  QMap<int, double>::const_iterator i = coh_mag.find(id);
-  if (i!=coh_mag.end())
-    return *i;
-  return 0;
+  if (coh_mag.contains(id))
+    return coh_mag[id];
+  else
+    return 0;
 }
 
 double CohData::phase(int id) {
   if (!valid)
     phases();
-  QMap<int, double>::const_iterator i = coh_pha.find(id);
-  if (i!=coh_pha.end())
-    return *i;
-  return 0;
+  if (coh_pha.contains(id))
+    return coh_pha[id];
+  else
+    return 0;
 }
 
 bool CohData::validate() {
@@ -103,16 +100,6 @@ bool CohData::validate() {
   coh_mag.clear();
   coh_pha.clear();
 
-  if (timing0)
-    timing = *timing0;
-  else
-    timing.reset();
-
-  if (timing.nframes()<=1) {
-    dbg("cohdata::validate: not enough frames: n=%i",timing.nframes());
-    valid = true; // so we won't repeat this warning inf'ly many times
-    return false;
-  }
   if (!roiset) {
     dbg("cohdata::validate: no roiset");
     valid = true; // so we won't repeat this warning inf'ly many times
@@ -124,58 +111,61 @@ bool CohData::validate() {
     return false;
   }
 
-  refineTiming();
+  recalcTiming();
   recalcReference();
 
   QSet<int> const &ids = roiset->ids();
 
   if (!cohest)
     cohest = new CohEst;
-  
-  double dt_s = timing.dt_ms()/1000;
-  double df_hz = 2./3;
-  dbg("cohdata:recalc: nfr=%i dt=%g df=%g",timing.nframes(),dt_s,df_hz);
-  int N = timing.nframes() - COH_STRIP_START - COH_STRIP_END;
-  TaperID tid(N, dt_s, df_hz);
-  rvec trc; trc.resize(N);
-  if (Taperbank::hasTaper(tid)) {
-    Tapers const &tapers = Taperbank::tapers(tid);
-    for (QSet<int>::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
-      int id = *i;
-      if (rs3d->haveData(id)) {
+
+  rvec trc;
+  foreach (int id, ids) {
+    if (rs3d->haveData(id)) {
+      Timing const &t = timing[rs3d.getCam(id)];
+      double dt_s = t.dt_ms()/1000;
+      double df_hz = 2./3;
+      dbg("cohdata:recalc: nfr=%i dt=%g df=%g",t.nframes(),dt_s,df_hz);
+      int N = t.nframes() - COH_STRIP_START - COH_STRIP_END;
+      TaperID tid(N, dt_s, df_hz);
+      trc.resize(N);
+      if (Taperbank::hasTaper(tid)) {
+	Tapers const &tapers = Taperbank::tapers(tid);
 	double const *src = rs3d->getData(id)->dataRatio();
 	for (int t=0; t<N; t++)
 	  trc[t]=src[t+COH_STRIP_START];
 	cohest->compute(ref, trc, dt_s, df_hz, tapers, fstar_hz);
 	coh_mag[id] = cohest->magnitude[0];
 	coh_pha[id] = cohest->phase[0];
-	dbg("cohdata %i: %4.2f %3.0f",id,coh_mag[id],coh_pha[id]*180/3.14159265);
+	dbg("cohdata %i: %4.2f %3.0f",id,coh_mag[id],coh_pha[id]*180/3.1415);
       } else {
-	dbg("cohdata %i: found no data");
-	coh_mag[id]=0;
-	coh_pha[id]=0;
+	coh_mag[id] = 0;
+	coh_pha[id] = 0;
+	if (!warned.contains(tid.name())) {
+	  warn(QString("Missing tapers '%1'.")
+	       .arg(tid.name())
+	       + QString("Please supply using preptaper('%2') in matlab.")
+	       .arg(tid.name()));
+	  warned.insert(tid.name());
+	}
       }
-    }
-  } else {
-    for (QSet<int>::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
-      int id = *i;
+    } else {    
       coh_mag[id] = 0;
       coh_pha[id] = 0;
     }
-    if (!warned.contains(tid.name())) {
-      warn(QString("Missing tapers '%1'. Please supply using preptaper('%2') in matlab.").arg(tid.name()).arg(tid.name()));
-      warned.insert(tid.name());
-    }
   }
-  
   valid = true;
   return true;
 }
 
-void CohData::refineTiming() {
+void CohData::recalcTiming() {
   if (!ddata)
     return;
 
+  int frameline = Enumerator::find("DIGILINES")
+    ->lookup("Frame" + Connections::leaderCamera())); // or rather, the right one for each camera
+
+  
   uint32_t const *src = ddata->allData();
   int K = ddata->getNumScans();
   uint32_t mask=1; mask<<=frameline;
@@ -357,7 +347,8 @@ void CohData::recalcReference() {
   }    
 }
 
-CohData::CohData(CohData const &other): CohData_(other) {
+#if 0
+CohData::CohData(CohData const &other): CohData_(other), QObject(0) {
   copy(other);
 }
 
@@ -377,6 +368,7 @@ CohData &CohData::operator=(CohData const &other) {
   copy(other);
   return *this;
 }
+#endif
 
 void CohData::setRefDigi(int digiline) {
   refType = refDIGITAL;

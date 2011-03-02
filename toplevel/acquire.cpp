@@ -207,7 +207,9 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
       Globals::coherence->adjustedRange(dat,nser,npar);
       Globals::coherence->newImage(dat,nser,npar,
   				   cams[k]->flipx, cams[k]->flipy);
-      first = false;
+      Globals::coherence->placeImage(Globals::trove->trial()
+				     .ccdPlacement(camname[k]));
+    first = false;
     }
     uint16_t min = 65535;
     uint16_t max = 0;

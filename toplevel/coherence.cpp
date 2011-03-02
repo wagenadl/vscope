@@ -35,8 +35,7 @@ Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
     data->newCCDData(&Globals::trove->roidata());
     owndata = true;
   }
-  connect(data->currentData(), SIGNAL(changedOne(int)), this, SLOT(newData()));
-  connect(data->currentData(), SIGNAL(changedAll()), this, SLOT(newData()));
+  connect(data->currentData(), SIGNAL(newData()), SLOT(updateData()));
 }
 
 Coherence::~Coherence() {
@@ -103,7 +102,7 @@ void Coherence::showEvent(QShowEvent *e) {
     //  }
 }
 
-void Coherence::newData() {
+void Coherence::updateData() {
   dbg("coherence:newdata");
   perhapsRefresh();
 }

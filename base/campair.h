@@ -17,4 +17,8 @@ public:
   }
 };
 
+inline uint qHash(CamPair const &cp) {
+  return qHash(cp.donor) + ~qHash(cp.acceptor);
+}
+
 #endif
