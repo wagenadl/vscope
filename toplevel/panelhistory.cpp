@@ -237,7 +237,7 @@ void PanelHistory::open(QString where, QString what) {
   old = child;
 }
 
-void PanelHistory::doubleClicked(QString id, QString txt) {
+void PanelHistory::doubleClicked(QString id, QString) {
   QString what = itemAt(id);
   //Dbg() << "PanelHistory::doubleClicked("<<id<<","<<txt<<"): " << what;
   QWidget *child = childWidget(what);

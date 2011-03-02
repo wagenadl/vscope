@@ -7,10 +7,10 @@
 class CCDTiming {
 public:
   CCDTiming();
-  void reset();
-  void setRate(double fs_hz);
-  void setFrames(int nframes);
-  void setTiming(double t0_ms, double dt_ms, double duty_pct=100);
+  CCDTiming &reset();
+  CCDTiming &setRate(double fs_hz);
+  CCDTiming &setFrames(int nframes);
+  CCDTiming &setTiming(double t0_ms, double dt_ms, double duty_pct=100);
   int nframes() const { return nframes_; }
   double t0_ms() const { return t0_ms_; }
   double dt_ms() const { return dt_ms_; }

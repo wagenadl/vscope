@@ -19,6 +19,6 @@ public:
   int K;
 };
 
-uint qHash(TaperID const &tid);
+extern uint qHash(TaperID const &tid);
 
 #endif

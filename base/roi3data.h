@@ -63,6 +63,14 @@ public:
   int getRatioNFrames() const;
   double getRatioT0ms() const;
   double getRatioDTms() const;
+  /*:F getRatioNFrames, getRatioT0ms, getRatioDTms
+   *:D Timing information of the ratio trace.
+   *:D If there are two cameras, then the ratio trace is the ratio of donor
+       over acceptor, or actually the dF/F of the donor minusthe dF/F of the
+       acceptor. If there is only one camera, then the ratio trace is just the
+       dF/F of that camera.
+   *:N There is no sign inversion even if the one camera is the acceptor.
+   */
   int getAcceptorNFrames() const;
   double getAcceptorT0ms() const;
   double getAcceptorDTms() const;

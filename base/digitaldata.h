@@ -99,6 +99,7 @@ public:
   /*:F getMask, clearMask, addLine
    *:N The mask is not currently used by either DigitalIn or DigitalOut.
   */
+  bool hasLine(uint32_t line) const;
 };
 
 #endif

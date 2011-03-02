@@ -81,7 +81,7 @@ void CohGraph::paintEvent(QPaintEvent *e) {
   }
   
   p.setPen(QColor("#000000"));
-  p.drawText(5,12,QString("f* = %1 Hz").arg(data->getFStarHz(),0,'f',2));
+  p.drawText(5,12,QString("f* = %1 Hz").arg(data->getTypicalFStarHz(),0,'f',2));
 }
 
 void CohGraph::showEvent(QShowEvent *e) {

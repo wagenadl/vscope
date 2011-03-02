@@ -8,8 +8,10 @@
 #include <math/cvec.h>
 #include <QSet>
 #include <QMap>
+#include <QHash>
 #include <base/ccdtiming.h>
 #include <base/campair.h>
+#include <math/taperid.h>
 
 class CohData: public QObject {
   Q_OBJECT;
@@ -22,13 +24,17 @@ private:
   CohData(CohData const &other);
   CohData &operator=(CohData const &other);
 public slots:
+  void setFrameLine(QString camera, int line);
   void newROISet(class ROISet const *roiset);
-  void newEPhys(class AnalogData const *ad, class DigitalData const *dd);
+  void newEPhys(class AnalogData const *ad,
+		class DigitalData const *dd,
+		double fs_hz);
   void newCCDData(class ROIData3Set *rs3d);
   void setRefTrace(int achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
-  double getFStarHz() const { return fstar_hz; }
+  double getFStarHz(int id) const;
+  double getTypicalFStarHz() const;
   QMap<int, double> const &magnitudes(); // this will validate if needed
   QMap<int, double> const &phases();
   double magnitude(int id); // this will validate if needed
@@ -40,7 +46,7 @@ signals:
 private:
   bool validate();
   void recalcReference();
-  void refineTiming();
+  void recalcTiming();
 private:
   void copy(CohData const &other);
 private:
@@ -49,16 +55,19 @@ private:
   class AnalogData const *adata; // we do not own this
   class DigitalData const *ddata; // we do not own this
 private:
+  double fs_hz;
   int ref_chn; // doubles as ref_digiline
   double ref_hz; // for refFIXED mode
   QMap<int, double> coh_mag;
   QMap<int, double> coh_pha;
-  QMap<CamPair, CCDTiming> timing;
+  QHash<CamPair, CCDTiming> timing;
   class CohEst *cohest;
   class PSDEst *psdest;
-  QMap<CamPair, rvec> refs;
-  double fstar_hz;
+  QHash<CamPair, TaperID> taperIDs;
+  QHash<CamPair, rvec> refs;
+  QHash<CamPair, double> fstar_hz;
   QSet<QString> warned; // set of missing taper ids that we have warned about
+  QHash<QString, int> digilines;
   bool valid;
 };
 

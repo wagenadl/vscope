@@ -5,6 +5,7 @@
 #define CAMPAIR_H
 
 #include <QString>
+#include <QHash>
 
 class CamPair {
 public:

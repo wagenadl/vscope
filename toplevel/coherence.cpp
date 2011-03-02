@@ -24,6 +24,7 @@
 #include <math/cohdata.h>
 #include <acq/datatrove.h>
 #include <base/roidata3set.h>
+#include <xml/connections.h>
 
 Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
   if (dat) {
@@ -33,6 +34,11 @@ Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
     data = new CohData();
     data->newROISet(&Globals::trove->rois());
     data->newCCDData(&Globals::trove->roidata());
+    Enumerator const *digilines = Enumerator::find("DIGILINES");
+    foreach (QString cam, Connections::allCams()) {
+      if (digilines->has("Frame"+cam))
+	data->setFrameLine(cam, digilines->lookup("Frame"+cam));
+    }
     owndata = true;
   }
   connect(data->currentData(), SIGNAL(newData()), SLOT(updateData()));
@@ -88,9 +94,10 @@ void Coherence::paintEvent(QPaintEvent *e) {
   }
 
   p.setPen(QColor("#000000"));
-  p.drawText(5,10,QString("f* = %1 Hz").arg(data->getFStarHz(),0,'f',2));
+  double fstar = data->getTypicalFStarHz();
+  p.drawText(5,10,QString("f* = %1 Hz").arg(fstar,0,'f',2));
   p.setPen(QColor("#ffffff"));
-  p.drawText(4,11,QString("f* = %1 Hz").arg(data->getFStarHz(),0,'f',2));
+  p.drawText(4,11,QString("f* = %1 Hz").arg(fstar,0,'f',2));
   
 }
 

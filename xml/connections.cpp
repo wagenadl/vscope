@@ -336,6 +336,7 @@ namespace Connections {
       cp.donor = cammap[id]->partnerid;
       return cp;
     }
+    return cp;
   }
    
   

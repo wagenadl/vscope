@@ -142,7 +142,11 @@ void DigitalData::addLine(uint32_t line) {
   cmask |= one<<line;
 }
 
-
+bool DigitalData::hasLine(uint32_t line) const {
+  uint32_t one = 1;
+  uint32_t msk = one<<line;
+  return (cmask & msk) != 0;
+}
 
 DigitalData::DigitalData(DigitalData const &other):
   DigitalData_(other) {
