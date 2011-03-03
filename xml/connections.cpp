@@ -71,6 +71,7 @@ namespace Connections {
       e.setAttribute("role", cam.isdonor ? "donor"
 		     : cam.isacceptor ? "acceptor"
 		     : "");
+      cam.placement.write(e);
     }
   }
 
@@ -154,6 +155,11 @@ namespace Connections {
       QString role = e.attribute("role");
       cam->isdonor = role=="donor";
       cam->isacceptor = role=="acceptor";
+      QDomElement t = e.firstChildElement("transform");
+      if (t.isNull())
+	cam->placement = Transform();
+      else
+	cam->placement.read(t);
     }
   }
 
@@ -251,6 +257,22 @@ namespace Connections {
   		  "There is no camera named '" + id + "'","findCam");
   }
 
+  CamPair camPair(QString id) {
+    CamPair p;
+    CamCon const &me = findCam(id);
+    if (me.partnerid.isEmpty()) {
+      p.donor = id;
+      p.acceptor = "";
+    } else if (me.isdonor) {
+      p.donor = id;
+      p.acceptor = me.partnerid;
+    } else {
+      p.donor = me.partnerid;
+      p.acceptor = id;
+    }
+    return p;
+  }
+
   void markCameraExists(QString id, bool exists) {
     if (cammap.contains(id))
       cammap[id]->exists = exists;
@@ -284,7 +306,39 @@ namespace Connections {
     foreach (QString id, camorder.values()) 
       return id;
     return "";
-  }	
+  }
+
+  CamPair leaderCamPair() {
+    CamPair cp;
+    foreach (QString id, camorder.values()) {
+      if (cammap[id]->isdonor && cammap[id]->exists) {
+	cp.donor = id;
+	cp.acceptor = cammap[id]->partnerid;
+	return cp;
+      }
+    }
+    foreach (QString id, camorder.values()) {
+      if (cammap[id]->exists) {
+	cp.acceptor = id;
+	cp.donor = cammap[id]->partnerid;
+	return cp;
+      }
+    }
+    foreach (QString id, camorder.values()) {
+      if (cammap[id]->isdonor) {
+	cp.donor = id;
+	cp.acceptor = cammap[id]->partnerid;
+	return cp;
+      }
+    }
+    foreach (QString id, camorder.values()) {
+      cp.acceptor = id;
+      cp.donor = cammap[id]->partnerid;
+      return cp;
+    }
+    return cp;
+  }
+   
   
   DigiChannel const *findpDig(QString id) {
     if (digimap.contains(id))

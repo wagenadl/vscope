@@ -40,10 +40,12 @@ class LineGraph: public QFrame {
    *:D Set the limits for the x-axis.
    *:A If nextAuto is set to true, we will pretend that the given range
        was the result of autoSetXRange.
+   *:N If xx is an empty range, this calls autoSetXRange.
    */
   void setYRange(Range const &yy);
   /*:F setYRange
    *:D Set the limits for the y-axis.
+   *:N If yy is an empty range, this calls autoSetYRange.
    */
   Range getXRange() const;
   /*:F getXRange
@@ -244,7 +246,35 @@ class LineGraph: public QFrame {
    */
   void drawLines();
   void drawPoly();
- protected:
+public:
+  Range computeXRange() const;
+  /*:F computeXRange
+   *:D Computes a suitable range for the x-axis given the current data.
+   *:N Returns an empty Range if there are no traces.
+   */
+  Range computeYRange(double frc=0) const;
+  /*:F computeYRange
+   *:D Computes a suitable range for the y-axis given the current data.
+   *:A frc: fraction of points that are allowed to end up off-graph.
+   *:N Returns an empty Range if there are no traces.
+   */
+  int dataToScreenX(double x) const;
+  /*:F dataToScreenX
+   *:D Converts data x-coordinates to screen pixels.
+   */
+  int dataToScreenY(double y) const;
+  /*:F dataToScreenY
+   *:D Converts data y-coordinates to screen pixels.
+   */
+  double screenToDataX(int x) const;
+  /*:F screenToDataX
+   *:D Converts screen pixel x-coordinates to data space.
+   */
+  double screenToDataY(int y) const;
+  /*:F screenToDataY
+   *:D Converts screen pixel y-coordinates to data space.
+   */
+protected:
   virtual void paintEvent(class QPaintEvent *);
   /*:F paintEvent
    *:D Redraws the entire widget.
@@ -272,33 +302,6 @@ class LineGraph: public QFrame {
   void perhapsRepaint();
   /*:F perhapsRepaint
    *:D Redraws the widget only if autoRepaint is set.
-   */
-  Range computeXRange() const;
-  /*:F computeXRange
-   *:D Computes a suitable range for the x-axis given the current data.
-   *:N Returns an empty Range if there are no traces.
-   */
-  Range computeYRange(double frc=0) const;
-  /*:F computeYRange
-   *:D Computes a suitable range for the y-axis given the current data.
-   *:A frc: fraction of points that are allowed to end up off-graph.
-   *:N Returns an empty Range if there are no traces.
-   */
-  int dataToScreenX(double x) const;
-  /*:F dataToScreenX
-   *:D Converts data x-coordinates to screen pixels.
-   */
-  int dataToScreenY(double y) const;
-  /*:F dataToScreenY
-   *:D Converts data y-coordinates to screen pixels.
-   */
-  double screenToDataX(int x) const;
-  /*:F screenToDataX
-   *:D Converts screen pixel x-coordinates to data space.
-   */
-  double screenToDataY(int y) const;
-  /*:F screenToDataY
-   *:D Converts screen pixel y-coordinates to data space.
    */
   static double reasonableTick(double dx, int fulpix);
   /*:F reasonableTick

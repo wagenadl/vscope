@@ -58,6 +58,12 @@ public:
   /*:F nPixelsSoFar
    *:D Returns number of pixels transferred so far by the given camera.
    */
+  Transform placement(QString camid) const;
+  /*:F placement
+   *:D Returns a transformation matrix that says where in canvas space
+       the image of a given camera lies. This is only valid after prepare().
+   *:N Returns a unit Transform if the camera is not in the set of cameras.
+   */
 private:
   QVector<QString> camids;
   QVector<Connections::CamCon const *> caminfo;

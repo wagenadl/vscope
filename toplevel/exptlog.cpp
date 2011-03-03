@@ -32,6 +32,11 @@ ExptLog::~ExptLog() {
   addNote("VScope closing");
 }
 
+QString ExptLog::trialID() {
+  int t = Globals::ptree->find("acquisition/_trialno").toInt();
+  return QString("%1").arg(t,int(3),int(10),QChar('0'));
+}
+
 void ExptLog::prepareUserNote() {
   if (!noteEditor) {
     noteEditor = new TextEntry(Globals::mainwindow);
@@ -147,15 +152,14 @@ void ExptLog::newExptName() {
 	  + Globals::ptree->find("acquisition/_exptname").toString());
 }
 
-void ExptLog::markSnap(QString trialno) {
+void ExptLog::markSnap() {
   activate();
-  addNote(QString("Trial %1: %2").arg(trialno).arg("Snapshot"));
+  addNote(QString("Trial %1: %2").arg(trialID()).arg("Snapshot"));
   suppressFurtherROI = false;
 }
   
 
-void ExptLog::markTrial(QString trialno) {
-  Dbg() <<"markTrial";
+void ExptLog::markTrial() {
   activate();
 
   bool hasvsd =  Globals::ptree->find("acqCCD/enable").toBool();
@@ -189,13 +193,13 @@ void ExptLog::markTrial(QString trialno) {
   } else if (hasvid) {
     typ += " with video stimuli";
   }
-  addNote(QString("Trial %1: %2").arg(trialno).arg(typ));
+  addNote(QString("Trial %1: %2").arg(trialID()).arg(typ));
   suppressFurtherROI = false;
 }
 
-void ExptLog::markContEphys(QString trialno) {
+void ExptLog::markContEphys() {
   activate();
-  addNote("Start of continuous e'phys., recording as Trial " + trialno);
+  addNote("Start of continuous e'phys., recording as Trial " + trialID());
 }
 
 void ExptLog::markContEphysEnds() {

@@ -2,7 +2,7 @@
 
 #include "vsdallgraph.h"
 #include <base/roi3data.h>
-#include <base/roiset3data.h>
+#include <base/roidata3set.h>
 #include <base/roidata.h>
 #include <base/ccddata.h>
 #include <base/dbg.h>
@@ -12,25 +12,30 @@
 
 const double TRACE_DY = 0.2; // That's the spacing between traces in percents
 
-VSDAllGraph::VSDAllGraph(ROISet3Data *data, QWidget *parent):
+VSDAllGraph::VSDAllGraph(ROIData3Set *data, QWidget *parent):
   LineGraph(parent), data(data) {
   autoSetXRange();
+  connect(data, SIGNAL(changedOne(int)), SLOT(updateROI(int)));
+  connect(data, SIGNAL(changedAll()), SLOT(updateROIs()));
+  connect(data, SIGNAL(changedAll()), SLOT(updateData()));
 }
 
 VSDAllGraph::~VSDAllGraph() {
-  for (QMap<int, TraceInfo *>::iterator i=traces.begin();
-       i!=traces.end(); ++i) 
-    delete i.value();
+  foreach (TraceInfo *tr, traces.values())
+    delete tr;
 }
 
-void VSDAllGraph::setData(CCDData const *donor,
-			  CCDData const *acceptor) {
-  data->setData(donor,acceptor);
-
+void VSDAllGraph::updateData() {
+  Dbg() << "VSDAllGraph("<<this<<"): updateData() data="<<data;
+  Range tt;
+  if (!data)
+    return;
   if (isXRangeAuto())
-    setXRange(Range(data->getT0_ms()/1e3,
-		    data->getT0_ms()/1e3
-		    +data->getDT_ms()/1e3*donor->getNFrames()),true);
+    autoSetXRange();
+  //    Range tt;
+  //    foreach (int id, data->allIDs()) 
+  //      tt.expand(data->getData(id)->timeRange());
+  //    setXRange(tt, true);
   update();
 }
 
@@ -42,70 +47,52 @@ bool VSDAllGraph::haveData(int id) const {
   return data->haveData(id);
 }
 
-void VSDAllGraph::setDebleach(ROIData::Debleach d) {
-  data->setDebleach(d);
-  update();
-}
-
-void VSDAllGraph::setROI(int id, XYRRA el) {
-  data->setROI(id, el);
-  setROIbase(id);
-  update();
-}
-
-void VSDAllGraph::setROI(int id, class PolyBlob const *pb) {
-  data->setROI(id, pb);
-  setROIbase(id);
-  update();
-}
-
-void VSDAllGraph::setROIbase(int id) {
-  if (!traces.contains(id)) {
-    traces[id] = new TraceInfo(TraceInfo::dataDouble);
-    QString sid = num2az(id);
-    addTrace(sid,traces[id]);
-    setTraceLabel(sid,sid);
-    setTracePen(sid,QColor("#000000"));
-    newOffsets();
-  }
-}
-
-void VSDAllGraph::removeROI(int id) {
-  removeTrace(num2az(id));
-  if (traces.contains(id)) {
-    delete traces[id];
-    traces.remove(id);
-  }
-  data->removeROI(id);
+void VSDAllGraph::updateROIs() {
+  Dbg() << "VSDAllGraph("<<this<<"): updateROIs()";
+  QSet<int> ids = QSet<int>::fromList(data->allIDs());
+  ids += QSet<int>::fromList(traces.keys());
+  foreach (int id, ids) 
+    updateROIcore(id);
   newOffsets();
   update();
 }
 
-void VSDAllGraph::clearROIs() {
-  for (QMap<int,TraceInfo *>::iterator i=traces.begin();
-       i!=traces.end(); ++i) {
-    int id = i.key();
+void VSDAllGraph::updateROIcore(int id) {
+  bool exists = data->haveData(id);
+  bool existed = traces.contains(id);
+  if (exists && !existed) {
+    traces[id] = new TraceInfo();
+    QString sid = num2az(id);
+    addTrace(sid,traces[id]);
+    setTraceLabel(sid,sid);
+    setTracePen(sid,QColor("#000000"));
+  } else if (existed && !exists) {
     removeTrace(num2az(id));
-    delete i.value();
+    delete traces[id];
+    traces.remove(id);
   }
-  data->clearROIs();
-  traces.clear();
+}  
+
+void VSDAllGraph::updateROI(int id) {
+  Dbg() << "VSDAllGraph("<<this<<"): updateROI("<<id<<")";
+  updateROIcore(id);
+  newOffsets();
   update();
 }
 
 void VSDAllGraph::newOffsets() {
   double offset=TRACE_DY*traces.size();
-  
-  for (QMap<int,TraceInfo*>::iterator i=traces.begin(); i!=traces.end(); ++i)
-    i.value()->setOffset(offset-=TRACE_DY);
+  foreach (TraceInfo *tr, traces.values()) 
+    tr->setOffset(offset-=TRACE_DY);
 }
 
-void VSDAllGraph::selectROI(int id) {
-  if (id!=selectedId) {
+void VSDAllGraph::updateSelection(int id) {
+  Dbg() << "VSDAllGraph("<<this<<"): updateSelection("<<id<<") was:"<<selectedId;
+  if (selectedId)
     setTracePen(num2az(selectedId),QColor("#000000"));
-    selectedId = id;
+  selectedId = traces.contains(id) ? id : 0;
+  if (selectedId)
     setTracePen(num2az(selectedId),QColor("#ff0000"));
-  }
   update();
 }
 
@@ -113,21 +100,14 @@ void VSDAllGraph::paintEvent(class QPaintEvent *e) {
   bool autoRP = getAutoRepaint();
   if (autoRP)
     setAutoRepaint(false);
-  // Ensure that our data are up-to-date
-  TraceInfo::DataPtr p;
-  for (QMap<int, TraceInfo *>::iterator tri=traces.begin();
-       tri!=traces.end(); ++tri) {
-    int id = tri.key();
-    TraceInfo *trc = tri.value();
-    ROI3Data *dat = data->getData(id);
-    if (!dat)
-      continue;
-    p.dp_double = dat->dataRatio();
-    trc->setData(data->getT0_ms()/1e3, data->getDT_ms()/1e3,
-		 p, dat->getNFrames());
 
-    //    dbg("VSDAllGraph::paintEvent. t0=%g dt=%g n=%i",
-    //	t0_ms,dt_ms,i.value()->getNFrames());
+  foreach (int id, traces.keys()) {
+    TraceInfo *trc = traces[id];
+    if (!data->haveData(id))
+      continue; // this should not happen
+    ROI3Data *dat = data->getData(id);
+    trc->setData(dat->getRatioT0ms()/1e3, dat->getRatioDTms()/1e3,
+		 DataPtr(dat->dataRatio()), dat->getRatioNFrames());
   }
   
   // Following is not really great, I think it may mess up zoom, but

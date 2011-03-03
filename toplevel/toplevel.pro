@@ -5,8 +5,8 @@ TEMPLATE = app
 TARGET = ../vscope.bin
 include(../config.pro)
 
-HEADERS += vscopegui.h gt_slots.h version.h
-SOURCES += vscopegui.cpp main.cpp
+HEADERS += vscopegui.h gt_slots.h version.h globals.h
+SOURCES += vscopegui.cpp main.cpp globals.cpp
 SOURCES += gt_slots.cpp gt_openclose.cpp gt_selected.cpp 
 SOURCES += gt_clicked.cpp gt_paramchanged.cpp
 SOURCES += checkdaq.cpp checkcam.cpp checkmea.cpp checkvid.cpp
@@ -16,8 +16,6 @@ HEADERS += mgauto.h   vsdtraces.h   coherence.h   cohgraph.h
 SOURCES += mgauto.cpp vsdtraces.cpp coherence.cpp cohgraph.cpp
 HEADERS += savedsettings.h   exptlog.h
 SOURCES += savedsettings.cpp exptlog.cpp
-HEADERS += roisetguard.h
-SOURCES += roisetguard.cpp
 HEADERS += panelhistory.h
 SOURCES += panelhistory.cpp
 HEADERS += scripts.h

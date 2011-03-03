@@ -18,10 +18,12 @@ HEADERS += base26.h \
  	   cplx.h \
 	ccddata.h roidata.h roi3data.h \
 	polyblob.h blobroi.h \
-	roiset.h roiset3data.h \
+	roiset.h roidata3set.h \
 	analogdata.h digitaldata.h \
 	xml.h unitqty.h xyabc.h \
-        ccdtiming.h
+        ccdtiming.h \
+        roicoords.h transform.h campair.h \
+        ptrguard.h
 	   
 SOURCES += base26.cpp \
            dbg.cpp \
@@ -33,10 +35,11 @@ SOURCES += base26.cpp \
 	   cplx.cpp \
 	ccddata.cpp roidata.cpp roi3data.cpp \
 	polyblob.cpp blobroi.cpp \
-	roiset.cpp roiset3data.cpp \
+	roiset.cpp roidata3set.cpp \
 	analogdata.cpp digitaldata.cpp \
 	xml.cpp unitqty.cpp xyabc.cpp \
-        ccdtiming.cpp memalloc.cpp
+        ccdtiming.cpp memalloc.cpp \
+        roicoords.cpp transform.cpp
 
 
 

@@ -6,6 +6,8 @@
 #include <base/numbers.h>
 #include <base/solvep.h>
 #include <base/dbg.h>
+#include <base/transform.h>
+#include <base/xyabc.h>
 
 #include <QPainter>
 #include <QPolygonF>
@@ -24,6 +26,13 @@ inline double ratan2(double y, double x) { return atan2(-y,x); }
 
 XYRRA::XYRRA(QDomElement doc) {
   read(doc);
+}
+
+XYRRA::XYRRA(QPointF xy0, double R, double r, double a): R(R), r(r), a(a) {
+  x0 = xy0.x();
+  y0 = xy0.y();
+  if (r<=0)
+    r=R;
 }
 
 void XYRRA::read(QDomElement doc) {
@@ -233,4 +242,23 @@ bool XYRRA::operator==(XYRRA const &other) {
   return x0==other.x0 && y0==other.y0
     && R==other.R && r==other.r
     && a==other.a;
+}
+
+XYRRA &XYRRA::transform(Transform const &t) {
+  x0 = t.mapx(x0);
+  y0 = t.mapy(y0);
+  XYABC abc(*this);
+  double ax = t.mapdx(1);
+  double ay = t.mapdy(1);
+  abc.a /= ax*ax;
+  abc.b /= ay*ay;
+  abc.c /= ax*ay;
+  *this = abc.toXYRRA();  
+  return *this;
+}
+
+XYRRA XYRRA::transformed(Transform const &t) const {
+  XYRRA x = *this;
+  x.transform(t);
+  return x;
 }

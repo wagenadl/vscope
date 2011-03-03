@@ -3,14 +3,18 @@
 #include "ccddata.h"
 #include <base/exception.h>
 #include <base/memalloc.h>
-CCDData::CCDData(int serpix, int parpix, int nframes):
-  serpix(serpix),
-  parpix(parpix),
-  nframes(nframes) {
+#include <base/dbg.h>
+
+CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
+  serpix = serpix_;
+  parpix = parpix_;
+  nframes = nframes_;
   framepix = serpix*parpix;
   allocpix = framepix*nframes;
   data = 0;
   data = memalloc<uint16_t>(allocpix, "CCDData:: constructor");
+  t0_ms = 0;
+  dt_ms = 0; // default value: meaningless on purpose
 }
 
 bool CCDData::reshape(int ser, int par, int nfr, bool free) {
@@ -28,9 +32,6 @@ bool CCDData::reshape(int ser, int par, int nfr, bool free) {
   nframes = nfr;
   return realloc;
 }
-
-    
-      
 
 CCDData::~CCDData() {
   if (data)
@@ -77,4 +78,10 @@ CCDData &CCDData::operator=(CCDData const &other) {
   data = 0;
   copy(other);
   return *this;
+}
+
+void CCDData::setDataToCanvas(Transform const &t0) {
+  t = t0;
+  //  dbg("CCDData(%p)::setDataToCanvas(%g,%g,%g,%g)",this,
+  //      t.mapdx(1),t.mapdy(1),t.mapx(0),t.mapy(0));
 }

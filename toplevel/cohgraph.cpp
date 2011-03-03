@@ -16,6 +16,7 @@
 #include <base/analogdata.h>
 #include <base/digitaldata.h>
 #include <base/roi3data.h>
+#include <base/roidata3set.h>
 #include <math/taperbank.h>
 #include <base/dbg.h>
 #include <xml/paramtree.h>
@@ -23,18 +24,10 @@
 #include <math/cohdata.h>
 #include <acq/datatrove.h>
 
-CohGraph::CohGraph(VSDTraces *s, CohData *dat, QWidget *p):
-  RadialGraph(p), source(s) {
-  if (dat) {
-    data = dat;
-    owndata = false;
-  } else {
-    data = new CohData();
-    data->newROISet(source->getROIs());
-    data->newCCDData(&Globals::trove->roidata());
-    owndata = true;
-  }
-  connect(source,SIGNAL(dataChanged()), this,SLOT(newData()));
+CohGraph::CohGraph(CohData *dat, QWidget *p): RadialGraph(p) {
+  data = dat;
+  owndata = false;
+  connect(data, SIGNAL(newData()), this, SLOT(updateData()));
 }
 
 CohGraph::~CohGraph() {
@@ -45,15 +38,15 @@ CohGraph::~CohGraph() {
 void CohGraph::paintEvent(QPaintEvent *e) {
   RadialGraph::paintEvent(e);
   dbg("cohgraph::paintevent");
-  ROISet const *roiset = source->getROIs();
-  if (!roiset || !data)
+  if (!data)
+    return;
+  ROISet const *roiset = data->currentData()->getROISet();
+  if (!roiset)
     return;
 
   QPainter p(this);
-  QSet<int> const &ids = roiset->ids();
-  for (QSet<int>::const_iterator i=ids.begin(); i!=ids.end(); i++) {
-    int id = *i;
-    if (id<0)
+  foreach (int id, roiset->ids()) {
+    if (id<=0)
       continue;
     double pha = data->phase(id);
     double mag = data->magnitude(id);
@@ -80,7 +73,7 @@ void CohGraph::paintEvent(QPaintEvent *e) {
   }
   
   p.setPen(QColor("#000000"));
-  p.drawText(5,12,QString("f* = %1 Hz").arg(data->getFStarHz(),0,'f',2));
+  p.drawText(5,12,QString("f* = %1 Hz").arg(data->getTypicalFStarHz(),0,'f',2));
 }
 
 void CohGraph::showEvent(QShowEvent *e) {
@@ -89,13 +82,7 @@ void CohGraph::showEvent(QShowEvent *e) {
 }
 
 
-void CohGraph::newData() {
-  dbg("cohgraph:newdata");
-  if (data) {
-    data->newTiming(source->getTiming());
-    data->newEPhys(source->getAnalog(),source->getDigital());
-    data->newCCDData(&Globals::trove->roidata());
-  }
+void CohGraph::updateData() {
   perhapsRefresh();
 }
 

@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include <base/memalloc.h>
 
-#define DD_SECRETCODE 0xdddd0000
-
 DigitalData::DigitalData(int nscans_) throw(Exception) {
   nallocated = nscans = nscans_;
   data = 0;
@@ -36,33 +34,6 @@ DigitalData::~DigitalData() {
    track of chunk lengths.
 */
 
-DigitalData::DigitalData(FILE *in) throw(Exception) {
-  nscans=0;
-  data=0;
-  read(in);
-}
-
-void DigitalData::read(FILE *fd) throw(Exception) {
-  uint32_t code;
-  int32_t newscans;
-  if (fread(&code,4,1,fd)!=1)
-    throw SysExc("DigitalData","File read error");
-  if (code != DD_SECRETCODE)
-    throw Exception("DigitalData","Inappropriate header marker");
-
-  if (fread(&newscans,4,1,fd)!=1)
-    throw SysExc("DigitalData", "File read error");
-  if (newscans<0)
-    throw Exception("DigitalData", "Inappropriate scan count");
-  
-  if (newscans!=nscans)
-    reshape(newscans);
-
-  if (fread(data,4,nscans,fd) != (unsigned int)nscans)
-    throw SysExc("DigitalData", "File read error");
-}
-
-
 void DigitalData::setNumScans(int nscans1) {
   if (nscans1>nallocated)
     throw Exception("DigitalData","Noncredible number of scans","setNumScans");
@@ -81,18 +52,6 @@ bool DigitalData::reshape(int nscans1, bool free) {
   }
   nscans = nscans1;
   return r;
-}
-
-
-int DigitalData::write(FILE *out) throw(Exception) {
-  uint32_t code = DD_SECRETCODE;
-  if (fwrite(&code,4,1,out) != 1)
-    throw SysExc("DigitalData", "File header write error");
-  if (fwrite(&nscans,4,1,out) != 1)
-    throw SysExc("DigitalData", "File header write error");
-  if (int32_t(fwrite(data,4,nscans,out)) != nscans)
-    throw SysExc("DigitalData", "File data write error");
-  return 8 + 4*nscans;
 }
 
 void DigitalData::writeUInt32(QString ofn) throw(Exception) {
@@ -129,7 +88,7 @@ void DigitalData::readUInt32(QString ifn) throw(Exception) {
     fclose(ifd);
     throw SysExc("DigitalData::readUInt32: Cannot read '" + ifn + "'");
   }
-
+  cmask = ~0;
   fclose(ifd);
 }
 
@@ -142,7 +101,11 @@ void DigitalData::addLine(uint32_t line) {
   cmask |= one<<line;
 }
 
-
+bool DigitalData::hasLine(uint32_t line) const {
+  uint32_t one = 1;
+  uint32_t msk = one<<line;
+  return (cmask & msk) != 0;
+}
 
 DigitalData::DigitalData(DigitalData const &other):
   DigitalData_(other) {

@@ -5,37 +5,19 @@
 #include <base/dbg.h>
 #include <xml/connections.h>
 #include <gfx/colors.h>
+#include <base/roidata3set.h>
 
-VSDGraph::VSDGraph(QWidget *parent): LineGraph(parent) {
+VSDGraph::VSDGraph(ROIData3Set *rs3d, QWidget *parent): LineGraph(parent) {
+  data = rs3d;
   trcDonor = trcAcceptor = trcRatio = 0;
-
-  QString id_donor = Connections::leaderCamera();
-  QString id_acceptor = Connections::findCam(id_donor).partnerid;
-  bool has_partner = !id_acceptor.isEmpty();
-
-  Dbg() << "VSDGraph: id_donor="<<id_donor;
-  Dbg() << "VSDGraph: id_acceptor="<<id_acceptor;
-  
-  trcDonor = new TraceInfo(TraceInfo::dataDouble);
-  
-  addTrace(id_donor,trcDonor);
-  setTraceLabel(id_donor,id_donor);
-  setTracePen(id_donor, Colors::find("CCD"+id_donor,"black"));
-
-  if (has_partner) {
-    trcAcceptor = new TraceInfo(TraceInfo::dataDouble);
-    addTrace(id_acceptor,trcAcceptor);
-    setTraceLabel(id_acceptor,id_acceptor);
-    setTracePen(id_acceptor,Colors::find("CCD"+id_acceptor,"black"));
-    
-    trcRatio = new TraceInfo(TraceInfo::dataDouble);
-    addTrace("rat",trcRatio);
-    setTraceLabel("rat","Ratio");
-    setTracePen("rat",QColor("#000000")); // black
-  }
-  
+  selid = 0;
+  trcDonor = new TraceInfo();
+  trcAcceptor = new TraceInfo();
+  trcRatio = new TraceInfo();
   autoSetXRange();
-  //  setAutoRepaint(false);
+
+  connect(data, SIGNAL(changedOne(int)), SLOT(updateROI(int)));
+  connect(data, SIGNAL(changedAll()), SLOT(updateROIs()));
 }
 
 VSDGraph::~VSDGraph() {
@@ -48,50 +30,88 @@ VSDGraph::~VSDGraph() {
     delete trcDonor;
 }
 
-void VSDGraph::setROI(XYRRA el) {
-  data.setROI(el);
-  update();
+void VSDGraph::updateROI(int id) {
+  //Dbg() << "VSDGraph("<<this<<"): updateROI("<<id<<")"; 
+  if (id==selid)
+    updateROIs();
 }
 
-void VSDGraph::setROI(class PolyBlob const *pb) {
-  data.setROI(pb);
-  update();
+void VSDGraph::updateROIs() {
+  //Dbg() << "VSDGraph("<<this<<"): updateROIs()";
+  if (data->haveData(selid)) {
+    if (isXRangeAuto()) {
+      //Dbg() << " autoranging";
+      setXRange(data->getData(selid)->timeRange(), true);
+    }
+    update();
+  }
 }
 
-void VSDGraph::setData(CCDData const *donor,
-		       CCDData const *acceptor) {
-  data.setData(donor, acceptor);
-  t0_ms = donor ? donor->getT0() : 0;
-  dt_ms = donor ? donor->getDT() : 1;
-  if (isXRangeAuto())
-    setXRange(Range(t0_ms/1e3,t0_ms/1e3+dt_ms/1e3*data.getNFrames()),true);
-  update();
-}
-
-void VSDGraph::setDebleach(ROIData::Debleach d) {
-  data.setDebleach(d);
-  update();
-}
+void VSDGraph::updateSelection(int id) {
+  //Dbg() << "VSDGraph("<<this<<"): updateSelection("<<id<<") was:"<<selid;
+  selid = id;
+  if (data->haveData(selid)) {
+    CamPair const &cams = data->getCam(selid);
+    ROI3Data *d3 = data->getData(selid);
+    bool plotDonor = d3->getDonorNFrames();
+    bool plotAcceptor = d3->getAcceptorNFrames();
+    bool plotRatio = d3->getRatioNFrames() && plotDonor && plotAcceptor;
+    if (plotDonor) {
+      addTrace("donor", trcDonor);
+      setTraceLabel("donor", cams.donor);
+      setTracePen("donor", Colors::find("CCD"+cams.donor, "blue"));
+    } else {
+      removeTrace("donor");
+    }
+    if (plotAcceptor) {
+      addTrace("acceptor", trcAcceptor);
+      setTraceLabel("acceptor", cams.acceptor);
+      setTracePen("acceptor", Colors::find("CCD"+cams.acceptor, "red"));
+    } else {
+      removeTrace("acceptor");
+    }
+    if (plotRatio) {
+      addTrace("ratio", trcRatio);
+      setTraceLabel("ratio", "Ratio");
+      setTracePen("ratio", QColor("black"));
+    } else {
+      removeTrace("ratio");
+    }
+  } else {
+    removeTrace("donor");
+    removeTrace("acceptor");
+    removeTrace("ratio");
+  }
+  updateROIs();
+}  
 
 void VSDGraph::paintEvent(class QPaintEvent *e) {
   try {
     bool autoRP = getAutoRepaint();
     if (autoRP)
       setAutoRepaint(false);
-    // Ensure that our data are up-to-date
-    TraceInfo::DataPtr p;
-    p.dp_double = data.dataDonor();
-    if (trcDonor)
-      trcDonor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-    p.dp_double = data.dataAcceptor();
-    if (trcAcceptor)
-      trcAcceptor->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-    p.dp_double = (data.dataDonor() && data.dataAcceptor())
-      ? data.dataRatio() : 0;
-    if (trcRatio)
-      trcRatio->setData(t0_ms/1e3, dt_ms/1e3, p, data.getNFrames());
-    
-    dbg("VSDGraph::paintEvent. t0=%g dt=%g n=%i",t0_ms,dt_ms,data.getNFrames());
+
+    if (data->haveData(selid)) {
+      ROI3Data *d3 = data->getData(selid);
+      bool plotDonor = d3->getDonorNFrames();
+      bool plotAcceptor = d3->getAcceptorNFrames();
+      bool plotRatio = d3->getRatioNFrames() && plotDonor && plotAcceptor;
+      if (plotDonor)
+	trcDonor->setData(d3->getDonorT0ms()/1e3,
+			  d3->getDonorDTms()/1e3,
+			  DataPtr(d3->dataDonor()),
+			  d3->getDonorNFrames());
+      if (plotAcceptor)
+	trcAcceptor->setData(d3->getAcceptorT0ms()/1e3,
+			     d3->getAcceptorDTms()/1e3,
+			     DataPtr(d3->dataAcceptor()),
+			     d3->getAcceptorNFrames());
+      if (plotRatio)
+	trcRatio->setData(d3->getRatioT0ms()/1e3,
+			  d3->getRatioDTms()/1e3,
+			  DataPtr(d3->dataRatio()),
+			  d3->getRatioNFrames());
+    }
     
     // Following is not really great, I think it may mess up zoom, but
     // where else can I reasonably do this?

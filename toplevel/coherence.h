@@ -16,10 +16,13 @@
 class Coherence: public CCDImage {
   Q_OBJECT;
   /*:C Coherence
-   *:D This class heavily depends on a VSDTraces for its data.
+   *:N Really, this class ought to be constructed for a specific camera (pair),
+       but the current version simply shows all ROIs over whatever image it
+       is given.
+       All coordinates are global.
    */
 public:
-  Coherence(class VSDTraces *source, class CohData *dat=0, QWidget *parent=0);
+  Coherence(class CohData *dat=0, QWidget *parent=0);
   virtual ~Coherence();
   virtual void showEvent(class QShowEvent *);
   virtual void paintEvent(class QPaintEvent *);
@@ -28,17 +31,17 @@ public:
    */
   class CohData /*const*/ *getData() const { return data; }
 public slots:
-  void newData();
   void setRefTrace(int achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
   void setShowMode(ROIImage::ShowMode sm);
+private slots:
+  void updateData();
 private:
   void perhapsRefresh();
 private:
   ROIImage::ShowMode showmode;
 private:
-  class VSDTraces *source;
   class CohData *data;
   bool owndata;
 private: // these will not be implemented

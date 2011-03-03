@@ -5,8 +5,9 @@
 
 #define ROIDATA_H
 
-#include <base/xyrra.h>
-#include <base/polyblob.h>
+#include <base/roicoords.h>
+#include <base/range.h>
+#include <base/transform.h>
 
 class ROIData_ {
 public:
@@ -22,16 +23,16 @@ private: friend class ROIData;
   bool validRaw;
   bool validDebleached;
   class CCDData const *source;
-  XYRRA roi;
-  PolyBlob const *roip;
-  bool usePolyNotXyrra;
-  class BlobROI *blobROI; // we do not own this!
+  ROICoords const *roi; // in global coordinates
+  class BlobROI *blobROI;
   bool validBlobROI;
   bool *bitmap;
   bool validBitmap;
-  int xl, yt, w, h;
+  int xl, yt, w, h; // in image coordinates
   int npix; // number of pixels inside the ROI
   bool flipX, flipY;
+  Transform tinv;
+  bool validTransform;
 };
 
 class ROIData: public ROIData_ {
@@ -52,17 +53,13 @@ public:
    *:D Specifies how DebleachedDFF gets calculated.
    *:N This does not cause immediate recomputation.
    */
-  void setROI(XYRRA const &roi);
+  void setROI(ROICoords const *roi);
   /*:F setROI
    *:D Redefines which portion of the CCD image we care about.
        This does not cause recomputation and is thus trivially fast.
-  */
-  void setROI(PolyBlob const *pb);
-  /*:F setROI
-   *:D Redefines which portion of the CCD image we care about.
-       This does not cause recomputation and is thus trivially fast.
-   *:N The blob is not copied, and must remain available until the next
-       call to a setROI.
+   *:N The ROI is not copied, and must remain available until the next
+       call to setROI.
+   *:N If ROI is null, all results will be zero.
   */
   void setData(class CCDData const *source);
   /*:F setData
@@ -92,11 +89,15 @@ public:
    *:R Normalized debleached data in percent.
    */
   int getNFrames() const;
+  double getT0ms() const;
+  double getDTms() const;
+  Range timeRange() const;
   bool haveData() const;
 private:
-  void ensureBitmap();
-  void makePolyBitmap();
-  void makeXYRRABitmap();
+  bool ensureBitmap(); // returns true iff it worked
+  bool makePolyBitmap();
+  bool makeXYRRABitmap();
+  bool makeNullBitmap();
 private:
   void copy(ROIData const &other);
 };

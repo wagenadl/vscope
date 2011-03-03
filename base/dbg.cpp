@@ -7,6 +7,8 @@
 #include <string.h>
 #include <QTime>
 #include <base/exception.h>
+#include <QRectF>
+#include <QLineF>
 
 Dbg::Dbg() throw() {
   try {
@@ -103,4 +105,74 @@ DbgFile &DbgFile::operator<<(QString const &str) {
     ts->flush();
   }
   return *this;
+}
+
+//Dbg &Dbg::operator<<(QString const &x) {
+//  *(QTextStream*)this << x;
+//  return *this;
+//}
+//
+//Dbg &Dbg::operator<<(int x) {
+//  *(QTextStream*)this << x;
+//  return *this;
+//}
+//
+//Dbg &Dbg::operator<<(unsigned int x) {
+//  *(QTextStream*)this << x;
+//  return *this;
+//}
+//
+//Dbg &Dbg::operator<<(void const *x) {
+//  *(QTextStream*)this << x;
+//  return *this;
+//}
+//
+//Dbg &Dbg::operator<<(char const *x) {
+//  *(QTextStream*)this << x;
+//  return *this;
+//}
+//
+//Dbg &Dbg::operator<<(double x) {
+//  *(QTextStream*)this << x;
+//  return *this;
+//}
+
+Dbg &Dbg::operator<<(class QPoint const &x) {
+  return *this << QString("(%1,%2)")
+    .arg(x.x()).arg(x.y());
+}
+
+Dbg &Dbg::operator<<(class QPointF const &x) {
+  return *this << QString("(%1,%2)")
+    .arg(x.x()).arg(x.y());
+}
+
+Dbg &Dbg::operator<<(class QSize const &x) {
+  return *this << QString("(%1x%2)")
+    .arg(x.width()).arg(x.height());
+}
+
+Dbg &Dbg::operator<<(class QSizeF const &x) {
+  return *this << QString("(%1x%2)")
+    .arg(x.width()).arg(x.height());
+}
+
+Dbg &Dbg::operator<<(class QRect const &x) {
+  return *this << QString("(%1x%2+%3+%4)")
+    .arg(x.width()).arg(x.height())
+    .arg(x.left()).arg(x.top());
+}
+
+Dbg &Dbg::operator<<(class QRectF const &x) {
+  return *this << QString("(%1x%2+%3+%4)")
+    .arg(x.width()).arg(x.height())
+    .arg(x.left()).arg(x.top());
+}
+
+Dbg &Dbg::operator<<(class QLine const &x) {
+  return *this << x.p1() << "-" << x.p2();
+}
+
+Dbg &Dbg::operator<<(class QLineF const &x) {
+  return *this << x.p1() << "-" << x.p2();
 }

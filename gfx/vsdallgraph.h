@@ -17,24 +17,23 @@ class VSDAllGraph: public LineGraph {
    */
   Q_OBJECT;
 public:
-  VSDAllGraph(class ROISet3Data *rs3d, QWidget *parent=0);
+  VSDAllGraph(class ROIData3Set *rs3d, QWidget *parent=0);
   virtual ~VSDAllGraph();
-  void setROI(int id, XYRRA el);
-  void setROI(int id, class PolyBlob const *pb);
-  void removeROI(int id);
-  void selectROI(int id);
-  void clearROIs();
-  void setData(class CCDData const *donor, class CCDData const *acceptor);
-  void setDebleach(ROIData::Debleach d);
   class ROI3Data *getData(int id);
   bool haveData(int id) const;
+public slots:
+  void updateSelection(int id);
+  void updateData();
+private slots:
+  void updateROI(int id);
+  void updateROIs();
 protected:
   virtual void paintEvent(class QPaintEvent *);
 private:
+  void updateROIcore(int id);
   void newOffsets(); // recalculates the y offsets of each trace
-  void setROIbase(int id);
 private:
-  class ROISet3Data *data;
+  class ROIData3Set *data; // we do not own this
   QMap<int, class TraceInfo *> traces;
   int selectedId;
 private:

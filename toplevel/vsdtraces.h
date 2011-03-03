@@ -24,26 +24,13 @@ class VSDTraces: public MultiGraph {
 public:
   VSDTraces(QWidget *parent);
   virtual ~VSDTraces();
-  class ROI3Data *getData(int id);
-  bool haveData(int id) const;
-  CCDTiming const &getTiming() const { return timing; }
-  class ROISet const *getROIs() const { return roiset; }
-  class AnalogData const *getAnalog() const { return lastAnalog; }
-  class DigitalData const *getDigital() const { return lastDigital; }
 public slots:
-  void selectROI(int id);
-  void editROI(int id); // emits roisChanged
-  void deleteROI(int id); // emits roisChanged
-  void newCCDData(bool dontTell=false);
-  void newEPhys(bool dontTell=false);
-  void newROIs(class ROISet const *newrois, bool dontTell=false); // does *not* emit roisChanged
-  void setDebleach(ROIData::Debleach d);
+  void updateSelection(int id);
   void setRefTrace(int chn);
   void setRefDigi(int chn);
   void setRefFreq(double frqhz);
-signals:
-  void dataChanged();
-  void roisChanged();
+private slots:
+  void updateEPhysData();
 private:
   class VSDGraph *selected;
   class VSDAllGraph *allgraph;
@@ -51,11 +38,6 @@ private:
   class TraceInfo *reftrace;
   int selid;
   int refchn;
-  CCDTiming timing;
-private: // we do not own the following
-  class ROISet const *roiset;
-  class AnalogData const *lastAnalog;
-  class DigitalData const *lastDigital;
 };
 
 #endif

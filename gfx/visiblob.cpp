@@ -8,8 +8,6 @@
 
 VisiBlob::VisiBlob(QWidget *parent): QWidget(parent) {
   pb = 0;
-  ax = 1; bx = 0;
-  ay = 1; by = 0;
   newpoly = 0;
   indrag = false;
   setEnabled(false);
@@ -27,16 +25,18 @@ void VisiBlob::setPen(QPen const &p) {
 }
 
 void VisiBlob::setShape(PolyBlob *pb0, bool redraw) {
+  //if (pb)
+  //  disconnect(pb,SIGNAL(destroyed(QObject*)),this,SLOT(pbDied(QObject*)));
   pb = pb0;
+  //if (pb)
+  //  connect(pb,SIGNAL(destroyed(QObject*)),this,SLOT(pbDied(QObject*)));
   if (redraw)
     update();
 }
 
-void VisiBlob::setZoom(double ax0, double bx0, double ay0, double by0) {
-  ax = ax0;
-  bx = bx0;
-  ay = ay0;
-  by = by0;
+void VisiBlob::setTransform(Transform const &t0) {
+  t = t0;
+  tinv = t.inverse();
   update();
 }
 
@@ -46,11 +46,11 @@ void VisiBlob::paintEvent(class QPaintEvent *) {
   if (newpoly)
     pntr.drawPolyline(*newpoly);
   else if (pb)
-    pb->paint(&pntr, ax,bx, ay,by);
+    pb->paint(&pntr, t);
 }
 
 void VisiBlob::startCreate(PolyBlob *dest, QMouseEvent *e) {
-  pb = dest;
+  setShape(dest, false);
   if (!pb)
     return;
   dragtype = CREATE;
@@ -67,12 +67,11 @@ void VisiBlob::drag(QMouseEvent *e) {
     newpoly->push_back(QPointF(e->x(),e->y()));
     break;
   case DISTORT:
-    pb->adjust((e->x()-bx)/ax, (e->y()-by)/ay, false);
+    pb->adjust(tinv(e->pos()), false);
     break;
   case MOVE:
     // dbg("Move!");
-    pb->recenter(startBlob.x() + (e->x()-startScreen.x())/ax,
-		 startBlob.y() + (e->y()-startScreen.y())/ay);
+    pb->recenter(startBlob + tinv(e->pos()-startScreen));
     break;
   }
   update();
@@ -87,8 +86,9 @@ bool VisiBlob::complete(QMouseEvent *) {
     double *xx = memalloc<double>(k, "VisiBlob");
     double *yy = memalloc<double>(k, "VisiBlob");
     for (int i=0; i<k; i++) {
-      xx[i] = ((*newpoly)[i].x()-bx)/ax;
-      yy[i] = ((*newpoly)[i].y()-by)/ay;
+      QPointF xy = tinv((*newpoly)[i]);
+      xx[i] = xy.x();
+      yy[i] = xy.y();
     }
     pb->build(k, xx, yy);
     delete newpoly;
@@ -111,7 +111,7 @@ void VisiBlob::startAdjust(class QMouseEvent *e) {
     return;
   dragtype = DISTORT;
   indrag = true;
-  pb->adjust((e->x()-bx)/ax, (e->y()-by)/ay, true);
+  pb->adjust(tinv(e->pos()), true);
 }
 
 void VisiBlob::startMove(QMouseEvent *e) {
@@ -138,4 +138,11 @@ void VisiBlob::mouseMoveEvent(class QMouseEvent *) {
 
 void VisiBlob::mouseDoubleClickEvent(class QMouseEvent *) {
   dbg("visiblob: mouse doubleclick");
+}
+
+void VisiBlob::pbDies(QObject *x) {
+  //if (x==pb) {
+  //  Dbg() << "VisiBlob Warning: My blob is dying";
+  //  pb = 0;
+  //}
 }

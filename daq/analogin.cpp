@@ -43,7 +43,7 @@ void AnalogIn::clearChannels() throw (daqException) {
 void AnalogIn::addChannel(int ain) throw(daqException) {
   uncommit();
   
-  if (ain<0 || ain>=AnalogData::MAXCHANNELS)
+  if (ain<0)
     throw daqException("AnalogIn", "Bad AI channel number");
   int index = ai_channel_list.size();
   ai_channel_list.push_back(ain);
@@ -286,7 +286,8 @@ AnalogData *AnalogIn::read(int nscanslimit) throw(daqException) {
   if (nscanslimit>navail)
     nscanslimit = navail;
 
-  AnalogData *dest = new AnalogData(nscanslimit, ai_channel_list.size());
+  AnalogData *dest = new AnalogData(nscanslimit, ai_channel_list.size(),
+				    freqhz);
 
   try {
     for (int n=0; n<ai_channel_list.size(); n++)

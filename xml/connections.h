@@ -8,6 +8,8 @@
 #include <QStringList>
 #include <QMap>
 #include <QDomElement>
+#include <base/campair.h>
+#include <base/transform.h>
 
 namespace Connections {
   /*:C Connections
@@ -57,6 +59,7 @@ namespace Connections {
     bool isacceptor;
     int order;
     bool exists;
+    Transform placement;
   };
   
   extern void readXML(QDomElement doc);
@@ -89,7 +92,15 @@ namespace Connections {
    *:D Returns a reference to a camera definition given an ID.
    *:R Throws an exception if not found.
    */
+  extern CamPair camPair(QString id);
+  /*:F camPair
+   *:D Constructs a CamPair object for a given camera.
+   *:R Throws an exception if not found.
+   */
   extern void markCameraExists(QString id, bool exists=true);
+  /*:F markCameraExists
+   *:D Notifies Connections that the named camera is up and running.
+   */
   QStringList allCams();
   /*:F allCams
    *:D Returns a list of all camera IDs, even nonexisting cameras.
@@ -108,6 +119,7 @@ namespace Connections {
 	      3. non-existing donor cameras
 	      4. non-existing other cameras
   */
+  CamPair leaderCamPair();
   
   DigiChannel const *findpDig(QString id);
   /*:F findpDig

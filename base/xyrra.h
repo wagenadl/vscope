@@ -13,6 +13,7 @@ public:
     if (r<=0)
       r=R;
   }
+  XYRRA(QPointF xy0, double R=0, double r=0, double a=0);
   XYRRA(QDomElement doc);
   void read(QDomElement doc);
   void write(QDomElement doc) const;
@@ -55,6 +56,8 @@ public:
        nPoints points around the circumference.
   */
   bool operator==(XYRRA const &other);
+  XYRRA &transform(class Transform const &t);
+  XYRRA transformed(class Transform const &t) const;
 public:
   double x0, y0;
   double R, r;

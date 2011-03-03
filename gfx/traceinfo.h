@@ -8,20 +8,16 @@
 #include <QString>
 // QString included just to force definition of intXX_t types
 
-class TraceInfo {
-  /*:C TraceInfo
-   *:D Container for data used in a LineGraph.
-       The data can be of many integer or floating point types; this
-       is largely transparent to callers.
-  */
- public:
-  enum DataType { dataNone=0, 
-		  dataInt8, dataUInt8, 
-		  dataInt16, dataUInt16,
-		  dataInt32, dataUInt32,
-		  dataFloat, dataDouble,
-		  dataBinary };
-  union DataPtr {
+class DataPtr {
+public:
+  enum { dataNone=0, 
+	 dataInt8, dataUInt8, 
+	 dataInt16, dataUInt16,
+	 dataInt32, dataUInt32,
+	 dataFloat, dataDouble,
+	 dataBinary 
+  } typ;
+  union {
     void const *dp_none;
     int8_t const *dp_int8;
     uint8_t const *dp_uint8;
@@ -32,10 +28,30 @@ class TraceInfo {
     float const *dp_float;
     double const *dp_double;
     uint32_t const *dp_binary;
-  };
- public:
-  TraceInfo(DataType dt=dataNone);
-  TraceInfo(DataType dt, int bit);
+  } ptr;
+  int bit;
+public:
+  DataPtr(void const *x=0) { ptr.dp_none = x; typ = dataNone; }
+  DataPtr(int8_t const *x) { ptr.dp_int8 = x; typ = dataInt8; }
+  DataPtr(uint8_t const *x) { ptr.dp_uint8 = x; typ = dataUInt8; }
+  DataPtr(int16_t const *x) { ptr.dp_int16 = x; typ = dataInt16; }
+  DataPtr(uint16_t const *x) { ptr.dp_uint16 = x; typ = dataUInt16; }
+  DataPtr(int32_t const *x) { ptr.dp_int32 = x; typ = dataInt32; }
+  DataPtr(uint32_t const *x) { ptr.dp_uint32 = x; typ = dataUInt32; }
+  DataPtr(float const *x) { ptr.dp_float = x; typ = dataFloat; }
+  DataPtr(double const *x) { ptr.dp_double = x; typ = dataDouble; }
+  DataPtr(uint32_t const *x, int bit): bit(bit) {
+    ptr.dp_binary = x; typ = dataBinary; }
+};
+
+class TraceInfo {
+  /*:C TraceInfo
+   *:D Container for data used in a LineGraph.
+       The data can be of many integer or floating point types; this
+       is largely transparent to callers.
+  */
+public:
+  TraceInfo();
   double getX0() const { return datax0; }
   double getDX() const { return datadx; }
   double getDatum(int n) const;
@@ -89,12 +105,11 @@ class TraceInfo {
        there are no data at all.
        The output is scaled by the current scale factor.
   */
+  void report() const;
 private:
   Range range99(int n0, int n1, double frc0, double frc1) const;
  protected: 
   friend class LineGraph; // read only!
-  DataType datatype;
-  int bit; // for binary data only
   double datax0;
   double datadx;
   DataPtr dataptr;

@@ -69,43 +69,39 @@ Trial::~Trial() {
     delete dat; // eventually, this will not be here any more
 }
 
-QString Trial::prepare(ParamTree const *ptree) {
+void Trial::prepare(ParamTree const *ptree) {
   if (active)
     throw Exception("Trial","Cannot prepare for new trial while active");
 
-  QString trialid = dat->prepare(ptree);
-
-  CCDTimingDetail timing(ptree, false);
+  dat->prepare(ptree);
   
   dbg("trial:prepare contephys=%i. ephysacq=%p",dat->hasContEPhys(),ephysacq);
   if (dat->isCCD())
-    ccdacq->prepare(ptree, timing);
+    ccdacq->prepare(ptree, dat->timing());
   ephysout->setMaster(dat->hasContEPhys() ? 0 : ephysacq);
-  ephysout->prepare(ptree, timing);
-  if (dat->isEPhys())
+  ephysout->prepare(ptree, dat->timing());
+  if (dat->isEPhys()) {
     ephysacq->prepare(ptree);
+    dat->notifyDataChange(); // it could have been reshaped!
+  }
   outcomplete = acqcomplete = false;
   prep = true;
-  return trialid;
 }
 
-QString Trial::prepareSnapshot(ParamTree const *ptree) {
+void Trial::prepareSnapshot(ParamTree const *ptree) {
   Dbg() << "Trial::prepareSnapshot";
   if (active)
     throw Exception("Trial","Cannot prepare for new trial while active");
 
   Dbg() << "Trial: preparing data";
-  QString trialid = dat->prepareSnapshot(ptree);
-  Dbg() << "Trial: preparing timing";
-  CCDTimingDetail timing(ptree, true);
+  dat->prepareSnapshot(ptree);
   Dbg() << "Trial: preparing cameras";
-  bool ccdok = ccdacq->prepare(ptree, timing);
+  bool ccdok = ccdacq->prepare(ptree, dat->timing());
   Dbg() << "Trial: camera status: " << ccdok;
   ephysout->setMaster(0);
-  ephysout->prepareSnap(ptree, timing);
+  ephysout->prepareSnap(ptree, dat->timing());
   outcomplete = acqcomplete = false;
   prep = true;
-  return trialid;
 }
 
 void Trial::start() {
@@ -177,11 +173,6 @@ void Trial::allEPhysComplete() {
   QDateTime now(QDateTime::currentDateTime());
   info.setAttribute("enddate",now.toString("yyMMdd"));
   info.setAttribute("endtime",now.toString("hhmmss"));
-  completedEvent();
+  dat->notifyDataChange();
   emit ended(dat->exptName(),dat->trialID());
 }
-
-void Trial::completedEvent() {
-  // meant for descendants
-}
-

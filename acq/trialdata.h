@@ -8,33 +8,36 @@
 #include <QVector>
 #include <QString>
 #include <base/xml.h>
+#include <acq/ccdtimingdetail.h>
+#include <base/transform.h>
 
-class TrialData {
+class TrialData: public QObject {
+  Q_OBJECT;
 public:
   TrialData();
   virtual ~TrialData();
-  QString prepare(class ParamTree const *ptree);
-  QString prepareSnapshot(class ParamTree const *ptree);
-  virtual QString write() const;
-  /*:F write
-   *:R Actual trial name, which may differ from trialno if there was a
-       pre-existing file. When that happens, letters are added to the
-       trialno.
-  */
+  void prepare(class ParamTree const *ptree);
+  void prepareSnapshot(class ParamTree const *ptree);
+  virtual void write() const;
   virtual void read(QString dir, QString exptname, QString trialid,
 		    class ParamTree *ptree_dest);
+public:
   class AnalogData const *analogData() const { return adataIn; }
-  class DigitalData const *digitalData() const { return ddataIn; }
-  class CCDData const *ccdData(QString camid) const;
-  class AnalogData const *analogStimuli() const { return adataOut; }
-  class DigitalData const *digitalStimuli() const { return ddataOut; }
-  class XML const *getXML() const { return xml; } // only useful after read() or write()
   class AnalogData  *analogData()  { return adataIn; }
+  class DigitalData const *digitalData() const { return ddataIn; }
   class DigitalData  *digitalData()  { return ddataIn; }
-  class CCDData  *ccdData(QString camid) ;
+  class CCDData const *ccdData(QString camid) const;
+  class CCDData  *ccdData(QString camid);
+  class AnalogData const *analogStimuli() const { return adataOut; }
   class AnalogData  *analogStimuli()  { return adataOut; }
+  class DigitalData const *digitalStimuli() const { return ddataOut; }
   class DigitalData  *digitalStimuli()  { return ddataOut; }
+  class XML const *getXML() const { return xml; }
   class XML *getXML() { return xml; } // only useful after read() or write()
+  /*:F getXML
+   *:D Only useful after read() or write().
+   */
+public:
   bool isPrepared() const { return prep; }
   bool isSnap() const { return snap; }
   bool isCCD() const { return do_ccd; }
@@ -43,17 +46,16 @@ public:
   QString filePath() const { return fpath; }
   QString exptName() const { return exptname; }
   QString trialID() const { return trialid; }
+  CCDTimingDetail const &timing() const { return timing_; }
+  Transform ccdPlacement(QString camid) const;
+  void notifyDataChange(); // call this if you have changed the data
+  // This is required, or no newData() signal will be emitted.
+  // Note that read() automatically causes the signal to be emitted.
+signals:
+  void newData();
 private:
   static QString trialname(class ParamTree const *tree);
-  /*:F trialname
-   *:D Determine actual trial name to be used to save data. This may differ
-       from the trial number in the ptree if a file preexists, in which case
-       letters are added to the file name.
-  */  
-  QString generalPrep(class ParamTree const *ptree);
-  /*:F generalPrep
-   *:R Actual trial name (as per trialname()).
-   */
+  void generalPrep(class ParamTree const *ptree);
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;
@@ -67,6 +69,7 @@ private:
   QMap<QString, int> camidx;
   QVector<QString> camids;
   QVector<CCDData *> ccddata;
+  QVector<Transform> ccdplace;
   class AnalogData *adataIn, *adataOut;
   class DigitalData *ddataIn, *ddataOut;
   // identification
@@ -81,6 +84,9 @@ private:
                   // concurrently with this trial.
   // xml stuff
   class XML *xml;
+  CCDTimingDetail timing_;
+private:
+  Transform camPlace(ParamTree const *ptree, QString camid); // this calculates it from scratch
 private:
   // not implemented
   TrialData(TrialData const &);

@@ -4,159 +4,134 @@
 #include <base/dbg.h>
 #include <base/xml.h>
 
-ROISet::ROISet() {
+ROISet::ROISet(QObject *p): QObject(p) {
+  lastid = 0;
 }
 
 ROISet::~ROISet() {
 }
 
-void ROISet::set(int id, XYRRA const &roi) {
+int ROISet::newROI(CamPair const &cam) {
+  int id = ++lastid;
   allids.insert(id);
-  emap.insert(id, roi);
-  pmap.remove(id);
+  cams[id] = cam;
+  map[id] = ROICoords();
+  return id;
 }
 
-void ROISet::set(int id, PolyBlob const &roip) {
-  allids.insert(id);
-  pmap.insert(id, roip);
-  emap.remove(id);
-}
-
-PolyBlob &ROISet::newblob(int id) {
-  allids.insert(id);
-  emap.remove(id);
-  pmap.insert(id, PolyBlob());
-  return getp(id);
+CamPair const &ROISet::cam(int id) const {
+  if (cams.contains(id))
+    return *cams.find(id);
+  else
+    throw Exception("ROISet",
+		    QString("No ROI with ID=%1").arg(id),"get");
 }
     
-PolyBlob &ROISet::newblob(int id, int log2n) {
-  allids.insert(id);
-  emap.remove(id);
-  pmap.insert(id, PolyBlob(log2n));
-  return getp(id);
-}
-    
-
-XYRRA ROISet::get(int id) const {
-  if (emap.contains(id))
-    return emap.value(id);
+ROICoords const &ROISet::get(int id) const {
+  if (map.contains(id))
+    return *map.find(id);
   else
     throw Exception("ROISet",
-		    QString("No XYRRA-style ROI with ID=%1").arg(id),"get");
+		    QString("No ROI with ID=%1").arg(id),"get");
 }
 
-PolyBlob const &ROISet::getp(int id) const {
-  QMap<int, PolyBlob>::const_iterator i = pmap.find(id);
-  if (i!=pmap.end())
-    return i.value();
+ROICoords &ROISet::checkout(int id) {
+  if (map.contains(id))
+    return map[id];
   else
     throw Exception("ROISet",
-		    QString("No PolyBlob-style ROI with ID=%1").arg(id),"getp");
+		    QString("No ROI with ID=%1").arg(id),"get");
 }
 
-PolyBlob &ROISet::getp(int id) {
-  if (pmap.contains(id))
-    return pmap[id];
-  else
-    throw Exception("ROISet",
-		    QString("No PolyBlob-style ROI with ID=%1").arg(id),"getp");
+void ROISet::checkin(int id) {
+  //Dbg() << "ROISet::checkin("<<id<<")";
+  emit changed(id);
+}
+
+void ROISet::cancel(int) {
 }
 
 bool ROISet::contains(int id) const {
   return allids.contains(id);
 }
 
-bool ROISet::isXYRRA(int id) const {
-  return emap.contains(id);
-}
-
-bool ROISet::isPoly(int id) const {
-  return pmap.contains(id);
-}
-
 void ROISet::remove(int id) {
+  //Dbg() << "ROISet::remove("<<id<<")";
+  if (!allids.contains(id))
+    return;
   allids.remove(id);
-  emap.remove(id);
-  pmap.remove(id);
+  cams.remove(id);
+  map.remove(id);
+  emit changed(id);
 }
 
 void ROISet::write(QDomElement dst) const {
   QDomDocument doc = dst.ownerDocument();
-  for (QMap<int, XYRRA>::const_iterator i=emap.begin(); i!=emap.end(); ++i) {
-    XYRRA const &roi = i.value();
+  foreach (int id, allids) {
     QDomElement e = doc.createElement("roi");
     dst.appendChild(e);
-    e.setAttribute("id",QString("%1").arg(i.key()));
-    dbg("roiset::write xyrra %i",i.key());
-    roi.write(e);
-  }
-  for (QMap<int, PolyBlob>::const_iterator i=pmap.begin();
-       i!=pmap.end(); ++i) {
-    PolyBlob const &roi = i.value();
-    QDomElement e = doc.createElement("roi");
-    dst.appendChild(e);
-    e.setAttribute("id",QString("%1").arg(i.key()));
-    roi.write(e);
+    e.setAttribute("id",QString("%1").arg(id));
+    e.setAttribute("cam",cams[id].donor + ":" + cams[id].acceptor);
+    map[id].write(e);
   }
 }
 
 void ROISet::read(QDomElement src) {
-  clear();
+  //Dbg() << "ROISet::read";
+  clearNoSignal();
   bool ok;
+  lastid = 0;
   for (QDomElement e=src.firstChildElement("roi");
        !e.isNull(); e=e.nextSiblingElement("roi")) {
     int id = e.attribute("id").toInt(&ok);
     if (!ok)
       throw Exception("ROISet","Cannot read id from xml");
-    if (e.hasAttribute("n")) {
-      // it must be polyblob-style
-      PolyBlob &roi = newblob(id, 0);
-      roi.read(e);
-    } else {
-      // it must be xyrra-style
-      XYRRA roi;
-      roi.read(e);
-      set(id, roi);
+    if (id>=lastid)
+      lastid = id;
+    allids.insert(id);
+    cams[id] = CamPair();
+    if (e.hasAttribute("cam")) {
+      QStringList c = e.attribute("cam").split(":");
+      if (c.size()>=2) {
+	cams[id].donor = c[0];
+	cams[id].acceptor = c[1];
+      }
     }
+    if (cams[id].donor=="" && cams[id].acceptor=="")
+      cams[id] = dfltcam;
+    map[id].read(e);
   }
+  emit changedAll();
+}
+
+void ROISet::setDefaultCamPair(CamPair const &cp) {
+  dfltcam = cp;
 }
 
 QSet<int> const &ROISet::ids() const {
   return allids;
 }
 
-void ROISet::clear() {
-  pmap.clear();
-  emap.clear();
+QSet<int> ROISet::idsForCam(CamPair const &cam) const {
+  QSet<int> ids;
+  foreach (int id, cams.keys()) 
+    if (cams[id]==cam)
+      ids.insert(id);
+  return ids;
+}
+
+void ROISet::clearNoSignal() {
+  map.clear();
+  cams.clear();
   allids.clear();
+  lastid = 0;
 }
 
-double ROISet::centerX(int id) const {
-  if (emap.contains(id))
-    return emap.value(id).x0;
-  else if (pmap.contains(id))
-    return pmap.value(id).x0();
-  else
-    return 0;
+void ROISet::clear() {
+  clearNoSignal();
+  emit changedAll();
 }
 
-double ROISet::centerY(int id) const {
-  if (emap.contains(id))
-    return emap.value(id).y0;
-  else if (pmap.contains(id))
-    return pmap.value(id).y0();
-  else
-    return 0;
-}
-
-bool ROISet::inside(int id, double x, double y, double marg) const {
-  if (emap.contains(id))
-    return emap.value(id).inside(x, y, marg);
-  else if (pmap.contains(id))
-    return pmap.value(id).inside(x, y, marg);
-  else
-    return false;
-}
 
 void ROISet::save(QString fn) const {
   XML xml(0,"vsdscopeROIs");
@@ -171,3 +146,16 @@ void ROISet::load(QString fn) {
   read(roidoc);
 }
   
+ROIWriter::ROIWriter(ROISet &rs, int id):
+  roi(rs.checkout(id)), rs(rs), id(id)  {
+  canceled = false;
+}
+
+void ROIWriter::cancel() {
+  canceled = true;
+}
+
+ROIWriter::~ROIWriter() {
+  if (!canceled)
+    rs.checkin(id);
+}

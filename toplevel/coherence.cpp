@@ -23,19 +23,27 @@
 #include <math.h>
 #include <math/cohdata.h>
 #include <acq/datatrove.h>
+#include <base/roidata3set.h>
+#include <xml/connections.h>
 
-Coherence::Coherence(VSDTraces *s, CohData *dat, QWidget *p):
-  CCDImage(p), source(s) {
+Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
   if (dat) {
     data = dat;
     owndata = false;
   } else {
     data = new CohData();
-    data->newROISet(source->getROIs());
-    data->newCCDData(&Globals::trove->roidata());
+    data->setROISet(&Globals::trove->rois());
+    data->setCCDData(&Globals::trove->roidata());
+    data->setEPhys(Globals::trove->trial().analogData(),
+		   Globals::trove->trial().digitalData());
+    Enumerator const *digilines = Enumerator::find("DIGILINES");
+    foreach (QString cam, Connections::allCams()) {
+      if (digilines->has("Frame"+cam))
+	data->setFrameLine(cam, digilines->lookup("Frame"+cam));
+    }
     owndata = true;
   }
-  connect(source,SIGNAL(dataChanged()), this,SLOT(newData()));
+  connect(data, SIGNAL(newData()), SLOT(updateData()));
 }
 
 Coherence::~Coherence() {
@@ -46,20 +54,19 @@ Coherence::~Coherence() {
 void Coherence::paintEvent(QPaintEvent *e) {
   CCDImage::paintEvent(e);
   dbg("coherence::paintevent");
-  ROISet const *roiset = source->getROIs();
-  if (!roiset || !data)
+  if (!data)
+    return;
+  ROISet const *roiset = data->currentData()->getROISet();
+  if (!roiset)
     return;
   
   QPainter p(this);
-  ZoomInfo z = makeZoomInfo();
-  
-  QSet<int> const &ids = roiset->ids();
-  for (QSet<int>::const_iterator i=ids.begin(); i!=ids.end(); i++) {
-    int id = *i;
-    if (id<0)
-      continue;
-    double x0 = z.ax * roiset->centerX(id) + z.bx;
-    double y0 = z.ay * roiset->centerY(id) + z.by;
+
+  foreach (int id, roiset->ids()) {
+    if (id<=0)
+      continue; // this should not happen
+    ROICoords const &roi = roiset->get(id);
+    QPointF xy = canvasToScreen()(roi.center());
     double pha = data->phase(id);
     double mag = data->magnitude(id);
     int hue = int(pha*180/3.141592);
@@ -71,40 +78,28 @@ void Coherence::paintEvent(QPaintEvent *e) {
     p.setBrush(c);
     p.setPen(QPen(Qt::NoPen));
     
-    if (roiset->isXYRRA(id)) {
-      XYRRA el = roiset->get(id);
-      if (hasZoom) {
-	el.x0 = z.ax*el.x0 + z.bx;
-	el.y0 = z.ay*el.y0 + z.by;
-	el.R *= z.ax; // Note: this means
-	el.r *= z.ax; // trouble if ax!=ay
-      }
-      el.paint(&p);
-    } else if (roiset->isPoly(id)) {
-      PolyBlob const &pb = roiset->getp(id);
-      pb.paint(&p, z.ax,z.bx, z.ay,z.by);
-    } else {
-      // unknown ROI style
-    }
+    if (roi.isXYRRA()) 
+      roi.xyrra().transformed(canvasToScreen()).paint(&p);
+    else if (roi.isBlob())
+	roi.blob().paint(&p, canvasToScreen());
 
-    Enumerator *sm = Enumerator::find("SHOWROIS");
-    if (showmode==sm->lookup("IDs") ||
-	showmode==sm->lookup("Full")) {
-      p.setPen(QColor("#000000"));
-      p.drawText(QRectF(x0,y0-1,2,2),
+    if (showmode==ROIImage::SM_IDs || showmode==ROIImage::SM_Full) {
+      p.setPen(QColor("black"));
+      p.drawText(QRectF(xy.x(),xy.y()-1,2,2),
 		 Qt::AlignCenter | Qt::TextDontClip,
 		 num2az(id));
-      p.setPen(QColor("#ffffff")); // anti b.g.
-      p.drawText(QRectF(x0-1,y0,2,2),
+      p.setPen(QColor("white")); // anti b.g.
+      p.drawText(QRectF(xy.x()-1,xy.y(),2,2),
 		 Qt::AlignCenter | Qt::TextDontClip,
 		 num2az(id));
     }
   }
 
   p.setPen(QColor("#000000"));
-  p.drawText(5,10,QString("f* = %1 Hz").arg(data->getFStarHz(),0,'f',2));
+  double fstar = data->getTypicalFStarHz();
+  p.drawText(5,10,QString("f* = %1 Hz").arg(fstar,0,'f',2));
   p.setPen(QColor("#ffffff"));
-  p.drawText(4,11,QString("f* = %1 Hz").arg(data->getFStarHz(),0,'f',2));
+  p.drawText(4,11,QString("f* = %1 Hz").arg(fstar,0,'f',2));
   
 }
 
@@ -116,14 +111,8 @@ void Coherence::showEvent(QShowEvent *e) {
     //  }
 }
 
-
-void Coherence::newData() {
+void Coherence::updateData() {
   dbg("coherence:newdata");
-  if (data) {
-    data->newTiming(source->getTiming());
-    data->newEPhys(source->getAnalog(),source->getDigital());
-    data->newCCDData(&Globals::trove->roidata());
-  }
   perhapsRefresh();
 }
 

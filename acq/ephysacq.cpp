@@ -67,6 +67,7 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   for (int i=0; i<ba.size(); ++i)
     if (ba.testBit(i))
       adata->defineChannel(idx++,i);
+  adata->setSamplingFrequency(samprate_hz);
 
   ddata->reshape(contEphys
 		 ? EPHYSACQ_CONTACQ_CHUNKSIZE*EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER

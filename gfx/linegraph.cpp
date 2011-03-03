@@ -51,17 +51,25 @@ LineGraph::~LineGraph() {
 }
 
 void LineGraph::setXRange(Range const &xx, bool nextAuto) {
-  x0 = xx.min;
-  x1 = xx.max;
-  xrangeFromAuto = nextAuto;
-  perhapsRepaint();
+  if (xx.empty()) {
+    autoSetXRange();
+  } else {
+    x0 = xx.min;
+    x1 = xx.max;
+    xrangeFromAuto = nextAuto;
+    perhapsRepaint();
+  }
 }
 
 void LineGraph::setYRange(Range const &yy) {
-  y0 = yy.min;
-  y1 = yy.max;
-  yrangeFromAuto = false;
-  perhapsRepaint();
+  if (yy.empty()) {
+    autoSetYRange();
+  } else {
+    y0 = yy.min;
+    y1 = yy.max;
+    yrangeFromAuto = false;
+    perhapsRepaint();
+  }
 }
 
 Range LineGraph::getXRange() const {
@@ -134,9 +142,7 @@ void LineGraph::autoGrowYRange(double frc) {
 
 Range LineGraph::computeXRange() const {
   Range xx;
-  for (Traces::const_iterator i=traces.constBegin();
-       i!=traces.constEnd(); ++i) {
-    TraceInfo const *ti = i.value();
+  foreach (TraceInfo const *ti, traces) {
     xx.include(ti->datax0);
     xx.include(ti->datax0+ti->datadx*ti->N);
   }
@@ -347,7 +353,7 @@ double LineGraph::computeFirstMinorYTick() {
 
 int LineGraph::dataToScreenX(double x) const {
   if (x1==x0) {
-    Dbg() << "linegraph: Badly scaled x-axis: x0=x1="<<x0;
+    //Dbg() << "linegraph: Badly scaled x-axis: x0=x1="<<x0;
     return 0;
   }
   return int((x-x0) * (contentsWidth()-2*hMargin) / (x1-x0))
@@ -356,7 +362,7 @@ int LineGraph::dataToScreenX(double x) const {
 
 int LineGraph::dataToScreenY(double y) const {
   if (y1==y0) {
-    Dbg() << "linegraph: Badly scaled y-axis: y0=y1="<<y0;
+    //Dbg() << "linegraph: Badly scaled y-axis: y0=y1="<<y0;
     return 0;
   }
   return int((y1-y) * (contentsHeight()-2*vMargin) / (y1-y0))
@@ -509,23 +515,26 @@ void LineGraph::paintYAxis(QPainter &p) {
 
 void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 
-  Dbg() << "LineGraph("<<this<<"): ti="<<ti;
+  //Dbg() << "LineGraph("<<this<<"): ti="<<ti;
+  if (ti)
+    ti->report();
   int M = contentsWidth(); // number of pixels
   if (M==0)
     return;
   double dx_per_pix = (x1-x0) / M;
   if (dx_per_pix<=0) {
-    Dbg() << "Linegraph: Badly scaled x-axis in paintTrace: x0=x1="<<x0;
+    //Dbg() << "Linegraph: Badly scaled x-axis in paintTrace: x0="<<x0<<" x1="<<x1;
     return;
   }
+  int N = ti->getN();
+  if (N<=0) {
+    //Dbg() << "LineGraph:: nothing to plot (N="<<N<<")";
+    return;
+  }
+  //Dbg() << "N="<<N<<" M="<<M;
   if (dx_per_pix <= ti->getDX()) {
     // fewer than one data point per pixel
-    int N = ti->getN();
-    if (N<=0) {
-      Dbg() << "LineGraph:: nothing to plot (N="<<N<<")";
-      return;
-    }
-    dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
+    //dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
     int x0pix = int(contentsX0()+(ti->getX0()-x0)/dx_per_pix);
     double dxpix = ti->getDX()/dx_per_pix;
     QVector<QPoint> pts(N);
@@ -533,20 +542,10 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
       pts[n] = QPoint(x0pix+int(dxpix*n), dataToScreenY(ti->getDatum(n)));
     p.drawPolyline(pts);
   } else {
+    // more than one data point per pixel
     double *yy_min = memalloc<double>(M, "Linegraph");
     double *yy_max = memalloc<double>(M, "Linegraph");
     ti->trueBlue(x0,dx_per_pix,M, yy_min,yy_max);
-  
-    dbg("linegraph(%p)::painttrace M=%i dxperpix=%g.\n",this,M,dx_per_pix);
-    dbg("  trace %p: x0=%g dx=%g dp=%p N=%i step=%i\n",
-             ti,ti->datax0,ti->datadx,ti->dataptr.dp_none,ti->N,ti->step);
-  
-    double summin=0, summax=0;
-    for (int m=0; m<M; m++) {
-      summin+=yy_min[m];
-      summax+=yy_max[m];
-    }
-    dbg(" avgmin=%g avgmax=%g\n",summin/M,summax/M);
     
     int m0=0, m1=M;
     for (int m=0; m<M; m++) {
@@ -559,10 +558,10 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
         }
       }
     }
-     dbg("linegraph: m0=%i m1=%i",m0,m1);
+    //dbg("linegraph: m0=%i m1=%i.",m0,m1);
     M=m1-m0;
     if (M<=0) {
-      Dbg() << "Linegraph: nothing to plot (M="<<M<<")";
+      //Dbg() << "Linegraph: nothing to plot (M="<<M<<")";
       return;
     }
     if (drawMode==Poly) {
@@ -597,7 +596,8 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 }
 
 void LineGraph::paintEvent(class QPaintEvent *) {
-  //  dbg("linegraph(%p)::paintevent\n",this);
+  //dbg("linegraph(%p)::paintevent\n",this);
+  //dbg("linegraph: xx=(%g:%g) yy=(%g:%g)",x0,x1,y0,y1);
   QPainter p(this);
   p.setFont(traceFont);
   int dy_legend = p.fontMetrics().lineSpacing();

@@ -17,18 +17,12 @@ class Trial: public QObject {
 public:
   Trial(TrialData *d);
   virtual ~Trial();
-  QString prepare(class ParamTree const *ptree);
-  QString prepareSnapshot(class ParamTree const *ptree);
+  void prepare(class ParamTree const *ptree);
+  void prepareSnapshot(class ParamTree const *ptree);
   bool isPrepared() const { return dat->isPrepared(); }
   bool isActive() const { return isPrepared() ? active : false; }
   // TrialData const &data() const { return *dat; }
   // TrialData &data() { return *dat; }
-protected:
-  virtual void completedEvent();
-  /*:F completedEvent
-   *:D Called after a trial is complete, just before the "ended" signal
-       is emitted. Descendants can use this to update their state.
-  */
 public slots:
   void start();
   void abort(); // I need to decide about error handling in abort() 

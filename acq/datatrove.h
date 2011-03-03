@@ -26,13 +26,13 @@ public:
   // class ParamTree &ptree() { return *ptree_; }
   class TrialData &trial() { return *trial_; }
   class ROISet &rois() { return *rois_; }
-  class ROISet3Data &roidata() { return *roidata_; }
+  class ROIData3Set &roidata() { return *roidata_; }
   class CohData &cohdata() { return *cohdata_; }
 private:
   class ParamTree *ptree_;
   class TrialData *trial_;
   class ROISet *rois_;
-  class ROISet3Data *roidata_;
+  class ROIData3Set *roidata_;
   class CohData *cohdata_;
 private:
   void constructData();

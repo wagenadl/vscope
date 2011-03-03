@@ -29,7 +29,7 @@ void ContAcq::dataAvFcn(int analogscans, int digitalscans, void *aux) {
 ContAcq::ContAcq() {
   ephysacq = 0;
   xml = 0;
-  adataIn = new AnalogData(1024,1);
+  adataIn = new AnalogData(1024,1, 1e4);
   ddataIn = new DigitalData(1024);
 
   ephysacq = new EPhysAcq();
@@ -80,7 +80,7 @@ QString ContAcq::prepare(class ParamTree *ptree) {
   ephysacq->prepare(ptree);
 
   dummy = ptree->find("acquisition/_dummy").toBool();
-  QString dir = ptree->find("acquisition/_filePath").toString();
+  QString dir = ptree->find("_filePath").toString();
   exptname = ptree->find("acquisition/_exptname").toString();
   int trialno = ptree->find("acquisition/_trialno").toInt();
   trialid = QString("%1").arg(trialno,int(3),int(10),QChar('0'));
