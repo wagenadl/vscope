@@ -25,17 +25,9 @@
 #include <acq/datatrove.h>
 
 CohGraph::CohGraph(CohData *dat, QWidget *p): RadialGraph(p) {
-  if (dat) {
-    data = dat;
-    owndata = false;
-  } else {
-    data = new CohData();
-    data->newROISet(&Globals::trove->rois());
-    data->newCCDData(&Globals::trove->roidata());
-    owndata = true;
-  }
-  connect(data->currentData(), SIGNAL(changedOne(int)), this, SLOT(newData()));
-  connect(data->currentData(), SIGNAL(changedAll()), this, SLOT(newData()));
+  data = dat;
+  owndata = false;
+  connect(data, SIGNAL(newData()), this, SLOT(updateData()));
 }
 
 CohGraph::~CohGraph() {
@@ -90,7 +82,7 @@ void CohGraph::showEvent(QShowEvent *e) {
 }
 
 
-void CohGraph::newData() {
+void CohGraph::updateData() {
   perhapsRefresh();
 }
 

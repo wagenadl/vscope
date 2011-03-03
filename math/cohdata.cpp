@@ -31,25 +31,36 @@ CohData::~CohData() {
   delete psdest;
 }
 
-void CohData::newROISet(ROISet const *r) {
+void CohData::setROISet(ROISet const *r) {
   roiset = r;
   invalidate();
   emit newData();
 }
 
-void CohData::newCCDData(class ROIData3Set /*const*/ *dat) {
+void CohData::setCCDData(class ROIData3Set /*const*/ *dat) {
   /* Conceptually const, but we may be the one to trigger recalculation */
+  if (rs3d && rs3d!=dat) {
+    disconnect(rs3d, SIGNAL(changedAll()), this, SLOT(updateROIs()));
+    disconnect(rs3d, SIGNAL(changedOne(int)), this, SLOT(updateROIs()));
+  }
+  if (dat && rs3d!=dat) {
+    connect(dat, SIGNAL(changedAll()), this, SLOT(updateROIs()));
+    connect(dat, SIGNAL(changedOne(int)), this, SLOT(updateROIs()));
+  }
   rs3d = dat;
   invalidate();
   emit newData();
 }
 
-void CohData::newEPhys(AnalogData const *ad, DigitalData const *dd,
-		       double fs_) {
+void CohData::updateROIs() {
+  invalidate();
+  emit newData();
+}
+
+void CohData::setEPhys(AnalogData const *ad, DigitalData const *dd) {
   dbg("cohdata::newephys");
   adata = ad;
   ddata = dd;
-  fs_hz = fs_;
   invalidate();
   emit newData();
 }
@@ -161,9 +172,14 @@ void CohData::recalcTiming() {
      worrying about that now.
    */
 
-  // First, let's find our complement of camera pairs
   if (!rs3d)
-    return;
+    return; // without that, we don't know about cameras
+  if (!adata)
+    return; // without that, we don't know sampling frequency
+
+  double fs_hz = adata->getSamplingFrequency();
+
+  // First, let's find our complement of camera pairs
   QHash<CamPair, int> campair_exemplars;
   foreach (int id, rs3d->allIDs())
     campair_exemplars[rs3d->getCam(id)] = id;
@@ -171,10 +187,16 @@ void CohData::recalcTiming() {
   // Now, for each camera pair, let's get the basic timing
   foreach (CamPair const &cp, campair_exemplars.keys()) {
     ROI3Data const *example = rs3d->getData(campair_exemplars[cp]);
-    timing[cp]
-      .setRate(fs_hz)
-      .setFrames(example->getDonorNFrames())
-      .setTiming(example->getDonorT0ms(), example->getDonorDTms());
+    timing[cp].setRate(fs_hz);
+    if (example->getDonorNFrames())
+      timing[cp]
+	.setFrames(example->getDonorNFrames())
+	.setTiming(example->getDonorT0ms(), example->getDonorDTms());
+    else
+      timing[cp]
+	.setFrames(example->getAcceptorNFrames())
+	.setTiming(example->getAcceptorT0ms(), example->getAcceptorDTms());
+    Dbg() << "timing: " << timing[cp].t0_ms() << "+" << timing[cp].dt_ms() << "x" << timing[cp].nframes();
   }
 
   // let's see if and what we can refine
@@ -426,14 +448,16 @@ void CohData::setRefFreq(double fref_hz) {
   invalidate();
 }
 
-double CohData::getFStarHz(int id) const {
+double CohData::getFStarHz(int id) {
+  validate();
   if (!rs3d || !rs3d->haveData(id))
     return 1;
   CamPair const &cp = rs3d->getCam(id);
   return fstar_hz[cp];
 }
 
-double CohData::getTypicalFStarHz() const {
+double CohData::getTypicalFStarHz() {
+  validate();
   int n=0;
   double fstar = 0;
   foreach (double d, fstar_hz) {

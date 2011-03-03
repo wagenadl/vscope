@@ -26,8 +26,8 @@
 TrialData::TrialData() {
   xml = 0;
 
-  adataIn = new AnalogData(1024,1);
-  adataOut = new AnalogData(1024,1);
+  adataIn = new AnalogData(1024,1, 1e4);
+  adataOut = new AnalogData(1024,1, 1e4);
   ddataIn = new DigitalData(1024);
   ddataOut = new DigitalData(1024);
 
@@ -88,8 +88,6 @@ void TrialData::generalPrep(ParamTree const *ptree) {
 
   QDomElement settings = xml->append("settings");
   ptree->write(settings);
-  //QDomElement connections = xml->append("connections");
-  //Connections::writeXML(connections);
 
   QDomElement info = xml->append("info");
   info.setAttribute("expt",exptname);
@@ -169,7 +167,7 @@ QString TrialData::trialname(ParamTree const *ptree) {
   return QString("%1").arg(t,int(3),int(10),QChar('0'));
 }
 
-QString TrialData::write() const {
+void TrialData::write() const {
   if (!xml)
     throw Exception("Trial","Cannot write - not prepared");
 
@@ -180,13 +178,11 @@ QString TrialData::write() const {
     writeDigital(base);
   }
   
-  if (do_ccd) {
+  if (do_ccd) 
     writeCCD(base);
-  }
 
   // xml
   xml->write(base + ".xml");
-  return trialid;
 }
 
 static double getScale(QString str) {
@@ -289,14 +285,14 @@ void TrialData::writeDigital(QString base) const {
   digital.setAttribute("typebytes","4");
   digital.setAttribute("scans",QString::number(ddataIn->getNumScans()));
   Enumerator *dlines = Enumerator::find("DIGILINES");
-  QStringList dltags = dlines->getAllTags();
-  for (QStringList::iterator i=dltags.begin(); i!=dltags.end(); ++i) {
-    QString dlid = *i;
+  foreach (QString dlid, Connections::digiInputLines()) {
     int dlno = dlines->lookup(dlid);
     QDomElement line = xml->append("line",digital);
     line.setAttribute("id",dlid);
     line.setAttribute("idx",QString::number(dlno));
   }
+  // Actually, this isn't how it should be. It would be better to let
+  // ddata do it by itself (and make it know about line names).
 }
 
 void TrialData::writeCCD(QString base) const {
@@ -391,8 +387,12 @@ void TrialData::readDigital(XML &myxml, QString base) {
     throw Exception("Trial","Cannot read number of scans from xml","read");
 
   ddataIn->reshape(nscans);
-
   ddataIn->readUInt32(base + "-digital.dat");
+  ddataIn->clearMask();
+  for (QDomElement l = digital.firstChildElement("line");
+       !l.isNull(); l = l.nextSiblingElement("line")) 
+    if (l.hasAttribute("idx"))
+      ddataIn->addLine(l.attribute("idx").toInt(0));
 }
 
 void TrialData::readCCD(XML &myxml, QString base) {

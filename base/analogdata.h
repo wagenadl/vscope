@@ -7,48 +7,27 @@
 #include <base/types.h>
 #include <base/exception.h>
 #include <QMap>
+#include <QHash>
+#include <QVector>
 
-class AnalogData_ {
-public:
-  static const int MAXCHANNELS = 32;
-  /*:V int MAXCHANNELS
-    :D The maximum number of channels that AnalogData can hold.
-  */
-private: friend class AnalogData;
-  int32_t nscans;
-  int32_t nchannels;
-  int32_t ndoubles_allocated;
-  int32_t index2channel[MAXCHANNELS];
-  int32_t channel2index[MAXCHANNELS];
-  double *data; // by index
-};
-
-class AnalogData: public AnalogData_ {
+class AnalogData {
   /*:C AnalogData
    *:D This class holds any amount of analog data from AnalogIn or for
        AnalogOut. It keeps track of the physical channels with which
        the data are associated, but not their gain and other settings.
   */
 public:
-  AnalogData(int nscans, int nchannels) throw(Exception);
+  AnalogData(int nscans, int nchannels, double fs_hz) throw(Exception);
   /*:F AnalogData(int nscans, int nchannels)
    *:D This constructor allocates space for multiple scans of data from
        multiple channels.
    *:A nscans: number of scans (i.e. multichannel samples)
     :  nchannels: number of channels
   */
-  AnalogData(FILE *in) throw(Exception);
-  /*:F AnalogData(FILE *in)
-   *:D This constructor reads back data written by write().
-   *:A FILE *in: file handle.
-   *:N We use file handles rather than file names in order to accommodate
-       storage of multiple chunks of data in one file.
-    :  Upon return, the file pointer points to immediately after the chunk
-       that was read.
-   */
   ~AnalogData();
   AnalogData(AnalogData const &other);
   AnalogData &operator=(AnalogData const &other);
+  void setSamplingFrequency(double fs_hz);
   void setNumScans(int nscans);
   /*:F setNumScans()
    *:D Specifies the actual number of scans in this chunk. This does not
@@ -66,23 +45,6 @@ public:
    *:D Specifies mapping for one physical channel.
    *:A int index: index within the scan.
     :  int channel: physical channel to associate with that index.
-  */
-  void read(FILE *in) throw(Exception);
-  /*:F void read(FILE *in)
-   *:D Reads back data written by write().
-   *:A FILE *in: File handle from which to read.
-   *:N Upon return, the file pointer points to immediately after the chunk
-       that was read.
-    :  If the data contained in the file has a different channel map or scan
-       count, this may involve releasing and reallocating memory.
-  */   
-  int write(FILE *out) throw(Exception);
-  /*:F int write(FILE *out)
-   *:D Writes data to a file.
-   *:A FILE *out: File handle to write to.
-   *:R Number of bytes written to file.
-   *:N Upon return, the file pointer points to immediately after the chunk
-       that was written.
   */
   QMap<int,double> writeInt16(QString ofn) throw(Exception);
   /*:F writeInt16
@@ -119,8 +81,9 @@ public:
   int getNumChannels() const { return nchannels; }
   /*:F int getNumChannels()
    *:D Return the number of channels represented in this chunk.
-   */  
-  int getChannelAtIndex(int n) const { return (n>=0 && n<MAXCHANNELS)
+   */
+  double getSamplingFrequency() const { return fs_hz; }
+  int getChannelAtIndex(int n) const { return (n>=0 && n<nchannels)
                                          ? index2channel[n] : -1; }
   /*:F int getChannelAtIndex(int n)
    *:D Return which physical channel is represented at a particular index
@@ -136,6 +99,14 @@ public:
   /*:F whereIsChannel
    *:D Returns the index of the given channel, or -1 if not included.
    */
+private:
+  int32_t nscans;
+  int32_t nchannels;
+  double fs_hz;
+  int32_t ndoubles_allocated;
+  QVector<int32_t> index2channel;
+  QHash<int32_t, int32_t> channel2index;
+  double *data; // by index
 };
 
 #endif

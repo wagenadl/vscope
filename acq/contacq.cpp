@@ -29,7 +29,7 @@ void ContAcq::dataAvFcn(int analogscans, int digitalscans, void *aux) {
 ContAcq::ContAcq() {
   ephysacq = 0;
   xml = 0;
-  adataIn = new AnalogData(1024,1);
+  adataIn = new AnalogData(1024,1, 1e4);
   ddataIn = new DigitalData(1024);
 
   ephysacq = new EPhysAcq();

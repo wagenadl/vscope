@@ -432,7 +432,7 @@ void LiveEPhys::newTimebase() {
   
   if (data)
     delete data;
-  data = new AnalogData(nscans, nchans);
+  data = new AnalogData(nscans, nchans, acqfreq_hz);
   if (contacq) {
     AnalogData const *src = contacq->adata();
     if (src) 

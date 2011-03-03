@@ -18,26 +18,26 @@ public:
   virtual ~TrialData();
   void prepare(class ParamTree const *ptree);
   void prepareSnapshot(class ParamTree const *ptree);
-  virtual QString write() const;
-  /*:F write
-   *:R Actual trial name, which may differ from trialno if there was a
-       pre-existing file. When that happens, letters are added to the
-       trialno.
-  */
+  virtual void write() const;
   virtual void read(QString dir, QString exptname, QString trialid,
 		    class ParamTree *ptree_dest);
+public:
   class AnalogData const *analogData() const { return adataIn; }
-  class DigitalData const *digitalData() const { return ddataIn; }
-  class CCDData const *ccdData(QString camid) const;
-  class AnalogData const *analogStimuli() const { return adataOut; }
-  class DigitalData const *digitalStimuli() const { return ddataOut; }
-  class XML const *getXML() const { return xml; } // only useful after read() or write()
   class AnalogData  *analogData()  { return adataIn; }
+  class DigitalData const *digitalData() const { return ddataIn; }
   class DigitalData  *digitalData()  { return ddataIn; }
+  class CCDData const *ccdData(QString camid) const;
   class CCDData  *ccdData(QString camid);
+  class AnalogData const *analogStimuli() const { return adataOut; }
   class AnalogData  *analogStimuli()  { return adataOut; }
+  class DigitalData const *digitalStimuli() const { return ddataOut; }
   class DigitalData  *digitalStimuli()  { return ddataOut; }
+  class XML const *getXML() const { return xml; }
   class XML *getXML() { return xml; } // only useful after read() or write()
+  /*:F getXML
+   *:D Only useful after read() or write().
+   */
+public:
   bool isPrepared() const { return prep; }
   bool isSnap() const { return snap; }
   bool isCCD() const { return do_ccd; }

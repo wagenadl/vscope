@@ -72,6 +72,7 @@ bool EPhysOut::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
   } else {
     setupAData_dummy();
   }
+  adata->setSamplingFrequency(ptree->find(PAR_OUTRATE).toDouble());
 
   if (ptree->find("stimVideo/enable").toBool())
     VideoProg::find().prepStim(ptree, timing, adata, ddata);
@@ -94,6 +95,7 @@ bool EPhysOut::prepareSnap(ParamTree const *ptree,
   ddata->zero();
   epho_ccd.prepare(ddata);
   setupAData_dummy();
+  adata->setSamplingFrequency(ptree->find(PAR_OUTRATE).toDouble());
   prep=true;
   
   return createDAQ(ptree);
@@ -234,7 +236,6 @@ void EPhysOut::setupAData_stim(ParamTree const *ptree) {
   int nchans = channels.size();
 
   adata->reshape(nscans,nchans);
-
   int idx=0;
   for (QList<int>::iterator i=channels.begin(); i!=channels.end(); ++i) {
     int channel = *i;

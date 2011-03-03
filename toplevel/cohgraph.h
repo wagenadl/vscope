@@ -18,7 +18,7 @@ class CohGraph: public RadialGraph {
    *:D This class heavily depends on a VSDTraces for its data.
    */
 public:
-  CohGraph(class CohData *dat=0, QWidget *parent=0);
+  CohGraph(class CohData *dat, QWidget *parent=0);
   virtual ~CohGraph();
   virtual void showEvent(class QShowEvent *);
   virtual void paintEvent(class QPaintEvent *);
@@ -26,7 +26,7 @@ public:
    *:D Redraws the current image and any ROIs
    */
 public slots:
-  void newData();
+  void updateData();
   void setRefTrace(int achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);

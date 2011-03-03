@@ -30,35 +30,9 @@ public:
    *:D This constructor allocates space for multiple scans of data.
    *:A nscans: number of scans
   */
-  DigitalData(FILE *in) throw(Exception);
-  /*:F DigitalData(FILE *in)
-   *:D This constructor reads back data written by write().
-   *:A FILE *in: file handle.
-   *:N We use file handles rather than file names in order to accommodate
-       storage of multiple chunks of data in one file.
-    :  Upon return, the file pointer points to immediately after the chunk
-       that was read.
-   */
   ~DigitalData();
   DigitalData(DigitalData const &other);
   DigitalData &operator=(DigitalData const &other);
-  void read(FILE *in) throw(Exception);
-  /*:F void read(FILE *in)
-   *:D Reads back data written by write().
-   *:A FILE *in: File handle from which to read.
-   *:N Upon return, the file pointer points to immediately after the chunk
-       that was read.
-    :  If the data contained in the file has a different scan
-       count, this may involve releasing and reallocating memory.
-  */   
-  int write(FILE *out) throw(Exception);
-  /*:F int write(FILE *out, int overwritenscans=0)
-   *:D Writes data to a file.
-   *:A FILE *out: File handle to write to.
-   *:R Number of bytes written to file.
-   *:N Upon return, the file pointer points to immediately after the chunk
-       that was written.
-  */
   void writeUInt32(QString ofn) throw(Exception);
   /*:F writeUInt32
    *:D Writes data to a file in a raw binary format.
@@ -96,10 +70,12 @@ public:
   uint32_t getMask() const { return cmask; }
   void clearMask();
   void addLine(uint32_t line);
-  /*:F getMask, clearMask, addLine
-   *:N The mask is not currently used by either DigitalIn or DigitalOut.
-  */
   bool hasLine(uint32_t line) const;
+  /*:F getMask, clearMask, addLine, hasLine
+   *:N The mask is not currently used by either DigitalIn or DigitalOut.
+   *:N Really, lines should be named because we don't want to assume that
+       the line order in here matches the connections.
+  */
 };
 
 #endif

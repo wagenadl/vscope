@@ -32,8 +32,10 @@ Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
     owndata = false;
   } else {
     data = new CohData();
-    data->newROISet(&Globals::trove->rois());
-    data->newCCDData(&Globals::trove->roidata());
+    data->setROISet(&Globals::trove->rois());
+    data->setCCDData(&Globals::trove->roidata());
+    data->setEPhys(Globals::trove->trial().analogData(),
+		   Globals::trove->trial().digitalData());
     Enumerator const *digilines = Enumerator::find("DIGILINES");
     foreach (QString cam, Connections::allCams()) {
       if (digilines->has("Frame"+cam))
@@ -41,7 +43,7 @@ Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
     }
     owndata = true;
   }
-  connect(data->currentData(), SIGNAL(newData()), SLOT(updateData()));
+  connect(data, SIGNAL(newData()), SLOT(updateData()));
 }
 
 Coherence::~Coherence() {

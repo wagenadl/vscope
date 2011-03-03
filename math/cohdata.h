@@ -25,21 +25,24 @@ private:
   CohData &operator=(CohData const &other);
 public slots:
   void setFrameLine(QString camera, int line);
-  void newROISet(class ROISet const *roiset);
-  void newEPhys(class AnalogData const *ad,
-		class DigitalData const *dd,
-		double fs_hz);
-  void newCCDData(class ROIData3Set *rs3d);
+  void setROISet(class ROISet const *roiset);
+  void setEPhys(class AnalogData const *ad,
+		class DigitalData const *dd);
+  void setCCDData(class ROIData3Set *rs3d);
   void setRefTrace(int achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
-  double getFStarHz(int id) const;
-  double getTypicalFStarHz() const;
-  QMap<int, double> const &magnitudes(); // this will validate if needed
-  QMap<int, double> const &phases();
-  double magnitude(int id); // this will validate if needed
-  double phase(int id);
   void invalidate();
+private slots:
+  void updateROIs();
+public: // these will validate if needed
+  double getFStarHz(int id);
+  double getTypicalFStarHz();
+  QMap<int, double> const &magnitudes();
+  QMap<int, double> const &phases();
+  double magnitude(int id);
+  double phase(int id);
+public:
   class ROIData3Set *currentData() const { return rs3d; }
 signals:
   void newData();
@@ -55,7 +58,6 @@ private:
   class AnalogData const *adata; // we do not own this
   class DigitalData const *ddata; // we do not own this
 private:
-  double fs_hz;
   int ref_chn; // doubles as ref_digiline
   double ref_hz; // for refFIXED mode
   QMap<int, double> coh_mag;

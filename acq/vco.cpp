@@ -80,7 +80,7 @@ void VCO::activate(ParamTree *p) {
   aout->setPollPeriod(buflen);
   aout->setTimeout(1); // hmmm...
 
-  data = new AnalogData(buflen,1);
+  data = new AnalogData(buflen, 1, fsamp_hz);
   data->defineChannel(0,aoc);
   phi=0;
   makeData();

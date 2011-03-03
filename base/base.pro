@@ -22,7 +22,8 @@ HEADERS += base26.h \
 	analogdata.h digitaldata.h \
 	xml.h unitqty.h xyabc.h \
         ccdtiming.h \
-        roicoords.h transform.h campair.h
+        roicoords.h transform.h campair.h \
+        ptrguard.h
 	   
 SOURCES += base26.cpp \
            dbg.cpp \
