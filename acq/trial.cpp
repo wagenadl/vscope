@@ -174,5 +174,5 @@ void Trial::allEPhysComplete() {
   info.setAttribute("enddate",now.toString("yyMMdd"));
   info.setAttribute("endtime",now.toString("hhmmss"));
   dat->notifyDataChange();
-  emit ended(dat->exptName(),dat->trialID());
+  emit ended(dat->exptName(), dat->trialID());
 }

@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+rm -f Makefile */Makefile
+
 if [[ $OSTYPE == "linux-gnu" ]]; then
   qmake-qt4 linux.pro
   echo Building for linux
