@@ -15,6 +15,7 @@ CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   data = memalloc<uint16_t>(allocpix, "CCDData:: constructor");
   t0_ms = 0;
   dt_ms = 0; // default value: meaningless on purpose
+  checkedout = false;
 }
 
 bool CCDData::reshape(int ser, int par, int nfr, bool free) {
@@ -30,20 +31,14 @@ bool CCDData::reshape(int ser, int par, int nfr, bool free) {
   parpix = par;
   framepix = ser*par;
   nframes = nfr;
+  if (!checkedout)
+    emit newData();
   return realloc;
 }
 
 CCDData::~CCDData() {
   if (data)
     delete [] data;
-}
-
-uint16_t *CCDData::frameData(int frame) {
-  if (frame<0)
-    return data;
-  if (frame>=nframes)
-    throw Exception("CCDData","Bad frame number","frameData");
-  return data + frame*framepix;
 }
 
 uint16_t const *CCDData::frameData(int frame) const {
@@ -54,34 +49,57 @@ uint16_t const *CCDData::frameData(int frame) const {
   return data + frame*framepix;
 }
 
+uint16_t *CCDData::frameData(CheckoutKey, int frame) {
+  if (frame<0)
+    return data;
+  if (frame>=nframes)
+    throw Exception("CCDData","Bad frame number","frameData");
+  return data + frame*framepix;
+}
+
 void CCDData::setTimeBase(double t0, double dt) {
   t0_ms = t0;
   dt_ms = dt;
-}
-
-CCDData::CCDData(CCDData const &other): CCDData_(other) {
-  data = 0;
-  copy(other);
-}
-
-void CCDData::copy(CCDData const &other) {
-  if (other.data) {
-    data = memalloc<uint16_t>(allocpix, "CCDData");
-    memcpy(data, other.data, allocpix*sizeof(uint16_t));
-  }
-}
-
-CCDData &CCDData::operator=(CCDData const &other) {
-  if (data)
-    delete [] data;
-  *(CCDData_*)this = other;
-  data = 0;
-  copy(other);
-  return *this;
+  if (!checkedout)
+    emit newData();
 }
 
 void CCDData::setDataToCanvas(Transform const &t0) {
   t = t0;
-  //  dbg("CCDData(%p)::setDataToCanvas(%g,%g,%g,%g)",this,
-  //      t.mapdx(1),t.mapdy(1),t.mapx(0),t.mapy(0));
+  if (!checkedout)
+    emit newData();
+}
+
+CCDData::CheckoutKey CCDData::checkout() {
+  checkedout = true;
+  return CheckoutKey();
+}
+
+void CCDData::cancel(CCDData::CheckoutKey) {
+  checkedout = false;
+}
+
+void CCDData::checkin(CCDData::CheckoutKey) {
+  checkedout = false;
+  emit newData();
+}
+
+CCDDataWriter::CCDDataWriter(CCDData &data): data(data) {
+  key = data.checkout();
+  canceled = false;
+}
+
+void CCDDataWriter::cancel() {
+  canceled = true;
+}
+
+CCDDataWriter::~CCDDataWriter() {
+  if (canceled)
+    data.cancel(key);
+  else
+    data.checkin(key);
+}
+
+uint16_t CCDDataWriter::frameData(int frame) {
+  return data.frameData(key, frame);
 }

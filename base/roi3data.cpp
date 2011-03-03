@@ -32,16 +32,24 @@ void ROI3Data::setROI(ROICoords const *roi) {
   valid = false;
 }
 
-void ROI3Data::setData(CCDData const *donor, CCDData const *acceptor) {
-  datDonor.setData(donor);
-  datAcceptor.setData(acceptor);
+void ROI3Data::setData(CCDData const *donor,
+		       CCDData const *acceptor,
+		       bool noupdate) {
+  datDonor.setData(donor, true);
+  datAcceptor.setData(acceptor, true);
+  if (!noupdate)
+    updateData();
+}
+
+void ROI3Data::updateData() {
   // Following is crude. Actually should think about appropriate time
   // if donor and acceptor are not the same.
+  datDonor.updateData();
+  datAcceptor.updateData();
   bool useDonor = datDonor.haveData();
   t0Ratio_ms = useDonor ? getDonorT0ms() : getAcceptorT0ms();
   dtRatio_ms = useDonor ? getDonorDTms() : getAcceptorDTms();
   int newNRatio = useDonor ? getDonorNFrames() : getAcceptorNFrames();
-  dbg("R3D(%p):setData(%p,%p) t0=%g dt=%g n=%i",this,donor,acceptor,t0Ratio_ms,dtRatio_ms,newNRatio);
   if (newNRatio != nRatio) {
     if (datRatio)
       delete datRatio;

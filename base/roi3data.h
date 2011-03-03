@@ -39,7 +39,9 @@ public:
    *:D Redefines which portion of the CCD image we care about.
        This does not cause recomputation and is thus trivially fast.
   */
-  void setData(class CCDData const *donor, class CCDData const *acceptor);
+  void setData(class CCDData const *donor,
+	       class CCDData const *acceptor,
+	       bool noupdate=false);
   /*:F setData
    *:D Redefines what CCD images we are working with.
        This does not cause recomputation and is thus trivially fast.
@@ -47,6 +49,7 @@ public:
        will simply equal the other pointer. If both are zero, the "ratio"
        data will always be zero.
   */
+  void updateData(); // same as setData, but uses old sources
   static void setFlip(bool donorflipx, bool donorflipy,
 	       bool acceptorflipx, bool acceptorflipy);
   /*:F setFlip
