@@ -61,7 +61,7 @@ public:
        call to setROI.
    *:N If ROI is null, all results will be zero.
   */
-  void setData(class CCDData const *source);
+  void setData(class CCDData const *source, bool noemit=false);
   /*:F setData
    *:D Specifies which data we are talking about. This does not immediately
        cause recalculation, rather, recalculation is postponed until the
@@ -69,6 +69,7 @@ public:
        While this is a very efficient way of doing business, it does imply
        that the data must remain available until the next call to setData.
   */
+  void updateData(bool noemit=false);
   void setFlip(bool flipx, bool flipy);
   /*:F setFlip
    *:D Specifies whether the data is flipped in the x- and or y-dimensions

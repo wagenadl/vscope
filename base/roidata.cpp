@@ -72,20 +72,27 @@ void ROIData::setFlip(bool x, bool y) {
 }
   
 
-void ROIData::setData(CCDData const *source0) {
-  if (source && source0)
-    if (source->dataToCanvas() != source0->dataToCanvas())
-      validBlobROI = false;
+void ROIData::setData(CCDData const *source0, bool noemit) {
+  if (source0==0 || source==0 ||
+      source->dataToCanvas() != source0->dataToCanvas()) {
+    validBlobROI = false;
+    if (source0) {
+      tinv = source0->dataToCanvas().inverse();
+      validTransform = true;
+    } else {
+      validTransform = false;
+    }
+  }
   source = source0;
+  updateData(noemit);
+}
+
+void ROIData::updateData(bool noemit) {
   validRaw = false;
   validDebleached = false;
-  if (source) {
-    tinv = source->dataToCanvas().inverse();
-    validTransform = true;
-  } else {
-    validTransform = false;
-  }
 }
+
+
 
 void ROIData::setROI(ROICoords const *roi0) {
   roi = roi0;
