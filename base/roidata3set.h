@@ -35,7 +35,11 @@ public:
   ROISet const *getROISet() const { return d.roiset; }
   bool haveData(int id) const;
   QList<int> allIDs() const;
-  void setData(QString camid, class CCDData const *acceptor); // does not cause updateData. Call updateData directly
+  void setData(QString camid, class CCDData const *acceptor);
+  /*:F setData
+   *:N Does not call updateData. Therefore, does not cause emission of
+       changedXXX signals.
+  */
 public slots:
   void changeROI(int id);
   void changeROIs();
