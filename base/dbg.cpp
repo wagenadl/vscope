@@ -1,6 +1,7 @@
 // dbg.cpp
 
 #include <base/dbg.h>
+#include <base/object.h>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -107,72 +108,46 @@ DbgFile &DbgFile::operator<<(QString const &str) {
   return *this;
 }
 
-//Dbg &Dbg::operator<<(QString const &x) {
-//  *(QTextStream*)this << x;
-//  return *this;
-//}
-//
-//Dbg &Dbg::operator<<(int x) {
-//  *(QTextStream*)this << x;
-//  return *this;
-//}
-//
-//Dbg &Dbg::operator<<(unsigned int x) {
-//  *(QTextStream*)this << x;
-//  return *this;
-//}
-//
-//Dbg &Dbg::operator<<(void const *x) {
-//  *(QTextStream*)this << x;
-//  return *this;
-//}
-//
-//Dbg &Dbg::operator<<(char const *x) {
-//  *(QTextStream*)this << x;
-//  return *this;
-//}
-//
-//Dbg &Dbg::operator<<(double x) {
-//  *(QTextStream*)this << x;
-//  return *this;
-//}
-
-Dbg &Dbg::operator<<(class QPoint const &x) {
+Dbg &Dbg::operator<<(QPoint const &x) {
   return *this << QString("(%1,%2)")
     .arg(x.x()).arg(x.y());
 }
 
-Dbg &Dbg::operator<<(class QPointF const &x) {
+Dbg &Dbg::operator<<(QPointF const &x) {
   return *this << QString("(%1,%2)")
     .arg(x.x()).arg(x.y());
 }
 
-Dbg &Dbg::operator<<(class QSize const &x) {
+Dbg &Dbg::operator<<(QSize const &x) {
   return *this << QString("(%1x%2)")
     .arg(x.width()).arg(x.height());
 }
 
-Dbg &Dbg::operator<<(class QSizeF const &x) {
+Dbg &Dbg::operator<<(QSizeF const &x) {
   return *this << QString("(%1x%2)")
     .arg(x.width()).arg(x.height());
 }
 
-Dbg &Dbg::operator<<(class QRect const &x) {
+Dbg &Dbg::operator<<(QRect const &x) {
   return *this << QString("(%1x%2+%3+%4)")
     .arg(x.width()).arg(x.height())
     .arg(x.left()).arg(x.top());
 }
 
-Dbg &Dbg::operator<<(class QRectF const &x) {
+Dbg &Dbg::operator<<(QRectF const &x) {
   return *this << QString("(%1x%2+%3+%4)")
     .arg(x.width()).arg(x.height())
     .arg(x.left()).arg(x.top());
 }
 
-Dbg &Dbg::operator<<(class QLine const &x) {
+Dbg &Dbg::operator<<(QLine const &x) {
   return *this << x.p1() << "-" << x.p2();
 }
 
-Dbg &Dbg::operator<<(class QLineF const &x) {
+Dbg &Dbg::operator<<(QLineF const &x) {
   return *this << x.p1() << "-" << x.p2();
+}
+
+Dbg &Dbg::operator<<(QObject const *x) {
+  return *this << objName(x);
 }

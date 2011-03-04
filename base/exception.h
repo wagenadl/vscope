@@ -23,6 +23,7 @@ public:
     :  QString aux: optional auxiliary identifying information about
          the issuer.
   */
+  Exception(class QObject const *issuer, QString msg="", QString aux="");
   Exception(Exception const &);
   virtual ~Exception();
   void addMessage(QString msg);
@@ -46,6 +47,8 @@ public:
    *:A bool onof: true to enable reporting at construction time, false to
        disable.
   */
+private:
+  void construct(QString issuer, QString msg, QString aux);
 protected: // read only for descendents
   QString issuer;
   QString message;
