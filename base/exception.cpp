@@ -2,7 +2,7 @@
 
 #include <base/exception.h>
 #include <base/dbg.h>
-
+#include <base/object.h>
 #include <QQueue>
 
 /* Note that these classes cannot use memalloc<...>, because that could easily
@@ -27,6 +27,14 @@ void Exception::immediateReport(bool onof) {
 }
 
 Exception::Exception(QString issuer_, QString msg_, QString aux_) {
+  construct(issuer_, msg_, aux_);
+}
+
+Exception::Exception(QObject const *issuer_, QString msg_, QString aux_) {
+  construct(objName(issuer_), msg_, aux_);
+}
+
+void Exception::construct(QString issuer_, QString msg_, QString aux_) {
   backtrace_data = 0;
   backtrace_count = 0;
   issuer = issuer_;
