@@ -6,6 +6,7 @@
 
 KeyAccess::KeyAccess(QObject *parent): QObject(parent) {
   mustEmit = false;
+  exclusive = false;
 }
 
 KeyAccess::~KeyAccess() {
@@ -26,6 +27,8 @@ bool KeyAccess::checkedOut(KeyAccess::WriteKey *key) const {
 }
 
 KeyAccess::WriteKey *KeyAccess::checkout() {
+  if (exclusive && !keys.isEmpty())
+    throw Exception(myName(), "Requested second checkout though exclusive");
   WriteKey *key = new WriteKey();
   keys.insert(key);
   return key;
@@ -63,11 +66,18 @@ void KeyAccess::emitUnlessCheckedOut() {
   }
 }
 
+void KeyAccess::makeExclusive(bool e) {
+  exclusive = e;
+  if (exclusive && keys.size()>1)
+    throw Exception(myName(),
+		    "Cannot make exclusive: multiple keys checked out");
+}
+
 QString KeyAccess::myName() const {
   QString obj = objectName();
   if (obj.isEmpty())
-    return metaObject()->className() + QString("@")
-      + QString::number((long int)(void*)this);
+    return metaObject()->className() + QString("@0x")
+      + QString::number((long int)(void*)this, 16);
   else
     return obj;
 }
