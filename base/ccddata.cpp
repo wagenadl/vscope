@@ -5,9 +5,6 @@
 #include <base/memalloc.h>
 #include <base/dbg.h>
 
-class CCDData::CheckoutKey {
-};
-
 CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   serpix = serpix_;
   parpix = parpix_;
@@ -18,7 +15,6 @@ CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   data = memalloc<uint16_t>(allocpix, "CCDData:: constructor");
   t0_ms = 0;
   dt_ms = 0; // default value: meaningless on purpose
-  mustEmit = false;
 }
 
 bool CCDData::reshape(int ser, int par, int nfr, bool free) {
@@ -46,27 +42,22 @@ CCDData::~CCDData() {
 uint16_t const *CCDData::frameData(int frame) const {
   if (frame<0)
     return data;
-  if (frame>=nframes)
+  else if (frame<nframes)
+    return data + frame*framepix;
+  else
     throw Exception("CCDData","Bad frame number","frameData");
-  return data + frame*framepix;
+
 }
 
-uint16_t *CCDData::frameData(CheckoutKey *, int frame) {
+uint16_t *CCDData::frameData(WriteKey *key, int frame) {
+  verifyKey(key,"frameData called with unknown key");
   if (frame<0)
     return data;
-  if (frame>=nframes)
+  else if (frame<nframes)
+    return data + frame*framepix;
+  else
     throw Exception("CCDData","Bad frame number","frameData");
-  return data + frame*framepix;
 }
-
-void CCDData::emitUnlessCheckedOut() {
-  if (keys.isEmpty()) {
-    mustEmit = false;
-    emit newData();
-  } else {
-    mustEmit = true;
-  }
-}  
 
 void CCDData::setTimeBase(double t0, double dt) {
   t0_ms = t0;
@@ -77,47 +68,4 @@ void CCDData::setTimeBase(double t0, double dt) {
 void CCDData::setDataToCanvas(Transform const &t0) {
   t = t0;
   emitUnlessCheckedOut();
-}
-
-CCDData::CheckoutKey *CCDData::checkout() {
-  CheckoutKey *key = new CheckoutKey();
-  keys.insert(key);
-  return key;
-}
-
-void CCDData::cancel(CCDData::CheckoutKey *key) {
-  if (!keys.contains(key))
-    throw Exception("CCDData", "Canceling with unknown key");
-  keys.remove(key);
-  delete key;
-  if (mustEmit)
-    emitUnlessCheckedOut();
-}
-
-void CCDData::checkin(CCDData::CheckoutKey *key) {
-  if (!keys.contains(key))
-    throw Exception("CCDData", "Checking in with unknown key");
-  keys.remove(key);
-  delete key;
-  emitUnlessCheckedOut();
-}
-
-CCDDataWriter::CCDDataWriter(CCDData &data): data(data) {
-  key = data.checkout();
-  canceled = false;
-}
-
-void CCDDataWriter::cancel() {
-  canceled = true;
-}
-
-CCDDataWriter::~CCDDataWriter() {
-  if (canceled)
-    data.cancel(key);
-  else
-    data.checkin(key);
-}
-
-uint16_t *CCDDataWriter::frameData(int frame) {
-  return data.frameData(key, frame);
 }

@@ -23,7 +23,7 @@ HEADERS += base26.h \
 	xml.h unitqty.h xyabc.h \
         ccdtiming.h \
         roicoords.h transform.h campair.h \
-        ptrguard.h
+        ptrguard.h keyaccess.h
 	   
 SOURCES += base26.cpp \
            dbg.cpp \
@@ -39,7 +39,8 @@ SOURCES += base26.cpp \
 	analogdata.cpp digitaldata.cpp \
 	xml.cpp unitqty.cpp xyabc.cpp \
         ccdtiming.cpp memalloc.cpp \
-        roicoords.cpp transform.cpp
+        roicoords.cpp transform.cpp \
+        keyaccess.cpp
 
 
 
