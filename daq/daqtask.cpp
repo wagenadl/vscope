@@ -33,6 +33,7 @@ void daqTask::setFrequency(double freq_hz) throw(daqException) {
 }
 
 void daqTask::commit() throw(daqException) {
+  dbg("daqtask(%p/%s)::commit",this,name());
   if (committed)
     return;
   preCommit();
@@ -65,6 +66,7 @@ void daqTask::postCommit() throw(daqException) {
 }
 
 void daqTask::uncommit() throw(daqException) {
+  dbg("daqtask(%p/%s)::uncommit",this,name());
   // daqTry(DAQmxStopTask(th),"daqTask","Cannot stop task"); // should we do this?
 
   daqTry(DAQmxClearTask(th),"daqTask","Cannot clear task");
@@ -96,7 +98,7 @@ void daqTask::callbackEvery(int) {
 }
 
 void daqTask::preStart() throw(daqException) {
-  dbg("daqTask(%p/%s):prestart",this,name());
+  dbg("daqTask(%p/%s):prestart %i",this,name(), th);
   commit();
   
   daqTry(DAQmxRegisterDoneEvent(th,0,
@@ -130,14 +132,16 @@ void daqTask::preStart() throw(daqException) {
 }
 
 void daqTask::postStart() throw(daqException) {
-  dbg("daqTask(%p/%s)::poststart",this,name());
+  dbg("daqTask(%p/%s)::poststart %i",this,name(),th);
   daqTry(DAQmxStartTask(th),"daqTask","Cannot start task");
-  dbg("  daqtask:poststart: started");
+  dbg("  daqtask:poststart: started %i", th);
 }
 
 void daqTask::start() throw(daqException) {
+  dbg("daqTask(%p/%s)::start",this,name());
   preStart();
   postStart();
+  dbg("daqTask(%p/%s)::start ok",this,name());
 }
 
 bool daqTask::isRunning() throw(daqException) {
@@ -176,26 +180,28 @@ void daqTask::setTriggering(bool trg) throw(daqException) {
 }
 
 void daqTask::preStop() throw(daqException) {
-  dbg("daqtask(%p/%s)::prestop",this,name());
+  dbg("daqtask(%p/%s)::prestop %i",this,name(), th);
   daqTry(DAQmxStopTask(th),"daqTask","Cannot stop task");
 }
 
 void daqTask::postStop() throw(daqException) {
-  dbg("daqtask(%p/%s)::poststop",this,name());
+  dbg("daqtask(%p/%s)::poststop %i",this,name(), th);
 }
 
 void daqTask::stop() throw(daqException) {
+  dbg("daqtask(%p/%s)::stop",this,name());
   preStop();
   postStop();
+  dbg("daqtask(%p/%s)::stop ok",this,name());
 }
 
 void daqTask::preAbort() throw(daqException) {
-  dbg("daqtask(%p/%s)::preabort",this,name());
+  dbg("daqtask(%p/%s)::preabort %i",this,name(), th);
   daqTry(DAQmxTaskControl(th,DAQmx_Val_Task_Abort),"daqTask","Cannot abort task");
 }
 
 void daqTask::postAbort() throw(daqException) {
-  dbg("daqtask(%p/%s)::postabort",this,name());
+  dbg("daqtask(%p/%s)::postabort %i",this,name(), th);
   stop();
   uncommit();
 }
