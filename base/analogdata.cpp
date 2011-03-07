@@ -13,16 +13,16 @@ AnalogData::AnalogData(int nscans_, int nchannels_, double fs_hz_) {
   ndoubles_allocated = nchannels * nscans;
   data = memalloc<double>(ndoubles_allocated, "AnalogData constructor");
 
-  index2channel.resize(nchannels);
+  index2id.resize(nchannels);
   index2scale.resize(nchannels);
   index2unit.resize(nchannels);
-  channel2index.clear();
+  id2index.clear();
   for (int n=0; n<nchannels; n++) {
     QString id ="A" + QString::number(n);
-    index2channel[n] = id;
+    index2id[n] = id;
     index2scale[n] = 1;
     index2unit[n] = "V";
-    channel2index[id] = n;
+    id2index[id] = n;
   }
 }
 
@@ -56,37 +56,37 @@ bool AnalogData::reshape(int nscans1, int nchannels1, bool free) {
   nscans = nscans1;
   nchannels = nchannels1;
 
-  index2channel.resize(nchannels);
+  index2id.resize(nchannels);
   index2unit.resize(nchannels);
   index2scale.resize(nchannels);
   // add names for new channels
   for (int n=nchannels1; n<nchannels; n++) {
     QString id = "A" + QString::number(n);
-    index2channel[n] = id;
+    index2id[n] = id;
     index2scale[n] = 1;
     index2unit[n] = "V";
-    channel2index[id] = n;
+    id2index[id] = n;
   }
   // drop names for old channels
-  foreach (QString c, channel2index.keys())
-    if (channel2index[c]>=nchannels)
-      channel2index.remove(c);
+  foreach (QString c, id2index.keys())
+    if (id2index[c]>=nchannels)
+      id2index.remove(c);
   
   emitUnlessCheckedOut();
   return r;
 }
 
-void AnalogData::defineChannel(int index, QString channel,
+void AnalogData::defineChannel(int index, QString id,
 			       double scale, QString unit) {
   if (index<0 || index>=nchannels)
     throw Exception("AnalogData", "Inappropriate channel definition");
 
-  channel2index.remove(index2channel[index]); // drop old definition
+  id2index.remove(index2id[index]); // drop old definition
   
-  index2channel[index] = channel;
+  index2id[index] = id;
   index2scale[index] = scale;
   index2unit[index] = unit;
-  channel2index[channel] = index;
+  id2index[id] = index;
   
   emitUnlessCheckedOut();
 }
@@ -107,8 +107,8 @@ void AnalogData::write(QString ofn, QDomElement elt) {
     QDomElement channel = elt.ownerDocument().createElement("channel");
     elt.appendChild(channel);
     channel.setAttribute("idx", QString::number(n));
-    channel.setAttribute("id", index2channel[n]);
-    UnitQty scl(scales[index2channel[n]]*index2scale[n],
+    channel.setAttribute("id", index2id[n]);
+    UnitQty scl(scales[index2id[n]]*index2scale[n],
 		index2unit[n]);
     channel.setAttribute("scale", scl.pretty(6));
   }
@@ -149,7 +149,7 @@ AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
       for (int c=0; c<nchannels; c++) 
 	*bp++ = int16_t(*dp++ * 32767 / range[c]);
     int nbytes = nchannels*2*now;
-    if (ofd.write((char const *)(int16_t*)buffer, nbytes) != nbytes)
+    if (ofd.write((char const *)buffer.ptr(), nbytes) != nbytes)
       throw SysExc("AnalogData::writeInt16: Cannot write '" + ofn + "'");
     scansleft -= now;
   }
@@ -157,7 +157,7 @@ AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
 
   ScaleMap steps;
   for (int c=0; c<nchannels; c++)
-    steps[index2channel[c]] = range[c]/32767;
+    steps[index2id[c]] = range[c]/32767;
   return steps;
 }
 
@@ -169,14 +169,49 @@ void AnalogData::read(QString ifn, QDomElement elt) {
 
   KeyGuard guard(this);
   
-  AnalogData::ScaleMap scales;
-  // etcetera
+  bool ok;
+  fs_hz = analog.attribute("rate").toDouble(&ok);
+  if (!ok)
+    throw Exception("AnalogData", "Cannot read sampling rate from xml");
+  int scans = analog.attribute("scans").toInt(&ok);
+  if (!ok)
+    throw Exception("AnalogData","Cannot read number of scans from xml");
+  int chans = analog.attribute("chans").toInt(&ok);
+  if (!ok)
+    throw Exception("Trial","Cannot read number of channels from xml",
+		    "read");
+  QString dtyp = analog.attribute("type");
+  if (dtyp != "int16")
+    throw Exception("Trial",
+		    "Only know how read analog data of type 'int16', not '"
+		    + dtyp + "'", "read");
+  reshape(scans, chans);
+  index2id.resize(chans);
+  index2scale.clear();
+  index2unit.clear();
+  id2index.clear();
+  ScaleMap scales;
+  for (QDomElement elt=analog.firstChildElement("channel");
+       !elt.isNull(); elt=elt.nextSiblingElement("channel")) {
+    int idx = elt.attribute("idx").toInt(&ok);
+    if (!ok)
+      throw Exception("Trial","Cannot read channel index from xml","read");
+    QString id = elt.attribute("id");
+    UnitQty scl(elt.attribute("scale"));
+    index2id[idx] = id;
+    id2index[id] = idx;
+    index2unit[idx] = scl.unitEPhys();
+    index2scale[idx] = 1;
+    scales[id] = scl.toDouble(index2unit[idx]);
+  }
   readInt16(ifn, scales);
+  if (nscans != scans)
+    throw Exception("AnalogData", "Scan count mismatch between data and xml");
 }
 
 void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps) {
   for (int c=0; c<nchannels; c++)
-    if (!steps.contains(index2channel[c]))
+    if (!steps.contains(index2id[c]))
       throw Exception("AnalogData",
 		      "Stepsize not specified for some channels",
 		      "readInt16");
@@ -202,25 +237,25 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps) {
     if (now>1024)
       now=1024;
     int nbytes = nchannels*2*now;
-    if (ifd.read((char *)(int16_t*)buffer, nbytes) != nbytes)
+    if (ifd.read((char *)buffer.ptr(), nbytes) != nbytes)
       throw SysExc("AnalogData::readInt16: Cannot read '" + ifn + "'");
 
     int16_t *bp = buffer;
     for (int s=0; s<now; s++)
       for (int c=0; c<nchannels; c++)
-	*dp++ = *bp++ * steps[index2channel[c]];
+	*dp++ = *bp++ * steps[index2id[c]];
     scansleft-=now;
   }
   emitUnlessCheckedOut();
 }
 
 bool AnalogData::contains(QString ch) const {
-  return channel2index.contains(ch);
+  return id2index.contains(ch);
 }
 
 int AnalogData::whereIsChannel(QString ch) const {
   return contains(ch)
-    ? channel2index[ch]
+    ? id2index[ch]
     : -1;
 }
 
@@ -231,22 +266,22 @@ void AnalogData::setSamplingFrequency(double f) {
 
 double const *AnalogData::channelData(QString channel) const {
   if (contains(channel)) 
-    return data + channel2index[channel];
+    return data + id2index[id];
   else
     return data;
 }
 
-double *AnalogData::channelData(AnalogData::WriteKey *key, QString channel) {
+double *AnalogData::channelData(AnalogData::WriteKey *key, QString id) {
   verifyKey(key, "channelData");
-  if (contains(channel)) 
-    return data + channel2index[channel];
+  if (contains(id)) 
+    return data + id2index[id];
   else
     return data;
 }
 
 QString AnalogData::getChannelAtIndex(int n) const {
   if (n>=0 && n<nchannels)
-    return index2channel[n];
+    return index2id[n];
   else
     return "?";
 }

@@ -8,10 +8,12 @@
 #include <stdio.h>
 #include <base/memalloc.h>
 
-DigitalData::DigitalData(int nscans_) throw(Exception) {
+DigitalData::DigitalData(int nscans_, double fs) {
+  fs_hz = fs;
   nallocated = nscans = nscans_;
   data = 0;
-  data = memalloc<uint32_t>(nscans, "DigitalData constructor");
+  data = memalloc<DataType>(nscans, "DigitalData constructor");
+  cmask = 0;
 }
 
 DigitalData::~DigitalData() {
@@ -22,23 +24,16 @@ DigitalData::~DigitalData() {
   }
 }
 
-/* Digital data chunk format:
-   +0 DD_SECRETCODE
-   +4 number of scans
-   +8 data
-   +k end
-
-   Here k is 8+4*number of scans.
-
-   This may be embedded in a larger file; if so the container will want to keep
-   track of chunk lengths.
-*/
-
 void DigitalData::setNumScans(int nscans1) {
   if (nscans1>nallocated)
     throw Exception("DigitalData","Noncredible number of scans","setNumScans");
   nscans = nscans1;
-}		   
+}
+
+void DigitalData::setSamplingFrequency(double f) {
+  fs_hz = f;
+}
+
 
 bool DigitalData::reshape(int nscans1, bool free) {
   bool r=false;
@@ -46,7 +41,7 @@ bool DigitalData::reshape(int nscans1, bool free) {
       (free && (nscans1 < nallocated))) {
     if (data)
       delete [] data;
-    data = memalloc<uint32_t>(nscans1, "AnalogData");
+    data = memalloc<DataType>(nscans1, "AnalogData");
     nallocated = nscans1;
     r=true;
   }
@@ -54,21 +49,47 @@ bool DigitalData::reshape(int nscans1, bool free) {
   return r;
 }
 
-void DigitalData::writeUInt32(QString ofn) throw(Exception) {
-  FILE *ofd = fopen(qPrintable(ofn),"wb");
-  if (!ofd)
-    throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
-
-  if (int32_t(fwrite(data,4,nscans,ofd))!=nscans) {
-    fclose(ofd);
-    throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
+void DigitalData::write(QString ofn, QDomElement elt) {
+  if (elt.tagName()!="digital") {
+    QDomElement e = elt.ownerDocument().createElement("digital");
+    elt.appendChild(e);
+    elt = e;
   }
-
-  if (fclose(ofd))
-    throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
+  elt.setAttribute("rate", UnitQty(fs_hz,"Hz").pretty(6));
+  elt.setAttribute("type","uint32");
+  elt.setAttribute("typebytes","4");
+  elt.setAttribute("scans", QString::number(nscans));
+  foreach (unsigned int n, line2id.keys()) {
+    QDomElement line = elt.ownerDocument().createElement("line");
+    elt.appendChild(line);
+    channel.setAttribute("idx", QString::number(n));
+    channel.setAttribute("id", line2id[n]);
+  }
 }
 
-void DigitalData::readUInt32(QString ifn) throw(Exception) {
+void DigitalData::writeUInt32(QString ofn) {
+  QFile ofd(ofn);
+  if (!ofd.open(QFile::WriteOnly))
+    throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
+  int nbytes = nscans*4;
+  if (ofd.write((char const *)data, nbytes) != nbytes)
+    throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
+  ofd.close();
+}
+
+void DigitalData::read(QString ifn, QDomElement elt) {
+  if (elt.tagName()!="digital")
+    elt = elt.firstChildElement("digital");
+  if (elt.isNull())
+    throw Exception("DigitalData", "Cannot find xml info");
+
+  KeyGuard guard(this);
+  /* Read aux. info from xml and use it! */
+  readUInt32(ifn);
+  
+}
+
+void DigitalData::readUInt32(QString ifn) {
   struct stat s;
   if (stat(qPrintable(ifn),&s))
     throw SysExc("DigitalData::readUInt32: Cannot stat '" + ifn + "'");
@@ -93,40 +114,33 @@ void DigitalData::readUInt32(QString ifn) throw(Exception) {
 }
 
 void DigitalData::clearMask() {
-  cmask=0;
+  setMask(0);
 }
 
-void DigitalData::addLine(uint32_t line) {
-  uint32_t one = 1;
+void DigitalData::setMask(DataType mask) {
+  cmask = mask;
+  ensureIDs();
+}
+
+void DigitalData::addLine(unsigned int line) {
+  DataType one = 1;
   cmask |= one<<line;
+  ensureIDs();
 }
 
-bool DigitalData::hasLine(uint32_t line) const {
-  uint32_t one = 1;
-  uint32_t msk = one<<line;
-  return (cmask & msk) != 0;
+void DigitalData::defineLine(unsigned int line, QString id) {
+  if (hasLine(line)) 
+    id2line.remove(line2id[line]);
+  line2id[line] = id;
+  id2line[id] = line;
 }
 
-DigitalData::DigitalData(DigitalData const &other):
-  DigitalData_(other) {
-  data = 0;
-  if (other.data) {
-    reshape(other.nscans);
-    memcpy(data, other.data, nscans*sizeof(uint32_t));
-  }
+bool hasLine(QString id) const {
+  return id2line.contains(id);
 }
 
-
-DigitalData &DigitalData::operator=(DigitalData const &other) {
-  if (data)
-    delete [] data;
-  *(DigitalData_*)this = other;
-  data = 0;
-  if (other.data) {
-    reshape(other.nscans);
-    memcpy(data, other.data, nscans*sizeof(uint32_t));
-  }
-  return *this;
+bool DigitalData::hasLine(unsigned int line) const {
+  return line2id.contains(line);
 }
 
 void DigitalData::zero() {

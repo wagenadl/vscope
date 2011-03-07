@@ -40,15 +40,6 @@ void KeyAccess::verifyKey(KeyAccess::WriteKey *key, QString msg) const {
 		    msg.isEmpty() ? "Key verification failed" : msg);
 }
 
-void KeyAccess::cancel(KeyAccess::WriteKey *key) {
-  if (!keys.contains(key))
-    throw Exception(myName(), "Canceling with unknown key");
-  keys.remove(key);
-  delete key;
-  if (mustEmit)
-    emitUnlessCheckedOut();
-}
-
 void KeyAccess::checkin(KeyAccess::WriteKey *key) {
   if (!keys.contains(key))
     throw Exception(myName(), "Checking in with unknown key");
@@ -87,12 +78,6 @@ KeyGuard::KeyGuard(KeyAccess &src): src(src) {
 }
 
 KeyGuard::~KeyGuard() {
-  if (key_) 
-    src.checkin(key_);
+  src.checkin(key_);
 }
 
-void KeyGuard::cancel() {
-  if (key_)
-    src.cancel(key_);
-  key_ = 0;
-}

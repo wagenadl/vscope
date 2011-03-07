@@ -55,6 +55,7 @@ public:
    *:D Writes data to a new file in a compact binary file format.
    *:R Value of digital steps for each channel (in DAQ input Volts).
    */
+  void read(QString ifn, QDomElement elt);
   void readInt16(QString ifn, ScaleMap const &steps);
   /*:F readInt16
    *:D Reads data from a file created by writeInt16(). Unlike read(), this
@@ -110,10 +111,10 @@ private:
   int32_t nchannels;
   double fs_hz;
   int32_t ndoubles_allocated;
-  QVector<QString> index2channel;
+  QVector<QString> index2id;
   QVector<double> index2scale;
   QVector<QString> index2unit;
-  QHash<QString, int32_t> channel2index;
+  QHash<QString, int32_t> id2index;
   double *data; // by index
 };
 

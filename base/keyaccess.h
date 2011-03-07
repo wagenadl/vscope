@@ -18,17 +18,12 @@ public:
    */
   WriteKey *checkout();
   void checkin(WriteKey *);
-  void cancel(WriteKey *);
-  /*:F checkout, checkin, cancel
+  /*:F checkout, cancel
    *:D To gain write access to the data, you must request a key using
        checkout(). Once you're done writing, call checkin() with the same
-       key. If you decide not to write, call cancel().
+       key.
        newData() is emitted upon final checkin.
-   *:N Slightly counterintuitively, if two clients check out, and one checks
-       in first after which the other cancels, a signal is emitted at the
-       time the second client cancels.
-   *:N Do *not* delete keys yourself. Call either checkin or cancel (but not
-       both).
+   *:N Do *not* delete keys yourself. Call checkin.
    */
   void makeExclusive(bool exclusive=true);
   /*:F makeExclusive
@@ -81,12 +76,7 @@ public:
   KeyGuard(KeyAccess &src);
   ~KeyGuard();
   /*:F destructor
-   *:D Checks in the key unless cancel() has been called.
-   */
-  void cancel();
-  /*:F cancel
-   *:D Calls cancel() on the source of the key. The key becomes invalid.
-   *:N Subsequent cancellations have no effect.
+   *:D Checks in the key.
    */
   KeyAccess::WriteKey *key() { return key_; }
 private:
