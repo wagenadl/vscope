@@ -36,13 +36,14 @@ AnalogData::~AnalogData() {
 }
 
 void AnalogData::setNumScans(int nscans1) {
+  KeyGuard guard(*this);
   if (nscans1*nchannels>ndoubles_allocated)
     throw Exception("AnalogData","Noncredible number of scans","setNumScans");
   nscans = nscans1;
-  emitUnlessCheckedOut();
 }		   
 
 bool AnalogData::reshape(int nscans1, int nchannels1, bool free) {
+  KeyGuard guard(*this);
   int needed=nscans1*nchannels1;
   bool r=false;
   if (!data || needed > ndoubles_allocated ||
@@ -78,6 +79,7 @@ bool AnalogData::reshape(int nscans1, int nchannels1, bool free) {
 
 void AnalogData::defineChannel(int index, QString id,
 			       double scale, QString unit) {
+  KeyGuard guard(*this);
   if (index<0 || index>=nchannels)
     throw Exception("AnalogData", "Inappropriate channel definition");
 
@@ -97,7 +99,9 @@ void AnalogData::write(QString ofn, QDomElement elt) {
     elt.appendChild(e);
     elt = e;
   }
+
   ScaleMap scales = writeInt16(ofn);
+
   elt.setAttribute("channels", QString::number(nchannels));
   elt.setAttribute("type","int16");
   elt.setAttribute("typebytes","2");
@@ -162,25 +166,25 @@ AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
 }
 
 void AnalogData::read(QString ifn, QDomElement elt) {
+  KeyGuard guard(*this);
+
   if (elt.tagName()!="analog")
     elt = elt.firstChildElement("analog");
   if (elt.isNull())
     throw Exception("AnalogData", "Cannot find xml info");
-
-  KeyGuard guard(this);
   
   bool ok;
-  fs_hz = analog.attribute("rate").toDouble(&ok);
+  fs_hz = elt.attribute("rate").toDouble(&ok);
   if (!ok)
     throw Exception("AnalogData", "Cannot read sampling rate from xml");
-  int scans = analog.attribute("scans").toInt(&ok);
+  int scans = elt.attribute("scans").toInt(&ok);
   if (!ok)
     throw Exception("AnalogData","Cannot read number of scans from xml");
-  int chans = analog.attribute("chans").toInt(&ok);
+  int chans = elt.attribute("chans").toInt(&ok);
   if (!ok)
     throw Exception("Trial","Cannot read number of channels from xml",
 		    "read");
-  QString dtyp = analog.attribute("type");
+  QString dtyp = elt.attribute("type");
   if (dtyp != "int16")
     throw Exception("Trial",
 		    "Only know how read analog data of type 'int16', not '"
@@ -191,13 +195,13 @@ void AnalogData::read(QString ifn, QDomElement elt) {
   index2unit.clear();
   id2index.clear();
   ScaleMap scales;
-  for (QDomElement elt=analog.firstChildElement("channel");
-       !elt.isNull(); elt=elt.nextSiblingElement("channel")) {
-    int idx = elt.attribute("idx").toInt(&ok);
+  for (QDomElement e=elt.firstChildElement("channel");
+       !e.isNull(); e=e.nextSiblingElement("channel")) {
+    int idx = e.attribute("idx").toInt(&ok);
     if (!ok)
       throw Exception("Trial","Cannot read channel index from xml","read");
-    QString id = elt.attribute("id");
-    UnitQty scl(elt.attribute("scale"));
+    QString id = e.attribute("id");
+    UnitQty scl(e.attribute("scale"));
     index2id[idx] = id;
     id2index[id] = idx;
     index2unit[idx] = scl.unitEPhys();
@@ -210,6 +214,8 @@ void AnalogData::read(QString ifn, QDomElement elt) {
 }
 
 void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps) {
+  KeyGuard guard(*this);
+
   for (int c=0; c<nchannels; c++)
     if (!steps.contains(index2id[c]))
       throw Exception("AnalogData",
@@ -260,12 +266,12 @@ int AnalogData::whereIsChannel(QString ch) const {
 }
 
 void AnalogData::setSamplingFrequency(double f) {
+  KeyGuard guard(*this);
   fs_hz = f;
-  emitUnlessCheckedOut();
 }
 
-double const *AnalogData::channelData(QString channel) const {
-  if (contains(channel)) 
+double const *AnalogData::channelData(QString id) const {
+  if (contains(id)) 
     return data + id2index[id];
   else
     return data;

@@ -46,8 +46,6 @@ class ROIData: public ROIData_ {
 public:
   ROIData();
   ~ROIData();
-  ROIData(ROIData const &other);
-  ROIData &operator=(ROIData const &other);
   void setDebleach(Debleach d);
   /*:F setDebleach
    *:D Specifies how DebleachedDFF gets calculated.
@@ -99,8 +97,6 @@ private:
   bool makePolyBitmap();
   bool makeXYRRABitmap();
   bool makeNullBitmap();
-private:
-  void copy(ROIData const &other);
 };
 
 #endif

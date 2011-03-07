@@ -16,8 +16,8 @@ public:
   /*:C WriteKey
    *:D Opaque data type to handle access permissions.
    */
-  WriteKey *checkout();
-  void checkin(WriteKey *);
+  virtual WriteKey *checkout();
+  virtual void checkin(WriteKey *);
   /*:F checkout, cancel
    *:D To gain write access to the data, you must request a key using
        checkout(). Once you're done writing, call checkin() with the same
@@ -55,7 +55,6 @@ private:
 private:
   QSet<WriteKey *> keys;
   bool exclusive;
-  bool mustEmit;
 };
 
 class KeyGuard {
@@ -78,7 +77,7 @@ public:
   /*:F destructor
    *:D Checks in the key.
    */
-  KeyAccess::WriteKey *key() { return key_; }
+  KeyAccess::WriteKey *key() const { return key_; }
 private:
   KeyAccess &src;
   KeyAccess::WriteKey *key_;

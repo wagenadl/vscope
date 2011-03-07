@@ -5,7 +5,6 @@
 #include <base/exception.h>
 
 KeyAccess::KeyAccess(QObject *parent): QObject(parent) {
-  mustEmit = false;
   exclusive = false;
 }
 
@@ -50,10 +49,7 @@ void KeyAccess::checkin(KeyAccess::WriteKey *key) {
 
 void KeyAccess::emitUnlessCheckedOut() {
   if (keys.isEmpty()) {
-    mustEmit = false;
     emit newData();
-  } else {
-    mustEmit = true;
   }
 }
 

@@ -90,6 +90,7 @@ void ROIData::setData(CCDData const *source0, bool noemit) {
 void ROIData::updateData(bool noemit) {
   validRaw = false;
   validDebleached = false;
+  // should I be emitting?? what should I emit??
 }
 
 
@@ -473,46 +474,3 @@ double const *ROIData::getDebleachedDFF() {
   return dataDebleached;
 }
 
-ROIData::ROIData(ROIData const &other): ROIData_(other) {
-  dataRaw=0;
-  dataDebleached=0;
-  bitmap=0;
-  blobROI=0;
-  copy(other);
-}
-
-void ROIData::copy(ROIData const &other) {
-  if (other.dataRaw) {
-    dataRaw = memalloc<double>(lengthRaw, "ROIData");
-    memcpy(dataRaw, other.dataRaw, lengthRaw*sizeof(double));
-  }
-  if (other.dataDebleached) {
-    dataDebleached = memalloc<double>(lengthDebleached, "ROIData");
-    memcpy(dataDebleached, other.dataDebleached,
-	   lengthDebleached*sizeof(double));
-  }
-  if (other.bitmap) {
-    bitmap = memalloc<bool>(w*h, "ROIData");
-    memcpy(bitmap, other.bitmap, w*h*sizeof(bool));
-  }
-  if (other.blobROI)
-    blobROI = new BlobROI(*other.blobROI);
-}
-
-ROIData &ROIData::operator=(ROIData const &other) {
-  if (dataRaw)
-    delete [] dataRaw;
-  if (dataDebleached)
-    delete [] dataDebleached;
-  if (bitmap)
-    delete [] bitmap;
-  if (blobROI)
-    delete blobROI;
-  *(ROIData_*)this = other;
-  dataRaw=0;
-  dataDebleached=0;
-  bitmap=0;
-  blobROI=0;
-  copy(other);
-  return *this;
-}
