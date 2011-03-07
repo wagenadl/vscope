@@ -36,7 +36,21 @@ ROICoords const &ROISet::get(int id) const {
 }
 
 ROICoords &ROISet::access(KeyAccess::WriteKey *key) {
-  return *map.find(getID(key));
+  int id = getID(key);
+  if (map.contains(id))
+    return *map.find(id);
+  else
+    throw Exception("ROISet",
+		    QString("No ROI with ID=%1").arg(id),"access");
+}
+
+ROICoords &ROISet::access(KeyAccess::WriteKey *key, int id) {
+  verifyAllKey(key);
+  if (map.contains(id))
+    return *map.find(id);
+  else
+    throw Exception("ROISet",
+		    QString("No ROI with ID=%1").arg(id),"access");
 }
 
 bool ROISet::contains(int id) const {

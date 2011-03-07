@@ -10,10 +10,8 @@ ROIData3Set::ROIData3Set(ROISet const *rs) {
   d.roiset = rs;
   d.lastDebleach = ROIData::None;
 
-  connect(rs, SIGNAL(changed(int)),
-	  SLOT(changeROI(int)));
-  connect(rs, SIGNAL(changedAll()),
-	  SLOT(changeROIs()));
+  connect(rs, SIGNAL(newDatum(int)), SLOT(updateROI(int)));
+  connect(rs, SIGNAL(newAll()), SLOT(updateROIs()));
 }
 
 ROIData3Set::~ROIData3Set() {
@@ -22,7 +20,8 @@ ROIData3Set::~ROIData3Set() {
 }
 
 
-void ROIData3Set::setData(QString id, CCDData const *data) {
+void ROIData3Set::setCCDData(QString id, CCDData const *data) {
+  AllKeyGuard guard(*this);
   Dbg()<<"ROIData3Set("<<this<<"): setdata:"<<id<<"="<<data;
   d.ccdData[id] = data;
   foreach (int roiid, d.data.keys()) {
@@ -38,33 +37,56 @@ void ROIData3Set::setData(QString id, CCDData const *data) {
       dat->setData(don, acc);
     }
   }
+  updateCCDData();
 }
 
-void ROIData3Set::updateData() {
+void ROIData3Set::updateCCDData() {
+  AllKeyGuard guard(*this);
   dbg("ROIData3Set(%p)::updateData. roiset=%p. n=%i",this,d.roiset,d.data.keys().size());
   foreach (ROI3Data *rd, d.data.values())
     rd->updateData();
 }
 
-ROI3Data *ROIData3Set::getData(int id) const {
+ROI3Data const *ROIData3Set::getData(int id) const {
   if (d.data.contains(id))
     return d.data[id];
   else
-    throw Exception("ROIData3Set","Request for unknown ID");
+    throw Exception("ROIData3Set","Request for unknown ID: "
+		    +QString::number(id), "getData");
+}
+
+ROI3Data *ROIData3Set::accessData(KeyAccess::WriteKey *key) {
+  int id = getID(key);
+  if (d.data.contains(id))
+    return d.data[id];
+  else
+    throw Exception("ROIData3Set","Request for unknown ID: "
+		    + QString::number(id), "accessData");
+}
+
+ROI3Data *ROIData3Set::accessData(KeyAccess::WriteKey *key, int id) {
+  verifyAllKey(key);
+  if (d.data.contains(id))
+    return d.data[id];
+  else
+    throw Exception("ROIData3Set","Request for unknown ID: "
+		    + QString::number(id), "accessData");
 }
 
 ROICoords const &ROIData3Set::getCoords(int id) const {
   if (d.roiset->contains(id))
     return d.roiset->get(id);
   else
-    throw Exception("ROIData3Set","Request for unknown ID");
+    throw Exception("ROIData3Set","Request for unknown ID: "
+		    + QString::number(id), "getCoords");
 }
 
 CamPair const &ROIData3Set::getCam(int id) const {
   if (d.roiset->contains(id))
     return d.roiset->cam(id);
   else
-    throw Exception("ROIData3Set","Request for unknown ID");
+    throw Exception("ROIData3Set","Request for unknown ID: "
+		    + QString::number(id), "getCam");
 }
 
 bool ROIData3Set::haveData(int id) const {
@@ -72,20 +94,20 @@ bool ROIData3Set::haveData(int id) const {
 }
 
 void ROIData3Set::setDebleach(ROIData::Debleach db) {
+  AllKeyGuard guard(*this);
   d.lastDebleach = db;
   foreach (ROI3Data *rd, d.data.values())
     rd->setDebleach(db);
-  emit changedAll();
 }
 
 QList<int> ROIData3Set::allIDs() const {
   return d.data.keys();
 }
 
-void ROIData3Set::changeROI(int id) {
+void ROIData3Set::updateROI(int id) {
+  IDKeyGuard guard(*this, id);
   Dbg() << "ROIData3Set::changeROI("<<id<<")";
   changeROIcore(id);
-  emit changedOne(id);
 }
 
 void ROIData3Set::changeROIcore(int id) {
@@ -113,28 +135,13 @@ void ROIData3Set::changeROIcore(int id) {
   }
 }
 
-void ROIData3Set::changeROIs() {
+void ROIData3Set::updateROIs() {
+  AllKeyGuard guard(*this);
   Dbg() << "ROIData3Set("<<this<<")::changeROIs()";
   QSet<int> ids = QSet<int>::fromList(d.data.keys());
   if (d.roiset)
     ids += d.roiset->ids();
   foreach (int id, ids)
     changeROIcore(id);
-  emit changedAll();
-}
-
-ROIData3Set::ROIData3Set(ROIData3Set const &other):
-  QObject(0), d(other.d) {
-  foreach (int id, d.data.keys())
-    d.data[id] = new ROI3Data(*other.d.data[id]); // make a deep copy
-}
-
-ROIData3Set &ROIData3Set::operator=(ROIData3Set const &other) {
-  foreach (ROI3Data *rd, d.data.values())
-    delete rd;
-  d = other.d;
-  foreach (int id, d.data.keys())
-    d.data[id] = new ROI3Data(*other.d.data[id]); // make a deep copy
-  return *this;
 }
 

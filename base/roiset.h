@@ -31,11 +31,16 @@ public:
    *:N This does not cause changed() signals to be emitted.
    */
   ROICoords const &get(int id) const; // throws exception if not found
-  ROICoords &access(WriteKey *key); // throws exception if not found
-  /* Note that it would logically make a lot of sense to make each ROI emit
-     its own newData() signals, but who really wants to connect to every single
-     ROI in a set? Therefore, write access to ROIs is regulated at the level
-     of the set, and the ROIs themselves are not even QObjects.
+  ROICoords &access(WriteKey *key);
+  ROICoords &access(WriteKey *key, int id);
+  /*:F access
+   *:D Accesses a certain ROI using either a key that checked out that ROI,
+       or using a key that checked out all (in which case the ID must be
+       supplied explicitly).
+   *:N While it would logically make a lot of sense to make each ROI emit
+       its own newData() signals, who really wants to connect to every single
+       ROI in a set? Therefore, write access to ROIs is regulated at the level
+       of the set, and the ROIs themselves are not even QObjects.
   */
   CamPair const &cam(int id) const;
   bool contains(int id) const;
