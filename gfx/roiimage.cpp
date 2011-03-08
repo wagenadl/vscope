@@ -337,9 +337,8 @@ void ROIImage::mouseReleaseEvent(QMouseEvent *e) {
       //Dbg() << "ROIImage:release: finding roi; selected was " << selectedroi;
       int id = selectedroi ? selectedroi : roiset->newROI(campair);
       //Dbg() << "ROIImage:release: roi = " << id;
-      roiset->checkout(id) = *editing;
+      roiset->access(IDKeyGuard(*roiset,id).key()) = *editing;
       //Dbg() << "ROIImage: checked out";
-      roiset->checkin(id);
       //Dbg() << "ROIImage: checked in";
       //Dbg() << "ROIImage: selected was " << selectedroi << ", will be " << id;
       if (id!=selectedroi)

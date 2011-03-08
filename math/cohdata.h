@@ -58,7 +58,7 @@ private:
   class AnalogData const *adata; // we do not own this
   class DigitalData const *ddata; // we do not own this
 private:
-  int ref_chn; // doubles as ref_digiline
+  QString ref_chn; // for both analog or digital
   double ref_hz; // for refFIXED mode
   QMap<int, double> coh_mag;
   QMap<int, double> coh_pha;

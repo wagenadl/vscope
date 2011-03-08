@@ -222,9 +222,9 @@ void CohData::recalcTiming() {
       continue;
 
     // let's refine!
-    uint32_t const *src = ddata->allData();
+    DigitalData::DataType const *src = ddata->allData();
     int K = ddata->getNumScans();
-    uint32_t mask=1; mask<<=frameline;
+    DigitalData::DataType mask=1; mask<<=frameline;
     bool ready = true;
     int istart=-1;
     int count=0;
@@ -286,16 +286,21 @@ void CohData::recalcReference() {
       continue;
     }
     
-    uint32_t *dsrc = refType==refDIGITAL ? ddata->allData() : 0;
-    uint32_t dmask = 1<<ref_chn;
-    double const *asrc = refType==refANALOG ? adata->channelData(ref_chn) : 0;
-    int astep = asrc ? adata->getNumChannels() : 0;
-    int ephyslen = refType==refDIGITAL ? ddata->getNumScans()
+    DigitalData::DataType *dsrc = refType==refDIGITAL
+      ? ddata->allData() : 0;
+    DigitalData::DataType dmask = refType==refDIGITAL
+      ? ddata->maskForLine(ref_chn) : 0;
+    double const *asrc = refType==refANALOG
+      ? adata->channelData(ref_chn) : 0;
+    int astep = asrc
+      ? adata->getNumChannels() : 0;
+    int ephyslen =
+      refType==refDIGITAL ? ddata->getNumScans()
       : refType==refANALOG ? adata->getNumScans()
       : refType==refFIXED ? 1000000000
       : 0;
-    dbg("CohData: adata=%p adata->data=%p asrc=%p ref_chn=%i",
-	adata,adata?adata->allData():0,asrc,ref_chn);
+    dbg("CohData: adata=%p adata->data=%p asrc=%p ref_chn=%s",
+	adata,adata?adata->allData():0,asrc,qPrintable(ref_chn));
     
     if (refType==refDIGITAL)
       ok = dsrc!=0;

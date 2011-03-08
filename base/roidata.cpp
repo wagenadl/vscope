@@ -126,7 +126,7 @@ Range ROIData::timeRange() const {
     return Range();
 }
 
-bool ROIData::ensureBitmap() {
+bool ROIData::ensureBitmap() const {
   /* The bitmap holds which pixels are inside the ROI and which are not.
      To avoid wasted effort, we only calculate inside a rectangular
      bounding box.
@@ -144,7 +144,7 @@ bool ROIData::ensureBitmap() {
     return makeNullBitmap();
 }
 
-bool ROIData::makeNullBitmap() {
+bool ROIData::makeNullBitmap() const {
   Dbg() << "ROIData: Caution: no data, making null bitmap";
   w=h=1;
   if (bitmap)
@@ -155,7 +155,7 @@ bool ROIData::makeNullBitmap() {
   return true;
 }
 
-bool ROIData::makePolyBitmap() {
+bool ROIData::makePolyBitmap() const {
   if (!validTransform)
     return false;
   if (!roi->isBlob())
@@ -188,7 +188,7 @@ bool ROIData::makePolyBitmap() {
   return true;
 }      
 
-bool ROIData::makeXYRRABitmap() {
+bool ROIData::makeXYRRABitmap() const {
   if (!roi->isXYRRA())
     throw Exception("ROIData", "ROI is not XYRRA", "makeXYRRABitmap");
   if (!validTransform)
@@ -232,7 +232,7 @@ bool ROIData::makeXYRRABitmap() {
   return true;
 }
 
-double const *ROIData::getRaw() {
+double const *ROIData::getRaw() const {
   Dbg() << "ROIData::getRaw("<<this<<"). validraw="<<validRaw<<" dataraw="<<dataRaw<<" source="<<source;
   if (validRaw)
     return dataRaw;
@@ -328,7 +328,7 @@ double const *ROIData::getRaw() {
   return dataRaw;
 }
 
-double const *ROIData::getDebleachedDFF() {
+double const *ROIData::getDebleachedDFF() const {
   dbg("getDebleachedDFF. valid=%c n=%i",validDebleached?'y':'n',getNFrames());
   if (validDebleached)
     return dataDebleached;

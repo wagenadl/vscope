@@ -15,21 +15,21 @@ public:
     None=0, Linear=1, Quadratic=2, Exponential=3,
   };
 private: friend class ROIData;
-  double *dataRaw;
-  double *dataDebleached;
-  int lengthRaw;
-  int lengthDebleached;
+  mutable double *dataRaw;
+  mutable double *dataDebleached;
+  mutable int lengthRaw;
+  mutable int lengthDebleached;
   Debleach debleach;
-  bool validRaw;
-  bool validDebleached;
+  mutable bool validRaw;
+  mutable bool validDebleached;
   class CCDData const *source;
   ROICoords const *roi; // in global coordinates
-  class BlobROI *blobROI;
-  bool validBlobROI;
-  bool *bitmap;
-  bool validBitmap;
-  int xl, yt, w, h; // in image coordinates
-  int npix; // number of pixels inside the ROI
+  mutable class BlobROI *blobROI;
+  mutable bool validBlobROI;
+  mutable bool *bitmap;
+  mutable bool validBitmap;
+  mutable int xl, yt, w, h; // in image coordinates
+  mutable int npix; // number of pixels inside the ROI
   bool flipX, flipY;
   Transform tinv;
   bool validTransform;
@@ -73,7 +73,7 @@ public:
    *:D Specifies whether the data is flipped in the x- and or y-dimensions
        relative to the ROI.
   */
-  double const *getRaw();
+  double const *getRaw() const;
   /*:F getRaw
    *:D Returns the time dependent average fluorescence for our ROI in
        the current data. This recomputes if necessary but returns cached
@@ -81,7 +81,7 @@ public:
    *:N The returned pointer is valid until the next call to getRaw or
        until this ROIData gets destructed.
   */
-  double const *getDebleachedDFF();
+  double const *getDebleachedDFF() const;
   /*:F getDebleachedDFF
    *:D Like getRaw(), but applies debleaching as set by setDebleach, and
        normalizes the result.
@@ -93,10 +93,10 @@ public:
   Range timeRange() const;
   bool haveData() const;
 private:
-  bool ensureBitmap(); // returns true iff it worked
-  bool makePolyBitmap();
-  bool makeXYRRABitmap();
-  bool makeNullBitmap();
+  bool ensureBitmap() const; // returns true iff it worked
+  bool makePolyBitmap() const;
+  bool makeXYRRABitmap() const;
+  bool makeNullBitmap() const;
 };
 
 #endif

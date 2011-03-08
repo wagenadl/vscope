@@ -5,20 +5,13 @@
 #include <base/memalloc.h>
 #include <base/dbg.h>
 
-bool ROI3Data_::donorflipx = false;
-bool ROI3Data_::donorflipy = false;
-bool ROI3Data_::acceptorflipx = false;
-bool ROI3Data_::acceptorflipy = false;
-
 ROI3Data::ROI3Data() {
   datRatio=0;
   nRatio=0;
   t0Ratio_ms = 0;
   dtRatio_ms = 0;
-  valid=false;
+  validRatio=false;
   debleach=ROIData::None;
-  datDonor.setFlip(donorflipx, donorflipy);
-  datAcceptor.setFlip(acceptorflipx, acceptorflipy);
 }
 
 ROI3Data::~ROI3Data() {
@@ -29,7 +22,7 @@ ROI3Data::~ROI3Data() {
 void ROI3Data::setROI(ROICoords const *roi) {
   datDonor.setROI(roi);
   datAcceptor.setROI(roi);
-  valid = false;
+  validRatio = false;
 }
 
 void ROI3Data::setData(CCDData const *donor,
@@ -56,7 +49,7 @@ void ROI3Data::updateData() {
     datRatio = 0;
     nRatio = newNRatio;
   }
-  valid = false;
+  validRatio = false;
 }
 
 void ROI3Data::setDebleach(ROIData::Debleach d) {
@@ -64,11 +57,11 @@ void ROI3Data::setDebleach(ROIData::Debleach d) {
     debleach = d;
     datDonor.setDebleach(d);
     datAcceptor.setDebleach(d);
-    valid = false;
+    validRatio = false;
   }
 }
 
-double const *ROI3Data::dataDonor() {
+double const *ROI3Data::dataDonor() const {
   return datDonor.getDebleachedDFF();
 }
 
@@ -108,14 +101,14 @@ double ROI3Data::getRatioDTms() const {
   return dtRatio_ms;
 }
 
-double const *ROI3Data::dataAcceptor() {
+double const *ROI3Data::dataAcceptor() const {
   return datAcceptor.getDebleachedDFF();
 }
 
 
 
-double const *ROI3Data::dataRatio() {
-  Dbg() << "ROI3Data::dataRatio valid="<<valid
+double const *ROI3Data::dataRatio() const {
+  Dbg() << "ROI3Data::dataRatio valid="<<validRatio
 	<< " donor.have="<<datDonor.haveData()
 	<< " donor.data="<<dataDonor()
 	<< " donor.n="<<datDonor.getNFrames()
@@ -124,7 +117,7 @@ double const *ROI3Data::dataRatio() {
 	<< " acc.n="<<datAcceptor.getNFrames()
 	<< " datRatio="<<datRatio
 	<< " nRatio="<<nRatio;
-  if (valid)
+  if (validRatio)
     return datRatio;
 
   if (!datDonor.haveData() || !datAcceptor.haveData()) {
@@ -148,37 +141,8 @@ double const *ROI3Data::dataRatio() {
   for (int n=0; n<nRatio; n++)
     datRatio[n] = dd[n] - da[n];
 
-  valid = true;
+  validRatio = true;
   return datRatio;
-}
-
-void ROI3Data::setFlip(bool donflipx, bool donflipy,
-		       bool accflipx, bool accflipy) {
-  donorflipx=donflipx;
-  donorflipy=donflipy;
-  acceptorflipx=accflipx;
-  acceptorflipy=accflipy;
-}
-
-ROI3Data::ROI3Data(ROI3Data const &other): ROI3Data_(other) {
-  datRatio=0;
-  copy(other);
-}
-
-void ROI3Data::copy(ROI3Data const &other) {
-  if (other.datRatio) {
-    datRatio = memalloc<double>(nRatio, "ROI3Data");
-    memcpy(datRatio, other.datRatio, nRatio*sizeof(double));
-  }
-}
-
-ROI3Data &ROI3Data::operator=(ROI3Data const &other) {
-  if (datRatio)
-    delete [] datRatio;
-  *(ROI3Data_*)this = other;
-  datRatio=0;
-  copy(other);
-  return *this;
 }
 
 Range ROI3Data::timeRange() const {

@@ -73,9 +73,9 @@ public:
   unsigned int addLine();
   bool hasLine(QString id) const;
   bool hasLine(unsigned int line) const;
-  /*:F getMask, clearMask, addLine, hasLine
-   *:N The mask is not currently used by either DigitalIn or DigitalOut.
-  */
+  unsigned int findLine(QString id) const;
+  DataType maskForLine(QString id) const;
+  DataType maskForLine(unsigned int line) const;
 private:
   void ensureIDs();
 private:

@@ -8,19 +8,7 @@
 #include <base/roicoords.h>
 #include <base/roidata.h>
 
-class ROI3Data_ {
-protected:
-  ROIData datDonor, datAcceptor;
-  double *datRatio;
-  ROIData::Debleach debleach;
-  int nRatio;
-  double t0Ratio_ms, dtRatio_ms;
-  bool valid;
-  static bool donorflipx, donorflipy;
-  static bool acceptorflipx, acceptorflipy;
-};
-
-class ROI3Data: private ROI3Data_ {
+class ROI3Data {
   /*:C ROI3Data
    *:D ROI3Data contains the time-dependent average fluorescence in a ROI.
        It contains the data for the donor (e.g, coumarin) and the acceptor
@@ -32,8 +20,6 @@ class ROI3Data: private ROI3Data_ {
 public:
   ROI3Data();
   virtual ~ROI3Data();
-  ROI3Data(ROI3Data const &other);
-  ROI3Data &operator=(ROI3Data const &other);
   void setROI(ROICoords const *roi);
   /*:F setROI
    *:D Redefines which portion of the CCD image we care about.
@@ -81,7 +67,7 @@ public:
   double getDonorT0ms() const;
   double getDonorDTms() const;
   Range timeRange() const;
-  double const *dataDonor();
+  double const *dataDonor() const;
   /*:F dataDonor
    *:D Returns the debleached and normalized data dF/F of the donor
        in percents.
@@ -90,11 +76,11 @@ public:
    *:N The returned pointer is valid until the next call to getRaw or
        until this ROIData gets destructed.
   */       
-  double const *dataAcceptor();
+  double const *dataAcceptor() const;
   /*:F dataAcceptor
    *:D Like dataDonor, but for the acceptor image sequence.
    */
-  double const *dataRatio();
+  double const *dataRatio() const;
   /*:F dataRatio
    *:D Like dataAcceptor, but for the ratio donor/acceptor.
    *:N We do not calculate a true ratio, but assume that dF/F is small
@@ -110,8 +96,13 @@ public:
        get done exactly?)
    *:N If we don't have acceptor data, this returns donor data w/o ratioing.
   */
-private:
-  void copy(ROI3Data const &other);
+protected:
+  mutable ROIData datDonor, datAcceptor;
+  mutable double *datRatio;
+  ROIData::Debleach debleach;
+  int nRatio;
+  double t0Ratio_ms, dtRatio_ms;
+  mutable bool validRatio;
 };
 
 #endif

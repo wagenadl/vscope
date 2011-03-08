@@ -178,6 +178,24 @@ bool DigitalData::hasLine(unsigned int line) const {
   return line2id.contains(line);
 }
 
+unsigned int DigitalData::findLine(QString id) const {
+  if (id2line.contains(id))
+    return id2line[id];
+  else
+    throw Exception("DigitalData","No line named " + id);
+}
+
+DigitalData::DataType DigitalData::maskForLine(unsigned int line) const {
+  DataType one = 1;
+  return one<<line;
+}
+
+DigitalData::DataType DigitalData::maskForLine(QString id) const {
+  DataType one = 1;
+  unsigned int line = findLine(id);
+  return one<<line;
+}
+
 void DigitalData::zero() {
   if (data)
     for (int n=0; n<nscans; n++)
