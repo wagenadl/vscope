@@ -28,8 +28,8 @@ void ROI3Data::setROI(ROICoords const *roi) {
 void ROI3Data::setData(CCDData const *donor,
 		       CCDData const *acceptor,
 		       bool noupdate) {
-  datDonor.setData(donor, true);
-  datAcceptor.setData(acceptor, true);
+  datDonor.setData(donor);
+  datAcceptor.setData(acceptor);
   if (!noupdate)
     updateData();
 }

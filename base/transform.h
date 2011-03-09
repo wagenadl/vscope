@@ -70,6 +70,23 @@ private:
   // Mapping is x <- ax + bx*x.
   //            y <- ay + by*y.
   // We currently do not support rotation.
+public:
+  static QPoint intPixel(QPointF const &p) {
+    return QPoint(int(p.x()), int(p.y()));
+  }
+  static QPointF pixelCenter(QPoint const &p) {
+    return QPointF(p.x()+0.5, p.y()+0.5);
+  }
+  static QPointF pixelCenter(int x, int y) {
+    return QPointF(x+0.5, y+0.5);
+  }
+  /* A pixel is nominally a rectangle QRect(x,y,1,1).
+     intPixel returns the integer indices of a pixel, i.e., the coordinates
+     of its top left.
+     pixelCenter returns the coordinates of the center of a pixel.
+  */
 };
+
+
 
 #endif

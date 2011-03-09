@@ -97,7 +97,7 @@ public:
    *:N If we don't have acceptor data, this returns donor data w/o ratioing.
   */
 protected:
-  mutable ROIData datDonor, datAcceptor;
+  ROIData datDonor, datAcceptor;
   mutable double *datRatio;
   ROIData::Debleach debleach;
   int nRatio;

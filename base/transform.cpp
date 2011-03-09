@@ -167,19 +167,31 @@ QPointF Transform::operator()(QPointF const &p) const {
 }
 
 QSize Transform::operator()(QSize const &s) const {
-  return QSize(ax*s.width(), ay*s.height());
+  return QSize(fabs(ax)*s.width(), fabs(ay)*s.height());
 }
 
 QSizeF Transform::operator()(QSizeF const &s) const {
-  return QSizeF(ax*s.width(), ay*s.height());
+  return QSizeF(fabs(ax)*s.width(), fabs(ay)*s.height());
 }
 
 QRect Transform::operator()(QRect const &r) const {
-  return QRect(operator()(r.topLeft()),operator()(r.size()));
+  QPoint tl = operator()(r.topLeft());
+  QSize s = operator()(r.size());
+  if (ax<0) 
+    tl.setX(tl.x()-s.width());
+  if (ay<0)
+    tl.setY(tl.y()-s.height());
+  return QRect(tl, s);
 }
 
 QRectF Transform::operator()(QRectF const &r) const {
-  return QRectF(operator()(r.topLeft()),operator()(r.size()));
+  QPointF tl = operator()(r.topLeft());
+  QSizeF s = operator()(r.size());
+  if (ax<0) 
+    tl.setX(tl.x()-s.width());
+  if (ay<0)
+    tl.setY(tl.y()-s.height());
+  return QRectF(tl, s);
 }
 
 Transform Transform::operator()(Transform const &t) const {
@@ -244,3 +256,4 @@ Transform Transform::inferred(QRectF src, QRectF dst) {
   
   return t;
 }
+

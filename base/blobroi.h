@@ -7,21 +7,7 @@
 #include <base/types.h>
 #include <base/transform.h>
 
-class BlobROI_ {
-protected:
-  int x0; // x_left of defined area
-  int w;  // width of defined area
-  int y0; // y_top of defined area
-  int h; // height of defined area
-  double *weight; // width x height area of weights for pixels
-  /* Weights are 1 inside, 0 outside, and intermediate near border,
-     dep. on blur.
-  */
-  double sumw;
-  int npix;
-};
-
-class BlobROI: private BlobROI_ {
+class BlobROI {
   /*:C BlobROI
    *:D A BlobROI is a polygonal region of interest.
        BlobROIs can be thought of as a form of a PolyBlob that can be used
@@ -29,6 +15,8 @@ class BlobROI: private BlobROI_ {
    */
 public:
   BlobROI(class PolyBlob const &src, Transform const &t, double border=0);
+  BlobROI(class PolyBlob const &src, Transform const &t,
+	  QRect bbox, double border=0);
   /*:F constructor
    *:D Creates a BlobROI from a PolyBlob, optionally blurring the edge by
        BORDER pixels.
@@ -37,8 +25,6 @@ public:
        entirely containing the PolyBlob.
   */
   ~BlobROI();
-  BlobROI(BlobROI const &other);
-  BlobROI &operator=(BlobROI const &other);
   class Result {
   public:
     Result();
@@ -85,7 +71,22 @@ public:
    *:R Number of bools written or 0 if dstSize was not big enough.
   */
 private:
-  void copy(BlobROI const &other);
+  int x0; // x_left of defined area
+  int w;  // width of defined area
+  int y0; // y_top of defined area
+  int h; // height of defined area
+  double *weight; // width x height area of weights for pixels
+  /* Weights are 1 inside, 0 outside, and intermediate near border,
+     dep. on blur.
+  */
+  double sumw;
+  int npix;
+private:
+  void construct(PolyBlob const &src, Transform const &t,
+		 QRect bbox, double border);
+private: // not defined
+  BlobROI(BlobROI const &other);
+  BlobROI &operator=(BlobROI const &other);
 };
 
 #endif
