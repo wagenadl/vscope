@@ -101,8 +101,10 @@ int DigitalIn::read(DigitalData *dest) throw(daqException) {
   if (!committed)
     throw daqException("DigitalIn","Cannot read when not committed");
 
+  KeyGuard guard(*dest);
+  
   int maxscans = dest->getNumScans();
-  uint32_t *destdata = dest->allData();
+  uint32_t *destdata = dest->allData(guard.key());
 
   int donescans = 0;
   while (donescans<maxscans) {
@@ -154,24 +156,6 @@ int DigitalIn::read(DigitalData *dest) throw(daqException) {
   dest->setNumScans(donescans);
   return donescans;
 }
-
-DigitalData *DigitalIn::read(int nscanslimit) throw(daqException) {
-  int navail = countScansAvailable();
-  if (nscanslimit>navail)
-    nscanslimit = navail;
-
-  DigitalData *dest = new DigitalData(nscanslimit);
-
-  try {
-    if (read(dest) != nscanslimit) 
-      throw daqException("DigitalIn","Failure to read all available scans");
-  } catch (...) {
-    delete dest;
-    throw;
-  }
-  return dest;
-}
-
 
 void DigitalIn::setChannelMask(uint32_t mask) throw(daqException) {
   cmask = mask;

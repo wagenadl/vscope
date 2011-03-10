@@ -30,7 +30,7 @@ public:
     unsigned int line;
   };
 public:
-  daqTask(QString id) throw(daqException);
+  daqTask(QString id);
   /*:F daqTask()
    *:D This is a bare-bones constructor; no resources are claimed at this time.
   */
@@ -42,7 +42,7 @@ public:
        while still in the committed state, because that is likely to leave
        the entire NIDAQ system in an undefined and unstable state.
   */
-  virtual void setTriggering(bool trg) throw(daqException);
+  virtual void setTriggering(bool trg);
   /*:F void setTriggering(bool trg)
    *:D This enables or disables hardware triggering of data acquisition.
        When enabled (trg=true), start() does not immediately begin acquisition,
@@ -51,7 +51,7 @@ public:
    *:N daqTask does not currently support any of NIDAQmx other triggers, 
        such as Pause or Reference triggers.
    */
-  virtual void commit() throw(daqException);
+  virtual void commit();
   /*:F void commit()
    *:D This virtual function claims the necessary hardware resources
        for the task. This is a required step before starting acquisition/
@@ -64,7 +64,7 @@ public:
        implementation with calls to preCommit() and postCommit() rather
        than calling daqTask's commit() function.
   */
-  virtual void uncommit() throw(daqException);
+  virtual void uncommit();
   /*:F void uncommit()
    *:D This virtual function returns the daqTask to its uncommitted state.
        Any tasks that are attached to this one (such as a
@@ -73,7 +73,7 @@ public:
     :  Descendents wishing to override this function should call
        daqTask's uncommit() function at the end of their implementation.
    */
-  virtual void start() throw(daqException);
+  virtual void start();
   /*:F void start()
    *:D This virtual function starts the data acquisition/production.
        Any tasks that are attached to this one (such as a
@@ -84,7 +84,7 @@ public:
        implementation with calls to preStart() and postStart() rather
        than calling daqTask's start() function.
    */
-  virtual void stop() throw(daqException);
+  virtual void stop();
   /*:F void stop()
    *:D This virtual function stops the data acquisition/production.
        Any tasks that are attached to this one (such as a
@@ -98,7 +98,7 @@ public:
        implementation with calls to preStop() and postStop() rather
        than calling daqTask's stop() function.
   */
-  virtual void abort() throw(daqException);
+  virtual void abort();
   /*:F void abort()
    *:D This virtual function immediately aborts data acquisition/production
        and uncommits the hardware resources associated with this task.
@@ -108,23 +108,23 @@ public:
        implementation with calls to preAbort() and postAbort() rather
        than calling daqTask's abort() function.
   */
-  virtual bool hasCompleted() throw(daqException);
+  virtual bool hasCompleted();
   /*:F bool hasCompleted()
    *:D This virtual function returns true if and only if the data acquisition/
        production has finished and stop() has not yet been called.
   */
-  virtual bool isRunning() throw(daqException);
+  virtual bool isRunning();
   /*:F bool isRunning()
    *:D This virtual function returns true if and only if the data acquisition/
        production has been started (or has been scheduled to start pending
        a hardware trigger) but has not yet completed.
   */
-  virtual int countScansSoFar() throw(daqException);
+  virtual int countScansSoFar();
   /*:F int countScansSoFar()
    *:D This virtual function counts how many scans (i.e. multichannel samples)
        have been acquired/produced so far (since the last start()).
   */
-  virtual int countScansAvailable() throw(daqException);
+  virtual int countScansAvailable();
   /*:F int countScansAvailable()
    *:D This virtual function counts how many scans are now available for
        reading from an input task. This number will be less than
@@ -133,7 +133,7 @@ public:
    *:N For output tasks, this function is not available and will throw
        an exception or return meaningless results.
   */
-  virtual void setPollPeriod(int nscans) throw(daqException);
+  virtual void setPollPeriod(int nscans);
   /*:F void setPollPeriod(int nscans)
    *:D This virtual function determines whether and how often an input task
        generates a dataAvailable signal.
@@ -143,7 +143,7 @@ public:
    *:N The period may be rounded down to evenly divide DMA buffer size as
        required by the NIDAQ library.
   */
-  virtual void setTimeout(float secs) throw(daqException);
+  virtual void setTimeout(float secs);
   /*:F void setTimeout(float secs)
    *:D This virtual function determines how long read() calls wait for
        data to become available.
@@ -151,7 +151,7 @@ public:
        is 5 seconds plus the time expected based on acquisition/production
        frequency and number of scans.
   */
-  virtual void setFrequency(double hz) throw(daqException);
+  virtual void setFrequency(double hz);
   /*:F void setFrequency(double hz)
    *:D Determines the rate of acquisition/production.
    *:A double hz: New rate, in Hertz.
@@ -162,39 +162,39 @@ public:
   QString deviceID() const { return dev.id(); }
  protected:
   DAQDevice &device() const { return dev; }
-  void preCommit() throw(daqException);
+  void preCommit();
   /*:F void preCommit()
    *:D This does the task-independent part of preparing for a commit.
    */
-  void postCommit() throw(daqException);
+  void postCommit();
   /*:F void postCommit()
    *:D This does the task-independent part of finalizing a commit.
    */
-  void preStart() throw(daqException);
+  void preStart();
   /*:F void preStart()
    *:D This does the task-independent part of preparing to start acquisition/
        production.
    */
-  void postStart() throw(daqException);
+  void postStart();
   /*:F void postStart()
    *:D This does the task-independent part of actually starting acquisition/
        production.
    */
-  void preStop() throw(daqException);
+  void preStop();
   /*:F void preStop()
    *:D This does the task-independent part of actually stopping acquisition/
        production.
    */  
-  void postStop() throw(daqException);
+  void postStop();
   /*:F void postStop()
    *:D This currently does nothing, but descendents should call it anyway.
    */
-  void preAbort() throw(daqException);
+  void preAbort();
   /*:F void preAbort()
    *:D This does the task-independent part of actually stopping acquisition/
        production.
   */
-  void postAbort() throw(daqException);
+  void postAbort();
   /*:F void postAbort()
    *:D This does the task-independent part of cleaning up after abort. It
        calls stop() and uncommit().

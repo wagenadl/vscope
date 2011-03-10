@@ -7,6 +7,14 @@
 #include <daq/dwNIDAQmx.h>
 #include <base/dbg.h>
 
+AnalogOut::Channel::Channel(unsigned int c): chn(c) {
+}
+
+QString AnalogOut::Channel::name() const {
+  return "ao" + QString::number(chn);
+}
+
+
 AnalogOut::AnalogOut(AnalogIn *master, QString id): daqTask(id),
 						    master(master) {
   timeout = 0;
@@ -31,31 +39,32 @@ AnalogOut::~AnalogOut() {
   if (master)
     master->detachAO();
   if (doslave)
-    fprintf(stderr,"AnalogOut: Dying while DO slave still attached. Armageddon imminent.\n");
+    Dbg() << "AnalogOut: "
+	  << "Dying while DO slave still attached. Armageddon imminent.";
 }
 
-void AnalogOut::commit() throw(daqException) {
+void AnalogOut::commit() {
   if (committed)
     return;
 
   if (!data)
-    throw daqException("AnalogOut","No data defined for production");
+    throw Exception("AnalogOut", "No data defined for production");
 
+  if (data->getNumChannels() != channelmap.size())
+    throw Exception("AnalogOut", "Channel map does not match production data");
+  
   dbg("AnalogOut(%p):commit",this);
   daqTask::preCommit();
   dbg("  aout:precommitted");
 
-  for (int n=0; n<data->getNumChannels(); n++) {
-    QString chid = data->getChannelAtIndex(n);
+  foreach (Channel c, channelmap) {
+    QByteArray chname = channelName(c).toAscii();
     double range = AO_RANGE_V;
-    QString chname = deviceID() + "/ao" + Connections::find
-    char chname[64];
-    sprintf(chname,"%s/ao%i",deviceID().toAscii().constData(),aout);
-    daqTry(DAQmxCreateAOVoltageChan(th,chname,0,
+    daqTry(DAQmxCreateAOVoltageChan(th,chname.constData(),0,
 				    -range,range,
 				    DAQmx_Val_Volts,0),
-	   "AnalogOut","Create AO channel");
-    dbg("aout Creating channel %i: %s",n,chname);
+	   "AnalogOut", "Create AO channel");
+    Dbg() << "AOut: Created channel " << channelName(c);
   }
 
   int bufsi = isCont ? dmabufsize : data->getNumScans();
@@ -63,35 +72,38 @@ void AnalogOut::commit() throw(daqException) {
   dbg("  aout:channels created. bufsi=%i",bufsi);
   
   if (master) {
-    char chname[64];
-    sprintf(chname,"/%s/ai/SampleClock",deviceID().toAscii().constData());
+    QByteArray clockname = (deviceID() + "/ai/SampleClock").toAscii();
     if (isCont)
-      throw Exception("AnalogOut","Continuous output not possible as slave");
+      throw Exception("AnalogOut",
+		      "Continuous output not possible as slave");
     else
-      daqTry(DAQmxCfgSampClkTiming(th,chname,
-				   freqhz,
+      daqTry(DAQmxCfgSampClkTiming(th, clockname.constData(), freqhz,
 				   DAQmx_Val_Rising,
 				   DAQmx_Val_FiniteSamps,
 				   bufsi),
-	     "AnalogOut","Cannot configure finite-length production as slave");
+	     "AnalogOut",
+	     "Cannot configure finite-length production as slave");
   } else {
     if (isCont) {
-      daqTry(DAQmxCfgSampClkTiming(th,"OnboardClock",
+      daqTry(DAQmxCfgSampClkTiming(th, "OnboardClock",
 				   freqhz,
 				   DAQmx_Val_Rising,
 				   DAQmx_Val_ContSamps,
 				   data->getNumScans()),
-	     "AnalogOut","Cannot configure continuous production as master");
+	     "AnalogOut",
+	     "Cannot configure continuous production as master");
       daqTry(DAQmxSetWriteAttribute(th, DAQmx_Write_RegenMode,
 				    DAQmx_Val_DoNotAllowRegen),
-	     "AnalogOut","Cannot unset autoregeneration");
+	     "AnalogOut",
+	     "Cannot unset autoregeneration");
     } else {
       daqTry(DAQmxCfgSampClkTiming(th,"OnboardClock",
 				   freqhz,
 				   DAQmx_Val_Rising,
 				   DAQmx_Val_FiniteSamps,
 				   bufsi),
-	     "AnalogOut","Cannot configure finite-length production as master");
+	     "AnalogOut",
+	     "Cannot configure finite-length production as master");
     }
   }
   dbg("aout: dmabufsize=%i iscont=%i",dmabufsize,isCont);
@@ -114,18 +126,18 @@ void AnalogOut::commit() throw(daqException) {
 
 }
 
-void AnalogOut::writeData() throw(daqException) {
+void AnalogOut::writeData() {
   if (!data)
-    throw daqException("AnalogOut","No data defined for production");
+    throw Exception("AnalogOut","No data defined for production");
 
   int index=0;
-  double *srcptr = data->allData();
+  double const *srcptr = data->allData();
   int nscans=data->getNumScans();
   int nchans=data->getNumChannels();
 
-  FILE *fd = fopen("/tmp/ao.bin","w");
-  fwrite(srcptr,sizeof(double),nscans*nchans,fd);
-  fclose(fd);
+  //FILE *fd = fopen("/tmp/ao.bin","w");
+  //fwrite(srcptr,sizeof(double),nscans*nchans,fd);
+  //fclose(fd);
   
   while (index<nscans) {
     int now = nscans-index;
@@ -144,7 +156,7 @@ void AnalogOut::writeData() throw(daqException) {
   }
 }  
 
-void AnalogOut::uncommit() throw(daqException) {
+void AnalogOut::uncommit() {
   if (!committed)
     return;
 
@@ -154,14 +166,14 @@ void AnalogOut::uncommit() throw(daqException) {
   daqTask::uncommit();
 }
   
-void AnalogOut::attachDO(DigitalOut *slave) throw(daqException) {
+void AnalogOut::attachDO(DigitalOut *slave) {
   uncommit();
   if (doslave && doslave!=slave)
     fprintf(stderr,"AnalogOut: Warning: Attaching a second DO slave. The first slave will not be used.\n");
   doslave = slave;
 }
 
-void AnalogOut::detachDO() throw(daqException) {
+void AnalogOut::detachDO() {
   uncommit();
   doslave = 0;
 }
@@ -175,7 +187,7 @@ void AnalogOut::callbackEvery(int nscans) {
     emit dataNeeded(this,nscans);
 }
 
-void AnalogOut::start() throw(daqException) {
+void AnalogOut::start() {
   dbg("AnalogOut(%p)::start",this);
   preStart();
 
@@ -191,7 +203,7 @@ void AnalogOut::start() throw(daqException) {
   dbg("aout bs=%i obs=%i",bs,obs);
 }
 
-int AnalogOut::countScansSoFar() throw(daqException) {
+int AnalogOut::countScansSoFar() {
   if (!committed)
     return 0;
   uInt64 cnt;
@@ -200,7 +212,7 @@ int AnalogOut::countScansSoFar() throw(daqException) {
   return cnt;
 }
 
-void AnalogOut::stop() throw(daqException) {
+void AnalogOut::stop() {
   dbg("analogout(%p)::stop (doslave=%p)",this,doslave);
   daqTask::preStop();
   if (doslave)
@@ -208,38 +220,44 @@ void AnalogOut::stop() throw(daqException) {
   daqTask::postStop();
 }
 
-void AnalogOut::abort() throw(daqException) {
+void AnalogOut::abort() {
   daqTask::preAbort();
   if (doslave)
     doslave->abort();
   daqTask::postAbort();
 }
 
-void AnalogOut::setData(AnalogData *ad) throw(daqException) {
+ void AnalogOut::setData(AnalogData *ad,
+			 QList<AnalogOut::Channel> const &cmap) {
   data = ad;
+  channelmap = cmap;
 }
 
-void AnalogOut::setFrequency(double hz)  throw(daqException) {
+void AnalogOut::setFrequency(double hz)  {
   daqTask::setFrequency(hz);
   if (doslave)
     doslave->setFrequency(hz);
 }
 
-void AnalogOut::setContinuous(int bufsi) throw(daqException) {
+void AnalogOut::setContinuous(int bufsi) {
   dmabufsize = bufsi;
   isCont = true;
 }
 
-void AnalogOut::setFiniteLength() throw(daqException) {
+void AnalogOut::setFiniteLength() {
   isCont = false;
 }
 
-int AnalogOut::countScansAvailable() throw(daqException) {
+int AnalogOut::countScansAvailable() {
   uInt32 cnt;
   daqTry(DAQmxGetWriteSpaceAvail(th,&cnt),
 	 "AnalogOut","Cannot count scans");
   dbg("aout: space avail: %i",cnt);
   return cnt;
+}
+
+QString AnalogOut::channelName(AnalogOut::Channel const &c) const {
+  return deviceID() + "/" + c.name();
 }
 
 char const *AnalogOut::name() const { return "AnalogOut"; }

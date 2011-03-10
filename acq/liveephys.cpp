@@ -75,12 +75,10 @@ LiveEPhys::~LiveEPhys() {
   if (data)
     delete data;
   try {
-    for (QMap<int,LineGraph *>::iterator i=aigraphs.begin();
-	 i!=aigraphs.end(); ++i)
-      i.value()->removeAllTraces();
-    for (QMap<int,TraceInfo *>::iterator i=aitraces.begin();
-	 i!=aitraces.end(); ++i)
-      delete i.value();
+    foreach (LineGraph *lg, aigraphs.values())
+      lg->removeAllTraces();
+    foreach (TraceInfo *tr, aitraces.values())
+      delete tr;
   } catch (...) {
     fprintf(stderr,"LiveEPhys::~LiveEPhys: caught exception.\n");
   }
@@ -145,22 +143,19 @@ void LiveEPhys::addedData() {
     return;
   dataoffset=0;
 
-  for (QMap<int,TraceInfo*>::iterator i=aitraces.begin();
-       i!=aitraces.end(); ++i) {
-    int cno = i.key();
-    TraceInfo *tr=i.value();
-    DataPtr dp(data->channelData(cno));
+  foreach (QString cid, aitraces.keys()) {
+    TraceInfo *tr = aitraces[cid];
+    DataPtr dp(data->channelData(cid));
     //dbg("  dataav cno=%i dp=%p",cno,dp.dp_none);
-    tr->setData(t0,dt_s, dp, data->getNumScans(),data->getNumChannels());
+    tr->setData(t0, dt_s, dp, data->getNumScans(), data->getNumChannels());
   }
   if (first) {
     autoRange();
     first = false;
   } else {
-    for (QMap<int,LineGraph*>::iterator i=aigraphs.begin();
-	 i!=aigraphs.end(); ++i) {
-      i.value()->autoSetXRange();
-      i.value()->update(); // or update(), but that doesn't seem to work fast?
+    foreach (LineGraph *lg, aigraphs.values()) {
+      lg->autoSetXRange();
+      lg->update();
     }
   }
   t0+=nscans*dt_s;
@@ -168,10 +163,9 @@ void LiveEPhys::addedData() {
 }
 
 void LiveEPhys::autoRange() {
-  for (QMap<int,LineGraph*>::iterator i=aigraphs.begin();
-       i!=aigraphs.end(); ++i) {
-    i.value()->autoSetXRange();
-    i.value()->autoSetYRange(0,2);
+  foreach (LineGraph *lg, aigraphs.values()) {
+    lg->autoSetXRange();
+    lg->autoSetYRange(0,2);
   }
 }
 
@@ -219,9 +213,7 @@ void LiveEPhys::activateVCO() {
   if (vcoid=="off") {
     vcoidx = -1;
   } else {
-    Enumerator *chnames = Enumerator::find("AICHAN");
-    int cno = chnames->lookup(vcoid);
-    vcoidx = data->whereIsChannel(cno);
+    vcoidx = data->whereIsChannel(vcoid);
     if (vcoidx>=0) {
       vcoscale = Connections::findAI(vcoid).scale;
       vco = new VCO();
@@ -282,30 +274,24 @@ void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
       lg->setTraceLabel(cid,Aliases::lookup(cid));
       tr->setScaleFactor(ch.scale);
       lg->setYLabel(ch.unit);
-      aitraces[cno] = tr;
-      aigraphs[cno] = lg;
+      aitraces[cid] = tr;
+      aigraphs[cid] = lg;
     }
   }
   first = true;
 }
 
-void LiveEPhys::addChannel(int cno, QString cid) {
+void LiveEPhys::addChannel(AnalogIn::Channel cno, QString cid) {
   if (!ain)
     return;
   
   Connections::AIChannel const &ch(Connections::findAI(cid));
   ain->addChannel(cno);
-  ain->setRange(cno,ch.range);
-  if (ch.ground=="NRSE")
-    ain->setGround(cno, AnalogIn::NRSE);
-  else if (ch.ground=="RSE")
-    ain->setGround(cno, AnalogIn::RSE);
-  else if (ch.ground=="DIFF")
-    ain->setGround(cno, AnalogIn::DIFF);
-  else
-    throw Exception("LiveEPhys",
-		    "Unknown grounding scheme '" + ch.ground +"'",
-		    "addChannel");
+  ain->setRange(cno, ch.range);
+  ain->setGround(ch.ground=="NRSE" ? AnalogIn::NRSE
+		 :ch.ground=="RSE" ? AnalogIn::RSE
+		 :ch.ground=="DIFF" ? AnalogIn::DIFF
+		 : AnalogIn::NRSE);
 }
 
 void LiveEPhys::deactivate() {

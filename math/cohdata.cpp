@@ -286,7 +286,7 @@ void CohData::recalcReference() {
       continue;
     }
     
-    DigitalData::DataType *dsrc = refType==refDIGITAL
+    DigitalData::DataType const *dsrc = refType==refDIGITAL
       ? ddata->allData() : 0;
     DigitalData::DataType dmask = refType==refDIGITAL
       ? ddata->maskForLine(ref_chn) : 0;

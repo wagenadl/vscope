@@ -16,9 +16,10 @@ public:
   enum Ground { NRSE, RSE, DIFF };
   class Channel {
   public:
-    explicit Channel(unsigned int c);
+    explicit Channel(unsigned int c=0);
     QString name() const;
-    bool operator==(Channel const &x) { return chn==x.chn; }
+    bool operator==(Channel const &x) const { return chn==x.chn; }
+    bool operator<(Channel const &x) const { return chn<x.chn; }
   private:
     unsigned int chn;
   };
@@ -26,25 +27,25 @@ signals:
   void dataAvailable(AnalogIn *src, int nscans); // This signal will only be emitted if dataAvailablePeriod is set to non-zero.
   void acquisitionEnded(AnalogIn *src, bool ok);
 public:
-  AnalogIn(QString id="") throw(daqException);
+  AnalogIn(QString id="");
   virtual ~AnalogIn();
   // It may be necessary to add a setTriggering func, just so we can pass that down to slaves?
-  void addChannel(int ain) throw(daqException);
-  void removeChannel(int ain) throw(daqException);
-  void clearChannels() throw(daqException);
-  void setRange(int ain, double range_V);
-  void setGround(int ain, enum Ground ground);
-  enum Ground getGround(int ain) throw(daqException);
-  double getRange(int ain) throw(daqException);
-  bool hasChannel(int ain) const;
+  void addChannel(Channel ain);
+  void removeChannel(Channel ain);
+  void clearChannels();
+  void setRange(Channel ain, double range_V);
+  void setGround(Channel ain, enum Ground ground);
+  enum Ground getGround(Channel ain);
+  double getRange(Channel ain);
+  bool hasChannel(Channel ain) const;
   int getNumChannels() const;
-  int getChannelAt(int idx) const throw(daqException);
+  Channel getChannelAt(int idx) const;
   void setAcqLength(int nscans); // set to zero for undefined length (cont. acq.)
   int getAcqLength() const;
-  virtual void commit() throw(daqException);
-  virtual void uncommit() throw(daqException);
-  virtual void start() throw(daqException);
-  virtual int countScansSoFar() throw(daqException);
+  virtual void commit();
+  virtual void uncommit();
+  virtual void start();
+  virtual int countScansSoFar();
   int read(AnalogData *dest);
   /*:F read
    *:D Reads data into the specified destination. The number of scans to
@@ -66,13 +67,13 @@ public:
    *:N The channel map in DEST must match ours. We only verify that the number
        of channels matches.
    */
-  virtual void abort() throw(daqException);
-  virtual void stop() throw(daqException);
-  virtual void setFrequency(double hz)  throw(daqException);
-  void attachDI(class DigitalIn *digin) throw(daqException);
-  void attachAO(class AnalogOut *analout) throw(daqException);
-  void detachDI() throw(daqException);
-  void detachAO() throw(daqException);
+  virtual void abort();
+  virtual void stop();
+  virtual void setFrequency(double hz) ;
+  void attachDI(class DigitalIn *digin);
+  void attachAO(class AnalogOut *analout);
+  void detachDI();
+  void detachAO();
 protected:
   int nscans;
   QVector<Channel> ai_channel_list; // by index
@@ -84,8 +85,8 @@ protected:
   class AnalogOut *aoslave;
   bool aborting;
 private:
-  QString channelName(Channel const &c);
- public: // for internal use
+  QString channelName(Channel const &c) const;
+public: // for internal use
   virtual void callbackDone(int status);
   virtual void callbackEvery(int nscans);
   virtual char const *name() const;

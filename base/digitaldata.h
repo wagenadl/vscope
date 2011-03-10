@@ -37,7 +37,8 @@ public:
   /*:F readUInt32
    *:D Reads data back from a file previously written by writeUInt32.
    */
-  DataType *allData() const { return data; }
+  DataType const *allData() const { return data; }
+  DataType *allData(KeyAccess::WriteKey *) { return data; }
   /*:F unsigned long *allData()
    *:D Returns a pointer to all data, that is, to the first scan.
    *:R Pointer to data.
