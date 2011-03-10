@@ -20,7 +20,16 @@ class daqTask: public QObject {
        directly creating a daqTask; use the task-specific classes instead.
   */
   Q_OBJECT;
- public:
+public:
+  class Line {
+  public:
+    Line(unsigned int l, bool output);
+    QString name() const;
+  private:
+    bool output;
+    unsigned int line;
+  };
+public:
   daqTask(QString id) throw(daqException);
   /*:F daqTask()
    *:D This is a bare-bones constructor; no resources are claimed at this time.

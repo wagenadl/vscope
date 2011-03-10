@@ -19,7 +19,7 @@ AnalogOut::AnalogOut(AnalogIn *master, QString id): daqTask(id),
     master->attachAO(this);
 }
 
-void AnalogOut::setMaster(AnalogIn *mstr) throw(daqException) {
+void AnalogOut::setMaster(AnalogIn *mstr) {
   if (master)
     master->detachAO();
   master=mstr;
@@ -46,8 +46,9 @@ void AnalogOut::commit() throw(daqException) {
   dbg("  aout:precommitted");
 
   for (int n=0; n<data->getNumChannels(); n++) {
-    int aout = data->getChannelAtIndex(n);
+    QString chid = data->getChannelAtIndex(n);
     double range = AO_RANGE_V;
+    QString chname = deviceID() + "/ao" + Connections::find
     char chname[64];
     sprintf(chname,"%s/ao%i",deviceID().toAscii().constData(),aout);
     daqTry(DAQmxCreateAOVoltageChan(th,chname,0,

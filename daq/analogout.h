@@ -18,8 +18,8 @@ signals:
 public:
   AnalogOut(class AnalogIn *master=0, QString id="");
   virtual ~AnalogOut();
-  void setMaster(class AnalogIn *master=0) throw(daqException);
-  void setData(class AnalogData *ad) throw(daqException);
+  void setMaster(class AnalogIn *master=0);
+  void setData(class AnalogData *ad, QList<int> const &channelmap);
   /* Data must stay available from start to stop.
      Data must be defined before calling commit or start. */
   void setContinuous(int bufsize=1024) throw(daqException);

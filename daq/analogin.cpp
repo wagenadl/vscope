@@ -7,6 +7,14 @@
 #include <math.h>
 #include <base/dbg.h>
 
+
+AnalogIn::Channel::Channel(unsigned int c): chn(c) {
+}
+
+QString AnalogIn::Channel::name() const {
+  return "ai" + QString::number(chn);
+}
+
 AnalogIn::AnalogIn(QString id) throw(daqException): daqTask(id) {
   dislave = 0;
   aoslave = 0;
@@ -94,13 +102,11 @@ void AnalogIn::commit() throw(daqException) {
   //  dbg("analogin::precommit ok\n");
 
   for (int n=0; n<ai_channel_list.size(); n++) {
-    int ain = ai_channel_list[n];
+    Channel ain = ai_channel_list[n];
     enum Ground ground = ai_ground_map[ain];
     double range = ai_range_map[ain];
-    char chname[64];
-    sprintf(chname,"%s/ai%i",deviceID().toAscii().constData(),ain);
-    //dbg("analogin: creating %i: %i: '%s'. ground=%i range=%g\n",n,ain,chname,ground,range);
-    daqTry(DAQmxCreateAIVoltageChan(th,chname,"",
+    QByteArray chname = channelName(ain).toAscii();
+    daqTry(DAQmxCreateAIVoltageChan(th,chname.constData(),"",
 				    ground==NRSE ? DAQmx_Val_NRSE :
 				    ground==RSE ? DAQmx_Val_RSE :
 				    ground==DIFF ? DAQmx_Val_Diff :
@@ -212,21 +218,24 @@ int AnalogIn::countScansSoFar() throw(daqException) {
 }
   
 
-int AnalogIn::read(AnalogData *dest) throw(daqException) {
+int AnalogIn::read(AnalogData *dest) {
+  KeyGuard guard(*dest);
   int donescans = read(dest,0,0);
   dest->setNumScans(donescans);
   return donescans;
 }
 
-int AnalogIn::read(AnalogData *dest, int offset, int maxscans) throw(daqException) {
+int AnalogIn::read(AnalogData *dest, int offset, int maxscans) {
   if (!committed)
-    throw daqException("AnalogIn","Cannot read when not committed");
+    throw Exception("AnalogIn","Cannot read when not committed");
   int nchans = dest->getNumChannels();
   if (nchans != ai_channel_list.size())
-    throw daqException("AnalogIn: Cannot read into structure with wrong channel count");
+    throw Exception("AnalogIn",
+		    "Cannot read into structure with wrong channel count");
   for (int n=0; n<nchans; n++)
     if (dest->getChannelAtIndex(n) != ai_channel_list[n])
-    throw daqException("AnalogIn: Cannot read into structure with wrong channel map");
+      throw Exception("AnalogIn",
+		      "Cannot read into structure with wrong channel map");
 
   int nscans = dest->getNumScans();
 
@@ -234,8 +243,10 @@ int AnalogIn::read(AnalogData *dest, int offset, int maxscans) throw(daqExceptio
     maxscans=nscans;
   if (maxscans>nscans-offset)
     maxscans=nscans-offset;
+
+  KeyGuard guard(*dest);
   
-  double *destdata = dest->allData();
+  double *destdata = dest->allData(guard.key());
   destdata += nchans*offset;
 
   int donescans = 0;
@@ -256,10 +267,10 @@ int AnalogIn::read(AnalogData *dest, int offset, int maxscans) throw(daqExceptio
 			      &scansread, 0),
 	   "AnalogIn","Read failure");
     if (scansread<0)
-      throw daqException("AnalogIn","Read fewer than zero scans!?");
+      throw Exception("AnalogIn", "Read fewer than zero scans!?");
     if (scansread==0)
       break;
-    //dbg("analogin read %i scans of %i channels\n",scansread,nchans);
+
     for (int c=0; c<nchans; c++) {
       double sum=0;
       double sumsum=0;
@@ -279,27 +290,6 @@ int AnalogIn::read(AnalogData *dest, int offset, int maxscans) throw(daqExceptio
     destdata += scansread*nchans;
   }
   return donescans;
-}
-
-AnalogData *AnalogIn::read(int nscanslimit) throw(daqException) {
-  int navail = countScansAvailable();
-  if (nscanslimit>navail)
-    nscanslimit = navail;
-
-  AnalogData *dest = new AnalogData(nscanslimit, ai_channel_list.size(),
-				    freqhz);
-
-  try {
-    for (int n=0; n<ai_channel_list.size(); n++)
-      dest->defineChannel(n,ai_channel_list[n]);
-
-    if (read(dest) != nscanslimit) 
-      throw daqException("AnalogIn","Failure to read all available scans");
-  } catch (...) {
-    delete dest;
-    throw;
-  }
-  return dest;
 }
 
 void AnalogIn::stop() throw(daqException) {
@@ -343,6 +333,10 @@ void AnalogIn::setFrequency(double hz)  throw(daqException) {
 
 int AnalogIn::getNumChannels() const {
   return ai_channel_list.size();
+}
+
+QString AnalogIn::channelName(AnalogIn::Channel const &c) const {
+  return deviceID() + "/" + ain.name();
 }
 
 char const *AnalogIn::name() const { return "AnalogIn"; }

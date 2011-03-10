@@ -14,6 +14,14 @@ class AnalogIn: public daqTask {
   Q_OBJECT;
 public:
   enum Ground { NRSE, RSE, DIFF };
+  class Channel {
+  public:
+    explicit Channel(unsigned int c);
+    QString name() const;
+    bool operator==(Channel const &x) { return chn==x.chn; }
+  private:
+    unsigned int chn;
+  };
 signals:
   void dataAvailable(AnalogIn *src, int nscans); // This signal will only be emitted if dataAvailablePeriod is set to non-zero.
   void acquisitionEnded(AnalogIn *src, bool ok);
@@ -37,7 +45,7 @@ public:
   virtual void uncommit() throw(daqException);
   virtual void start() throw(daqException);
   virtual int countScansSoFar() throw(daqException);
-  int read(AnalogData *dest) throw(daqException);
+  int read(AnalogData *dest);
   /*:F read
    *:D Reads data into the specified destination. The number of scans to
        be read is determined by DEST's NumScans. At the end of an
@@ -45,46 +53,38 @@ public:
        NumScans will be updated to reflect this.
    *:R Number of scans actually read.
    *:N This will wait until data available, except at end of acq.
+   *:N The channel map in DEST must match ours. We only verify that the number
+       of channels matches.
    */
-  AnalogData *read(int nscanslimit) throw(daqException);
-  /*:F read
-   *:D Reads all currently available data into a newly allocated structure.
-   *:N The caller is responsible for eventually deleting the AnalogData
-       structure.
-   */
-  int read(AnalogData *dest, int scanoffset, int scanlimit=0) throw(daqException);
+  int read(AnalogData *dest, int scanoffset, int scanlimit=0);
   /*:F read
    *:D Read a limited number of scans into an AnalogData structure, placing
        the result at the given offset.
    *:A If scanlimit=0, this will fill the rest of the buffer.
    *:R Number of scans read.
    *:N The AnalogData is *not* resized.
+   *:N The channel map in DEST must match ours. We only verify that the number
+       of channels matches.
    */
   virtual void abort() throw(daqException);
   virtual void stop() throw(daqException);
   virtual void setFrequency(double hz)  throw(daqException);
-  //virtual void setPollPeriod(int nscans) throw(daqException);
-  ///*:F setPollPeriod
-  // *:D See daqtask.h.
-  // *:N This version rounds down the period so that it divides the DMA buffer
-  //     size evenly. For this to work, you must call this function *after*
-  //     commit()ing.
-  //*/
   void attachDI(class DigitalIn *digin) throw(daqException);
   void attachAO(class AnalogOut *analout) throw(daqException);
   void detachDI() throw(daqException);
   void detachAO() throw(daqException);
 protected:
   int nscans;
-  QVector<int> ai_channel_list; // by index
-  QMap<int, double> ai_range_map; // by channel number
-  QMap<int, enum Ground> ai_ground_map; // by channel number
-  QMap<int, int> ai_channel2index;
+  QVector<Channel> ai_channel_list; // by index
+  QMap<Channel, double> ai_range_map; // by channel number
+  QMap<Channel, enum Ground> ai_ground_map; // by channel number
+  QMap<Channel, int> ai_channel2index;
 
   class DigitalIn *dislave;
   class AnalogOut *aoslave;
   bool aborting;
-
+private:
+  QString channelName(Channel const &c);
  public: // for internal use
   virtual void callbackDone(int status);
   virtual void callbackEvery(int nscans);

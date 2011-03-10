@@ -155,6 +155,10 @@ public:
    *:D Returns a QBitArray representation of this parameter.
    *:N Only type "set" can be represented as a QBitArray.
    */
+  QStringList toStringList() const;
+  /*:F toStringList
+   *:N Only type "set" can be represented as a list of strings.
+   */
   void read(QDomElement v);
   /*:F read
    *:D Reads the value of a <pval> xml element into this parameter.
@@ -214,6 +218,10 @@ public:
    *:N Only type "set" can be represented as a QBitArray. The array must
        have exactly the right length: the enumerator's largest value
        plus one.
+   */
+  void setStringList(QList<QString> const &ss);
+  /*:F setStringList
+   *:N Only type "set" can be set this way.
    */
   void report() const;
   /*:F report

@@ -61,17 +61,17 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   for (int i=0; i<ba.size(); i++)
     if (ba.testBit(i))
       nchans++;
-  
-  adata->reshape(contEphys ? EPHYSACQ_CONTACQ_CHUNKSIZE*EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER : nscans,nchans);
+
+  if (contEphys)
+    nscans =  EPHYSACQ_CONTACQ_CHUNKSIZE * EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER;
+  adata->reshape(nscans, nchans);
   int idx=0;
   for (int i=0; i<ba.size(); ++i)
     if (ba.testBit(i))
       adata->defineChannel(idx++,i);
   adata->setSamplingFrequency(samprate_hz);
 
-  ddata->reshape(contEphys
-		 ? EPHYSACQ_CONTACQ_CHUNKSIZE*EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER
-		 : nscans);
+  ddata->reshape(nscans);
   prep = true;
 
   bool haveDevice = createDAQ(ptree);
