@@ -253,30 +253,31 @@ void LiveEPhys::activate(ParamTree *p, ContAcq *ca) {
 }
 
 void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
-  QBitArray chmask = ptree->find("maintenance/liveEphys/aiChannels").toBitArray();
-  Enumerator *chnames = Enumerator::find("AICHAN");
+  QStringList chmask = ptree->find("maintenance/liveEphys/aiChannels")
+    .toStringList();
+  QSet<QString> chset;
+  foreach (QString c, chmask)
+    chset.insert(c);
   dbg("liveephys addchannels to %p n=%i\n",cc,list.size());
-  for (int l=0; l<list.size(); l++) {
-    QString cid = list[l];
-    if (!chnames->has(cid))
-      continue; // skip digital channels
-    int cno = chnames->lookup(cid);
-    dbg("addchannels l=%i cno=%i cid='%s' test=%i\n",
-    	l,cno,qPrintable(cid),chmask.testBit(cno));
-    if (chmask.testBit(cno)) {
-      LineGraph *lg = new LineGraph(cc); // cc becomes owner
-      TraceInfo *tr = new TraceInfo(); // aitraces becomes owner
-      dbg("  addchannels cid=%s cno=%i lg=%p tr=%p",qPrintable(cid),cno,lg,tr);
-      addChannel(cno, cid);
-      cc->addGraph(cid, lg, isChannelTiny(cid));
-      lg->addTrace(cid, tr);
-      Connections::AIChannel const &ch(Connections::findAI(cid));
-      lg->setTraceLabel(cid,Aliases::lookup(cid));
-      tr->setScaleFactor(ch.scale);
-      lg->setYLabel(ch.unit);
-      aitraces[cid] = tr;
-      aigraphs[cid] = lg;
-    }
+  foreach (QString cid, list) {
+    if (!chset.contains(cid))
+      continue;
+    Connections::AIChannel const *aic = Connections::findpAI(cid);
+    if (!aic)
+      continue; // skip, e.g., digital channels
+    LineGraph *lg = new LineGraph(cc); // cc becomes owner
+    TraceInfo *tr = new TraceInfo(); // aitraces becomes owner
+    int cno = aic->line;
+    dbg("  addchannels cid=%s cno=%i lg=%p tr=%p",qPrintable(cid),cno,lg,tr);
+    addChannel(AnalogIn::Channel(cno), cid);
+    cc->addGraph(cid, lg, isChannelTiny(cid));
+    lg->addTrace(cid, tr);
+    Connections::AIChannel const &ch(Connections::findAI(cid));
+    lg->setTraceLabel(cid,Aliases::lookup(cid));
+    tr->setScaleFactor(ch.scale);
+    lg->setYLabel(ch.unit);
+    aitraces[cid] = tr;
+    aigraphs[cid] = lg;
   }
   first = true;
 }
