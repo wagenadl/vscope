@@ -11,7 +11,12 @@ int main() {
   int ncams = sys.countCameras();
   Dbg() << "Camera count: " << ncams;
   for (int n=0; n<ncams; n++) {
-    Dbg() << "Camera #" << n;
+    QString s = sys.getCamName(n);
+    Dbg() << "Camera #" << n << " is " << s << ". Status report follows.";
+    pvpCamera cam(s);
+    cam.reportStatus();
+    cam.reportSpeeds();
+    Dbg();
   }
   return 0;
 }
