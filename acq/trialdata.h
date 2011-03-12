@@ -48,11 +48,12 @@ public:
   QString trialID() const { return trialid; }
   CCDTimingDetail const &timing() const { return timing_; }
   Transform ccdPlacement(QString camid) const;
-  void notifyDataChange(); // call this if you have changed the data
-  // This is required, or no newData() signal will be emitted.
-  // Note that read() automatically causes the signal to be emitted.
 signals:
   void newData();
+  /*:S newData
+   *:D Emitted whenever our data is changed for whatever reason.
+   *:N *Not* emitted for changed to analog or digital *output* data.
+   */
 private:
   static QString trialname(class ParamTree const *tree);
   void generalPrep(class ParamTree const *ptree);
@@ -72,6 +73,7 @@ private:
   QVector<Transform> ccdplace;
   class AnalogData *adataIn, *adataOut;
   class DigitalData *ddataIn, *ddataOut;
+  class KeyAgg *keyagg;
   // identification
   QString fpath;
   QString exptname;

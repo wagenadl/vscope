@@ -22,14 +22,21 @@
 #include <video/videoprog.h>
 
 #include "trialdata.h"
+#include <base/keyagg.h>
 
 TrialData::TrialData() {
   xml = 0;
 
+  keyagg = new KeyAgg(this);
+  connect(keyagg, SIGNAL(newData()), this, SIGNAL(newData()));
+  
   adataIn = new AnalogData(1024, 1, 1e4);
   adataOut = new AnalogData(1024, 1, 1e4);
   ddataIn = new DigitalData(1024, 1e4);
   ddataOut = new DigitalData(1024, 1e4);
+
+  keyagg->add(adataIn);
+  keyagg->add(ddataIn);
 
   foreach (QString camid, Connections::allCams()) {
     //Dbg() << "TrialData: camidx["<<camid<<"] = " << ccddata.size();
@@ -38,6 +45,7 @@ TrialData::TrialData() {
     CCDData *d = new CCDData();
     d->setDataToCanvas(Connections::findCam(camid).placement);
     ccddata.append(d);
+    keyagg->add(d);
   }
 
   prep=false;
@@ -509,8 +517,4 @@ void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
     throw Exception("Trial",
 		    QString("Camera count mismatch (%1; expected %2)")
 		    .arg(havecam.size()).arg(ncam));
-}
-
-void TrialData::notifyDataChange() {
-  emit newData();
 }

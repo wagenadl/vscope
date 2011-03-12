@@ -31,20 +31,23 @@ public:
    *:N Making the access exclusive while multiple keys are checked out
        causes an exception.
   */
+  bool isCheckedOut(WriteKey *key) const;
+  bool anyCheckedOut() const;
+  /*:F isCheckedOut, anyCheckedOut
+   *:D Returns true if the given key (or any key) is checked out.
+   */
 signals:
   void newData();
   /*:S newData
    *:D Emitted upon checkin or by emitUnlessCheckedOut().
+   *:N The signal is emitted *after* the key is removed from the set,
+       so any slots that receive this signal will get false if they call
+       isCheckedOut(key).
    */
 protected:
   void emitUnlessCheckedOut();
   /*:F emitUnlessCheckedOut
    *:D Emits the newData() signal unless any key is checked out.
-   */
-  bool checkedOut(WriteKey *key) const;
-  bool checkedOut() const;
-  /*:F checkedOut
-   *:D Returns true if the given key (or any key) is checked out.
    */
   void verifyKey(WriteKey *key, QString msg="") const;
   /*:F verifyKey

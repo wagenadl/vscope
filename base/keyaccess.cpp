@@ -9,7 +9,7 @@ KeyAccess::KeyAccess(QObject *parent): QObject(parent) {
 }
 
 KeyAccess::~KeyAccess() {
-  if (checkedOut())
+  if (anyCheckedOut())
     Dbg()
       << "KeyAccess destroyed while keys still checked out. Disaster imminent.";
 }
@@ -17,11 +17,11 @@ KeyAccess::~KeyAccess() {
 class KeyAccess::WriteKey {
 };
 
-bool KeyAccess::checkedOut() const {
+bool KeyAccess::anyCheckedOut() const {
   return !keys.isEmpty();
 }
 
-bool KeyAccess::checkedOut(KeyAccess::WriteKey *key) const {
+bool KeyAccess::isCheckedOut(KeyAccess::WriteKey *key) const {
   return keys.contains(key);
 }
 
