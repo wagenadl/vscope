@@ -108,6 +108,10 @@ void CCDAcq::abort() {
   for (int k=0; k<ncams; k++)
     if (cameras[k])
       cameras[k]->abort();
+
+  for (int k=0; k<ncams; k++)
+    dest[k]->checkin(keys[k]);
+  keys.clear();
   
   isActive=false;
   isGood=false;
@@ -123,19 +127,23 @@ void CCDAcq::start() {
     if (!dest[k] && cameras[k])
       throw Exception("CCDAcq","Cannot start without destination buffers");
 
-    for (int k=0; k<ncams; k++)
-      if (dest[k])
-	dest[k]->reshape(ccdcfg[k].getSerPix(),ccdcfg[k].getParPix(),
-			 ccdcfg[k].nframes);
+  for (int k=0; k<ncams; k++)
+    if (dest[k])
+      dest[k]->reshape(ccdcfg[k].getSerPix(),ccdcfg[k].getParPix(),
+		       ccdcfg[k].nframes);
+  
+  for (int k=0; k<ncams; k++) 
+    if (dest[k])
+      dest[k]->setTimeBase(t0_ms,dt_ms);
 
-    for (int k=0; k<ncams; k++) 
-      if (dest[k])
-	dest[k]->setTimeBase(t0_ms,dt_ms);
-
+  keys.clear();
+  for (int k=0; k<ncams; k++)
+    keys.append(dest[k]->checkout());
+  
   try {
     for (int k=0; k<ncams; k++)
       if (cameras[k])
-	cameras[k]->startFinite(dest[k]->frameData(),
+	cameras[k]->startFinite(dest[k]->frameData(keys[k]),
 				dest[k]->getTotalPix());
     isActive = true;
   } catch (Exception const &) {
@@ -177,12 +185,18 @@ bool CCDAcq::hasEnded() {
       isActive = false;
       isDone = true;
       isGood = true;
+      for (int k=0; k<ncams; k++)
+	dest[k]->checkin(keys[k]);
+      keys.clear();
     }
   } catch (Exception const &) {
     fprintf(stderr,"ccdAcq caught exception.\n");
     isActive = false;
     isDone = true;
     isGood = false;
+    for (int k=0; k<ncams; k++)
+      dest[k]->checkin(keys[k]);
+    keys.clear();
   }
 
   return isActive ? false : isDone;

@@ -99,14 +99,16 @@ void LiveEPhys::contAcqAvailable(int ascans, int /*dscans*/) {
   if (!data || ascans<=0 || !contacq || !contacq->adata())
     return;
 
+  KeyGuard guard(*data);
+
   int nspace = data->getNumScans() - dataoffset;
   int nnow = mini(ascans, nspace);
 
   AnalogData *src = contacq->adata();
   int nchans = data->getNumChannels();
 
-  memcpy((void*)(data->allData()+nchans*dataoffset),
-	 (void*)(src->allData()),
+  memcpy((void *)(data->allData(guard.key())+nchans*dataoffset),
+	 (void const *)(src->allData()),
 	 nnow*nchans*sizeof(double));
   feedVCO(dataoffset,nnow);
   dataoffset+=nnow;
@@ -183,9 +185,10 @@ void LiveEPhys::activate(ParamTree *p) {
     return;
   }
     dbg("liveephys: ain created");
-  connect(ain,SIGNAL(dataAvailable(AnalogIn*,int)),
-	  this,SLOT(dataAvailable()));
-  
+  connect(ain, SIGNAL(dataAvailable(AnalogIn*, int)),
+	  this, SLOT(dataAvailable()));
+
+  channels.clear();
   addChannels(ic, potchs_left);
   addChannels(ec, potchs_right);
   //  dbg("liveephys::channels added\n");
@@ -238,6 +241,7 @@ void LiveEPhys::activate(ParamTree *p, ContAcq *ca) {
   connect(contacq,SIGNAL(dataSaved(int,int)),
 	  this,SLOT(contAcqAvailable(int,int)));
 
+  channels.clear();
   addChannels(ic, potchs_left);
   addChannels(ec, potchs_right);
 
@@ -267,32 +271,33 @@ void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
       continue; // skip, e.g., digital channels
     LineGraph *lg = new LineGraph(cc); // cc becomes owner
     TraceInfo *tr = new TraceInfo(); // aitraces becomes owner
-    int cno = aic->line;
-    dbg("  addchannels cid=%s cno=%i lg=%p tr=%p",qPrintable(cid),cno,lg,tr);
-    addChannel(AnalogIn::Channel(cno), cid);
+    addChannel(cid);
     cc->addGraph(cid, lg, isChannelTiny(cid));
     lg->addTrace(cid, tr);
-    Connections::AIChannel const &ch(Connections::findAI(cid));
     lg->setTraceLabel(cid,Aliases::lookup(cid));
-    tr->setScaleFactor(ch.scale);
-    lg->setYLabel(ch.unit);
+    tr->setScaleFactor(aic->scale);
+    lg->setYLabel(aic->unit);
     aitraces[cid] = tr;
     aigraphs[cid] = lg;
   }
   first = true;
 }
 
-void LiveEPhys::addChannel(AnalogIn::Channel cno, QString cid) {
+void LiveEPhys::addChannel(QString cid) {
+  Connections::AIChannel const &ch(Connections::findAI(cid));
+  channels.append(&ch);
+  
   if (!ain)
     return;
-  
-  Connections::AIChannel const &ch(Connections::findAI(cid));
+
+  AnalogIn::Channel cno(ch.line);
   ain->addChannel(cno);
   ain->setRange(cno, ch.range);
-  ain->setGround(ch.ground=="NRSE" ? AnalogIn::NRSE
+  ain->setGround(cno,
+		 ch.ground=="NRSE" ? AnalogIn::NRSE
 		 :ch.ground=="RSE" ? AnalogIn::RSE
 		 :ch.ground=="DIFF" ? AnalogIn::DIFF
-		 : AnalogIn::NRSE);
+		 :AnalogIn::NRSE);
 }
 
 void LiveEPhys::deactivate() {
@@ -322,19 +327,12 @@ void LiveEPhys::deactivate() {
     //    dbg("  deactivate: ain uncommitted");
   }
 
-  for (QMap<int,LineGraph*>::iterator i=aigraphs.begin();
-       i!=aigraphs.end(); ++i) {
-    i.value()->removeAllTraces();
-    //    dbg("  deactivate: remove traces %i",i.key());
-  }
+  foreach (LineGraph *lg, aigraphs) 
+    lg->removeAllTraces();
   aigraphs.clear();
-  for (QMap<int,TraceInfo*>::iterator i=aitraces.begin();
-       i!=aitraces.end(); ++i) {
-    delete i.value();
-    //    dbg("  deactivate: delete trace %i",i.key());
-  }
+  foreach (TraceInfo *tr, aitraces) 
+    delete tr;
   aitraces.clear();
-  //  dbg("  deactivate: traces cleared");
 
   if (ain) {
     delete ain;
@@ -413,9 +411,8 @@ void LiveEPhys::newTimebase() {
   dbg("Liveephys::settimebase acqfreqhz=%g timebases=%g nscans=%i dts=%g\n",
       acqfreq_hz, timebase_s, nscans, dt_s);
 
-  for (QMap<int,TraceInfo *>::iterator i=aitraces.begin();
-       i!=aitraces.end(); ++i)
-    i.value()->setData(0,dt_s, DataPtr(), 0);
+  foreach (TraceInfo *tr, aitraces)
+    tr->setData(0,dt_s, DataPtr(), 0);
   
   if (data)
     delete data;
@@ -428,16 +425,17 @@ void LiveEPhys::newTimebase() {
     else 
       throw Exception("LiveEPhys","No contacq src. This should not happen. (3)");
   } else {
-    for (int idx=0; idx<nchans; idx++)
-      data->defineChannel(idx,ain->getChannelAt(idx));
+    int idx = 0;
+    foreach (Connections::AIChannel const *ach, channels) {
+      data->defineChannel(idx++, ach->id, ach->scale, ach->unit);
+    }
   }
   if (isActive && ain) {
     ain->commit();
     ain->start();
-  for (QMap<int,LineGraph*>::iterator i=aigraphs.begin();
-       i!=aigraphs.end(); ++i) 
-    i.value()->autoSetXRange();
   }
+  foreach (LineGraph *lg, aigraphs) 
+    lg->autoSetXRange();
 }
 
 void LiveEPhys::feedVCO(int offset, int length) {
@@ -448,7 +446,7 @@ void LiveEPhys::feedVCO(int offset, int length) {
 
   double sumv=0;
   int dn = data->getNumChannels();
-  double *d = data->allData() + vcoidx + offset*dn;
+  double const *d = data->allData() + vcoidx + offset*dn;
   for (int k=0; k<length; k++) {
     sumv += *d;
     d+=dn;

@@ -10,6 +10,7 @@
 #include <pvp/ccdconfig.h>
 #include <xml/connections.h>
 #include <acq/ccdtimingdetail.h>
+#include <base/keyaccess.h>
 
 #ifdef vsdLINUX
 #define CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA 1
@@ -78,6 +79,7 @@ private:
   bool isDone;
 
   double t0_ms, dt_ms; // expected timing of frames relative to trial
+  QVector<KeyAccess::WriteKey *> keys;
 };
 
 #endif

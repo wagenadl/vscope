@@ -56,19 +56,18 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
 
   bool contEphys = ptree->find("acquisition/contEphys").toBool();
 
-  int nchans = 0;
-  QBitArray ba = ptree->find("acqEphys/aiChannels").toBitArray();
-  for (int i=0; i<ba.size(); i++)
-    if (ba.testBit(i))
-      nchans++;
+  QStringList aic = ptree->find("acqEphys/aiChannels").toStringList();
+  QMap<AnalogIn::Channel, QString> chmap;
+  foreach (QString s, aic) 
+    chmap[AnalogIn::Channel(Connections::findAI(s).line)] = s;
+  int nchans = aic.size();
 
   if (contEphys)
     nscans =  EPHYSACQ_CONTACQ_CHUNKSIZE * EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER;
   adata->reshape(nscans, nchans);
   int idx=0;
-  for (int i=0; i<ba.size(); ++i)
-    if (ba.testBit(i))
-      adata->defineChannel(idx++,i);
+  foreach (QString id, chmap.values())
+    adata->defineChannel(idx++, id);
   adata->setSamplingFrequency(samprate_hz);
 
   ddata->reshape(nscans);
@@ -83,24 +82,21 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   ain->setAcqLength(contEphys ? 0 : nscans);
   ain->setPollPeriod(contEphys ? EPHYSACQ_CONTACQ_CHUNKSIZE : 0);
   
-  Enumerator *aichan = Enumerator::find("AICHAN");
-  for (int i=0; i<ba.size(); ++i) {
-    if (ba.testBit(i)) {
-      Connections::AIChannel const &aic =
-	Connections::findAI(aichan->reverseLookup(i));
-      ain->addChannel(i);
-      ain->setRange(i,aic.range);
-      if (aic.ground=="RSE")
-	ain->setGround(i,AnalogIn::RSE);
-      else if (aic.ground=="NRSE")
-	ain->setGround(i,AnalogIn::NRSE);
-      else if (aic.ground=="DIFF")
-	ain->setGround(i,AnalogIn::DIFF);
-      else
-	throw Exception("EPhysAcq",
-			"Unknown grounding scheme '" + aic.ground
-			+ "' for '" + aic.id + "'", "prepare");
-    }
+  foreach (QString id, chmap.values()) {
+    Connections::AIChannel const &aic = Connections::findAI(id);
+    AnalogIn::Channel i(aic.line);
+    ain->addChannel(i);
+    ain->setRange(i,aic.range);
+    if (aic.ground=="RSE")
+      ain->setGround(i,AnalogIn::RSE);
+    else if (aic.ground=="NRSE")
+      ain->setGround(i,AnalogIn::NRSE);
+    else if (aic.ground=="DIFF")
+      ain->setGround(i,AnalogIn::DIFF);
+    else
+      throw Exception("EPhysAcq",
+		      "Unknown grounding scheme '" + aic.ground
+		      + "' for '" + aic.id + "'", "prepare");
   }
   
   din->setAcqLength(contEphys ? 0 : nscans);
