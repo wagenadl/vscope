@@ -25,6 +25,10 @@ ROIData::ROIData() {
   debleach = None;
 }
 
+ROIData::~ROIData() {
+  // real destruction done by caches.
+}
+
 void ROIData::setDebleach(ROIData::Debleach d) {
   if (d!=debleach) {
     debleach = d;
@@ -131,12 +135,18 @@ void ROIData::BitmapCache::setROI(ROICoords const *roi_) {
   valid = false;
 }
 
+void ROIData::BitmapCache::unsetTransformAndClip() {
+  haveTransformAndClip = false;
+  valid = false;
+}
+
 void ROIData::BitmapCache::setTransformAndClip(Transform const &t_,
 					       QRect const &bb) {
   if (haveTransformAndClip && t==t_ && clip==bb)
     return;
   t = t_;
   clip = bb;
+  haveTransformAndClip = true;
   valid = false;
 }
 

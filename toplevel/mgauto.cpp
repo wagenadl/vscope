@@ -28,13 +28,11 @@ MGAuto::Channel::Channel(QDomElement c) {
   label = id;
   if (ctyp=="ai") {
     typ=AI;
-    chn = Enumerator::find("AICHAN")->lookup(id);
     label = Aliases::lookup(id);
     isOut = false;
     isDigi = false;
   } else if (ctyp=="ao") {
     typ=AO;
-    chn = Enumerator::find("AOCHAN")->lookup(id);
     isOut = true;
     isDigi = false;
   } else if (ctyp=="di") {
@@ -101,14 +99,13 @@ void MGAuto::rebuild() {
   QSet<QString> newset;
   for (QList<Channel>::iterator i=pool.begin(); i!=pool.end(); ++i) {
     QString id = (*i).id;
-    int chn = (*i).chn;
     if (!Globals::ptree->enabled((*i).if_enabled))
       continue;
     
     switch ((*i).typ) {
     case Channel::AI:
       if (Globals::trove->trial().analogData() &&
-	  Globals::trove->trial().analogData()->contains(chn)) {
+	  Globals::trove->trial().analogData()->contains(id)) {
 	newset.insert(id);
       } else {
 	;
@@ -181,7 +178,7 @@ void MGAuto::newtraces() {
       case Channel::AI:
 	if (aacq) {
 	  tr->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
-		      DataPtr(aacq->channelData(c.chn)),
+		      DataPtr(aacq->channelData(c.id)),
 		      aacq->getNumScans(),
 		      aacq->getNumChannels());
 	  Connections::AIChannel const &aich = Connections::findAI(c.id);
@@ -192,7 +189,7 @@ void MGAuto::newtraces() {
       case Channel::AO:
 	if (astim) {
 	  tr->setData(0,1/outrate_hz,
-		      DataPtr(astim->channelData(c.chn)),
+		      DataPtr(astim->channelData(c.id)),
 		      astim->getNumScans(),
 		      astim->getNumChannels());
 	  g->setYLabel("(V)"); // AO always in volts for now

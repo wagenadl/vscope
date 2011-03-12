@@ -129,7 +129,7 @@ void Coherence::setRefDigi(int digiline) {
   perhapsRefresh();
 }
 
-void Coherence::setRefTrace(int ach) {
+void Coherence::setRefTrace(QString ach) {
   if (data)
     data->setRefTrace(ach);
   perhapsRefresh();

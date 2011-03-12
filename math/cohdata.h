@@ -29,7 +29,7 @@ public slots:
   void setEPhys(class AnalogData const *ad,
 		class DigitalData const *dd);
   void setCCDData(class ROIData3Set *rs3d);
-  void setRefTrace(int achn);
+  void setRefTrace(QString achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
   void invalidate();
@@ -58,7 +58,8 @@ private:
   class AnalogData const *adata; // we do not own this
   class DigitalData const *ddata; // we do not own this
 private:
-  QString ref_chn; // for both analog or digital
+  QString ref_chn; // for refANALOG mode
+  int ref_line; // for refDIGITAL mode
   double ref_hz; // for refFIXED mode
   QMap<int, double> coh_mag;
   QMap<int, double> coh_pha;

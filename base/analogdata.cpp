@@ -270,6 +270,14 @@ void AnalogData::setSamplingFrequency(double f) {
   fs_hz = f;
 }
 
+double const *AnalogData::allData() const {
+  return data;
+}
+
+double *AnalogData::allData(WriteKey *key) {
+  verifyKey(key, "channelData");
+  return data;
+}
 double const *AnalogData::channelData(QString id) const {
   if (contains(id)) 
     return data + id2index[id];

@@ -116,21 +116,6 @@ QWidget *makeBanner2(QWidget *parent) {
   return w;
 }
 
-void setFlips() {
-  QString id_donor = Connections::leaderCamera();
-  QString id_acceptor = Connections::findCam(id_donor).partnerid;
-  Connections::CamCon const &donCam = Connections::findCam(id_donor);
-  if (id_acceptor.isEmpty()) {
-    // only one camera
-    ROI3Data::setFlip(donCam.flipx, donCam.flipy, false, false);
-  } else {
-    // two cameras
-    Connections::CamCon const &accCam = Connections::findCam(id_acceptor);
-    ROI3Data::setFlip(donCam.flipx, donCam.flipy,
-		      accCam.flipx, accCam.flipy);
-  }
-}
-
 void setupAppStyle(QApplication &app) {
   app.setStyle(new QPlastiqueStyle);
   
@@ -225,7 +210,6 @@ QDomElement setupGUI() {
 }
 
 void setupCams() {
-  setFlips();
   CamPool();
   QStringList sz = Connections::allCams();
   foreach (QString id, sz) {
@@ -262,8 +246,7 @@ void setupVSDTraces() {
   Globals::vsdtraces = new VSDTraces(Globals::rightplace);
   Globals::vsdtraces->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::vsdtraces->
-    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
-				.toInt()));
+    setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
   Globals::vsdtraces->hide();
 
   QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
@@ -304,8 +287,7 @@ void setupCoherence() {
   Globals::coherence->setCanvas(Globals::ccdw->currentCanvas());
   Globals::coherence->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::coherence->
-    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
-				    .toInt()));
+    setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
   Globals::coherence->
     setShowMode(ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs")
 				    .toInt()));
@@ -315,8 +297,7 @@ void setupCoherence() {
 				   Globals::rightplace);
   Globals::cohgraph->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::cohgraph->
-    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
-				  .toInt()));
+    setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
   Globals::cohgraph->hide();
 
   QObject::connect(Globals::ccdw, SIGNAL(newZoom(QRect)),

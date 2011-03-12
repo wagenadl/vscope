@@ -29,7 +29,6 @@ VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent) {
   addGraph("ref",refgraph);
   reftrace = new TraceInfo();
   refgraph->addTrace("ref",reftrace);
-  refchn = 0;
   refgraph->autoSetXRange();
   refgraph->autoSetYRange();
   connect(&Globals::trove->trial(), SIGNAL(newData()), SLOT(updateEPhysData()));
@@ -49,10 +48,9 @@ void VSDTraces::updateSelection(int id) {
   allgraph->updateSelection(id);
 }
 
-void VSDTraces::setRefTrace(int rf) {
+void VSDTraces::setRefTrace(QString id) {
   //dbg("vsdtraces::setreftrace: %i",rf);
-  refchn = rf;
-  QString id = Enumerator::find("AICHAN")->reverseLookup(rf);
+  refchn = id;
   refgraph->setTraceLabel("ref", Aliases::lookup(id));
   updateEPhysData();
 }
@@ -68,7 +66,7 @@ void VSDTraces::setRefFreq(double) {
 void VSDTraces::updateEPhysData() {
   AnalogData const *adata = Globals::trove->trial().analogData();
   if (!adata->contains(refchn)) {
-    int rf = adata->getChannelAtIndex(0);
+    QString rf = adata->getChannelAtIndex(0);
     if (adata->contains(rf)) {
       setRefTrace(rf);
       return;
@@ -77,14 +75,11 @@ void VSDTraces::updateEPhysData() {
   DataPtr dp(adata->contains(refchn)
 	     ? adata->channelData(refchn)
 	     : adata->allData());
-  //dbg("vsdtraces::newephys. refchn=%i contained=%i. data=%p",
-  //      refchn,adata->contains(refchn), dp.ptr.dp_double);
   reftrace->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
 		    dp,
 		    adata->getNumScans(),
 		    adata->getNumChannels());
-  QString id = Enumerator::find("AICHAN")->reverseLookup(refchn);
-  Connections::AIChannel const &aich = Connections::findAI(id);
+  Connections::AIChannel const &aich = Connections::findAI(refchn);
   reftrace->setScaleFactor(aich.scale);
   refgraph->setYLabel("("+aich.unit+")");
   refgraph->autoSetYRange();

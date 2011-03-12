@@ -259,7 +259,7 @@ void Acquire::doneTrial() {
   saveData();
   displayCCD();
   displayEPhys();
-  Globals::trove->roidata().updateData(); // temporary hack
+  //  Globals::trove->roidata().updateData(); // temporary hack
   //  updateVSDTraces();
 }
 

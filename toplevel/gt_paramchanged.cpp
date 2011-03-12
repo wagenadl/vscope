@@ -33,7 +33,7 @@ static void setRefTrace() {
   Dbg() << "gt_paramchanged::setRefTrace(). typ="<<typ;
   Enumerator *e = Enumerator::find("REFTYPE");
   if (typ==e->lookup("Analog")) {
-    int chn = Globals::ptree->find("analysis/refTrace").toInt();
+    QString chn = Globals::ptree->find("analysis/refTrace").toString();
     Dbg() << "-> analog. chn="<<chn;
     Globals::vsdtraces->setRefTrace(chn);
     Globals::coherence->setRefTrace(chn);

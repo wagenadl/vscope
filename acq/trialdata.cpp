@@ -26,10 +26,10 @@
 TrialData::TrialData() {
   xml = 0;
 
-  adataIn = new AnalogData(1024,1, 1e4);
-  adataOut = new AnalogData(1024,1, 1e4);
-  ddataIn = new DigitalData(1024);
-  ddataOut = new DigitalData(1024);
+  adataIn = new AnalogData(1024, 1, 1e4);
+  adataOut = new AnalogData(1024, 1, 1e4);
+  ddataIn = new DigitalData(1024, 1e4);
+  ddataOut = new DigitalData(1024, 1e4);
 
   foreach (QString camid, Connections::allCams()) {
     //Dbg() << "TrialData: camidx["<<camid<<"] = " << ccddata.size();
@@ -185,21 +185,6 @@ void TrialData::write() const {
   xml->write(base + ".xml");
 }
 
-static double getScale(QString str) {
-  /* Given either a voltage, e.g., "3.4 uV", or a current, e.g., "1.2 pA",
-     converts to canonical units, i.e., millivolts or nanoamperes.
-  */
-  QString qty;
-  if (str.endsWith("A"))
-    qty = "current";
-  else
-    qty = "voltage";
-  Param scale(qty);
-  scale.set(str);
-  double scl = scale.toDouble();
-  return scl;
-}
-
 void TrialData::read(QString dir, QString exptname0, QString trialid0,
 		     ParamTree *ptree_dest) {
   prep=false;
@@ -253,49 +238,17 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
 }
 
 void TrialData::writeAnalog(QString base) const {
-  QMap<int,double> scale = adataIn->writeInt16(base+"-analog.dat");
   QDomElement analog = xml->find("analog");
-  analog.setAttribute("channels",QString::number(adataIn->getNumChannels()));
-  analog.setAttribute("type","int16");
-  analog.setAttribute("typebytes","2");
-  analog.setAttribute("scans",QString::number(adataIn->getNumScans()));
-  Enumerator *aichan = Enumerator::find("AICHAN");
-  for (int idx=0; idx<adataIn->getNumChannels(); idx++) {
-    int chn = adataIn->getChannelAtIndex(idx);
-    double scl = scale[chn];
-    QString chname = aichan->reverseLookup(chn);
-    Connections::AIChannel const *chinfo = Connections::findpAI(chname);
-    QString unit = "V";
-    if (chinfo) {
-      scl = scl * chinfo->scale;
-      unit = chinfo->unit;
-    }
-    QDomElement channel = xml->append("channel",analog);
-    channel.setAttribute("idx",QString("%1").arg(idx));
-    channel.setAttribute("chn",QString("%1").arg(chn));
-    channel.setAttribute("id",chname);
-    channel.setAttribute("scale",QString("%1 %2").arg(scl,0,'f',9).arg(unit));
-  }
+  adataIn->write(base+"-analog.dat", analog);
 }
 
 void TrialData::writeDigital(QString base) const {
-  ddataIn->writeUInt32(base + "-digital.dat");
   QDomElement digital = xml->find("digital");
-  digital.setAttribute("type","uint32");
-  digital.setAttribute("typebytes","4");
-  digital.setAttribute("scans",QString::number(ddataIn->getNumScans()));
-  Enumerator *dlines = Enumerator::find("DIGILINES");
-  foreach (QString dlid, Connections::digiInputLines()) {
-    int dlno = dlines->lookup(dlid);
-    QDomElement line = xml->append("line",digital);
-    line.setAttribute("id",dlid);
-    line.setAttribute("idx",QString::number(dlno));
-  }
-  // Actually, this isn't how it should be. It would be better to let
-  // ddata do it by itself (and make it know about line names).
+  ddataIn->write(base + "-digital.dat", digital);
 }
 
 void TrialData::writeCCD(QString base) const {
+  // Soon I should make ccddata be able to read and write by itself
   QString ccdfn = base + "-ccd.dat";
   QFile ccdf(ccdfn);
   if (!ccdf.open(QIODevice::WriteOnly))
@@ -335,64 +288,12 @@ void TrialData::writeCCD(QString base) const {
 
 void TrialData::readAnalog(XML &myxml, QString base) {
   QDomElement analog = myxml.find("analog");
-  bool ok;
-  
-  // read analog
-  int nscans = analog.attribute("scans").toInt(&ok);
-  if (!ok)
-    throw Exception("Trial","Cannot read number of scans from xml","read");
-  int nchans = analog.attribute("channels").toInt(&ok);
-  if (!ok)
-    throw Exception("Trial","Cannot read number of channels from xml",
-		    "read");
-  QString dtyp = analog.attribute("type");
-  if (dtyp!="int16")
-    throw Exception("Trial",
-		    "Only know how read analog data of type 'int16', not '"
-		    + dtyp + "'", "read");
-
-  adataIn->reshape(nscans, nchans);
-  
-  Enumerator *aichan = Enumerator::find("AICHAN");
-  QMap<int,double> scalemap;
-  for (QDomElement elt=analog.firstChildElement("channel");
-       !elt.isNull(); elt=elt.nextSiblingElement("channel")) {
-    int idx = elt.attribute("idx").toInt(&ok);
-    if (!ok)
-      throw Exception("Trial","Cannot read channel index from xml","read");
-    int chn = elt.attribute("chn").toInt(&ok);
-    if (!ok)
-      throw Exception("Trial","Cannot read channel number from xml","read");
-    adataIn->defineChannel(idx,chn);
-    double scl = getScale(elt.attribute("scale"));
-    try {
-      QString chname = aichan->reverseLookup(chn);
-      Connections::AIChannel const *chinfo = Connections::findpAI(chname);
-      if (chinfo) 
-	scl /= getScale(QString("%1 %2").arg(chinfo->scale).arg(chinfo->unit));
-      //scl = scl / chinfo->scale;
-    } catch(...) {
-      Dbg() << "TrialData:: unknown channel #" << chn;
-    }
-    scalemap[chn] = scl;
-  }
-  adataIn->readInt16(base + "-analog.dat", scalemap);
+  adataIn->read(base+"-analog.dat", analog);
 }
 
 void TrialData::readDigital(XML &myxml, QString base) {
   QDomElement digital = myxml.find("digital");
-  bool ok;
-  int nscans = digital.attribute("scans").toInt(&ok);
-  if (!ok)
-    throw Exception("Trial","Cannot read number of scans from xml","read");
-
-  ddataIn->reshape(nscans);
-  ddataIn->readUInt32(base + "-digital.dat");
-  ddataIn->clearMask();
-  for (QDomElement l = digital.firstChildElement("line");
-       !l.isNull(); l = l.nextSiblingElement("line")) 
-    if (l.hasAttribute("idx"))
-      ddataIn->addLine(l.attribute("idx").toInt(0));
+  ddataIn->read(base+"-digital.dat", digital);
 }
 
 void TrialData::readCCD(XML &myxml, QString base) {

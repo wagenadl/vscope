@@ -99,7 +99,7 @@ void CohGraph::setRefDigi(int digiline) {
   perhapsRefresh();
 }
 
-void CohGraph::setRefTrace(int ach) {
+void CohGraph::setRefTrace(QString ach) {
   if (data)
     data->setRefTrace(ach);
   perhapsRefresh();

@@ -7,11 +7,11 @@
 #include <base/exception.h>
 #include <daq/analogout.h>
 #include <base/analogdata.h>
+#include <xml/connections.h>
 
 VCO::VCO() {
   f0_hz = 130.8128; // C below middle C is 130.8 Hz.
   dfdv_oct10mV = 0.5; // -40 mV will be C above middle C if dfdv = 0.5.
-  aoc=3;
   Vpp=1;
   tau_s = 0.01;
   buflen = 2048;
@@ -50,11 +50,15 @@ void VCO::reconfig() {
     return;
 
   // we should reread our parameter values
-  aoc = ptree->find("acqEphys/vco/Dest").toInt();
+  aoc = ptree->find("acqEphys/vco/Dest").toString();
   f0_hz = ptree->find("acqEphys/vco/F0").toDouble();
   dfdv_oct10mV = ptree->find("acqEphys/vco/dfdv_oct10mV").toDouble();
   Vpp = ptree->find("acqEphys/vco/Vpp").toDouble() / 1000;
   tau_s = ptree->find("acqEphys/vco/tau").toDouble() / 1000;
+
+  chn.clear();
+  chn.append(AnalogOut::Channel(Connections::findAO(aoc).line));
+  
 }
 
 void VCO::activate(ParamTree *p) {
@@ -82,9 +86,10 @@ void VCO::activate(ParamTree *p) {
 
   data = new AnalogData(buflen, 1, fsamp_hz);
   data->defineChannel(0, aoc);
+
   phi=0;
   makeData();
-  aout->setData(data);
+  aout->setData(data, chn);
   aout->commit();
   makeData();
   aout->writeData();
@@ -116,7 +121,8 @@ void VCO::deactivate() {
 
   
 void VCO::makeData() {
-  double *d = data->allData();
+  KeyGuard guard(*data);
+  double *d = data->allData(guard.key());
   for (int k=0; k<buflen; k++) {
     *d++ = sin(2*3.14159265*phi)*Vpp;
     phi += fnow_hz/fsamp_hz;
@@ -132,7 +138,7 @@ void VCO::dataNeeded() {
   while (first || aout->countScansAvailable() >= buflen) {
     //dbg("VCO: making data");
     makeData();
-    aout->setData(data);
+    aout->setData(data, chn);
     aout->writeData();
     first = false;
   }

@@ -289,7 +289,7 @@ void CohData::recalcReference() {
     DigitalData::DataType const *dsrc = refType==refDIGITAL
       ? ddata->allData() : 0;
     DigitalData::DataType dmask = refType==refDIGITAL
-      ? ddata->maskForLine(ref_chn) : 0;
+      ? ddata->maskForLine(ref_line) : 0;
     double const *asrc = refType==refANALOG
       ? adata->channelData(ref_chn) : 0;
     int astep = asrc
@@ -436,11 +436,11 @@ CohData &CohData::operator=(CohData const &other) {
 
 void CohData::setRefDigi(int digiline) {
   refType = refDIGITAL;
-  ref_chn = digiline;
+  ref_line = digiline;
   invalidate();
 }
 
-void CohData::setRefTrace(int ach) {
+void CohData::setRefTrace(QString ach) {
   refType = refANALOG;
   ref_chn = ach;
   invalidate();

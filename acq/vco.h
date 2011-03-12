@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QString>
 
+#include <daq/analogout.h>
+
 class VCO: public QObject {
   Q_OBJECT;
 public:
@@ -30,7 +32,7 @@ private:
   */
   double tau_s;
   
-  int aoc; // channel we're using
+  QString aoc; // channel we're using
   int buflen;
 
   double Vm;
@@ -43,7 +45,7 @@ private:
   class AnalogOut *aout;
   class ParamTree *ptree;
     
-  
+  QList<AnalogOut::Channel> chn;
 };
 
 #endif
