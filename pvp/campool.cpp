@@ -8,9 +8,6 @@ QMap<QString, Camera *> CamPool::byId;
 QVector<Camera *> CamPool::cameras;
 bool CamPool::inited = false;
 
-CamPool::CamPool() {
-  initialize();
-}
 
 void CamPool::initialize() {
   if (inited)
@@ -93,4 +90,3 @@ QStringList CamPool::systemInfo() {
   return res;
 }
 
-static CamPool pool_; // ensure initialization

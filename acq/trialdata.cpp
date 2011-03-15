@@ -45,6 +45,7 @@ TrialData::TrialData() {
     CCDData *d = new CCDData();
     d->setDataToCanvas(Connections::findCam(camid).placement);
     ccddata.append(d);
+    ccdplace.append(Transform()); // this is not correct, but we don't have a tree yet.
     keyagg->add(d);
   }
 

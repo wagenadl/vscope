@@ -20,7 +20,7 @@ static int ncameras = 0;
 QStringList checkcam() {
   QStringList list;
   try {
-    CamPool();
+    CamPool::initialize();
     QString s="";
     QStringList sl = CamPool::systemInfo();
     while (!sl.isEmpty()) {

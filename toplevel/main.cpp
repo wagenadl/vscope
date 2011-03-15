@@ -35,7 +35,7 @@
 #include <QFile>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <pvp/campool.h>
 #include <gui/xmlpage.h>
 #include <gui/timebutton.h>
 #include <gfx/roiimage.h>
@@ -210,7 +210,7 @@ QDomElement setupGUI() {
 }
 
 void setupCams() {
-  CamPool();
+  CamPool::initialize();
   QStringList sz = Connections::allCams();
   foreach (QString id, sz) {
     QString serno = Connections::findCam(id).serno;
@@ -436,8 +436,11 @@ int main(int argc, char **argv) {
 
     reportCameraSituation();
     reportDAQSituation();
-    
-    return app.exec();
+
+    Dbg() << "Starting application";
+    int res = app.exec();
+    Dbg() << "Application done";
+    return res;
   } catch (Exception const &e) {
     Warning() << "Exception caught in main.";
     GUIExc::report(e,"");
