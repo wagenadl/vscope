@@ -2,7 +2,7 @@
 
 #include "keyagg.h"
 
-KeyAgg::KeyAgg(QObject *parent): QObject(parent) {
+KeyAgg::KeyAgg(QObject *parent): KeyAccess(parent) {
 }
 
 KeyAgg::~KeyAgg() {
@@ -25,8 +25,12 @@ void KeyAgg::sourceDying(QObject *o) {
 }
 
 void KeyAgg::updateData() {
+  emitUnlessCheckedOut();
+}
+
+void KeyAgg::emitUnlessCheckedOut() {
   foreach (KeyAccess *src, sources)
     if (src->anyCheckedOut())
       return;
-  emit newData();
+  KeyAccess::emitUnlessCheckedout();
 }

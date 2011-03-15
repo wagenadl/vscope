@@ -10,8 +10,9 @@
 #include <base/xml.h>
 #include <acq/ccdtimingdetail.h>
 #include <base/transform.h>
+#include <base/keyagg.h>
 
-class TrialData: public QObject {
+class TrialData: public KeyAgg {
   Q_OBJECT;
 public:
   TrialData();
@@ -33,9 +34,15 @@ public:
   class DigitalData const *digitalStimuli() const { return ddataOut; }
   class DigitalData  *digitalStimuli()  { return ddataOut; }
   class XML const *getXML() const { return xml; }
-  class XML *getXML() { return xml; } // only useful after read() or write()
+  //  class XML *getXML() { return xml; } // only useful after read() or write()
   /*:F getXML
    *:D Only useful after read() or write().
+   */
+  QStringList const &cameras() const { return camids; }
+signals:
+  void newCameras();
+  /*:S newCameras
+   *:D Emitted when the complement of our cameras has changed.
    */
 public:
   bool isPrepared() const { return prep; }
@@ -48,12 +55,6 @@ public:
   QString trialID() const { return trialid; }
   CCDTimingDetail const &timing() const { return timing_; }
   Transform ccdPlacement(QString camid) const;
-signals:
-  void newData();
-  /*:S newData
-   *:D Emitted whenever our data is changed for whatever reason.
-   *:N *Not* emitted for changed to analog or digital *output* data.
-   */
 private:
   static QString trialname(class ParamTree const *tree);
   void generalPrep(class ParamTree const *ptree);
@@ -67,13 +68,11 @@ private:
   void readCCDNewStyle(QVector<QString> &camsstored, QDomElement ccd);
 private:
   // data
-  QMap<QString, int> camidx;
-  QVector<QString> camids;
-  QVector<CCDData *> ccddata;
-  QVector<Transform> ccdplace;
+  QStringList camids;
+  QMap<QString, CCDData *> ccddata;
+  QMap<QString, Transform> ccdplace;
   class AnalogData *adataIn, *adataOut;
   class DigitalData *ddataIn, *ddataOut;
-  class KeyAgg *keyagg;
   // identification
   QString fpath;
   QString exptname;

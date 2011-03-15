@@ -45,7 +45,7 @@ signals:
        isCheckedOut(key).
    */
 protected:
-  void emitUnlessCheckedOut();
+  virtual void emitUnlessCheckedOut();
   /*:F emitUnlessCheckedOut
    *:D Emits the newData() signal unless any key is checked out.
    */

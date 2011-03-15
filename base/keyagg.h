@@ -6,7 +6,7 @@
 
 #include <base/keyaccess.h>
 
-class KeyAgg: public QObject {
+class KeyAgg: public KeyAccess {
   /*:C KeyAgg
    *:D Helper to avoid redundant calls to updateData() slots.
        If your class depends on multiple data sources, you can register
@@ -23,6 +23,12 @@ public:
   void remove(KeyAccess *);
 signals:
   void newData();
+protected:
+  virtual void emitUnlessCheckedOut();
+  /*:F emitUnlessCheckedOut
+   *:D Emits newData unless either we or any of our children has outstanding
+       keys.
+  */
 private slots:
   void updateData();
   void sourceDying(QObject *);
