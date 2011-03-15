@@ -25,7 +25,7 @@ Dbg::~Dbg() throw () {
     if (!txt.endsWith("\n"))
       txt += "\n";
     
-    fprintf(stderr,"%s",qPrintable(txt));
+    printf("%s",qPrintable(txt));
     if (!dbgfile)
       dbgfile = new DbgFile();
     *dbgfile << txt;
@@ -65,10 +65,13 @@ void dbg(char const *fmt, ...) throw() {
 DbgFile *dbgfile = 0;
 
 DbgFile::DbgFile() {
+  printf("DbgFile(%p) constructor\n",this);
+  dir = "";
   ts=0;
 }
 
 DbgFile::~DbgFile() {
+  printf("DbgFile(%p) destructor\n",this);
   if (ts)
     delete ts;
 }
@@ -83,27 +86,28 @@ void DbgFile::setDir(QString const &d) {
 
 DbgFile &DbgFile::operator<<(QString const &str) {
   if (!ts) {
-    f.setFileName(dir + "/debug.txt");
-    if (f.exists()) {
-      int n=0;
-      while (f.exists()) {
-	n++;
-	f.setFileName(dir + QString("/debug-%1.txt").arg(n));
+    if (!dir.isEmpty()) {
+      f.setFileName(dir + "/debug.txt");
+      if (f.exists()) {
+        int n=0;
+        while (f.exists()) {
+          n++;
+	  f.setFileName(dir + QString("/debug-%1.txt").arg(n));
+        }
       }
-    }
-    if (f.open(QIODevice::WriteOnly | QIODevice::Append)) {
-      ts = new QTextStream(&f);
-      foreach (QString s, backlog) {
-	*ts << s;
+      if (f.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        ts = new QTextStream(&f);
+        foreach (QString s, backlog) 
+  	  *ts << s;
+        backlog.clear();
       }
-      backlog.clear();
-    } else {
-      backlog.append(str);
     }
   }
   if (ts) {
     *ts << str;
     ts->flush();
+  } else {
+    backlog.append(str);
   }
   return *this;
 }

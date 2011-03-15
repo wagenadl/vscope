@@ -194,6 +194,7 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
   QString brightMsg = "Pixel values:";
   bool first = true;
   for (int k=0; k<K; k++) {
+    Dbg() << "Acq. camname="<<camname[k] <<" n="<<(src[k]?src[k]->getNFrames():0);
     if (!src[k] || src[k]->getNFrames()==0)
       continue;
     uint16_t const *dat = src[k]->frameData();
