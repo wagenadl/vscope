@@ -26,8 +26,18 @@ PanelHistory::PanelHistory() {
 PanelHistory::~PanelHistory() {
 }
 
+Param const &PanelHistory::whatPar(QString where, int n) const {
+  QString name = QString("panelHistory/what%1%2").arg(where).arg(n);
+  return Globals::ptree->find(name);
+}
+
 Param &PanelHistory::whatPar(QString where, int n) {
   QString name = QString("panelHistory/what%1%2").arg(where).arg(n);
+  return Globals::ptree->find(name);
+}
+
+Param const &PanelHistory::prioPar(QString where, int n) const {
+  QString name = QString("panelHistory/prio%1%2").arg(where).arg(n);
   return Globals::ptree->find(name);
 }
 
@@ -46,15 +56,11 @@ xmlButton &PanelHistory::menuButton(QString where, QString what) {
   return Globals::gui->findButton(name);
 }
 
-int PanelHistory::countButtons() /*const*/ {
+int PanelHistory::countButtons() const {
   int n = 0;
-  try {
-    while (true) {
-      whatPar("Left",n+1);
-      n++;
-    }
-  } catch (Exception const &) {
-  }
+  while (Globals::ptree->findp(QString("panelHistory/what%1%2")
+			       .arg("Left").arg(n+1)))
+    n++;
   return n;
 }
 
@@ -95,15 +101,15 @@ void PanelHistory::newSelection(QString const &where) {
   busy = false;
 }
 
-QString PanelHistory::butNameToWhere(QString const &s) {
+QString PanelHistory::butNameToWhere(QString const &s) const {
   return s.contains("Left") ? "Left" : "Right";
 }
 
-int PanelHistory::butNameToNumber(QString const &s) {
+int PanelHistory::butNameToNumber(QString const &s) const {
   return s.right(1).toInt();
 }
 
-QString PanelHistory::itemAt(QString const &s) /*const*/ {
+QString PanelHistory::itemAt(QString const &s) const {
   QString where = butNameToWhere(s);
   int n = butNameToNumber(s);
   return itemAt(where, n);
@@ -135,15 +141,15 @@ void PanelHistory::reprioritize(QString where, int n) {
   barButton(where,n).setSelected(true);
 }
 
-double PanelHistory::prio(QString where, int n) /*const*/ {
+double PanelHistory::prio(QString where, int n) const {
   return prioPar(where,n).toDouble();
 }
 
-QString PanelHistory::itemAt(QString where, int n) /*const*/ {
+QString PanelHistory::itemAt(QString where, int n) const {
   return whatPar(where,n).toString();
 }
 
-int PanelHistory::find(QString where, QString what) /*const*/ {
+int PanelHistory::find(QString where, QString what) const {
   for (int k=1; k<=nButtons; k++)
     if (itemAt(where,k)==what)
       return k;
@@ -172,7 +178,7 @@ void PanelHistory::setItemAt(QString where, int n, QString what) {
   but.setValue(what);
 }
 
-int PanelHistory::weakest(QString where) /*const*/ {
+int PanelHistory::weakest(QString where) const {
   int best=nButtons;
   double p0=1000000;
   for (int k=1; k<=nButtons; k++) {
