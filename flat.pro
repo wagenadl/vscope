@@ -22,6 +22,7 @@ SOURCES += base/ccdtiming.cpp
 SOURCES += base/memalloc.cpp
 SOURCES += base/roicoords.cpp
 SOURCES += base/transform.cpp
+SOURCES += base/object.cpp
 HEADERS += base/base26.h
 HEADERS += base/dbg.h
 HEADERS += base/exception.h
@@ -50,6 +51,7 @@ HEADERS += base/roicoords.h
 HEADERS += base/transform.h
 HEADERS += base/campair.h
 HEADERS += base/ptrguard.h
+HEADERS += base/object.h
 
 SOURCES += math/fft.cpp
 SOURCES += math/psdest.cpp

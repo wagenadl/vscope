@@ -1,5 +1,6 @@
 CONFIG = debug qt resources warn_on
-QTDIR=/cygdrive/c/Qt/4.4.1
+QTDIR=/cygdrive/c/Qt/4.4.3
+#QTDIR=/usr/lib/qt4
 QMAKESPEC=cygwin-g++
 TEMPLATE = app
 TARGET = vscope

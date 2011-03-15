@@ -11,7 +11,7 @@
 #include <pvp/camera.h>
 
 class CamPool {
-public:
+private:
   CamPool();
 public:
   static int nCameras();
@@ -21,7 +21,7 @@ public:
   static void rename(QString oldid, QString newid);
   static bool haveAll(QStringList const &ids);
   static QStringList systemInfo();
-private:
+public:
   static void initialize();
 private:
   static QMap<QString, Camera *> byId;

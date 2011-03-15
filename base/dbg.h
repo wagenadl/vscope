@@ -53,6 +53,9 @@ private:
   QFile f;
   QTextStream *ts;
   QStringList backlog;
+private: // not instantiated
+  DbgFile(DbgFile const &);
+  void operator=(DbgFile const &);
 };
 
 extern DbgFile *dbgfile;

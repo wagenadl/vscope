@@ -35,7 +35,7 @@
 #include <QFile>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <pvp/campool.h>
 #include <gui/xmlpage.h>
 #include <gui/timebutton.h>
 #include <gfx/roiimage.h>
@@ -226,7 +226,7 @@ QDomElement setupGUI() {
 
 void setupCams() {
   setFlips();
-  CamPool();
+  CamPool::initialize();
   QStringList sz = Connections::allCams();
   foreach (QString id, sz) {
     QString serno = Connections::findCam(id).serno;
@@ -393,12 +393,18 @@ void reportDAQSituation() {
 }
 
 int main(int argc, char **argv) {
+  printf("this is vscope\n");
   GUIExc::setArgs(argc, argv);
+  printf("1\n");
   QApplication app(argc, argv);
+  printf("2\n");
   try {
     checkTypes();
+    printf("3\n");
     setupAppStyle(app);
+    printf("4\n");
     setupParsAndConns();
+    printf("5\n");
 
     QString fpath = Globals::ptree->find("_filePath").toString();
     Globals::trove = new DataTrove(Globals::ptree);

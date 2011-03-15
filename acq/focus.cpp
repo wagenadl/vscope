@@ -21,7 +21,7 @@
 #include <xml/connections.h>
 
 Focus::Focus(QWidget *parent): QFrame(parent) {
-  CamPool();
+  CamPool::initialize();
   isActive = false;
   viewMode = ViewAll;
   timer = 0;
