@@ -31,19 +31,19 @@ private:
    *:D Resets the priority of the item at the specified location to highest,
        so that it will not be a candidate for replacement any time soon.
    */
-  QString itemAt(QString where, int n) /*const*/;
+  QString itemAt(QString where, int n) const;
   /*:F itemAt
    *:D Returns the ID of the item available in the specified location.
        Note that this item may or may not be open.
    */
-  QString itemAt(QString const &butname) /*const*/;
+  QString itemAt(QString const &butname) const;
   void setItemAt(QString where, int n, QString what);
-  int find(QString where, QString what) /*const*/;
-  double prio(QString where, int n) /*const*/;
+  int find(QString where, QString what) const;
+  double prio(QString where, int n) const;
   void setPrio(QString where, int n, double prio);
-  int weakest(QString where) /*const*/;
+  int weakest(QString where) const;
   void open(QString where, QString what);
-  int countButtons() /*const*/;
+  int countButtons() const;
   void makeButtons(QString where);
 private:  
   class xmlButton &barButton(QString where, int n);
@@ -57,10 +57,12 @@ private:
        "panelLeft/VSDTraces".
    *:N This is a button in the menu.
    */
+  Param const &whatPar(QString where, int n) const;
   Param &whatPar(QString where, int n);
   /*:F whatPar
    *:D whatPar("Left",2) returns the parameter "panelHistory/whatLeft2".
    */
+  Param const &prioPar(QString where, int n) const;
   Param &prioPar(QString where, int n);
   /*:F prioPar
    *:D prioPar("Left",2) returns the parameter "panelHistory/prioLeft2".
@@ -69,11 +71,11 @@ private:
   /*:F niceLabel
    *:D whatName("Left","VSDTraces") returns "VSD\nTraces".
    */
-  QString butNameToWhere(QString const &s);
+  QString butNameToWhere(QString const &s) const;
   /*:F butNameToWhere
    *:D butNameToWhere("panelLeft2") returns "Left".
    */
-  int butNameToNumber(QString const &s);
+  int butNameToNumber(QString const &s) const;
   /*:F butNameToNumber
    *:D butNameToNumber("panelLeft2") returns 2.
    */
