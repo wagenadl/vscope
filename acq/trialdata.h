@@ -27,16 +27,25 @@ public:
   class AnalogData  *analogData()  { return adataIn; }
   class DigitalData const *digitalData() const { return ddataIn; }
   class DigitalData  *digitalData()  { return ddataIn; }
-  class CCDData const *ccdData(QString camid) const;
-  class CCDData  *ccdData(QString camid);
   class AnalogData const *analogStimuli() const { return adataOut; }
   class AnalogData  *analogStimuli()  { return adataOut; }
   class DigitalData const *digitalStimuli() const { return ddataOut; }
   class DigitalData  *digitalStimuli()  { return ddataOut; }
+  /* Note that the above non-const returning functions do not need a write
+     key. That's because the returned pointers can only be *used* in a non-
+     const way after obtaining a write key from the individual data items.
+  */
+  class CCDData const *ccdData(QString camid) const;
+  class CCDData *ccdData(QString camid);
+  /*:F ccdData
+   *:D Throw exception if camid not found
+   */
+  bool haveCCDData(QString camid) const;
   class XML const *getXML() const { return xml; }
-  //  class XML *getXML() { return xml; } // only useful after read() or write()
+  class XML *getXML() { return xml; } // only useful after read() or write()
   /*:F getXML
    *:D Only useful after read() or write().
+   *:N The writable form breaks the KeyAccess convention.
    */
   QStringList const &cameras() const { return camids; }
 signals:
@@ -54,10 +63,12 @@ public:
   QString exptName() const { return exptname; }
   QString trialID() const { return trialid; }
   CCDTimingDetail const &timing() const { return timing_; }
-  Transform ccdPlacement(QString camid) const;
+  Transform const &ccdPlacement(QString camid) const;
+  /*:F ccdPlacement
+    :N Throws exception if camid not found */
 private:
   static QString trialname(class ParamTree const *tree);
-  void generalPrep(class ParamTree const *ptree);
+  void generalPrep(class ParamTree const *ptree, bool newccds);
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;
@@ -66,6 +77,9 @@ private:
   void readCCD(XML &myxml, QString base);
   void readCCDOldStyle(QVector<QString> &camsstored, QDomElement ccd);
   void readCCDNewStyle(QVector<QString> &camsstored, QDomElement ccd);
+  void prepare(class ParamTree const *ptree, bool newccds);
+  void prepareSnapshot(class ParamTree const *ptree, bool newccds);
+  bool renewCameras(QList<QString> newcams, ParamTree const *ptree=0);
 private:
   // data
   QStringList camids;
@@ -87,7 +101,12 @@ private:
   class XML *xml;
   CCDTimingDetail timing_;
 private:
-  Transform camPlace(ParamTree const *ptree, QString camid); // this calculates it from scratch
+  static Transform camPlace(QString camid, ParamTree const *ptree=0);
+  /*:F camPlace
+   *:D Calculates camera placement on a canvas from scratch.
+   *:N If ptree is non-zero, acqCCD/region and /binning are used.
+   *:N If the camera is unknown, a unit transform is returned
+   */
 private:
   // not implemented
   TrialData(TrialData const &);

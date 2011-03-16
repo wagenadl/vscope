@@ -13,8 +13,15 @@ public:
   Transform();
   Transform &operator=(Transform const &);
   Transform(QDomElement const &);
-  void read(QDomElement const &);
-  void write(QDomElement &) const;
+  void read(QDomElement const &src);
+  /*:F read
+   *:D src may be a <transform> element or contain a <transform> element.
+   */
+  void write(QDomElement &dst) const;
+  /*:F write
+   *:D If DST is a <transform> element, writes into it. Otherwise, appends
+       a <transform> element to dst.
+  */
   bool operator==(Transform const &) const;
   bool operator!=(Transform const &) const;
 public:

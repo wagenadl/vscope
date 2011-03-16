@@ -32,5 +32,5 @@ void KeyAgg::emitUnlessCheckedOut() {
   foreach (KeyAccess *src, sources)
     if (src->anyCheckedOut())
       return;
-  KeyAccess::emitUnlessCheckedout();
+  KeyAccess::emitUnlessCheckedOut();
 }

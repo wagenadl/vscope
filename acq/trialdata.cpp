@@ -24,68 +24,113 @@
 #include "trialdata.h"
 #include <base/keyagg.h>
 
-TrialData::TrialData() {
+TrialData::TrialData(): KeyAgg(0) {
   xml = 0;
 
-  keyagg = new KeyAgg(this);
-  connect(keyagg, SIGNAL(newData()), this, SIGNAL(newData()));
-  
   adataIn = new AnalogData(1024, 1, 1e4);
   adataOut = new AnalogData(1024, 1, 1e4);
   ddataIn = new DigitalData(1024, 1e4);
   ddataOut = new DigitalData(1024, 1e4);
 
-  keyagg->add(adataIn);
-  keyagg->add(ddataIn);
+  add(adataIn);
+  add(ddataIn);
+  add(adataOut);
+  add(ddataOut);
 
-  foreach (QString camid, Connections::allCams()) {
-    //Dbg() << "TrialData: camidx["<<camid<<"] = " << ccddata.size();
-    camidx[camid] = ccddata.size();
-    camids.append(camid);
-    CCDData *d = new CCDData();
-    d->setDataToCanvas(Connections::findCam(camid).placement);
-    ccddata.append(d);
-    ccdplace.append(Transform()); // this is not correct, but we don't have a tree yet.
-    keyagg->add(d);
-  }
+  renewCameras(Connections::allCams());
+  placeCameras();
 
   prep=false;
   snap=false;
 }
 
 TrialData::~TrialData() {
-  for (QVector<CCDData *>::iterator i=ccddata.begin();
-       i!=ccddata.end(); ++i) 
-    delete *i;
-
+  foreach (CCDData *d, ccddata)
+    delete d;
   delete ddataOut;
   delete adataOut;
   delete ddataIn;
   delete adataIn;
 }
 
-CCDData const *TrialData::ccdData(QString camid) const {
-  if (camidx.contains(camid))
-    return ccddata[camidx[camid]];
-  else
-    return 0;
+bool TrialData::renewCameras(QList<QString> newcams) {
+  QSet<QString> newset;
+  foreach (QString id, newcams)
+    newset.insert(id);
+
+  QSet<QString> oldset;
+  foreach (QString id, camids)
+    oldset.insert(id);
+  
+  // remove old cameras
+  foreach (QString id, camids)
+    if (!newset.contains(id)) {
+      delete ccddata[id]; // automatically removes from signal list
+      ccddata.remove(id);
+      ccdplace.remove(id);
+    }
+
+  // add new cameras
+  foreach (QString id, newcams) 
+    if (!oldset.contains(id))
+      add(ccddata[id] = new CCDData());
+
+  camids = newcams;
+
+  return newset!=oldset;
 }
 
-Transform TrialData::ccdPlacement(QString camid) const {
-  if (camidx.contains(camid))
-    return ccdplace[camidx[camid]];
+void TrialData::placeCameras(ParamTree const *ptree) {
+  // place all cameras
+  foreach (QString id, camids) {
+    ccdplace[id] = camPlace(id, ptree);
+    ccddata[id]->setDataToCanvas(ccdplace[id]);
+  }
+}
+
+void TrialData::placeCameras(QDomElement ccd) {
+  QSet<QString> inXML;
+  for (QDomElement cam=ccd.firstChildElement("camera");
+       !cam.isNull(); cam=cam.nextSiblingElement("camera")) {
+    QString id = cam.attribute("name");
+    if (camids.contains(id)) {
+      inXML.insert(id);
+      
+      ccdplace[id] = ...;
+      ccddata[id]->setDataToCanvas(ccdplace[id]);    
+    }
+  }
+  foreach (QString id, camids)
+    if (!inXML.contains(id)) 
+      ccddata[id]->setDataToCanvas(ccdplace[id] = Transform());     
+}
+
+bool TrialData::haveCCDData(QString camid) const {
+  return ccddata.contains(camid);
+}
+
+CCDData const *TrialData::ccdData(QString camid) const {
+  if (haveCCDData(camid))
+    return ccddata[camid];
   else
-    return Transform();
+    throw Exception("TrialData", "No CCD Data for camera " + camid);
 }
 
 CCDData *TrialData::ccdData(QString camid) {
-  if (camidx.contains(camid))
-    return ccddata[camidx[camid]];
+  if (haveCCDData(camid))
+    return ccddata[camid];
   else
-    return 0;
+    throw Exception("TrialData", "No CCD Data for camera " + camid);
 }
 
-void TrialData::generalPrep(ParamTree const *ptree) {
+Transform const &TrialData::ccdPlacement(QString camid) const {
+  if (haveCCDData(camid))
+    return ccdplace.find(camid).value();
+  else
+    throw Exception("TrialData", "No CCD Data for camera " + camid);
+}
+
+void TrialData::generalPrep(ParamTree const *ptree, bool newccds) {
   if (xml)
     delete xml;
 
@@ -133,42 +178,54 @@ void TrialData::generalPrep(ParamTree const *ptree) {
     QDomElement ccd = xml->append("ccd");
     ccd.setAttribute("rate", ptree->find("acqCCD/rate").toString());
     ccd.setAttribute("delay", ptree->find("acqCCD/delay").toString());
-    ccdplace.clear();
-    foreach (QString id, camids)
-      ccdplace.append(camPlace(ptree, id));
+    if (newccds)
+      renewCameras(Connections::allCams(), ptree);
   }
   prep = true;
 }
 
-Transform TrialData::camPlace(ParamTree const *ptree, QString camid) {
-  if (!camidx.contains(camid)) {
+Transform TrialData::camPlace(QString camid, ParamTree const *ptree) {
+  Connections::CamCon *cam = Connections::findpCam(camid);
+  if (!cam) {
     Dbg() << "TrialData::CamPlace: no data for camera " << camid;
     return Transform();
   }
-  QRect reg(ptree->find("acqCCD/region").toRect());
-  QRect bin(ptree->find("acqCCD/binning").toRect());
-  Transform t0 = Connections::findCam(camid).placement;
-  Transform t1;
-  t1.scale(bin.width(),bin.height());
-  t1.translate(reg.left(),reg.top());
-  return t0(t1);
+  Transform t0 = cam->placement;
+  if (ptree) {
+    QRect reg(ptree->find("acqCCD/region").toRect());
+    QRect bin(ptree->find("acqCCD/binning").toRect());
+    Transform t1;
+    t1.scale(bin.width(),bin.height());
+    t1.translate(reg.left(),reg.top());
+    return t0(t1);
+  } else {
+    return t0;
+  }
 }
 
 void TrialData::prepare(ParamTree const *ptree) {
+  prepare(ptree, true);
+}
+
+void TrialData::prepare(ParamTree const *ptree, bool newccds) {
   snap=false;
   timing_.prepTrial(ptree);
   contEphys = ptree->find("acquisition/contEphys").toBool();
   /* contEphys tracks whether continuous e'phys acq is simultaneously
      happening (in "ContAcq"). We are *not* doing that ourselves here. */
   do_ccd = ptree->find("acqCCD/enable").toBool();
-  generalPrep(ptree);
+  generalPrep(ptree, newccds);
 }
 
 void TrialData::prepareSnapshot(ParamTree const *ptree) {
+  prepareSnapshot(ptree, true);
+}
+
+ void TrialData::prepareSnapshot(ParamTree const *ptree, bool newccds) {
   snap=true;
   timing_.prepSnap(ptree);
   do_ccd = true;
-  generalPrep(ptree);
+  generalPrep(ptree, newccds);
 }
 
 QString TrialData::trialname(ParamTree const *ptree) {
@@ -196,6 +253,7 @@ void TrialData::write() const {
 
 void TrialData::read(QString dir, QString exptname0, QString trialid0,
 		     ParamTree *ptree_dest) {
+  KeyGuard guard(*this);
   prep=false;
 
   fpath = dir;
@@ -225,9 +283,10 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   // and that the xdataIn have the right sizes
   VideoProg::find().reset(ptree_dest);
   if (info.attribute("type")=="snapshot")
-    prepareSnapshot(ptree_dest);
+    prepareSnapshot(ptree_dest, false);
   else
-    prepare(ptree_dest);
+    prepare(ptree_dest, false);
+
   if (own_ptree_dest)
     delete ptree_dest;
   if (xml)
@@ -239,11 +298,8 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
     readDigital(myxml, base);
   }
 
-  if (do_ccd) {
+  if (do_ccd) 
     readCCD(myxml, base);
-  }
-
-  emit newData();
 }
 
 void TrialData::writeAnalog(QString base) const {
@@ -311,7 +367,6 @@ void TrialData::readCCD(XML &myxml, QString base) {
   bool ok;
   // read attributes from xml
   
-  bool oldstyle = ccd.hasAttribute("type");
   int ncam = ccd.attribute("cameras").toInt(&ok);
   if (!ok)
     throw Exception("Trial",
@@ -326,13 +381,7 @@ void TrialData::readCCD(XML &myxml, QString base) {
   // I also should compare placement against the data already loaded from
   // the ptree in prepare()
   
-  QVector<QString> camsstored;
-  camsstored.fill("",ncam);
-  
-  if (oldstyle) 
-    readCCDOldStyle(camsstored, ccd);
-  else
-    readCCDNewStyle(camsstored, ccd);
+  readCCDNewStyle(ccd);
   
   // read actual ccd data
   QString ccdfn = base + "-ccd.dat";
@@ -341,138 +390,39 @@ void TrialData::readCCD(XML &myxml, QString base) {
     throw Exception("Trial",
 		    QString("Cannot open '%1' for reading").arg(ccdfn),
 		    "read");
-  
-  if (oldstyle) {
-    int nfrm = ccd.attribute("frames").toInt();
-    int nser = ccd.attribute("serpix").toInt();
-    int npar = ccd.attribute("parpix").toInt();
+  foreach (QString id, camids) {
+    int nfrm = ccddata[id]->getNFrames();
+    int nser = ccddata[id]->getSerPix();
+    int npar = ccddata[id]->getParPix();
     int frpix = nser*npar;
-    for (int fr=0; fr<nfrm; fr++) {
-      if (ccdf.read((char *)ccddata[0]->frameData(fr),2*frpix)!=2*frpix)
+    for (int fr=0; fr<nfrm; fr++) 
+      if (ccdf.read((char *)ccddata[id]->frameData(fr),2*frpix)!=2*frpix)
 	throw Exception("Trial","Cannot read CCD data","read");
-      if (ccdf.read((char *)ccddata[1]->frameData(fr),2*frpix)!=2*frpix)
-	throw Exception("Trial","Cannot read CCD data","read");
-      }
-  } else {
-    for (int idx=0; idx<ncam; idx++) {
-      int k = camidx[camsstored[idx]];
-      int nfrm = ccddata[k]->getNFrames();
-      int nser = ccddata[k]->getSerPix();
-      int npar = ccddata[k]->getParPix();
-      int frpix = nser*npar;
-      //Dbg() << "trialdata: reading ccd #"<<idx<<"("<<k<<"): "<<nfrm<<"*"<<nser<<"x"<<npar;
-      for (int fr=0; fr<nfrm; fr++) 
-	if (ccdf.read((char *)ccddata[k]->frameData(fr),2*frpix)!=2*frpix)
-	  throw Exception("Trial","Cannot read CCD data","read");
-    }
   }
   ccdf.close();
 }
 
-void TrialData::readCCDOldStyle(QVector<QString> &camsstored,
-				QDomElement ccd) {
-  // This is an old-style file with interleaved identical frames
-  int ndata = ccddata.size();
-  int ncam = camsstored.size();
-  bool ok;  
-  int nfrm = ccd.attribute("frames").toInt(&ok);
-  if (!ok)
-    throw Exception("Trial","Cannot read number of frames from xml","readOld");
-  int nser = ccd.attribute("serpix").toInt(&ok);
-  if (!ok)
-    throw Exception("Trial",
-		    "Cannot read number of serial pixels from xml","readOld");
-  int npar = ccd.attribute("parpix").toInt(&ok);
-  if (!ok)
-    throw Exception("Trial",
-		    "Cannot read number of parallel pixels from xml","readOld");
-  
-  // check that dimensions make sense
-  if (ccd.attribute("type")!="uint16")
-    throw Exception("Trial",
-		    "Only know how to read ccd data of type 'uint16', not '"
-		    + ccd.attribute("type") + "'", "readOld");
-  for (int k=0; k<ndata; k++)
-    if (nfrm!=ccddata[k]->getNFrames())
-      throw Exception("Trial",
-		      QString("Frame count mismatch (%1; expected %2)")
-		      .arg(nfrm)
-		      .arg(ccddata[k]->getNFrames()),"readOld");
-  for (int k=0; k<ndata; k++)
-    if (nser!=ccddata[k]->getSerPix())
-      throw Exception("Trial",
-		      QString("Ser. pix count mismatch (%1; expected %2)")
-		      .arg(nser)
-		      .arg(ccddata[k]->getSerPix()),"readOld");
-  for (int k=0; k<ndata; k++)
-    if (npar!=ccddata[k]->getParPix())
-      throw Exception("Trial",
-		      QString("Par. pix count mismatch (%1; expected %2)")
-		      .arg(npar)
-		      .arg(ccddata[k]->getParPix()),"readOld");
-  if (ncam!=2)
-    throw Exception("Trial",
-		    QString("Camera count mismatch (%1; expected 2)")
-		    .arg(ncam),"readOld");
-  
-  for (int k=0; k<ndata; k++) 
-    ccddata[k]->setTimeBase(0,0); // we don't have the data, so make meaningless
-
-  for (int k=0; k<ndata; k++)
-    ccddata[k]->setDataToCanvas(ccdplace[k]);
-  
-  // check that camera identities match expectations
-  int okmask=0;
-  for (QDomElement elt=ccd.firstChildElement("camera");
-       !elt.isNull(); elt=elt.nextSiblingElement("camera")) {
-    bool ok;
-    int idx = elt.attribute("idx").toInt(&ok);
-    QString name = elt.attribute("name");
-    if (idx==0) {
-      if (name.toLower()==camids[0].toLower())
-	okmask|=1;
-      else
-	throw Exception("Trial","Expected camera #0 to be cc","readOld");
-    } else if (idx==1) {
-      if (name.toLower()==camids[1].toLower())
-	okmask|=2;
-      else
-	throw Exception("Trial","Expected camera #1 to be ox","readOld");
-    } else {
-      throw Exception("Trial",
-		      "Expected cameras to be numbered 0 and 1","readOld");
-    }
-  }
-  if (okmask!=3)
-    throw Exception("Trial","Insufficient camera definitions found in xml",
-		    "readOld");
-  camsstored[0] = camids[0];
-  camsstored[1] = camids[1];
-}
-
-void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
-				QDomElement ccd) {
-  // int ndata = ccddata.size();
-  int ncam = camsstored.size();
+void TrialData::readCCDNewStyle(QDomElement ccd) {
   double ccd_rate_Hz = UnitQty::str2num(ccd.attribute("rate"),"Hz");
   double ccd_delay_s = UnitQty::str2num(ccd.attribute("delay"),"s");
-  //Dbg() << "Hz=" << ccd_rate_Hz << " delay=" << ccd_delay_s;
-  QSet<int> havecam;
+
+  QMap<int, QString> newcams;
   for (QDomElement elt=ccd.firstChildElement("camera");
        !elt.isNull(); elt=elt.nextSiblingElement("camera")) {
     bool ok;
     int idx = elt.attribute("idx").toInt(&ok);
     if (!ok)
       throw Exception("Trial","Cannot read camera index","read");
-    havecam.insert(idx);
     QString name = elt.attribute("name");
-    if (!camidx.contains(name))
-      throw Exception("Trial",
-		      "File contains data from a camera I don't know about: "
-		      + name,
-		      "read");
-    int k = camidx[name];
-    
+    newcams[idx] = name;
+  }
+
+  if (renewCameras(newcams.values()))
+    emit newCameras();
+  
+  for (QDomElement elt=ccd.firstChildElement("camera");
+       !elt.isNull(); elt=elt.nextSiblingElement("camera")) {
+    bool ok;
     int nfrm = elt.attribute("frames").toInt(&ok);
     if (!ok)
       throw Exception("Trial","Cannot read number of frames from xml","read");
@@ -489,33 +439,8 @@ void TrialData::readCCDNewStyle(QVector<QString> &camsstored,
 		      "Only know how to read ccd data of type 'uint16', not '"
 		      + ccd.attribute("type") + "'", "read");
     
-    ccddata[k]->reshape(nser, npar, nfrm);
-    ccddata[k]->setTimeBase(ccd_delay_s*1e3,1e3/ccd_rate_Hz);
-    ccddata[k]->setDataToCanvas(ccdplace[k]);
-
-    //Dbg() << "trialdata:readnewccd("<<k<<"): "<<nfrm<<"*"<<nser<<"x"<<npar;
-    
-    //if (nfrm!=ccddata[k]->getNFrames())
-    //  throw Exception("Trial",
-    //		      QString("Frame count mismatch (%1; expected %2)")
-    //		      .arg(nfrm)
-    //		      .arg(ccddata[k]->getNFrames()),"read");
-    //for (int k=0; k<ndata; k++)
-    //  if (nser!=ccddata[k]->getSerPix())
-    //	throw Exception("Trial",
-    //			QString("Ser. pix count mismatch (%1; expected %2)")
-    //			.arg(nser)
-    //			.arg(ccddata[k]->getSerPix()),"read");
-    //for (int k=0; k<ndata; k++)
-    //  if (npar!=ccddata[k]->getParPix())
-    //	throw Exception("Trial",
-    //			QString("Par. pix count mismatch (%1; expected %2)")
-    //			.arg(npar)
-    //			.arg(ccddata[k]->getParPix()),"read");
-    camsstored[idx] = name;
-  }
-  if (havecam.size()!=ncam)
-    throw Exception("Trial",
-		    QString("Camera count mismatch (%1; expected %2)")
-		    .arg(havecam.size()).arg(ncam));
+    ccddata[id]->reshape(nser, npar, nfrm);
+    ccddata[id]->setTimeBase(ccd_delay_s*1e3,1e3/ccd_rate_Hz);
+    ccddata[id]->setDataToCanvas(ccdplace[id]);
+    /* Placement should be read from xml. */
 }

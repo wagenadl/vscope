@@ -32,6 +32,19 @@ public:
    *:D Specifies how the image should be placed on the global canvas.
    *:N Emits newData() unless a key has been checked out.
   */
+  QDomElement write(QFile f, QDomElement dst);
+  /*:F write
+   *:D Data is written to an already open file, at the current write pointer.
+       If DST is a "camera" element, its information is filled. Otherwise,
+       a "camera" element is appended to DST, filled, and returned by the
+       function.
+   *:N We cannot provide the "idx" or "name" information to the XML.
+  */
+void read(QFile f, QDomElement src);
+  /*:F read
+   *:D Data is read from an already open file, from the current read pointer.
+       DST must be a "camera" element.
+  */
 public:
   uint16_t const *frameData(int frame=-1) const;
   /*:F frameData
