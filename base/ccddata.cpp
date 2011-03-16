@@ -4,6 +4,7 @@
 #include <base/exception.h>
 #include <base/memalloc.h>
 #include <base/dbg.h>
+#include <base/unitqty.h>
 
 CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   serpix = serpix_;
@@ -70,17 +71,19 @@ void CCDData::setDataToCanvas(Transform const &t0) {
   emitUnlessCheckedOut();
 }
 
-QDomElement CCDData::write(QFile f, QDomElement dst) const {
+QDomElement CCDData::write(QFile &f, QDomElement dst) const {
   if (dst.tagName()!="camera") {
     QDomElement e = dst.ownerDocument().createElement("camera");
     dst.appendChild(e);
     dst = e;
   }
+  dst.setAttribute("type","uint16");
+  dst.setAttribute("typebytes","2");
   dst.setAttribute("frames",QString::number(nframes));
   dst.setAttribute("serpix",QString::number(serpix));
   dst.setAttribute("parpix",QString::number(parpix));
-  dst.setAttribute("delay",QString("%1 ms").arg(t0_ms));
-  dst.setAttribute("rate",QString("%1 Hz").arg(1000/dt_ms));
+  dst.setAttribute("delay",UnitQty(t0_ms,"ms").pretty());
+  dst.setAttribute("rate",UnitQty(1/dt_ms,"kHz").pretty());
   t.write(dst);
 
   int nbytes = nframes*serpix*parpix*2;
@@ -90,7 +93,7 @@ QDomElement CCDData::write(QFile f, QDomElement dst) const {
   return dst;
 }
 
-void CCDData::read(QFile f, QDomElement src) {
+void CCDData::read(QFile &f, QDomElement src) {
   if (src.tagName()!="camera")
     throw Exception("CCDData","Cannot read without a <camera> element");
 
@@ -113,13 +116,14 @@ void CCDData::read(QFile f, QDomElement src) {
 		    "Only know how to read ccd data of type 'uint16', not '"
 		    + src.attribute("type") + "'", "read");
 
-  double t0_ms = UnitQty::str2num(ccd.attribute("delay"),"ms");
-  double rate_hz = UnitQty::str2num(ccd.attribute("rate"),"Hz");
+  double t0_ms = UnitQty::str2num(src.attribute("delay"),"ms");
+  double rate_hz = UnitQty::str2num(src.attribute("rate"),"Hz");
   
   reshape(nser, npar, nfrm);
   setTimeBase(t0_ms, rate_hz ? 1e3/rate_hz : 1);
   Transform t(src.firstChildElement("place"));
   setDataToCanvas(t);
+  
   int nbytes = nfrm*nser*npar*2;
   if (f.read((char*)data, nbytes) != nbytes)
     throw Exception("CCDData", "Cannot read CCD data");

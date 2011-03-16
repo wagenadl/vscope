@@ -75,11 +75,9 @@ private:
   void readAnalog(XML &myxml, QString base);
   void readDigital(XML &myxml, QString base);
   void readCCD(XML &myxml, QString base);
-  void readCCDOldStyle(QVector<QString> &camsstored, QDomElement ccd);
-  void readCCDNewStyle(QVector<QString> &camsstored, QDomElement ccd);
-  void prepare(class ParamTree const *ptree, bool newccds);
-  void prepareSnapshot(class ParamTree const *ptree, bool newccds);
-  bool renewCameras(QList<QString> newcams, ParamTree const *ptree=0);
+  void prepare(class ParamTree const *ptree, bool concams);
+  void prepareSnapshot(class ParamTree const *ptree, bool concams);
+  void useConnectedCameras(ParamTree const *ptree=0);
 private:
   // data
   QStringList camids;

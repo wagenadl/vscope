@@ -37,8 +37,7 @@ TrialData::TrialData(): KeyAgg(0) {
   add(adataOut);
   add(ddataOut);
 
-  renewCameras(Connections::allCams());
-  placeCameras();
+  useConnectedCameras();
 
   prep=false;
   snap=false;
@@ -53,7 +52,9 @@ TrialData::~TrialData() {
   delete adataIn;
 }
 
-bool TrialData::renewCameras(QList<QString> newcams) {
+void TrialData::useConnectedCameras(ParamTree const *ptree) {
+  QStringList newcams = Connections::allCams();
+  
   QSet<QString> newset;
   foreach (QString id, newcams)
     newset.insert(id);
@@ -77,32 +78,14 @@ bool TrialData::renewCameras(QList<QString> newcams) {
 
   camids = newcams;
 
-  return newset!=oldset;
-}
-
-void TrialData::placeCameras(ParamTree const *ptree) {
   // place all cameras
   foreach (QString id, camids) {
     ccdplace[id] = camPlace(id, ptree);
     ccddata[id]->setDataToCanvas(ccdplace[id]);
   }
-}
-
-void TrialData::placeCameras(QDomElement ccd) {
-  QSet<QString> inXML;
-  for (QDomElement cam=ccd.firstChildElement("camera");
-       !cam.isNull(); cam=cam.nextSiblingElement("camera")) {
-    QString id = cam.attribute("name");
-    if (camids.contains(id)) {
-      inXML.insert(id);
-      
-      ccdplace[id] = ...;
-      ccddata[id]->setDataToCanvas(ccdplace[id]);    
-    }
-  }
-  foreach (QString id, camids)
-    if (!inXML.contains(id)) 
-      ccddata[id]->setDataToCanvas(ccdplace[id] = Transform());     
+  
+  if (newset!=oldset)
+    emit newCameras();
 }
 
 bool TrialData::haveCCDData(QString camid) const {
@@ -130,7 +113,7 @@ Transform const &TrialData::ccdPlacement(QString camid) const {
     throw Exception("TrialData", "No CCD Data for camera " + camid);
 }
 
-void TrialData::generalPrep(ParamTree const *ptree, bool newccds) {
+void TrialData::generalPrep(ParamTree const *ptree, bool concams) {
   if (xml)
     delete xml;
 
@@ -176,16 +159,14 @@ void TrialData::generalPrep(ParamTree const *ptree, bool newccds) {
   }
   if (do_ccd) {
     QDomElement ccd = xml->append("ccd");
-    ccd.setAttribute("rate", ptree->find("acqCCD/rate").toString());
-    ccd.setAttribute("delay", ptree->find("acqCCD/delay").toString());
-    if (newccds)
-      renewCameras(Connections::allCams(), ptree);
+    if (concams)
+      useConnectedCameras(ptree);
   }
   prep = true;
 }
 
 Transform TrialData::camPlace(QString camid, ParamTree const *ptree) {
-  Connections::CamCon *cam = Connections::findpCam(camid);
+  Connections::CamCon const *cam = Connections::findpCam(camid);
   if (!cam) {
     Dbg() << "TrialData::CamPlace: no data for camera " << camid;
     return Transform();
@@ -207,25 +188,25 @@ void TrialData::prepare(ParamTree const *ptree) {
   prepare(ptree, true);
 }
 
-void TrialData::prepare(ParamTree const *ptree, bool newccds) {
+void TrialData::prepare(ParamTree const *ptree, bool concams) {
   snap=false;
   timing_.prepTrial(ptree);
   contEphys = ptree->find("acquisition/contEphys").toBool();
   /* contEphys tracks whether continuous e'phys acq is simultaneously
      happening (in "ContAcq"). We are *not* doing that ourselves here. */
   do_ccd = ptree->find("acqCCD/enable").toBool();
-  generalPrep(ptree, newccds);
+  generalPrep(ptree, concams);
 }
 
 void TrialData::prepareSnapshot(ParamTree const *ptree) {
   prepareSnapshot(ptree, true);
 }
 
- void TrialData::prepareSnapshot(ParamTree const *ptree, bool newccds) {
+ void TrialData::prepareSnapshot(ParamTree const *ptree, bool concams) {
   snap=true;
   timing_.prepSnap(ptree);
   do_ccd = true;
-  generalPrep(ptree, newccds);
+  generalPrep(ptree, concams);
 }
 
 QString TrialData::trialname(ParamTree const *ptree) {
@@ -313,42 +294,19 @@ void TrialData::writeDigital(QString base) const {
 }
 
 void TrialData::writeCCD(QString base) const {
-  // Soon I should make ccddata be able to read and write by itself
+  QDomElement ccd = xml->find("ccd");
   QString ccdfn = base + "-ccd.dat";
   QFile ccdf(ccdfn);
   if (!ccdf.open(QIODevice::WriteOnly))
     throw Exception("Trial",
 		    QString("Cannot open '%1' for writing").arg(ccdfn),
 		    "write");
-  
-  int ndata = ccddata.size();
-  for (int k=0; k<ndata; k++) {
-    if (ccddata[k]) {
-      int nfr = ccddata[k]->getNFrames();
-      int frpix = ccddata[k]->getFramePix();
-      for (int fr=0; fr<nfr; fr++) 
-	if (ccdf.write((char const *)ccddata[k]->frameData(fr),2*frpix)
-	    != 2*frpix)
-	  throw Exception("Trial","Cannot write CCD data","write");
-    }
+
+  foreach (QString id, camids) {
+    QDomElement cam = ccddata[id]->write(ccdf, ccd);
+    cam.setAttribute("name", id);
   }
   ccdf.close();
-  QDomElement ccd = xml->find("ccd");
-  ccd.setAttribute("cameras",QString::number(ndata));
-  for (int k=0; k<ndata; k++) {
-    QDomElement cam = xml->append("camera",ccd);
-    cam.setAttribute("idx",QString::number(k));
-    cam.setAttribute("name",camids[k]);
-    cam.setAttribute("type","uint16");
-    cam.setAttribute("typebytes","2");
-    cam.setAttribute("serpix",QString::number(ccddata[k]->getSerPix()));
-    cam.setAttribute("parpix",QString::number(ccddata[k]->getParPix()));
-    cam.setAttribute("frames",QString::number(ccddata[k]->getNFrames()));
-    Connections::CamCon const &c = Connections::findCam(camids[k]);
-    cam.setAttribute("flipx",c.flipx?"yes":"no");
-    cam.setAttribute("flipy",c.flipy?"yes":"no");
-    ccdplace[k].write(cam);
-  }
 }
 
 void TrialData::readAnalog(XML &myxml, QString base) {
@@ -363,84 +321,55 @@ void TrialData::readDigital(XML &myxml, QString base) {
 
 void TrialData::readCCD(XML &myxml, QString base) {
   QDomElement ccd = myxml.find("ccd");
-  // read ccd
-  bool ok;
-  // read attributes from xml
-  
-  int ncam = ccd.attribute("cameras").toInt(&ok);
-  if (!ok)
-    throw Exception("Trial",
-		    "Cannot read number of cameras from xml","read");
-  Param delay("time"); delay.set(ccd.attribute("delay"));
-  double delay_ms = delay.toDouble();
-  Param rate("freq"); rate.set(ccd.attribute("rate"));
-  double rate_hz = rate.toDouble();
-  if (delay_ms>0 || rate_hz>0) {
-    ; // actually, I should compare these against the ptree.
-  }
-  // I also should compare placement against the data already loaded from
-  // the ptree in prepare()
-  
-  readCCDNewStyle(ccd);
-  
-  // read actual ccd data
+  /* We now have three versions of ccd data storage
+     (1) The very oldest, with interleaved frames for precisely two cameras.
+         This we recognize by the existence of a "type" attribute at <ccd>
+	 level.
+     (2) The one used until 3/15/2011, with any number of cameras, but
+         timing shared between cameras. This we recognize by the existence
+	 of a "rate" attribute at <ccd> level.
+     (3) The new one of 3/15/2011. Each <camera> now has independent timing.
+  */
+
+  if (ccd.hasAttribute("type"))
+    throw Exception("TrialData",
+		    "Loading of ancient CCD file format not yet implemented");
+  if (ccd.hasAttribute("rate"))
+    throw Exception("TrialData",
+		    "Loading of olde CCD file format not yet implemented");
+  // So now we know we are modern.
   QString ccdfn = base + "-ccd.dat";
   QFile ccdf(ccdfn);
   if (!ccdf.open(QIODevice::ReadOnly))
     throw Exception("Trial",
 		    QString("Cannot open '%1' for reading").arg(ccdfn),
 		    "read");
-  foreach (QString id, camids) {
-    int nfrm = ccddata[id]->getNFrames();
-    int nser = ccddata[id]->getSerPix();
-    int npar = ccddata[id]->getParPix();
-    int frpix = nser*npar;
-    for (int fr=0; fr<nfrm; fr++) 
-      if (ccdf.read((char *)ccddata[id]->frameData(fr),2*frpix)!=2*frpix)
-	throw Exception("Trial","Cannot read CCD data","read");
+  QStringList newcams;
+  QSet<QString> oldset;
+  QSet<QString> newset;
+  foreach (QString id, camids)
+    oldset.insert(id);
+  for (QDomElement cam = ccd.firstChildElement("camera");
+       !cam.isNull(); cam = cam.nextSiblingElement("camera")) {
+    QString id = cam.attribute("name");
+    newset.insert(id);
+    newcams.append(id);
+    if (!oldset.contains(id))
+      ccddata[id] = new CCDData;
+    ccddata[id]->read(ccdf, cam);
   }
   ccdf.close();
-}
-
-void TrialData::readCCDNewStyle(QDomElement ccd) {
-  double ccd_rate_Hz = UnitQty::str2num(ccd.attribute("rate"),"Hz");
-  double ccd_delay_s = UnitQty::str2num(ccd.attribute("delay"),"s");
-
-  QMap<int, QString> newcams;
-  for (QDomElement elt=ccd.firstChildElement("camera");
-       !elt.isNull(); elt=elt.nextSiblingElement("camera")) {
-    bool ok;
-    int idx = elt.attribute("idx").toInt(&ok);
-    if (!ok)
-      throw Exception("Trial","Cannot read camera index","read");
-    QString name = elt.attribute("name");
-    newcams[idx] = name;
+  foreach (QString id, camids) {
+    if (!newset.contains(id)) {
+      delete ccddata[id];
+      ccddata.remove(id);
+      ccdplace.remove(id);
+    }
   }
+  camids = newcams;
+  foreach (QString id, newcams)
+    ccdplace[id] = ccddata[id]->dataToCanvas();
 
-  if (renewCameras(newcams.values()))
+  if (newset!=oldset)
     emit newCameras();
-  
-  for (QDomElement elt=ccd.firstChildElement("camera");
-       !elt.isNull(); elt=elt.nextSiblingElement("camera")) {
-    bool ok;
-    int nfrm = elt.attribute("frames").toInt(&ok);
-    if (!ok)
-      throw Exception("Trial","Cannot read number of frames from xml","read");
-    int nser = elt.attribute("serpix").toInt(&ok);
-    if (!ok)
-      throw Exception("Trial",
-		      "Cannot read number of serial pixels from xml","read");
-    int npar = elt.attribute("parpix").toInt(&ok);
-    if (!ok)
-      throw Exception("Trial",
-		      "Cannot read number of parallel pixels from xml","read");
-    if (elt.attribute("type")!="uint16")
-      throw Exception("Trial",
-		      "Only know how to read ccd data of type 'uint16', not '"
-		      + ccd.attribute("type") + "'", "read");
-    
-    ccddata[id]->reshape(nser, npar, nfrm);
-    ccddata[id]->setTimeBase(ccd_delay_s*1e3,1e3/ccd_rate_Hz);
-    ccddata[id]->setDataToCanvas(ccdplace[id]);
-    /* Placement should be read from xml. */
 }

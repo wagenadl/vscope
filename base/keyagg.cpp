@@ -10,12 +10,12 @@ KeyAgg::~KeyAgg() {
 
 void KeyAgg::add(KeyAccess *src) {
   sources.insert(src);
-  connect(src, SIGNAL(newData()), this, SIGNAL(updateData()));
+  connect(src, SIGNAL(newData()), this, SLOT(updateData()));
 }
 
 void KeyAgg::remove(KeyAccess *src) {
   if (sources.contains(src)) {
-    disconnect(src, SIGNAL(newData()), this, SIGNAL(updateData()));
+    disconnect(src, SIGNAL(newData()), this, SLOT(updateData()));
     sources.remove(src);
   }
 }

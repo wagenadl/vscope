@@ -12,17 +12,15 @@
 #include <base/ccdtiming.h>
 #include <base/campair.h>
 #include <math/taperid.h>
+#include <base/keyaccess.h>
 
-class CohData: public QObject {
+class CohData: public KeyAccess {
   Q_OBJECT;
 public:
   enum { refANALOG, refDIGITAL, refFIXED } refType;
 public:
   CohData();
   virtual ~CohData();
-private:
-  CohData(CohData const &other);
-  CohData &operator=(CohData const &other);
 public slots:
   void setFrameLine(QString camera, int line);
   void setROISet(class ROISet const *roiset);
@@ -36,20 +34,18 @@ public slots:
 private slots:
   void updateROIs();
 public: // these will validate if needed
-  double getFStarHz(int id);
-  double getTypicalFStarHz();
-  QMap<int, double> const &magnitudes();
-  QMap<int, double> const &phases();
-  double magnitude(int id);
-  double phase(int id);
+  double getFStarHz(int id) const;
+  double getTypicalFStarHz() const;
+  QMap<int, double> const &magnitudes() const;
+  QMap<int, double> const &phases() const;
+  double magnitude(int id) const;
+  double phase(int id) const;
 public:
   class ROIData3Set *currentData() const { return rs3d; }
-signals:
-  void newData();
 private:
-  bool validate();
-  void recalcReference();
-  void recalcTiming();
+  bool validate() const;
+  void recalcReference() const;
+  void recalcTiming() const;
 private:
   void copy(CohData const &other);
 private:
@@ -61,9 +57,13 @@ private:
   QString ref_chn; // for refANALOG mode
   int ref_line; // for refDIGITAL mode
   double ref_hz; // for refFIXED mode
-  QMap<int, double> coh_mag;
-  QMap<int, double> coh_pha;
-  QHash<CamPair, CCDTiming> timing;
+  struct Data {
+    QMap<int, double> coh_mag;
+    QMap<int, double> coh_pha;
+    QHash<CamPair, CCDTiming> timing;
+    bool valid;
+  };
+  mutable Data data;
   class CohEst *cohest;
   class PSDEst *psdest;
   QHash<CamPair, TaperID> taperIDs;
@@ -71,7 +71,9 @@ private:
   QHash<CamPair, double> fstar_hz;
   QSet<QString> warned; // set of missing taper ids that we have warned about
   QHash<QString, int> digilines;
-  bool valid;
+private:
+  CohData(CohData const &other);
+  CohData &operator=(CohData const &other);
 };
 
 #endif

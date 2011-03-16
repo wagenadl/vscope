@@ -9,10 +9,18 @@
 #include <QMap>
 #include <QSet>
 
+typedef int ID;
+
 class IDKeyAccess: public KeyAccess {
   Q_OBJECT;
 public:
-  typedef int ID;
+  //class ID {
+  //public:
+  //  ID(int id=0): id(id) { }
+  //  operator int() const { return id; };
+  //private:
+  //  int id;
+  //};
 public:
   IDKeyAccess(QObject *parent=0);
   virtual ~IDKeyAccess();
@@ -33,7 +41,7 @@ public:
        checkout(ID).
    */
 signals:
-  void newDatum(ID);
+  void newDatum(ID id);
   void newAll();
 private:
   QMap<WriteKey *, ID> key2id;
@@ -43,7 +51,7 @@ private:
 
 class IDKeyGuard {
 public:
-  IDKeyGuard(IDKeyAccess &src, IDKeyAccess::ID id);
+  IDKeyGuard(IDKeyAccess &src, ID id);
   ~IDKeyGuard();
   KeyAccess::WriteKey *key() const { return key_; }
 private:

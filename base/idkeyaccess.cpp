@@ -53,14 +53,14 @@ void IDKeyAccess::verifyAllKey(KeyAccess::WriteKey *key,
     throw Exception("IDKeyAccess", "Key verification failed: " + msg);
 }
 
-IDKeyAccess::ID IDKeyAccess::getID(WriteKey *key) const {
+ID IDKeyAccess::getID(WriteKey *key) const {
   if (key2id.contains(key))
     return key2id[key];
   else
     throw Exception("IDKeyAccess", "ID retrieval failed: unknown key");
 }
 
-IDKeyGuard::IDKeyGuard(IDKeyAccess &src, IDKeyAccess::ID id):
+IDKeyGuard::IDKeyGuard(IDKeyAccess &src, ID id):
   src(src) {
   key_ = src.checkout(id);
 }

@@ -5,9 +5,9 @@
 #define DATATROVE_H
 
 #include <base/xml.h>
-#include <QObject>
+#include <base/keyagg.h>
 
-class DataTrove: public QObject {
+class DataTrove: public KeyAgg {
   Q_OBJECT;
 public:
   DataTrove(class ParamTree *ptree);
@@ -23,7 +23,6 @@ public slots:
        nothing.
   */
 public:
-  // class ParamTree &ptree() { return *ptree_; }
   class TrialData &trial() { return *trial_; }
   class ROISet &rois() { return *rois_; }
   class ROIData3Set &roidata() { return *roidata_; }

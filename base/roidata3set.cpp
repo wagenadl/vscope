@@ -10,7 +10,8 @@ ROIData3Set::ROIData3Set(ROISet const *rs) {
   d.roiset = rs;
   d.lastDebleach = ROIData::None;
 
-  connect(rs, SIGNAL(newDatum(int)), SLOT(updateROI(int)));
+  connect(rs, SIGNAL(newDatum(ID)),
+	  SLOT(updateROI(ID)));
   connect(rs, SIGNAL(newAll()), SLOT(updateROIs()));
 }
 
@@ -104,7 +105,7 @@ QList<int> ROIData3Set::allIDs() const {
   return d.data.keys();
 }
 
-void ROIData3Set::updateROI(int id) {
+void ROIData3Set::updateROI(ID id) {
   IDKeyGuard guard(*this, id);
   Dbg() << "ROIData3Set::changeROI("<<id<<")";
   changeROIcore(id);

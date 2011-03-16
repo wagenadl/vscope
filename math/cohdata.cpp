@@ -21,7 +21,7 @@ CohData::CohData() {
   rs3d=0;
   adata=0;
   ddata=0;
-  valid=false;
+  data.valid=false;
   cohest = new CohEst;
   psdest = new PSDEst;
 }
@@ -66,54 +66,50 @@ void CohData::setEPhys(AnalogData const *ad, DigitalData const *dd) {
 }
 
 void CohData::invalidate() {
-  valid=false;
+  data.valid=false;
 }
 
-QMap<int, double> const &CohData::magnitudes() {
+QMap<int, double> const &CohData::magnitudes() const {
   if (!validate())
     dbg("CohData::magnitudes: Could not validate; returning null values");
-  return coh_mag;
+  return data.coh_mag;
 }
 
-QMap<int, double> const &CohData::phases() {
+QMap<int, double> const &CohData::phases() const {
   if (!validate())
     dbg("CohData::phases: Could not validate; returning null values");
-  return coh_pha;
+  return data.coh_pha;
 }
 
-double CohData::magnitude(int id) {
-  if (!valid)
-    magnitudes();
-  if (coh_mag.contains(id))
-    return coh_mag[id];
+double CohData::magnitude(int id) const {
+  if (validate() && data.coh_mag.contains(id))
+    return data.coh_mag[id];
   else
     return 0;
 }
 
-double CohData::phase(int id) {
-  if (!valid)
-    phases();
-  if (coh_pha.contains(id))
-    return coh_pha[id];
+double CohData::phase(int id) const {
+  if (validate() && data.coh_pha.contains(id))
+    return data.coh_pha[id];
   else
     return 0;
 }
 
-bool CohData::validate() {
-  if (valid)
+bool CohData::validate() const {
+  if (data.valid)
     return true;
 
-  coh_mag.clear();
-  coh_pha.clear();
+  data.coh_mag.clear();
+  data.coh_pha.clear();
 
   if (!roiset) {
     dbg("cohdata::validate: no roiset");
-    valid = true; // so we won't repeat this warning inf'ly many times
+    data.valid = true; // so we won't repeat this warning inf'ly many times
     return false;
   }
   if (!rs3d) {
     dbg("cohdata::validate: no rs3d");
-    valid = true; // so we won't repeat this warning inf'ly many times
+    data.valid = true; // so we won't repeat this warning inf'ly many times
     return false;
   }
 
@@ -124,11 +120,11 @@ bool CohData::validate() {
 
   rvec trc;
   foreach (int id, ids) {
-    coh_mag[id] = 0;
-    coh_pha[id] = 0;
+    data.coh_mag[id] = 0;
+    data.coh_pha[id] = 0;
     if (rs3d->haveData(id)) {
       CamPair const &cp = rs3d->getCam(id);
-      CCDTiming const &t = timing[cp];
+      CCDTiming const &t = data.timing[cp];
       double dt_s = t.dt_ms()/1000;
       double df_hz = 2./3;
       dbg("cohdata:recalc: nfr=%i dt=%g df=%g",t.nframes(),dt_s,df_hz);
@@ -142,9 +138,10 @@ bool CohData::validate() {
 	  for (int t=0; t<N; t++)
 	    trc[t]=src[t+COH_STRIP_START];
 	  cohest->compute(refs[cp], trc, dt_s, df_hz, tapers, fstar_hz[cp]);
-	  coh_mag[id] = cohest->magnitude[0];
-	  coh_pha[id] = cohest->phase[0];
-	  dbg("cohdata %i: %4.2f %3.0f",id,coh_mag[id],coh_pha[id]*180/3.1415);
+	  data.coh_mag[id] = cohest->magnitude[0];
+	  data.coh_pha[id] = cohest->phase[0];
+	  dbg("cohdata %i: %4.2f %3.0f",id,
+	      data.coh_mag[id],data.coh_pha[id]*180/3.1415);
 	} else if (!warned.contains(tid.name())) {
 	  warn(QString("Missing tapers '%1'.")
 	       .arg(tid.name())
@@ -155,12 +152,12 @@ bool CohData::validate() {
       }
     }
   }
-  valid = true;
+  data.valid = true;
   return true;
 }
 
 void CohData::recalcTiming() {
-  timing.clear();
+  data.timing.clear();
 
   /* Our plan is to calculate the precise timing for each camera pair based
      on actual frame times.
@@ -187,16 +184,16 @@ void CohData::recalcTiming() {
   // Now, for each camera pair, let's get the basic timing
   foreach (CamPair const &cp, campair_exemplars.keys()) {
     ROI3Data const *example = rs3d->getData(campair_exemplars[cp]);
-    timing[cp].setRate(fs_hz);
+    data.timing[cp].setRate(fs_hz);
     if (example->getDonorNFrames())
-      timing[cp]
+      data.timing[cp]
 	.setFrames(example->getDonorNFrames())
 	.setTiming(example->getDonorT0ms(), example->getDonorDTms());
     else
-      timing[cp]
+      data.timing[cp]
 	.setFrames(example->getAcceptorNFrames())
 	.setTiming(example->getAcceptorT0ms(), example->getAcceptorDTms());
-    Dbg() << "timing: " << timing[cp].t0_ms() << "+" << timing[cp].dt_ms() << "x" << timing[cp].nframes();
+    Dbg() << "timing: " << data.timing[cp].t0_ms() << "+" << data.timing[cp].dt_ms() << "x" << data.timing[cp].nframes();
   }
 
   // let's see if and what we can refine
@@ -245,13 +242,13 @@ void CohData::recalcTiming() {
 	}
       }
     }
-    if (istart>=0 && count==timing[cp].nframes()-1) {
-      timing[cp].setTiming(istart*1000.0/timing[cp].fs_hz(),
+    if (istart>=0 && count==data.timing[cp].nframes()-1) {
+      data.timing[cp].setTiming(istart*1000.0/data.timing[cp].fs_hz(),
 			   (ilatest-istart)*1000.0/count
-			   /timing[cp].fs_hz());
+			   /data.timing[cp].fs_hz());
     } else {
       dbg("istart=%i ilatest=%i count=%i nfr=%i mask=0x%08x",istart,ilatest,
-	  count,timing[cp].nframes(),mask);   
+	  count,data.timing[cp].nframes(),mask);   
       dbg("CohData: WARNING: Could not count CCD frames");
       // I could give a GUI warning, but this probably only ever happens
       // when there are no cameras. Even otherwise, the problem will be minor.
@@ -264,8 +261,8 @@ void CohData::recalcReference() {
      ccd frames. We will also recalculate fstar_hz. */
 
   refs.clear();
-  foreach (CamPair const &cp, timing.keys()) {
-    CCDTiming const &t(timing[cp]);
+  foreach (CamPair const &cp, data.timing.keys()) {
+    CCDTiming const &t(data.timing[cp]);
     int N = t.nframes()-COH_STRIP_START-COH_STRIP_END;
     if (N<=0)
       continue;
@@ -385,7 +382,7 @@ void CohData::recalcReference() {
     // run a psdest to find spectral peak
     double dt_s = t.dt_ms()/1000;
     double df_hz = 1./3;
-    //dbg("coherence:recalcref: nfr=%i dt=%g df=%g",timing.nframes,dt_s,df_hz);
+    //dbg("coherence:recalcref: nfr=%i dt=%g df=%g",data.timing.nframes,dt_s,df_hz);
     //dbg("coherence:recalcref: isdigi=%i chn=%i",ref_is_digital,ref_chn);
     TaperID tid(N, dt_s, df_hz);
     taperIDs[cp] = tid;
@@ -411,29 +408,6 @@ void CohData::recalcReference() {
   }
 }
 
-#if 0
-CohData::CohData(CohData const &other): CohData_(other), QObject(0) {
-  copy(other);
-}
-
-void CohData::copy(CohData const &other) {
-  if (cohest)
-    cohest = new CohEst(*other.cohest);
-  if (psdest)
-    psdest = new PSDEst(*other.psdest);
-}
-
-CohData &CohData::operator=(CohData const &other) {
-  if (cohest)
-    delete cohest;
-  if (psdest)
-    delete psdest;
-  *(CohData_*)this = other;
-  copy(other);
-  return *this;
-}
-#endif
-
 void CohData::setRefDigi(int digiline) {
   refType = refDIGITAL;
   ref_line = digiline;
@@ -453,7 +427,7 @@ void CohData::setRefFreq(double fref_hz) {
   invalidate();
 }
 
-double CohData::getFStarHz(int id) {
+double CohData::getFStarHz(int id) const {
   validate();
   if (!rs3d || !rs3d->haveData(id))
     return 1;
@@ -461,7 +435,7 @@ double CohData::getFStarHz(int id) {
   return fstar_hz[cp];
 }
 
-double CohData::getTypicalFStarHz() {
+double CohData::getTypicalFStarHz() const {
   validate();
   int n=0;
   double fstar = 0;
