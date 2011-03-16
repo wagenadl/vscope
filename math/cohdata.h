@@ -61,16 +61,20 @@ private:
     QMap<int, double> coh_mag;
     QMap<int, double> coh_pha;
     QHash<CamPair, CCDTiming> timing;
+    QHash<CamPair, rvec> refs;
+    QHash<CamPair, double> fstar_hz;
+    QHash<CamPair, TaperID> taperIDs;
     bool valid;
   };
   mutable Data data;
   class CohEst *cohest;
   class PSDEst *psdest;
-  QHash<CamPair, TaperID> taperIDs;
-  QHash<CamPair, rvec> refs;
-  QHash<CamPair, double> fstar_hz;
-  QSet<QString> warned; // set of missing taper ids that we have warned about
   QHash<QString, int> digilines;
+private:
+  static QSet<QString> warned;
+  /*:V warned
+   *:D Set of missing taper ids that we have already warned the user about.
+   */
 private:
   CohData(CohData const &other);
   CohData &operator=(CohData const &other);

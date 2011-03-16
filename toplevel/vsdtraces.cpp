@@ -79,9 +79,14 @@ void VSDTraces::updateEPhysData() {
 		    dp,
 		    adata->getNumScans(),
 		    adata->getNumChannels());
-  Connections::AIChannel const &aich = Connections::findAI(refchn);
-  reftrace->setScaleFactor(aich.scale);
-  refgraph->setYLabel("("+aich.unit+")");
+  Connections::AIChannel const *aich = Connections::findpAI(refchn);
+  if (aich) {
+    reftrace->setScaleFactor(aich->scale);
+    refgraph->setYLabel("("+aich->unit+")");
+  } else {
+    reftrace->setScaleFactor(1);
+    refgraph->setYLabel("(a.u.)");
+  }
   refgraph->autoSetYRange();
   Range xr = allgraph->computeXRange();
   xr.expand(refgraph->computeXRange());

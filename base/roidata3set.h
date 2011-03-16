@@ -42,7 +42,7 @@ public:
   QList<int> allIDs() const;
   void setCCDData(QString camid, class CCDData const *data);
 public slots:
-  void updateROI(ID id);
+  void updateROI(int id);
   void updateROIs();
   void updateCCDData();
   void setDebleach(ROIData::Debleach d);

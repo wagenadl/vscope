@@ -15,9 +15,9 @@ const double TRACE_DY = 0.2; // That's the spacing between traces in percents
 VSDAllGraph::VSDAllGraph(ROIData3Set *data, QWidget *parent):
   LineGraph(parent), data(data) {
   autoSetXRange();
-  connect(data, SIGNAL(changedOne(int)), SLOT(updateROI(int)));
-  connect(data, SIGNAL(changedAll()), SLOT(updateROIs()));
-  connect(data, SIGNAL(changedAll()), SLOT(updateData()));
+  connect(data, SIGNAL(newDatum(int)), SLOT(updateROI(int)));
+  connect(data, SIGNAL(newAll()), SLOT(updateROIs()));
+  connect(data, SIGNAL(newAll()), SLOT(updateData()));
 }
 
 VSDAllGraph::~VSDAllGraph() {

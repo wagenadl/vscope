@@ -27,6 +27,8 @@ public:
   class ROISet &rois() { return *rois_; }
   class ROIData3Set &roidata() { return *roidata_; }
   class CohData &cohdata() { return *cohdata_; }
+private slots:
+  void updateCameras();
 private:
   class ParamTree *ptree_;
   class TrialData *trial_;

@@ -140,9 +140,3 @@ void VisiBlob::mouseDoubleClickEvent(class QMouseEvent *) {
   dbg("visiblob: mouse doubleclick");
 }
 
-void VisiBlob::pbDies(QObject *x) {
-  //if (x==pb) {
-  //  Dbg() << "VisiBlob Warning: My blob is dying";
-  //  pb = 0;
-  //}
-}

@@ -15,6 +15,7 @@
 #define COH_STRIP_START 1
 #define COH_STRIP_END   2
 
+QSet<QString> CohData::warned;
 
 CohData::CohData() {
   roiset=0;
@@ -137,7 +138,8 @@ bool CohData::validate() const {
 	  double const *src = rs3d->getData(id)->dataRatio();
 	  for (int t=0; t<N; t++)
 	    trc[t]=src[t+COH_STRIP_START];
-	  cohest->compute(refs[cp], trc, dt_s, df_hz, tapers, fstar_hz[cp]);
+	  cohest->compute(data.refs[cp], trc, dt_s, df_hz,
+			  tapers, data.fstar_hz[cp]);
 	  data.coh_mag[id] = cohest->magnitude[0];
 	  data.coh_pha[id] = cohest->phase[0];
 	  dbg("cohdata %i: %4.2f %3.0f",id,
@@ -156,7 +158,7 @@ bool CohData::validate() const {
   return true;
 }
 
-void CohData::recalcTiming() {
+void CohData::recalcTiming() const {
   data.timing.clear();
 
   /* Our plan is to calculate the precise timing for each camera pair based
@@ -256,17 +258,17 @@ void CohData::recalcTiming() {
   }
 }  
 
-void CohData::recalcReference() {
+void CohData::recalcReference() const {
   /* We are going to reinterpolate the reference signal at the times of the
      ccd frames. We will also recalculate fstar_hz. */
 
-  refs.clear();
+  data.refs.clear();
   foreach (CamPair const &cp, data.timing.keys()) {
     CCDTiming const &t(data.timing[cp]);
     int N = t.nframes()-COH_STRIP_START-COH_STRIP_END;
     if (N<=0)
       continue;
-    rvec &ref(refs[cp]);
+    rvec &ref(data.refs[cp]);
     ref.resize(N);
     
     bool ok = false;
@@ -279,7 +281,7 @@ void CohData::recalcReference() {
     if (!ok) {
       for (int k=0; k<N; k++)
 	ref[k]=0;
-      fstar_hz[cp] = 1;
+      data.fstar_hz[cp] = 1;
       continue;
     }
     
@@ -307,7 +309,7 @@ void CohData::recalcReference() {
     if (!ok) {
       for (int k=0; k<N; k++)
 	ref[k]=0;
-      fstar_hz[cp] = 1;
+      data.fstar_hz[cp] = 1;
       return;
     }
     dbg("CohData:recRef: N=%i dt_ms=%g fs_hz=%g ephl=%i",
@@ -385,7 +387,7 @@ void CohData::recalcReference() {
     //dbg("coherence:recalcref: nfr=%i dt=%g df=%g",data.timing.nframes,dt_s,df_hz);
     //dbg("coherence:recalcref: isdigi=%i chn=%i",ref_is_digital,ref_chn);
     TaperID tid(N, dt_s, df_hz);
-    taperIDs[cp] = tid;
+    data.taperIDs[cp] = tid;
     if (Taperbank::hasTaper(tid)) {
       Tapers const &tapers = Taperbank::tapers(tid);
       psdest->compute(ref, dt_s, df_hz, tapers);
@@ -395,11 +397,11 @@ void CohData::recalcReference() {
 	dbg("psd at %5.2f Hz: %5.2f",psdest->freqbase[n],psdest->psd[n]);
 	if (n>0 && psdest->psd[n]>max) {
 	  max = psdest->psd[n];
-	  fstar_hz[cp] = psdest->freqbase[n];
+	  data.fstar_hz[cp] = psdest->freqbase[n];
 	}
       }
     } else {
-      fstar_hz[cp] = 1;
+      data.fstar_hz[cp] = 1;
       if (!warned.contains(tid.name())) {
 	warn(QString("Missing tapers '%1'. Please supply using preptaper('%2') in matlab.").arg(tid.name()).arg(tid.name()));
 	warned.insert(tid.name());
@@ -432,14 +434,14 @@ double CohData::getFStarHz(int id) const {
   if (!rs3d || !rs3d->haveData(id))
     return 1;
   CamPair const &cp = rs3d->getCam(id);
-  return fstar_hz[cp];
+  return data.fstar_hz[cp];
 }
 
 double CohData::getTypicalFStarHz() const {
   validate();
   int n=0;
   double fstar = 0;
-  foreach (double d, fstar_hz) {
+  foreach (double d, data.fstar_hz) {
     n++;
     fstar += d;
   }

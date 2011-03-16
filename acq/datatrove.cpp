@@ -29,7 +29,7 @@ void DataTrove::constructData() {
   updateCameras();
 
   connect(trial_, SIGNAL(newCameras()), SLOT(updateCameras()));
-  connect(rois_, SIGNAL(newDatum(ID)), SLOT(saveROIs()));
+  connect(rois_, SIGNAL(newDatum(int)), SLOT(saveROIs()));
   connect(rois_, SIGNAL(newAll()), SLOT(saveROIs()));
 }
 

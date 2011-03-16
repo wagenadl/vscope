@@ -9,8 +9,6 @@
 #include <QMap>
 #include <QSet>
 
-typedef int ID;
-
 class IDKeyAccess: public KeyAccess {
   Q_OBJECT;
 public:
@@ -24,7 +22,7 @@ public:
 public:
   IDKeyAccess(QObject *parent=0);
   virtual ~IDKeyAccess();
-  virtual WriteKey *checkout(ID);
+  virtual WriteKey *checkout(int);
   virtual WriteKey *checkoutAll();
   virtual void checkin(WriteKey *);
   /*:F checkin
@@ -32,26 +30,26 @@ public:
        If the key was checked out with checkoutAll, we emit newAll().
        In both cases, we also emit newData().
    */
-  void verifyIDKey(WriteKey *key, ID id, QString msg="") const;
+  void verifyIDKey(WriteKey *key, int id, QString msg="") const;
   void verifyAllKey(WriteKey *key, QString msg="") const;
-  ID getID(WriteKey *key) const;
+  int getID(WriteKey *key) const;
   /*:F getID
    *:D Returns the ID associated with the given key.
    *:N Throws an acception if the key is unknown or was not created by
        checkout(ID).
    */
 signals:
-  void newDatum(ID id);
+  void newDatum(int id);
   void newAll();
 private:
-  QMap<WriteKey *, ID> key2id;
-  QMultiMap<ID, WriteKey *> id2key;
+  QMap<WriteKey *, int> key2id;
+  QMultiMap<int, WriteKey *> id2key;
   QSet<WriteKey *> key4all;
 };
 
 class IDKeyGuard {
 public:
-  IDKeyGuard(IDKeyAccess &src, ID id);
+  IDKeyGuard(IDKeyAccess &src, int id);
   ~IDKeyGuard();
   KeyAccess::WriteKey *key() const { return key_; }
 private:

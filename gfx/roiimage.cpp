@@ -63,15 +63,15 @@ ROISet *ROIImage::getROIs() const {
 
 void ROIImage::setROIs(ROISet *rs) {
   if (roiset!=dummyrois) {
-    disconnect(roiset, SIGNAL(changed(int)), this, SLOT(updateROIs()));
-    disconnect(roiset, SIGNAL(changedAll(int)), this, SLOT(updateROIs()));
+    disconnect(roiset, SIGNAL(newDatum(int)), this, SLOT(updateROIs()));
+    disconnect(roiset, SIGNAL(newAll()), this, SLOT(updateROIs()));
   }
   
   roiset = rs ? rs : dummyrois;
 
   if (roiset!=dummyrois) {
-    connect(roiset, SIGNAL(changed(int)), this, SLOT(updateROIs()));
-    connect(roiset, SIGNAL(changedAll()), this, SLOT(updateROIs()));
+    connect(roiset, SIGNAL(newDatum(int)), this, SLOT(updateROIs()));
+    connect(roiset, SIGNAL(newAll()), this, SLOT(updateROIs()));
   }
   
   select(0);

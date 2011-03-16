@@ -9,7 +9,7 @@ IDKeyAccess::IDKeyAccess(QObject *parent): KeyAccess(parent) {
 IDKeyAccess::~IDKeyAccess() {
 }
 
-KeyAccess::WriteKey *IDKeyAccess::checkout(ID id) {
+KeyAccess::WriteKey *IDKeyAccess::checkout(int id) {
   WriteKey *key = KeyAccess::checkout();
   key2id.insert(key, id);
   id2key.insert(id, key);
@@ -31,7 +31,7 @@ void IDKeyAccess::checkin(WriteKey *key) {
     if (key4all.isEmpty())
       emit newAll();
   } else if (key2id.contains(key)) {
-    ID id = key2id[key];
+    int id = key2id[key];
     key2id.remove(key);
     id2key.remove(id, key);
     if (id2key.find(id)==id2key.end())
@@ -39,7 +39,7 @@ void IDKeyAccess::checkin(WriteKey *key) {
   }
 }
 
-void IDKeyAccess::verifyIDKey(KeyAccess::WriteKey *key, ID id,
+void IDKeyAccess::verifyIDKey(KeyAccess::WriteKey *key, int id,
 			      QString msg) const {
   verifyKey(key, msg);
   if (key2id[key]!=id)
@@ -53,14 +53,14 @@ void IDKeyAccess::verifyAllKey(KeyAccess::WriteKey *key,
     throw Exception("IDKeyAccess", "Key verification failed: " + msg);
 }
 
-ID IDKeyAccess::getID(WriteKey *key) const {
+int IDKeyAccess::getID(WriteKey *key) const {
   if (key2id.contains(key))
     return key2id[key];
   else
     throw Exception("IDKeyAccess", "ID retrieval failed: unknown key");
 }
 
-IDKeyGuard::IDKeyGuard(IDKeyAccess &src, ID id):
+IDKeyGuard::IDKeyGuard(IDKeyAccess &src, int id):
   src(src) {
   key_ = src.checkout(id);
 }

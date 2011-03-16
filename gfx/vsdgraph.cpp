@@ -16,8 +16,8 @@ VSDGraph::VSDGraph(ROIData3Set *rs3d, QWidget *parent): LineGraph(parent) {
   trcRatio = new TraceInfo();
   autoSetXRange();
 
-  connect(data, SIGNAL(changedOne(int)), SLOT(updateROI(int)));
-  connect(data, SIGNAL(changedAll()), SLOT(updateROIs()));
+  connect(data, SIGNAL(newDatum(int)), SLOT(updateROI(int)));
+  connect(data, SIGNAL(newAll()), SLOT(updateROIs()));
 }
 
 VSDGraph::~VSDGraph() {
