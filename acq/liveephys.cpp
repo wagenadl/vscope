@@ -264,6 +264,7 @@ void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
   QBitArray chmask = ptree->find("maintenance/liveEphys/aiChannels").toBitArray();
   Enumerator *chnames = Enumerator::find("AICHAN");
   dbg("liveephys addchannels to %p n=%i\n",cc,list.size());
+  bool ireallyneedone = chmask.count(true) == 0;
   for (int l=0; l<list.size(); l++) {
     QString cid = list[l];
     if (!chnames->has(cid))
@@ -271,7 +272,8 @@ void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
     int cno = chnames->lookup(cid);
     dbg("addchannels l=%i cno=%i cid='%s' test=%i\n",
     	l,cno,qPrintable(cid),chmask.testBit(cno));
-    if (chmask.testBit(cno)) {
+    if (chmask.testBit(cno) || ireallyneedone) {
+      ireallyneedone = false;
       LineGraph *lg = new LineGraph(cc); // cc becomes owner
       TraceInfo *tr = new TraceInfo(); // aitraces becomes owner
       dbg("  addchannels cid=%s cno=%i lg=%p tr=%p",qPrintable(cid),cno,lg,tr);
