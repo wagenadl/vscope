@@ -4,13 +4,17 @@ SUBDIRS=`grep SUBDIRS linux.pro | perl -pe 's/\#.*//' | tr ' ' '\n' | tr '\t' '\
 
 rm -f flat.pro
 touch flat.pro
+rm -f tests/flattest.pro
+touch tests/flattest.pro
 
 for a in ${=SUBDIRS}; do
   for s in `tr ' ' '\n' < $a/$a.pro | grep '\.cpp' | grep -vi dummy`; do
     echo "SOURCES += $a/$s" >> flat.pro
+    [[ $s == "main.cpp" ]] || echo "OBJECTS += ../../.obj/`basename $s .cpp`.o" >> tests/flattest.pro
   done
   for h in `tr ' ' '\n' < $a/$a.pro | grep '\.h$' | grep -vi dummy`; do
     echo "HEADERS += $a/$h" >> flat.pro
+    grep -q Q_OBJECT $a/$h && echo "OBJECTS += ../../.obj/moc_`basename $h .h`.o" >> tests/flattest.pro
   done
   echo >> flat.pro
 done
