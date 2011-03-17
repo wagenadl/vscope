@@ -11,7 +11,6 @@
 
 #include <QDateTime>
 
-#include <bzr_versioninfo.h>
 #include <base/dbg.h>
 #include <base/base26.h>
 #include <base/xml.h>
@@ -74,13 +73,16 @@ QWidget *makeBanner1(QWidget *parent) {
   QTextEdit *w = new QTextEdit(parent);
   w->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   w->setReadOnly(true);
-  QString txt = "<html><body><h1>VScope</h1>";
-  txt += QString() + "Revision #" + bzr_version_nick + ":" + bzr_version_revno
-    + " dd " + bzr_version_month + "/" + bzr_version_day
-    + "/" + bzr_version_year + ".<br>";
+  XML vsndoc(":/version.xml");
+  QDomElement vsn = vsndoc.root();
+  QString txt = "<html><body><h1>VScope ";
+  txt += vsn.attribute("branch");
+  txt += ":" + vsn.attribute("rev") + "</h1>";
+  txt += "Last commit: " + vsn.attribute("date") + "<br>";
+  txt += "Build date: " + vsn.attribute("builddate") + "<br>";
   txt += QString() + "(C) Daniel A. Wagenaar 2008&ndash;"
-    + bzr_version_year + ".<br>";
-  txt += "For more info: email daw@caltech.edu.<br>";
+    + vsn.attribute("year") + "<br>";
+  txt += "For more info: daw@caltech.edu";
 
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();

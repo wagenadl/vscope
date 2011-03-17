@@ -20,7 +20,6 @@ HEADERS += panelhistory.h
 SOURCES += panelhistory.cpp
 HEADERS += scripts.h
 SOURCES += scripts.cpp
-HEADERS += ../bzr_versioninfo.h
  
 LIBS += -L../base -L../gfx -L../xml -L../gui
 LIBS += -lvscope-base -lvscope-gfx -lvscope-xml -lvscope-gui
@@ -31,9 +30,9 @@ LIBS += -L../math -lvscope-math
 
 RESOURCES += vscope.qrc
 
-QMAKE_EXTRA_TARGETS += version
+QMAKE_EXTRA_TARGETS += version alwaysrun
 PRE_TARGETDEPS += version.xml
 version.target = version.xml
 version.commands = ../utils/getversion $$version.target
-version.depends = ../.bzr/repository ../.bzr/checkout
-
+version.depends = alwaysrun
+alwaysrun.commands = 

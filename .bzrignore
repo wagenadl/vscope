@@ -14,3 +14,6 @@ core
 *.stackdump
 object_script.*
 
+toplevel/version.h
+toplevel/version.tmp
+toplevel/version.xml
