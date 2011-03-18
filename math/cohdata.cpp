@@ -41,12 +41,12 @@ void CohData::setROISet(ROISet const *r) {
 void CohData::setCCDData(class ROIData3Set /*const*/ *dat) {
   /* Conceptually const, but we may be the one to trigger recalculation */
   if (rs3d && rs3d!=dat) {
-    disconnect(rs3d, SIGNAL(changedAll()), this, SLOT(updateROIs()));
-    disconnect(rs3d, SIGNAL(changedOne(int)), this, SLOT(updateROIs()));
+    disconnect(rs3d, SIGNAL(newAll()), this, SLOT(updateROIs()));
+    disconnect(rs3d, SIGNAL(newDatum(int)), this, SLOT(updateROIs()));
   }
   if (dat && rs3d!=dat) {
-    connect(dat, SIGNAL(changedAll()), this, SLOT(updateROIs()));
-    connect(dat, SIGNAL(changedOne(int)), this, SLOT(updateROIs()));
+    connect(dat, SIGNAL(newAll()), this, SLOT(updateROIs()));
+    connect(dat, SIGNAL(newDatum(int)), this, SLOT(updateROIs()));
   }
   rs3d = dat;
   invalidate();

@@ -120,6 +120,7 @@ void ROIData::DataCache::resize(int len_) {
 ROIData::BitmapCache::BitmapCache() {
   bm = 0;
   roi = 0;
+  blobROI = 0;
   haveTransformAndClip = 0;
 }
 

@@ -9,7 +9,45 @@
 #include <base/exception.h>
 #include <pvp/campool.h>
 #include "dutycyclelimit.h"
- 
+#include <math.h>
+
+static void generateMockData(CCDData *dest, CCDData::WriteKey *key, int seed) {
+  int wid = dest->getSerPix();
+  int hei = dest->getParPix();
+  int nfr = dest->getNFrames();
+  double frmdt_s = dest->getDTms()/1e3;
+  double f0_hz = 1;
+  int NX = 4; // number of patches
+  int NY = 4;
+  uint16_t *data = dest->frameData(key);
+  for (int n=0; n<nfr; n++) {
+    int x0 = 0;
+    for (int nx=0; nx<NX; nx++) {
+      int x1 = wid*(nx+1)/NX;
+      int y0 = 0;
+      for (int ny=0; ny<NY; ny++) {
+	int y1 = hei*(ny+1)/NY;
+	uint16_t *patch = data + n*(wid*hei) + y0*wid + x0;
+	double val0 = cos(2*3.14159265*f0_hz*(1+(nx&1)+(ny&1))*n*frmdt_s
+			 +nx*2345+ny*278+37*seed);
+	double val1 = 0;
+	for (int k=0; k<10; k++)
+	  val1 += double(rand())/RAND_MAX - 0.5;
+	uint16_t val = 2000+100*(nx^2)+50*(ny^2)+val0*100+val1*0;
+	int w = x1-x0;
+	int h = y1-y0;
+	for (int y=0; y<h; y++) {
+	  uint16_t *ptr = patch+y*wid;
+	  for (int x=0; x<w; x++)
+	    *ptr++ = val;
+	}
+	y0 = y1;
+      }
+      x0 = x1;
+    }
+  }
+}
+
 CCDAcq::CCDAcq() {
   QStringList cams = Connections::allCams();
   ncams=0;
@@ -69,10 +107,10 @@ bool CCDAcq::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
       Dbg() << "CCDAcq: camera "<< k << ": " << camids[k]<<" is " << cameras[k] << "; dest is " << dest[k];
 
 #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
-      //
+      // we are going to generate mock data
 #else
       if (!cameras[k])
-	ccdcfg[k].nframes=0; // never acquire from dummy camera
+	ccdcfg[k].nframes=0; // we won't acquire from dummy camera
 #endif
     }
 
@@ -145,6 +183,8 @@ void CCDAcq::start() {
       if (cameras[k])
 	cameras[k]->startFinite(dest[k]->frameData(keys[k]),
 				dest[k]->getTotalPix());
+      else if (dest[k])
+	generateMockData(dest[k], keys[k], k);
     isActive = true;
   } catch (Exception const &) {
     dbg("CCDAcq: exception during start");
