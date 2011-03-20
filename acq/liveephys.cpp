@@ -264,11 +264,13 @@ void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
     chset.insert(c);
   dbg("liveephys addchannels to %p n=%i\n",cc,list.size());
   foreach (QString cid, list) {
-    if (!chset.contains(cid))
-      continue;
     Connections::AIChannel const *aic = Connections::findpAI(cid);
     if (!aic)
       continue; // skip, e.g., digital channels
+    if (chset.isEmpty())
+      chset.insert(cid); // make sure we have at least one
+    if (!chset.contains(cid))
+      continue;
     LineGraph *lg = new LineGraph(cc); // cc becomes owner
     TraceInfo *tr = new TraceInfo(); // aitraces becomes owner
     addChannel(cid);
