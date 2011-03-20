@@ -18,6 +18,41 @@
 #define EPHYSACQ_CONTACQ_CHUNKSIZE 8192
 #define EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER 1
 
+static void makeFakeAData(AnalogData *adata) {
+  if (!adata)
+    return;
+  KeyGuard guard(*adata);
+  int C = adata->getNumChannels();
+  int N = adata->getNumScans();
+  for (int c=0; c<C; c++) {
+    QString chid = adata->getChannelAtIndex(c);
+    double *data = adata->channelData(guard.key(), chid);
+    for (int n=0; n<N; n++) {
+      *data = (n%(100+60*c)) / 1000.;
+      data += C;
+    }
+  }
+}
+
+static void makeFakeDData(DigitalData *ddata) {
+  if (!ddata)
+    return;
+  KeyGuard guard(*ddata);
+  int N = ddata->getNumScans();
+  DigitalData::DataType mask = ddata->getMask();
+  Dbg() << "makeFakeDData mask=" << QString::number(mask,16);
+  DigitalData::DataType *data = ddata->allData(guard.key());
+  DigitalData::DataType filler = 0;
+  DigitalData::DataType step = 0x11111111;
+  for (int n=0; n<N; n++) {
+    if (n%100==0)
+      filler += step;
+    *data++ = filler & mask;
+  }
+}
+
+
+
 EPhysAcq::EPhysAcq() {
   ain = 0;
   din = 0;
@@ -71,6 +106,11 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   adata->setSamplingFrequency(samprate_hz);
 
   ddata->reshape(nscans);
+  QStringList dch = Connections::digiInputLines();
+  Enumerator *digilines = Enumerator::find("DIGILINES");
+  ddata->clearMask();
+  foreach (QString id, dch)
+    ddata->defineLine(digilines->lookup(id), id);
   prep = true;
 
   bool haveDevice = createDAQ(ptree);
@@ -101,9 +141,6 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   
   din->setAcqLength(contEphys ? 0 : nscans);
   din->setPollPeriod(contEphys ? EPHYSACQ_CONTACQ_CHUNKSIZE : 0);
-  QStringList dch = Connections::digiInputLines();
-  // dbg("ephysacq: digiinputs:");
-  Enumerator *digilines = Enumerator::find("DIGILINES");
   din->setChannelMask(0);
   for (QStringList::iterator i=dch.begin(); i!=dch.end(); ++i) {
     // dbg("  digiinput: '%s'",qPrintable(*i));
@@ -154,6 +191,10 @@ void EPhysAcq::start() {
       timer = new QTimer(this);
       connect(timer,SIGNAL(timeout()), this,SLOT(ainEnded()));
     }
+
+    makeFakeAData(adata);
+    makeFakeDData(ddata);
+    
     timer->setSingleShot(true);
     timer->setInterval(int(trialtime_ms));
     timer->start();

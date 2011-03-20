@@ -11,6 +11,9 @@
 #include <acq/ccdtimingdetail.h>
 #include <base/transform.h>
 #include <base/keyagg.h>
+#include <base/ccddata.h>
+#include <base/analogdata.h>
+#include <base/digitaldata.h>
 
 class TrialData: public KeyAgg {
   Q_OBJECT;
@@ -23,26 +26,26 @@ public:
   virtual void read(QString dir, QString exptname, QString trialid,
 		    class ParamTree *ptree_dest);
 public:
-  class AnalogData const *analogData() const { return adataIn; }
-  class AnalogData  *analogData()  { return adataIn; }
-  class DigitalData const *digitalData() const { return ddataIn; }
-  class DigitalData  *digitalData()  { return ddataIn; }
-  class AnalogData const *analogStimuli() const { return adataOut; }
-  class AnalogData  *analogStimuli()  { return adataOut; }
-  class DigitalData const *digitalStimuli() const { return ddataOut; }
-  class DigitalData  *digitalStimuli()  { return ddataOut; }
+  AnalogData const *analogData() const { return adataIn; }
+  AnalogData  *analogData()  { return adataIn; }
+  DigitalData const *digitalData() const { return ddataIn; }
+  DigitalData  *digitalData()  { return ddataIn; }
+  AnalogData const *analogStimuli() const { return adataOut; }
+  AnalogData  *analogStimuli()  { return adataOut; }
+  DigitalData const *digitalStimuli() const { return ddataOut; }
+  DigitalData  *digitalStimuli()  { return ddataOut; }
   /* Note that the above non-const returning functions do not need a write
      key. That's because the returned pointers can only be *used* in a non-
      const way after obtaining a write key from the individual data items.
   */
-  class CCDData const *ccdData(QString camid) const;
-  class CCDData *ccdData(QString camid);
+  CCDData const *ccdData(QString camid) const;
+  CCDData *ccdData(QString camid);
   /*:F ccdData
    *:D Throw exception if camid not found
    */
   bool haveCCDData(QString camid) const;
-  class XML const *getXML() const { return xml; }
-  class XML *getXML() { return xml; } // only useful after read() or write()
+  XML const *getXML() const { return xml; }
+  XML *getXML() { return xml; } // only useful after read() or write()
   /*:F getXML
    *:D Only useful after read() or write().
    *:N The writable form breaks the KeyAccess convention.

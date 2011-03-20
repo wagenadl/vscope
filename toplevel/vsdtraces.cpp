@@ -49,7 +49,7 @@ void VSDTraces::updateSelection(int id) {
 }
 
 void VSDTraces::setRefTrace(QString id) {
-  //dbg("vsdtraces::setreftrace: %i",rf);
+  Dbg() << "vsdtraces::setreftrace: " << id;
   refchn = id;
   refgraph->setTraceLabel("ref", Aliases::lookup(id));
   updateEPhysData();
@@ -64,14 +64,15 @@ void VSDTraces::setRefFreq(double) {
 }
 
 void VSDTraces::updateEPhysData() {
+  Dbg() << "VSDTraces::updateEphysData";
   AnalogData const *adata = Globals::trove->trial().analogData();
-  if (!adata->contains(refchn)) {
-    QString rf = adata->getChannelAtIndex(0);
-    if (adata->contains(rf)) {
-      setRefTrace(rf);
-      return;
-    }
-  }
+  //if (!adata->contains(refchn)) {
+  //  QString rf = adata->getChannelAtIndex(0);
+  //  if (adata->contains(rf)) {
+  //    setRefTrace(rf);
+  //    return;
+  //  }
+  //}
   DataPtr dp(adata->contains(refchn)
 	     ? adata->channelData(refchn)
 	     : adata->allData());

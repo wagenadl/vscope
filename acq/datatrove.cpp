@@ -52,6 +52,10 @@ DataTrove::~DataTrove() {
 void DataTrove::updateCameras() {
   foreach (QString camid, trial_->cameras())
     roidata_->setCCDData(camid, trial_->ccdData(camid));
+
+  foreach (QString camid, trial_->cameras())
+    connect(trial_->ccdData(camid), SIGNAL(newData()),
+	    roidata_, SLOT(updateCCDData()));
 }
 
 void DataTrove::read(QString dir, QString exptname, QString trialid) {

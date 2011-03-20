@@ -24,9 +24,13 @@ AnalogIn::AnalogIn(QString id): daqTask(id) {
 
 AnalogIn::~AnalogIn() {
   if (dislave)
-    fprintf(stderr,"AnalogIn: Dying while DI slave still attached. Armageddon imminent.\n");
+    fprintf(stderr,
+	    "AnalogIn: Dying while DI slave still attached."
+	    " Armageddon imminent.\n");
   if (aoslave)
-    fprintf(stderr,"AnalogIn: Dying while AO slave still attached. Armageddon imminent.\n");
+    fprintf(stderr,
+	    "AnalogIn: Dying while AO slave still attached."
+	    " Armageddon imminent.\n");
 }
 
 void AnalogIn::removeChannel(AnalogIn::Channel ain) {
