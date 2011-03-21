@@ -174,13 +174,12 @@ void AnalogData::read(QString ifn, QDomElement elt) {
     throw Exception("AnalogData", "Cannot find xml info");
   
   bool ok;
-  fs_hz = elt.attribute("rate").toDouble(&ok);
-  if (!ok)
-    throw Exception("AnalogData", "Cannot read sampling rate from xml");
+  UnitQty fs(elt.attribute("rate"));
+  fs_hz = fs.toDouble("Hz");
   int scans = elt.attribute("scans").toInt(&ok);
   if (!ok)
     throw Exception("AnalogData","Cannot read number of scans from xml");
-  int chans = elt.attribute("chans").toInt(&ok);
+  int chans = elt.attribute("channels").toInt(&ok);
   if (!ok)
     throw Exception("Trial","Cannot read number of channels from xml",
 		    "read");

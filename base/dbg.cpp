@@ -11,10 +11,12 @@
 #include <QRectF>
 #include <QLineF>
 
-Dbg::Dbg() throw() {
+Dbg::Dbg(QObject const *x) throw() {
   try {
     txt = "[" + QTime::currentTime().toString("hhmmss.zzz") + "] ";
     setString(&txt);
+    if (x) 
+      *this << objName(x) << ": ";
   } catch(...) {
     ;
   }
@@ -150,8 +152,4 @@ Dbg &Dbg::operator<<(QLine const &x) {
 
 Dbg &Dbg::operator<<(QLineF const &x) {
   return *this << x.p1() << "-" << x.p2();
-}
-
-Dbg &Dbg::operator<<(QObject const *x) {
-  return *this << objName(x);
 }

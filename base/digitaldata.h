@@ -8,6 +8,7 @@
 #include <base/types.h>
 #include <base/keyaccess.h>
 #include <QDomElement>
+#include <QMap>
 
 class DigitalData: public KeyAccess {
   /*:C DigitalData
@@ -85,8 +86,8 @@ private:
   double fs_hz;
   DataType *data;
   DataType cmask;
-  QHash<QString, unsigned int> id2line;
-  QHash<unsigned int, QString> line2id;
+  QMap<QString, unsigned int> id2line;
+  QMap<unsigned int, QString> line2id;
 };
 
 #endif

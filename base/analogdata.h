@@ -114,7 +114,7 @@ private:
   QVector<QString> index2id;
   QVector<double> index2scale;
   QVector<QString> index2unit;
-  QHash<QString, int32_t> id2index;
+  QMap<QString, int32_t> id2index;
   double *data; // by index
 };
 

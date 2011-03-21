@@ -1,6 +1,7 @@
 // keyagg.cpp
 
 #include "keyagg.h"
+#include <base/dbg.h>
 
 KeyAgg::KeyAgg(QObject *parent): KeyAccess(parent) {
 }
@@ -25,12 +26,16 @@ void KeyAgg::sourceDying(QObject *o) {
 }
 
 void KeyAgg::updateData() {
+  //  Dbg(this) << "KeyAgg: updateData";
   emitUnlessCheckedOut();
 }
 
 void KeyAgg::emitUnlessCheckedOut() {
+  //  Dbg(this) << "KeyAgg: emitUnlessCheckedOut";
   foreach (KeyAccess *src, sources)
     if (src->anyCheckedOut())
       return;
+  //  Dbg(this) << "  No sources checkedout. any of mine? " << anyCheckedOut();
+  dumpObjectInfo();
   KeyAccess::emitUnlessCheckedOut();
 }

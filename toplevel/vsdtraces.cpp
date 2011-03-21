@@ -31,7 +31,9 @@ VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent) {
   refgraph->addTrace("ref",reftrace);
   refgraph->autoSetXRange();
   refgraph->autoSetYRange();
-  connect(&Globals::trove->trial(), SIGNAL(newData()), SLOT(updateEPhysData()));
+  connect(&Globals::trove->trial(), SIGNAL(newData()),
+	  SLOT(updateEPhysData()));
+  Dbg(this) << "connected " << &Globals::trove->trial() << ":newData to my updateEphysData";
 
   allgraph = new VSDAllGraph(&Globals::trove->roidata(), this);
   addGraph("all",allgraph);

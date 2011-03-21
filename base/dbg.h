@@ -13,7 +13,7 @@ extern void warn(char const *fmt,...) throw();
 
 class Dbg: public QTextStream {
 public:
-  Dbg() throw();
+  Dbg(QObject const *src=0) throw();
   virtual ~Dbg() throw();
   //Dbg &operator<<(char const *);
   //Dbg &operator<<(void const *);
@@ -29,7 +29,6 @@ public:
   Dbg &operator<<(class QSizeF const &);
   Dbg &operator<<(class QRectF const &);
   Dbg &operator<<(class QLineF const &);
-  Dbg &operator<<(class QObject const *);
   template <class X> Dbg &operator<<(X const &x) {
     *(QTextStream*)this << x; return *this;
   }

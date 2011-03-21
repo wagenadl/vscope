@@ -21,8 +21,6 @@ public:
   virtual ~KeyAgg();
   void add(KeyAccess *);
   void remove(KeyAccess *);
-signals:
-  void newData();
 protected:
   virtual void emitUnlessCheckedOut();
   /*:F emitUnlessCheckedOut

@@ -48,7 +48,9 @@ void KeyAccess::checkin(KeyAccess::WriteKey *key) {
 }
 
 void KeyAccess::emitUnlessCheckedOut() {
+  //Dbg(this) << "KeyAccess::emitUnlessCheckedOut";
   if (keys.isEmpty()) {
+    //Dbg(this) << "emitting newData";
     emit newData();
   }
 }

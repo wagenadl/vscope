@@ -4,7 +4,7 @@
 
 #include <base/memalloc.h>
 #include <base/unitqty.h>
-
+#include <base/dbg.h>
 #include <QFile>
 
 DigitalData::DigitalData(int nscans_, double fs) {
@@ -62,6 +62,7 @@ void DigitalData::write(QString ofn, QDomElement elt) {
   elt.setAttribute("typebytes","4");
   elt.setAttribute("scans", QString::number(nscans));
   foreach (unsigned int n, line2id.keys()) {
+    Dbg(this) << "write n="<<n<<" id="<<line2id[n];
     QDomElement line = elt.ownerDocument().createElement("line");
     elt.appendChild(line);
     line.setAttribute("idx", QString::number(n));
@@ -131,8 +132,9 @@ void DigitalData::clearMask() {
 }
 
 void DigitalData::ensureIDs() {
-  DataType msk = 1;
+  DataType one = 1;
   for (int n=0; n<32; n++) {
+    DataType msk = one<<n;
     if (cmask & msk) {
       if (!line2id.contains(n)) {
 	QString id = "D" + QString::number(n);
@@ -163,6 +165,7 @@ void DigitalData::addLine(unsigned int line) {
 }
 
 void DigitalData::defineLine(unsigned int line, QString id) {
+  Dbg(this) << "defineLine: " << line << ":" << id << " mask="<<cmask;
   KeyGuard guard(*this);
   addLine(line);
   id2line.remove(line2id[line]);
