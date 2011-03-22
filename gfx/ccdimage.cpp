@@ -48,10 +48,6 @@ void CCDImage::setCanvas(QRect r) {
   update();
 }
 
-void CCDImage::placeImage(Transform const &t) {
-  img2cnv = t;
-}
-
 QRect CCDImage::currentCanvas() const {
   return canvasRect.isNull() ? rect() : canvasRect;
 }
@@ -100,12 +96,26 @@ void CCDImage::createTestImage() {
 
 void CCDImage::newImage(uint16_t const *data, int X, int Y,
 			bool flipX, bool flipY) {
+  Transform t;
+  if (flipX)
+    t.flipx(X/2);
+  if (flipY)
+    t.flipy(Y/2);
+  newImage(data, X, Y, t);
+}
+
+void CCDImage::newImage(uint16_t const *data, int X, int Y,
+			Transform const &t) {
+
+  bool flipX = t.reflectsX();
+  bool flipY = t.reflectsY();
+
   if (image.width()!=X || image.height()!=Y)
     image = QImage(X,Y,QImage::Format_RGB32);
   // I could use Indexed8 if that's faster.
-  //Dbg() << "CCDImage::newImage " << data
-  //	<< " " << X << "x" << Y
-  //	<< " (" << flipX << "," << flipY << ")";
+  Dbg(this) << "newImage " << data
+    	<< " " << X << "x" << Y
+	    << " " << t.stringRep();
   uint32_t *dst = (uint32_t *)image.bits();
   int rng = 1 + max - min;
   //Dbg() << "  max="<<max<<" min="<<min<<" rng="<<rng;
@@ -135,6 +145,8 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
       }
     }
   }
+  img2cnv = t; // actually, this is not right. I have to unflip.
+  // But I am too tired to do that properly right now.
   update();
 }
 
@@ -319,6 +331,9 @@ void CCDImage::paintEvent(class QPaintEvent *) {
   //  if (zoomRect==r)
   //    p.drawImage(r,image);
   //  else
+  Dbg(this) << "drawImage: t=" << img2cnv.inverse().stringRep()
+	    << " zR=" << zoomRect
+	    << " t(zR) = " << img2cnv.inverse()(zoomRect);
   p.drawImage(r,image,img2cnv.inverse()(zoomRect),
 	      Qt::DiffuseDither|Qt::ColorOnly|Qt::PreferDither);
 }

@@ -108,15 +108,15 @@ double const *ROI3Data::dataAcceptor() const {
 
 
 double const *ROI3Data::dataRatio() const {
-  Dbg() << "ROI3Data::dataRatio valid="<<validRatio
-	<< " donor.have="<<datDonor.haveData()
-	<< " donor.data="<<dataDonor()
-	<< " donor.n="<<datDonor.getNFrames()
-	<< " acc.have="<<datAcceptor.haveData()
-	<< " acc.data="<<dataAcceptor()
-	<< " acc.n="<<datAcceptor.getNFrames()
-	<< " datRatio="<<datRatio
-	<< " nRatio="<<nRatio;
+  //Dbg() << "ROI3Data::dataRatio valid="<<validRatio
+  //	<< " donor.have="<<datDonor.haveData()
+  //	<< " donor.data="<<dataDonor()
+  //	<< " donor.n="<<datDonor.getNFrames()
+  //	<< " acc.have="<<datAcceptor.haveData()
+  //	<< " acc.data="<<dataAcceptor()
+  //	<< " acc.n="<<datAcceptor.getNFrames()
+  //	<< " datRatio="<<datRatio
+  //	<< " nRatio="<<nRatio;
   if (validRatio)
     return datRatio;
 

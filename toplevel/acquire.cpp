@@ -202,14 +202,13 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     int npar = src[k]->getParPix();
     imgs[k]->adjustedRange(dat,nser,npar);
     Dbg() << "Acquire: new image for camera " << camname[k] << ": " << dat;
-    imgs[k]->newImage(dat,nser,npar,cams[k]->flipx, cams[k]->flipy);
-    imgs[k]->placeImage(Globals::trove->trial().ccdPlacement(camname[k]));
+    imgs[k]->newImage(dat,nser,npar,
+		      Globals::trove->trial().ccdPlacement(camname[k]));
     if (first) {
       Globals::coherence->adjustedRange(dat,nser,npar);
       Globals::coherence->newImage(dat,nser,npar,
-  				   cams[k]->flipx, cams[k]->flipy);
-      Globals::coherence->placeImage(Globals::trove->trial()
-				     .ccdPlacement(camname[k]));
+				   Globals::trove->trial()
+				   .ccdPlacement(camname[k]));
     first = false;
     }
     uint16_t min = 65535;

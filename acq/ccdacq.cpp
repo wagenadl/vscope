@@ -53,8 +53,8 @@ static void generateMockData(CCDData *dest, CCDData::WriteKey *key, int seed) {
       x1=wid;
     if (y1>hei)
       y1=hei;
-    double val0 = cos(2*3.141592*f0_hz*3*n*frmdt_s);
-    uint16_t val = 2500+300*val0;
+    double val0 = n%5;
+    uint16_t val = 2500+100*val0;
     for (int y=y0; y<y1; y++) {
       uint16_t *patch = data + n*(wid*hei) + y*wid;
       for (int x=x0; x<x1; x++)
@@ -110,10 +110,10 @@ bool CCDAcq::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
   
     for (int k=0; k<ncams; k++) {
       ccdcfg[k] = cfg;
-      if (caminfo[k]->flipx)
-        ccdcfg[k].region = cfg.region.flipSerial(caminfo[k]->xpix);
-      if (caminfo[k]->flipy)
-        ccdcfg[k].region = cfg.region.flipParallel(caminfo[k]->ypix);
+      ccdcfg[k].region = CCDRegion(caminfo[k]->placement.inverse()(reg));
+      Dbg() << "Camera " << camids[k] << ": region "
+	    << ccdcfg[k].region.smin << ":" << ccdcfg[k].region.smax
+	    << " " << ccdcfg[k].region.pmin << ":" << ccdcfg[k].region.pmax;
     }
     
     for (int k=0; k<ncams; k++) {

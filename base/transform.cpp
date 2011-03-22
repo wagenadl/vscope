@@ -202,6 +202,8 @@ Transform Transform::operator()(Transform const &t) const {
   // We do x'' = ax*x' + bx. t does x' = ax'*x + bx'.
   // We should produce: x'' = ax''*x + bx''.
   // Now: x'' = ax*(ax'*x + bx') + bx = ax*ax'*x + ax*bx' + bx.
+  // So, ax'' = ax*ax', and bx'' = ax*bx' + bx.
+  
   Transform tt;
   tt.ax = ax*t.ax;
   tt.bx = ax*t.bx + bx;
@@ -267,4 +269,8 @@ bool Transform::reflectsX() const {
 
 bool Transform::reflectsY() const {
   return ay<0;
+}
+
+QString Transform::stringRep() const {
+  return QString("%1x%2+%3+%4").arg(ax).arg(ay).arg(bx).arg(by);
 }

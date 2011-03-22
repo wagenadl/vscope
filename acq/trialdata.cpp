@@ -175,6 +175,20 @@ Transform TrialData::camPlace(QString camid, ParamTree const *ptree) {
   if (ptree) {
     QRect reg(ptree->find("acqCCD/region").toRect());
     QRect bin(ptree->find("acqCCD/binning").toRect());
+    /* This is actually hard to figure out for flipped cameras.
+       Let's try some examples.
+       A camera that y-flips, so that t0=1x-1+0+512.
+       Assume that I am binning 1x2. I want to return t=1x-2+0+512.
+       So, if I set t1=1x2+0+0, t0(t1) = 1x-2+0+512; all good.
+       Second example. Same camera.
+       Assume that the region is 256x256+256+256. That's in global coords,
+       for now. I want to return t=1x-1+256+512.
+       Now, if I set t1=1x1+256+256, I get t0(t1) = 1x-1+256+256. That's not
+       what I want. I would get the right thing from t1=1x1+256+0, but how
+       does that make sense? Answer: by reverse applying t0 to the region!
+       Just like in ccdacq!
+     */
+    reg = t0.inverse()(reg);
     Transform t1;
     t1.scale(bin.width(),bin.height());
     t1.translate(reg.left(),reg.top());

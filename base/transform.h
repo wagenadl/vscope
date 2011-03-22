@@ -79,6 +79,7 @@ public:
   /* Informational functions */
   bool reflectsX() const;
   bool reflectsY() const;
+  QString stringRep() const;
 private:
   double ax, ay; // scale
   double bx, by; // shift
