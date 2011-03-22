@@ -18,6 +18,14 @@ CCDRegion::CCDRegion(int smin_, int smax_, int pmin_, int pmax_) {
   pmax = pmax_;
 }
 
+CCDRegion::CCDRegion(QRect const &r0) {
+  QRect r = r0.normalized();
+  smin = r.left();
+  smax = r.right();
+  pmin = r.top();
+  pmax = r.bottom();
+}
+
 CCDRegion CCDRegion::flipSerial(int serpix) const {
   CCDRegion r = *this;
   r.smin = serpix-1-smax;

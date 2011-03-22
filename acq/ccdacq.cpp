@@ -45,6 +45,21 @@ static void generateMockData(CCDData *dest, CCDData::WriteKey *key, int seed) {
       }
       x0 = x1;
     }
+    x0=30;
+    int x1=70;
+    int y0=50;
+    int y1=90;
+    if (x1>wid)
+      x1=wid;
+    if (y1>hei)
+      y1=hei;
+    double val0 = cos(2*3.141592*f0_hz*3*n*frmdt_s);
+    uint16_t val = 2500+300*val0;
+    for (int y=y0; y<y1; y++) {
+      uint16_t *patch = data + n*(wid*hei) + y*wid;
+      for (int x=x0; x<x1; x++)
+	patch[x] = val;
+    }
   }
 }
 

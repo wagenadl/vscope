@@ -85,13 +85,14 @@
   
   <camera id="Cc" serno="A08F101002" role="donor" order="0"
      xpix="512" ypix="512"
-     flipx="false" flipy="true" 
-     focusexpose="200 ms" partnerid="Ox"/>  <!-- back -->
+     focusexpose="200 ms" partnerid="Ox">  <!-- back -->
+    <transform ax="1" ay="-1" bx="0" by="512"/>
+  </camera>
   <camera id="Ox" serno="A08B101016" role="acceptor" order="1"
      xpix="512" ypix="512"
-     flipx="false" flipy="false"
-     focusexpose="3 ms" partnerid="Cc"/>  <!-- top -->
-
+     focusexpose="3 ms" partnerid="Cc">  <!-- top -->
+    <transform ax="1" ay="1" bx="0" by="0"/>
+  </camera>
   <dichannel id="FrameOx" line="28"/>
   <dichannel id="FrameCc" line="29"/>
   <dichannel id="TrigOxMon" line="26"/>

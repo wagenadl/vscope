@@ -121,7 +121,7 @@ void CCDData::read(QFile &f, QDomElement src) {
   
   reshape(nser, npar, nfrm);
   setTimeBase(t0_ms, rate_hz ? 1e3/rate_hz : 1);
-  Transform t(src.firstChildElement("place"));
+  Transform t(src);
   setDataToCanvas(t);
   
   int nbytes = nfrm*nser*npar*2;

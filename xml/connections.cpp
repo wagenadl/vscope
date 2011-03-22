@@ -30,7 +30,6 @@ namespace Connections {
   CamCon::CamCon(QString id): id(id) {
     serno="-";
     partnerid="";
-    flipx = flipy = false;
     xpix = ypix = 512;
     focusexp_ms = 100;
   }
@@ -79,8 +78,6 @@ namespace Connections {
       e.setAttribute("serno",cam.serno);
       e.setAttribute("xpix",QString::number(cam.xpix));
       e.setAttribute("ypix",QString::number(cam.ypix));
-      e.setAttribute("flipx",cam.flipx?"yes":"no");
-      e.setAttribute("flipy",cam.flipy?"yes":"no");
       Param expo("time"); expo.setDouble(cam.focusexp_ms);
       e.setAttribute("focusexpose",expo.toString());
       e.setAttribute("role", cam.isdonor ? "donor"
@@ -177,20 +174,12 @@ namespace Connections {
       cam->partnerid = e.attribute("partnerid");
       cam->xpix = e.attribute("xpix").toInt();
       cam->ypix = e.attribute("ypix").toInt();
-      QString flipx = e.attribute("flipx");
-      cam->flipx = flipx=="true" || flipx=="on" || flipx=="yes";
-      QString flipy = e.attribute("flipy");
-      cam->flipy = flipy=="true" || flipy=="on" || flipy=="yes";
       Param expo("time"); expo.set(e.attribute("focusexpose"));
       cam->focusexp_ms = expo.toDouble();
       QString role = e.attribute("role");
       cam->isdonor = role=="donor";
       cam->isacceptor = role=="acceptor";
-      QDomElement t = e.firstChildElement("transform");
-      if (t.isNull())
-	cam->placement = Transform();
-      else
-	cam->placement.read(t);
+      cam->placement.read(e);
     }
   }
 

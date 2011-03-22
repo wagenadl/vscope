@@ -63,12 +63,12 @@ void Focus::setCams(QString idA) {
     : 0;
   Dbg() << "  Focus: ccA=" << ccA << ". ccB=" << ccB;
 
-  flipXA = ccA ? ccA->flipx : false;
-  flipYA = ccA ? ccA->flipy : false;
+  flipXA = ccA ? ccA->placement.reflectsX() : false;
+  flipYA = ccA ? ccA->placement.reflectsY() : false;
   exp_msA = ccA ? ccA->focusexp_ms : 100;
 
-  flipXB = ccB ? ccB->flipx : false;
-  flipYB = ccB ? ccB->flipy : false;
+  flipXB = ccB ? ccB->placement.reflectsX() : false;
+  flipYB = ccB ? ccB->placement.reflectsY() : false;
   exp_msB = ccB ? ccB->focusexp_ms : 100;
 
   X = ccA ? ccA->xpix : 512; 

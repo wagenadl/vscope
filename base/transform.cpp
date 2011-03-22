@@ -174,6 +174,10 @@ QSizeF Transform::operator()(QSizeF const &s) const {
   return QSizeF(fabs(ax)*s.width(), fabs(ay)*s.height());
 }
 
+QPointF Transform::mapDisplacement(QPointF const &p) const {
+  return QPointF(ax*p.x(), ay*p.y());
+}
+
 QRect Transform::operator()(QRect const &r) const {
   QPoint tl = operator()(r.topLeft());
   QSize s = operator()(r.size());
@@ -257,3 +261,10 @@ Transform Transform::inferred(QRectF src, QRectF dst) {
   return t;
 }
 
+bool Transform::reflectsX() const {
+  return ax<0;
+}
+
+bool Transform::reflectsY() const {
+  return ay<0;
+}

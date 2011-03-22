@@ -64,7 +64,6 @@ namespace Connections {
     QString serno;  // serial number of this camera
     QString partnerid;
     int xpix, ypix; // number of pixels in full frame
-    bool flipx, flipy; // true if this image should be flipped
     double focusexp_ms;
     bool isdonor;
     bool isacceptor;

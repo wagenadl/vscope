@@ -25,6 +25,7 @@ public:
   bool operator==(Transform const &) const;
   bool operator!=(Transform const &) const;
 public:
+  /* The following construct transformations. */
   static Transform unit();
   static Transform scaling(double x, double y);
   static Transform scaling(double xy);
@@ -38,14 +39,17 @@ public:
        Transform::inferred(src,dst)(src) := dst
   */
 public:
+  /* The following apply the transformation. */
   QPoint operator()(QPoint const &) const;
   QPointF operator()(QPointF const &) const;
   QSize operator()(QSize const &) const;
   QSizeF operator()(QSizeF const &) const;
+  // sizes remain positive even on reflection
   QRect operator()(QRect const &) const;
   QRectF operator()(QRectF const &) const;
   Transform operator()(Transform const &) const;
   // If A and B are transforms, and x is a point, then (A(B))(x) := A(B(x)).
+  QPointF mapDisplacement(QPointF const &) const; // treats the point as a distance. Result is -ve in case of reflection
   double mapx(double x) const;
   double mapy(double y) const;
   double mapdx(double dx) const;
@@ -71,6 +75,10 @@ public:
   Transform xflipped(double xcoord) const;
   Transform yflipped(double ycoord) const;
   Transform inverse() const;
+public:
+  /* Informational functions */
+  bool reflectsX() const;
+  bool reflectsY() const;
 private:
   double ax, ay; // scale
   double bx, by; // shift

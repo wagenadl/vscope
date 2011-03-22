@@ -170,7 +170,8 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
   //Dbg() << "ROIImage: selectedid="<<selectedroi
   //	<< " has="<<roiset->contains(selectedroi);
   clickPoint = e->pos();
-  QPointF canvasPoint = canvasToScreen().inverse()(clickPoint);
+  QPointF canvasPoint =
+    canvasToScreen().inverse()(Transform::pixelCenter(clickPoint));
   switch (clickMode) {
   case CM_Zoom: case CM_None:
     CCDImage::mousePressEvent(e);
@@ -243,9 +244,8 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
 	// We have a polyblob selection, so either we'll modify the blob,
 	// or we'll deselect.
 	PolyBlob const &blob = roiset->get(selectedroi).blob();
-	QPointF xy = canvasToScreen().inverse()(clickPoint);
-	double dr_center = blob.distToCenter(xy);
-	double dr_edge = blob.distToEdge(xy);
+	double dr_center = blob.distToCenter(canvasPoint);
+	double dr_edge = blob.distToEdge(canvasPoint);
 	if (dr_center<dr_edge) {
 	  // closer to center than to edge -> deselect
   	  select(0);
@@ -298,7 +298,7 @@ void ROIImage::selectNearestROI(QPoint xy, double margin) {
 
 int ROIImage::findNearestROI(QPoint xy, double marg) {
   Transform tinv = canvasToScreen().inverse();
-  QPointF xy_ = tinv(xy);
+  QPointF xy_ = tinv(Transform::pixelCenter(xy));
   int bestid=0;
   double dd;
   foreach (int id, roiset->ids()) {

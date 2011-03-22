@@ -23,6 +23,7 @@ public:
   // fills pixels internal to the ellipse with VALUE.
 
   double findNearest(double x, double y) const;
+  double findNearest(QPointF const &xy) const;
   /*:F findNearest
    *:D Returns the omega angle for the point on the ellipse nearest (x,y).
    */

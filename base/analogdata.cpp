@@ -190,8 +190,8 @@ void AnalogData::read(QString ifn, QDomElement elt) {
 		    + dtyp + "'", "read");
   reshape(scans, chans);
   index2id.resize(chans);
-  index2scale.clear();
-  index2unit.clear();
+  index2scale.resize(chans);
+  index2unit.resize(chans);
   id2index.clear();
   ScaleMap scales;
   for (QDomElement e=elt.firstChildElement("channel");
