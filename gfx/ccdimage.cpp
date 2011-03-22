@@ -113,12 +113,8 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
   if (image.width()!=X || image.height()!=Y)
     image = QImage(X,Y,QImage::Format_RGB32);
   // I could use Indexed8 if that's faster.
-  Dbg(this) << "newImage " << data
-    	<< " " << X << "x" << Y
-	    << " " << t.stringRep();
   uint32_t *dst = (uint32_t *)image.bits();
   int rng = 1 + max - min;
-  //Dbg() << "  max="<<max<<" min="<<min<<" rng="<<rng;
   for (int y=0; y<Y; y++) {
     uint16_t const *row = flipY ? (data+(Y-1-y)*X) : data+y*X;
     if (adjust_black>0 || adjust_white>0) {
@@ -145,8 +141,12 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
       }
     }
   }
-  img2cnv = t; // actually, this is not right. I have to unflip.
-  // But I am too tired to do that properly right now.
+  Transform t0;
+  if (flipX)
+    t0.flipx(X);
+  if (flipY)
+    t0.flipy(Y);
+  img2cnv = t(t0);
   update();
 }
 
@@ -322,25 +322,12 @@ void CCDImage::paintEvent(class QPaintEvent *) {
   QPainter p(this);
   QRect r = rect(); // (0,0,width,height) of this widget
   constrainZoom();
-
-  //Dbg() << "CCDImage::paintEvent. imgrect=" << image.rect()
-  //	<< " zoomrect=" << zoomRect
-  //	<< " canvasrect=" << canvasRect
-  //	<< " rect=" << r;
-
-  //  if (zoomRect==r)
-  //    p.drawImage(r,image);
-  //  else
-  Dbg(this) << "drawImage: t=" << img2cnv.inverse().stringRep()
-	    << " zR=" << zoomRect
-	    << " t(zR) = " << img2cnv.inverse()(zoomRect);
   p.drawImage(r,image,img2cnv.inverse()(zoomRect),
 	      Qt::DiffuseDither|Qt::ColorOnly|Qt::PreferDither);
 }
 
 void CCDImage::mousePressEvent(QMouseEvent *e) {
-  // only zooming implemented here
-  dbg("CCDImage: press (%i,%i)\n",e->x(),e->y());
+  // only zooming implemented here, rois are in ROIImage.cpp
   clickPoint = e->pos();
   if (!rubberband)
     rubberband = new QRubberBand(QRubberBand::Rectangle, this);

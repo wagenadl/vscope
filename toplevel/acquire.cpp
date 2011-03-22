@@ -168,8 +168,6 @@ void Acquire::redisplayCCD() {
 }
 
 void Acquire::displayCCD(bool writePixStatsToLog) {
-  dbg("acquire:displayccd");
-
   QVector<QString> camname;
   foreach (QString id, Connections::allCams())
     camname.push_back(id);
@@ -194,14 +192,12 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
   QString brightMsg = "Pixel values:";
   bool first = true;
   for (int k=0; k<K; k++) {
-    Dbg() << "Acq. camname="<<camname[k] <<" n="<<(src[k]?src[k]->getNFrames():0);
     if (!src[k] || src[k]->getNFrames()==0)
       continue;
     uint16_t const *dat = src[k]->frameData();
     int nser = src[k]->getSerPix();
     int npar = src[k]->getParPix();
     imgs[k]->adjustedRange(dat,nser,npar);
-    Dbg() << "Acquire: new image for camera " << camname[k] << ": " << dat;
     imgs[k]->newImage(dat,nser,npar,
 		      Globals::trove->trial().ccdPlacement(camname[k]));
     if (first) {

@@ -5,6 +5,7 @@
 #include <base/minmax.h>
 #include <base/numbers.h>
 #include <base/memalloc.h>
+#include <base/dbg.h>
 
 BlobROI::~BlobROI() {
   delete [] weight;
@@ -43,17 +44,28 @@ void BlobROI::construct(PolyBlob const &src, Transform const &t,
   w = ceili(xmax + 2*border) - x0;
   y0 = floori(ymin - 2*border);
   h = ceili(ymax + 2*border) - y0;
+  Dbg() << "BlobROI: x0="<<x0<< " w="<<w<< " y0="<<y0<< " h="<<h;
+  Dbg() << "  bbox.l=" << bbox.left() << " .r="<<bbox.right()
+	<< " .t=" << bbox.top() << " .b="<<bbox.bottom();
   if (bbox.isValid()) {
     if (x0<bbox.left())
       x0 = bbox.left();
+    else if (x0>bbox.right())
+      x0 = bbox.right();
     if (y0<bbox.top())
       y0 = bbox.top();
+    else if (y0>bbox.bottom())
+      y0 = bbox.bottom();
     if (x0+w>bbox.right())
       w = bbox.right()+1-x0;
     if (y0+h>bbox.bottom())
       h = bbox.bottom()+1-y0;
   }
 
+  if (w<=0 || h<=0) 
+    w=h=1;
+    
+  
   weight = memalloc<double>(w*h, "BlobROI");
   sumw = 0;
   npix = 0;

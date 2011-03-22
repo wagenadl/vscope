@@ -18,7 +18,6 @@ void gt_slots::selected(QString p) {
   try {
     QStringList l = p.split("/");
     QString tail=l.last();
-    dbg("selected %s\n",qPrintable(p));
     if (p.startsWith("panel")) 
       Globals::panelHistory->oldSelection(p);
     else if (p=="maintenance/focus/viewAll" && Globals::focus)

@@ -30,23 +30,19 @@
 
 static void setRefTrace() {
   int typ = Globals::ptree->find("analysis/refType").toInt();
-  Dbg() << "gt_paramchanged::setRefTrace(). typ="<<typ;
   Enumerator *e = Enumerator::find("REFTYPE");
   if (typ==e->lookup("Analog")) {
     QString chn = Globals::ptree->find("analysis/refTrace").toString();
-    Dbg() << "-> analog. chn="<<chn;
     Globals::vsdtraces->setRefTrace(chn);
     Globals::coherence->setRefTrace(chn);
     Globals::cohgraph->setRefTrace(chn);
   } else if (typ==e->lookup("Digital")) {
     int chn = Globals::ptree->find("analysis/refDigi").toInt();
-    Dbg() << "-> digital. chn="<<chn;
     Globals::vsdtraces->setRefDigi(chn);
     Globals::coherence->setRefDigi(chn);
     Globals::cohgraph->setRefDigi(chn);
   } else if (typ==e->lookup("Frequency")) {
     double frqhz = Globals::ptree->find("analysis/refFreq").toDouble();
-    Dbg() << "-> frequency. frq="<<frqhz;
     Globals::vsdtraces->setRefFreq(frqhz);
     Globals::coherence->setRefFreq(frqhz);
     Globals::cohgraph->setRefFreq(frqhz);
@@ -77,7 +73,6 @@ void gt_slots::everythingChanged() {
 
 void gt_slots::paramchanged(QString p, QString val) {
   try {
-    dbg("param changed %s -> %s\n",qPrintable(p),qPrintable(val));
     // Most parameters' side effects go in the following switch.
 
     if (p!="savedSettings/_name") {
@@ -150,7 +145,6 @@ void gt_slots::paramchanged(QString p, QString val) {
       Dbg() << "trial for " << val << " is " << lastmax;
       Globals::ptree->find("acquisition/_trialno").setInt(lastmax);
       xmlPage *pg = Globals::gui->findpPage("acquisition");
-      Dbg() << "page is " << pg;
       if (pg && pg->isVisible())
 	pg->open();
     } else if (p=="acquisition/contEphys") {
@@ -182,10 +176,8 @@ void gt_slots::paramchanged(QString p, QString val) {
 	arr=re.cap(1);
 	chn=re.cap(2);
       }
-      dbg("chn = [%s]",qPrintable(chn));
       QString val = Globals::ptree->find(p).toString();
       QString gp = Globals::gui->pathDeinstantiate(p);
-      dbg("path = %s ----> %s",qPrintable(p), qPrintable(gp));
       QStringList pathparts = gp.split("/");
       gp = "";
       QString lbl = "";
@@ -197,7 +189,6 @@ void gt_slots::paramchanged(QString p, QString val) {
 	QString pp = pathparts.takeFirst();
 	gp += pp;
 	if (pp==arr) {
-	  Dbg() << "Adding chn: " << chn;
 	  lbl += chn;
 	} else {
 	  xmlButton *b = Globals::gui->findpButton(gp);
@@ -208,7 +199,6 @@ void gt_slots::paramchanged(QString p, QString val) {
 	      t=t.left(idx);
 	    t.replace("\n"," ");
 	    lbl += t;
-	    Dbg() << "Adding t: " << t;
 	  }
 	}
       }
@@ -221,7 +211,6 @@ void gt_slots::paramchanged(QString p, QString val) {
       lbl=lbl.simplified();
       lbl.replace(" :",":");
       Globals::exptlog->changeSetting(lbl, val);
-      dbg("wrote '%s: %s' to log",qPrintable(lbl), qPrintable(val));
     }
   } catch (Exception const &e) {
     report(e,"parameter change");
