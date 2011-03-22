@@ -38,6 +38,12 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
   hiddenA = new CCDImage(this); hiddenA->hide();
   hiddenB = new CCDImage(this); hiddenB->hide();
 
+  QRect cnv(0,0,512,512);
+  left->setCanvas(cnv);
+  right->setCanvas(cnv);
+  hiddenA->setCanvas(cnv);
+  hiddenB->setCanvas(cnv);
+
   cfgA = new CCDConfig();
   cfgB = new CCDConfig();
 

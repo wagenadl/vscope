@@ -98,9 +98,9 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
 			bool flipX, bool flipY) {
   Transform t;
   if (flipX)
-    t.flipx(X/2);
+    t.flipx(X);
   if (flipY)
-    t.flipy(Y/2);
+    t.flipy(Y);
   newImage(data, X, Y, t);
 }
 
