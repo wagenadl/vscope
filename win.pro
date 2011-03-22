@@ -30,11 +30,13 @@ LIBS += -lQtGui4 -lQtCore4 -lQtNetwork4 -lQtXml4
 
 DEFINES+=WIN32 Q_OS_WIN32 vsdWIN32
 
-
-RESOURCES += vsdscope-win.qrc
-
 include(flat.pro)
 
 RESOURCES += vsdscope-win.qrc
 
-
+QMAKE_EXTRA_TARGETS += version alwaysrun
+PRE_TARGETDEPS += toplevel/version.xml
+version.target = toplevel/version.xml
+version.commands = utils/getversion $$version.target .
+version.depends = alwaysrun
+alwaysrun.commands = 

@@ -33,6 +33,6 @@ RESOURCES += vscope.qrc
 QMAKE_EXTRA_TARGETS += version alwaysrun
 PRE_TARGETDEPS += version.xml
 version.target = version.xml
-version.commands = ../utils/getversion $$version.target
+version.commands = ../utils/getversion $$version.target ..
 version.depends = alwaysrun
 alwaysrun.commands = 

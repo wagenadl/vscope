@@ -1,12 +1,15 @@
 #!/bin/sh
 
 OUT=$1
+BASE=$2
+
 TMP=version.tmp
 rm -f $TMP
+BZR=$BASE/.bzr
 
-if [ -d ../.bzr/repository ] && [ -d ../.bzr/checkout ]; then
+if [ -d $BZR/repository ] && [ -d $BZR/checkout ]; then
     # We have bazaar
-    [ -f $OUT ] && [ $OUT -nt ../.bzr/repository ] && [ $OUT -nt ../.bzr/checkout ] && [ $OUT -nt $0 ] && exit 0
+    [ -f $OUT ] && [ $OUT -nt $BZR/repository ] && [ $OUT -nt $BZR/checkout ] && [ $OUT -nt $0 ] && exit 0
     if bzr version-info > $TMP; then
 	vDATE=`grep '^date:' $TMP | cut -c7-`
 	vREVNO=`grep '^revno:' $TMP | cut -c8-`
