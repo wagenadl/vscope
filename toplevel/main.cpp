@@ -78,11 +78,10 @@ QWidget *makeBanner1(QWidget *parent) {
   QString txt = "<html><body><h1>VScope ";
   txt += vsn.attribute("branch");
   txt += ":" + vsn.attribute("rev") + "</h1>";
-  txt += "Last commit: " + vsn.attribute("date") + "<br>";
-  txt += "Build date: " + vsn.attribute("builddate") + "<br>";
-  txt += QString() + "(C) Daniel A. Wagenaar 2008&ndash;"
-    + vsn.attribute("year") + "<br>";
-  txt += "For more info: daw@caltech.edu";
+  txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" + vsn.attribute("year");
+  txt += "<p>Last commit: " + vsn.attribute("date") + "<br>";
+  txt += "Build date: " + vsn.attribute("builddate");
+  txt += "<p>For more info: daw@caltech.edu";
 
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();
