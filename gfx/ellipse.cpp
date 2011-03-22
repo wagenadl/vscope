@@ -7,6 +7,7 @@
 #include <base/numbers.h>
 #include <base/solvep.h>
 #include <base/dbg.h>
+#include <base/transform.h>
 
 double inline sq(double x) { return x*x; }
 
@@ -67,7 +68,7 @@ void Ellipse::startMove(QMouseEvent *e) {
 }
 
 void Ellipse::startResize(QMouseEvent *e) {
-  omega = xyrra.findNearest(e->x(), e->y());
+  omega = xyrra.findNearest(Transform::pixelCenter(e->pos()));
   theta = xyrra.parallel(omega) - numbers.pi/2;
   // dbg("ellipse:resize omega=%5.2g (%4.0f) theta=%5.2g (%4.0f)",omega,
   //     180*omega/numbers.pi,theta,180*theta/numbers.pi);
@@ -76,12 +77,12 @@ void Ellipse::startResize(QMouseEvent *e) {
 
 void Ellipse::startRotate(QMouseEvent *e, bool far0) {
   far=far0;
-  omega = xyrra.findNearest(e->x(), e->y());
+  omega = xyrra.findNearest(Transform::pixelCenter(e->pos()));
   startDrag(e,Rotate);
 }
 
 void Ellipse::startRotSize(QMouseEvent *e) {
-  omega = xyrra.findNearest(e->x(), e->y());
+  omega = xyrra.findNearest(Transform::pixelCenter(e->pos()));
   theta = xyrra.parallel(omega) - numbers.pi/2;
   // dbg("ellipse:rotsize omega=%5.2g (%4.0f) theta=%5.2g (%4.0f)",omega,
   //     180*omega/numbers.pi,theta,180*theta/numbers.pi);
@@ -89,8 +90,9 @@ void Ellipse::startRotSize(QMouseEvent *e) {
 }
 
 void Ellipse::startDrag(QMouseEvent *e, enum Mode m) {
-  x0 = e->x();
-  y0 = e->y();
+  QPointF xy = Transform::pixelCenter(e->pos());
+  x0 = xy.x();
+  y0 = xy.y();
   xyrra0 = xyrra;
   mode = m;
   // dbg("ellipse:start %i:  [(%g,%g)+(%g,%g)/%g]",mode,
@@ -105,8 +107,9 @@ void Ellipse::complete(QMouseEvent *e) {
 }
 
 void Ellipse::drag(QMouseEvent *e) {
-  double x1 = e->x();
-  double y1 = e->y();
+  QPointF xy = Transform::pixelCenter(e->pos());
+  double x1 = xy.x();
+  double y1 = xy.y();
   switch (mode) {
   case Nop:
     break;

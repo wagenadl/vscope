@@ -4,6 +4,7 @@
 #include <base/exception.h>
 #include <base/memalloc.h>
 #include <base/dbg.h>
+#include <base/unitqty.h>
 
 CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   serpix = serpix_;
@@ -30,6 +31,7 @@ bool CCDData::reshape(int ser, int par, int nfr, bool free) {
   parpix = par;
   framepix = ser*par;
   nframes = nfr;
+  emitUnlessCheckedOut();
   return realloc;
 }
 
@@ -38,50 +40,92 @@ CCDData::~CCDData() {
     delete [] data;
 }
 
-uint16_t *CCDData::frameData(int frame) {
-  if (frame<0)
-    return data;
-  if (frame>=nframes)
-    throw Exception("CCDData","Bad frame number","frameData");
-  return data + frame*framepix;
-}
-
 uint16_t const *CCDData::frameData(int frame) const {
   if (frame<0)
     return data;
-  if (frame>=nframes)
+  else if (frame<nframes)
+    return data + frame*framepix;
+  else
     throw Exception("CCDData","Bad frame number","frameData");
-  return data + frame*framepix;
+
+}
+
+uint16_t *CCDData::frameData(WriteKey *key, int frame) {
+  verifyKey(key,"frameData called with unknown key");
+  if (frame<0)
+    return data;
+  else if (frame<nframes)
+    return data + frame*framepix;
+  else
+    throw Exception("CCDData","Bad frame number","frameData");
 }
 
 void CCDData::setTimeBase(double t0, double dt) {
   t0_ms = t0;
   dt_ms = dt;
-}
-
-CCDData::CCDData(CCDData const &other): CCDData_(other) {
-  data = 0;
-  copy(other);
-}
-
-void CCDData::copy(CCDData const &other) {
-  if (other.data) {
-    data = memalloc<uint16_t>(allocpix, "CCDData");
-    memcpy(data, other.data, allocpix*sizeof(uint16_t));
-  }
-}
-
-CCDData &CCDData::operator=(CCDData const &other) {
-  if (data)
-    delete [] data;
-  *(CCDData_*)this = other;
-  data = 0;
-  copy(other);
-  return *this;
+  emitUnlessCheckedOut();
 }
 
 void CCDData::setDataToCanvas(Transform const &t0) {
   t = t0;
-  //  dbg("CCDData(%p)::setDataToCanvas(%g,%g,%g,%g)",this,
-  //      t.mapdx(1),t.mapdy(1),t.mapx(0),t.mapy(0));
+  emitUnlessCheckedOut();
 }
+
+QDomElement CCDData::write(QFile &f, QDomElement dst) const {
+  if (dst.tagName()!="camera") {
+    QDomElement e = dst.ownerDocument().createElement("camera");
+    dst.appendChild(e);
+    dst = e;
+  }
+  dst.setAttribute("type","uint16");
+  dst.setAttribute("typebytes","2");
+  dst.setAttribute("frames",QString::number(nframes));
+  dst.setAttribute("serpix",QString::number(serpix));
+  dst.setAttribute("parpix",QString::number(parpix));
+  dst.setAttribute("delay",UnitQty(t0_ms,"ms").pretty());
+  dst.setAttribute("rate",UnitQty(1/dt_ms,"kHz").pretty());
+  t.write(dst);
+
+  int nbytes = nframes*serpix*parpix*2;
+  if (f.write((char const*)data, nbytes) != nbytes)
+    throw Exception("CCDData","Cannot write to file");
+  
+  return dst;
+}
+
+void CCDData::read(QFile &f, QDomElement src) {
+  if (src.tagName()!="camera")
+    throw Exception("CCDData","Cannot read without a <camera> element");
+
+  KeyGuard guard(*this);
+  
+  bool ok;
+  int nfrm = src.attribute("frames").toInt(&ok);
+  if (!ok)
+    throw Exception("CCDData","Cannot read number of frames from xml","read");
+  int nser = src.attribute("serpix").toInt(&ok);
+  if (!ok)
+    throw Exception("CCDData",
+		    "Cannot read number of serial pixels from xml","read");
+  int npar = src.attribute("parpix").toInt(&ok);
+  if (!ok)
+    throw Exception("CCDData",
+		    "Cannot read number of parallel pixels from xml","read");
+  if (src.attribute("type")!="uint16")
+    throw Exception("CCDData",
+		    "Only know how to read ccd data of type 'uint16', not '"
+		    + src.attribute("type") + "'", "read");
+
+  double t0_ms = UnitQty::str2num(src.attribute("delay"),"ms");
+  double rate_hz = UnitQty::str2num(src.attribute("rate"),"Hz");
+  
+  reshape(nser, npar, nfrm);
+  setTimeBase(t0_ms, rate_hz ? 1e3/rate_hz : 1);
+  Transform t(src);
+  setDataToCanvas(t);
+  
+  int nbytes = nfrm*nser*npar*2;
+  if (f.read((char*)data, nbytes) != nbytes)
+    throw Exception("CCDData", "Cannot read CCD data");
+}
+

@@ -3,5 +3,6 @@
      <file alias="parameters.xml">toplevel/parameters.xml</file>
      <file alias="guiconfig.xml">toplevel/guiconfig.xml</file>
      <file alias="connections.xml">toplevel/connections.xml</file>
+     <file alias="version.xml">toplevel/version.xml</file>
  </qresource>
 </RCC>

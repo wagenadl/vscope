@@ -29,8 +29,8 @@ void ContAcq::dataAvFcn(int analogscans, int digitalscans, void *aux) {
 ContAcq::ContAcq() {
   ephysacq = 0;
   xml = 0;
-  adataIn = new AnalogData(1024,1, 1e4);
-  ddataIn = new DigitalData(1024);
+  adataIn = new AnalogData(1024, 1, 1e4);
+  ddataIn = new DigitalData(1024, 1e4);
 
   ephysacq = new EPhysAcq();
   ephysacq->setBuffer(adataIn,ddataIn);
@@ -152,13 +152,10 @@ QString ContAcq::prepare(class ParamTree *ptree) {
   ana_elt.setAttribute("typebytes","2");
   ana_elt.setAttribute("scans","0"); // change later
   int nchans = adataIn->getNumChannels();
-  Enumerator *aichan = Enumerator::find("AICHAN");
   for (int idx=0; idx<nchans; idx++) {
     QDomElement channel = xml->append("channel",ana_elt);
     channel.setAttribute("idx",QString("%1").arg(idx));
-    int chn = adataIn->getChannelAtIndex(idx);
-    channel.setAttribute("chn",QString("%1").arg(chn));
-    QString chname = aichan->reverseLookup(chn);
+    QString chname = adataIn->getChannelAtIndex(idx);
     channel.setAttribute("id",chname);
     QString unit = "mV";
     Connections::AIChannel const *chinfo = Connections::findpAI(chname);
@@ -266,7 +263,7 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
 	analogMax.push_back(0);
     for (int c=0; c<nchans; c++) {
       double mx = 0;
-      double *dat = adataIn->channelData(c);
+      double const *dat = adataIn->channelData(adataIn->getChannelAtIndex(c));
       for (int s=0; s<analogscans; s++) {
 	double x = fabs(*dat);
 	dat += nchans;
@@ -282,13 +279,11 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
       // must write new scale information to xml
       QDomElement elt = xml->append("scale",ana_elt);
       elt.setAttribute("startscan",QString::number(analogFileOffset));
-      Enumerator *aichan = Enumerator::find("AICHAN");
       for (int idx=0; idx<nchans; idx++) {
 	QDomElement channel = xml->append("channel",elt);
 	channel.setAttribute("idx",QString("%1").arg(idx));
 	double scl = analogMax[idx]/32767;
-	int chn = adataIn->getChannelAtIndex(idx);
-	QString chname = aichan->reverseLookup(chn);
+	QString chname = adataIn->getChannelAtIndex(idx);
 	Connections::AIChannel const *chinfo = Connections::findpAI(chname);
 	QString unit = "V";
 	if (chinfo) {
@@ -302,7 +297,7 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
 	xml->write(xmlfn);
     }
     
-    double *src = adataIn->allData();
+    double const *src = adataIn->allData();
     int16_t *dst = analogBinary;
     for (int s=0; s<analogscans; s++) {
       for (int c=0; c<nchans; c++) {

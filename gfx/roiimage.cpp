@@ -63,15 +63,15 @@ ROISet *ROIImage::getROIs() const {
 
 void ROIImage::setROIs(ROISet *rs) {
   if (roiset!=dummyrois) {
-    disconnect(roiset, SIGNAL(changed(int)), this, SLOT(updateROIs()));
-    disconnect(roiset, SIGNAL(changedAll(int)), this, SLOT(updateROIs()));
+    disconnect(roiset, SIGNAL(newDatum(int)), this, SLOT(updateROIs()));
+    disconnect(roiset, SIGNAL(newAll()), this, SLOT(updateROIs()));
   }
   
   roiset = rs ? rs : dummyrois;
 
   if (roiset!=dummyrois) {
-    connect(roiset, SIGNAL(changed(int)), this, SLOT(updateROIs()));
-    connect(roiset, SIGNAL(changedAll()), this, SLOT(updateROIs()));
+    connect(roiset, SIGNAL(newDatum(int)), this, SLOT(updateROIs()));
+    connect(roiset, SIGNAL(newAll()), this, SLOT(updateROIs()));
   }
   
   select(0);
@@ -170,7 +170,8 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
   //Dbg() << "ROIImage: selectedid="<<selectedroi
   //	<< " has="<<roiset->contains(selectedroi);
   clickPoint = e->pos();
-  QPointF canvasPoint = canvasToScreen().inverse()(clickPoint);
+  QPointF canvasPoint =
+    canvasToScreen().inverse()(Transform::pixelCenter(clickPoint));
   switch (clickMode) {
   case CM_Zoom: case CM_None:
     CCDImage::mousePressEvent(e);
@@ -243,9 +244,8 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
 	// We have a polyblob selection, so either we'll modify the blob,
 	// or we'll deselect.
 	PolyBlob const &blob = roiset->get(selectedroi).blob();
-	QPointF xy = canvasToScreen().inverse()(clickPoint);
-	double dr_center = blob.distToCenter(xy);
-	double dr_edge = blob.distToEdge(xy);
+	double dr_center = blob.distToCenter(canvasPoint);
+	double dr_edge = blob.distToEdge(canvasPoint);
 	if (dr_center<dr_edge) {
 	  // closer to center than to edge -> deselect
   	  select(0);
@@ -298,7 +298,7 @@ void ROIImage::selectNearestROI(QPoint xy, double margin) {
 
 int ROIImage::findNearestROI(QPoint xy, double marg) {
   Transform tinv = canvasToScreen().inverse();
-  QPointF xy_ = tinv(xy);
+  QPointF xy_ = tinv(Transform::pixelCenter(xy));
   int bestid=0;
   double dd;
   foreach (int id, roiset->ids()) {
@@ -337,9 +337,8 @@ void ROIImage::mouseReleaseEvent(QMouseEvent *e) {
       //Dbg() << "ROIImage:release: finding roi; selected was " << selectedroi;
       int id = selectedroi ? selectedroi : roiset->newROI(campair);
       //Dbg() << "ROIImage:release: roi = " << id;
-      roiset->checkout(id) = *editing;
+      roiset->access(IDKeyGuard(*roiset,id).key()) = *editing;
       //Dbg() << "ROIImage: checked out";
-      roiset->checkin(id);
       //Dbg() << "ROIImage: checked in";
       //Dbg() << "ROIImage: selected was " << selectedroi << ", will be " << id;
       if (id!=selectedroi)

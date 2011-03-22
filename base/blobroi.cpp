@@ -5,12 +5,23 @@
 #include <base/minmax.h>
 #include <base/numbers.h>
 #include <base/memalloc.h>
+#include <base/dbg.h>
 
 BlobROI::~BlobROI() {
   delete [] weight;
 }
 
 BlobROI::BlobROI(PolyBlob const &src, Transform const &t, double border) {
+  construct(src, t, QRect(), border);
+}
+
+BlobROI::BlobROI(PolyBlob const &src, Transform const &t,
+		 QRect bbox, double border) {
+  construct(src, t, bbox, border);
+}
+
+void BlobROI::construct(PolyBlob const &src, Transform const &t,
+			QRect bbox, double border) {
   QPointF p = t(src.xy(0));
   double xmin = p.x();
   double xmax = p.x();
@@ -33,7 +44,28 @@ BlobROI::BlobROI(PolyBlob const &src, Transform const &t, double border) {
   w = ceili(xmax + 2*border) - x0;
   y0 = floori(ymin - 2*border);
   h = ceili(ymax + 2*border) - y0;
+  Dbg() << "BlobROI: x0="<<x0<< " w="<<w<< " y0="<<y0<< " h="<<h;
+  Dbg() << "  bbox.l=" << bbox.left() << " .r="<<bbox.right()
+	<< " .t=" << bbox.top() << " .b="<<bbox.bottom();
+  if (bbox.isValid()) {
+    if (x0<bbox.left())
+      x0 = bbox.left();
+    else if (x0>bbox.right())
+      x0 = bbox.right();
+    if (y0<bbox.top())
+      y0 = bbox.top();
+    else if (y0>bbox.bottom())
+      y0 = bbox.bottom();
+    if (x0+w>bbox.right())
+      w = bbox.right()+1-x0;
+    if (y0+h>bbox.bottom())
+      h = bbox.bottom()+1-y0;
+  }
 
+  if (w<=0 || h<=0) 
+    w=h=1;
+    
+  
   weight = memalloc<double>(w*h, "BlobROI");
   sumw = 0;
   npix = 0;
@@ -42,7 +74,7 @@ BlobROI::BlobROI(PolyBlob const &src, Transform const &t, double border) {
     int y = y_ + y0;
     for (int x_=0; x_<w; x_++) {
       int x = x_ + x0;
-      QPointF p(x,y); p = tinv(p);
+      QPointF p = tinv(Transform::pixelCenter(x,y));
       double wei = border>0 ? src.weight(p,border) : src.inside(p);
       weight[x_+w*y_] = wei;
       sumw += wei;
@@ -65,32 +97,11 @@ int BlobROI::nPixels() const {
 }
 
 int BlobROI::bitmap(bool *dst, int dstSize) const {
-  if (dstSize<npix)
+  if (dstSize<w*h)
     return 0;
   double *src = weight;
   for (int j=0; j<h; j++)
     for (int i=0; i<w; i++)
       *dst++ = *src++ >= 0.5;
   return w*h;
-}
-
-BlobROI::BlobROI(BlobROI const &other): BlobROI_(other) {
-  weight = 0;
-  copy(other);
-}
-
-void BlobROI::copy(BlobROI const &other) {
-  if (other.weight) {
-    weight = memalloc<double>(w*h,"BlobROI");
-    memcpy(weight, other.weight, w*h*sizeof(double));
-  }
-}
-
-BlobROI &BlobROI::operator=(BlobROI const &other) {
-  if (weight)
-    delete [] weight;
-  *(BlobROI_*)this = other;
-  weight = 0;
-  copy(other);
-  return *this;
 }

@@ -18,7 +18,7 @@ public:
   UnitQty(double qty, QString unit);
   QString unitSI() const; // returns SI unit
   QString unitEPhys() const; // returns mV, nA, ms, um, or SI unit.
-  QString pretty() const; // returns number + pretty unit
+  QString pretty(int precision=3) const; // returns number + pretty unit
   double toDouble(QString unit) const; // returns number in terms of given unit
                                        // or NaN if bad conversion.
   void set(QString); // arg can be, e.g., "17 mV".

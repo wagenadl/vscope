@@ -82,6 +82,9 @@ void VideoCommPlugins::prepStim(ParamTree const *ptree,
     throw Exception("VideoCommPlugins","No analog data","prepStim");
   if (!ddata)
     throw Exception("VideoCommPlugins","No digital data","prepStim");
+
+  KeyGuard aguard(*adata);
+  KeyGuard dguard(*ddata);
   
   double marginpre_ms = ptree->find("stimVideo/marginPreCCD").toDouble();
   double marginpost_ms = ptree->find("stimVideo/marginPostCCD").toDouble();
@@ -140,17 +143,15 @@ void VideoCommPlugins::prepStim(ParamTree const *ptree,
 
   // Analog part of rendering: control of x and y position
   info.nchans = adata->getNumChannels();
-  Enumerator *chans = Enumerator::find("AOCHAN");
-  info.destx = adata->channelData(chans->lookup("VidX"));
-  info.desty = adata->channelData(chans->lookup("VidY"));
+  info.destx = adata->channelData(aguard.key(), "VidX");
+  info.desty = adata->channelData(aguard.key(), "VidY");
   
   // Digital part of rendering: control of light
   Enumerator *lines = Enumerator::find("DIGILINES");
   int lightline = lines->lookup("VideoLight");
-  ddata->addLine(lightline);
-  uint32_t one = 1;
-  info.dmask_light = one<<lightline;
-  info.destd = ddata->allData();
+  ddata->defineLine(lightline, "VideoLight");
+  info.dmask_light = ddata->maskForLine(lightline);
+  info.destd = ddata->allData(dguard.key());
 
   dbg("videocommplugins: i0=%i nfr=%i nfil=%i friv=%i",
       info.i0,info.nframes,info.nfill,info.frameival);

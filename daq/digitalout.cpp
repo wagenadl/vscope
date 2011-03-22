@@ -82,7 +82,7 @@ void DigitalOut::writeData() throw(daqException) {
   if (!data)
     throw daqException("DigitalOut","No data defined for production");
 
-  uint32_t *srcptr = data->allData();
+  uint32_t const *srcptr = data->allData();
   int nscans=data->getNumScans();
   long scanswritten;
   int nli = device().nDIOLines();

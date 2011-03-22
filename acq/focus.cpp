@@ -38,6 +38,12 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
   hiddenA = new CCDImage(this); hiddenA->hide();
   hiddenB = new CCDImage(this); hiddenB->hide();
 
+  QRect cnv(0,0,512,512);
+  left->setCanvas(cnv);
+  right->setCanvas(cnv);
+  hiddenA->setCanvas(cnv);
+  hiddenB->setCanvas(cnv);
+
   cfgA = new CCDConfig();
   cfgB = new CCDConfig();
 
@@ -63,12 +69,12 @@ void Focus::setCams(QString idA) {
     : 0;
   Dbg() << "  Focus: ccA=" << ccA << ". ccB=" << ccB;
 
-  flipXA = ccA ? ccA->flipx : false;
-  flipYA = ccA ? ccA->flipy : false;
+  flipXA = ccA ? ccA->placement.reflectsX() : false;
+  flipYA = ccA ? ccA->placement.reflectsY() : false;
   exp_msA = ccA ? ccA->focusexp_ms : 100;
 
-  flipXB = ccB ? ccB->flipx : false;
-  flipYB = ccB ? ccB->flipy : false;
+  flipXB = ccB ? ccB->placement.reflectsX() : false;
+  flipYB = ccB ? ccB->placement.reflectsY() : false;
   exp_msB = ccB ? ccB->focusexp_ms : 100;
 
   X = ccA ? ccA->xpix : 512; 

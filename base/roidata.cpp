@@ -21,85 +21,41 @@ inline int rangelimit(int x, int min, int max) {
 }
 
 ROIData::ROIData() {
-  dataRaw = 0;
-  dataDebleached = 0;
-  roi = 0;
-  blobROI = 0;
-  lengthRaw = 0;
-  lengthDebleached = 0;
-  validRaw = false;
-  validDebleached = false;
-  validBitmap = false;
-  validBlobROI = false;
   source = 0;
-  bitmap = 0;
   debleach = None;
-  flipY = false;
-  flipX = false;
-  validTransform = false;
 }
 
 ROIData::~ROIData() {
-  if (dataRaw)
-    delete dataRaw;
-  if (dataDebleached)
-    delete dataDebleached;
-  if (bitmap)
-    delete bitmap;
-  if (blobROI)
-    delete blobROI;
+  // real destruction done by caches.
 }
 
 void ROIData::setDebleach(ROIData::Debleach d) {
   if (d!=debleach) {
     debleach = d;
-    validDebleached = false;
+    debleached.invalidate();
   }
 }
 
-void ROIData::setFlip(bool x, bool y) {
-  bool chgd = false;
-  if (flipX != x) {
-    flipX = x;
-    chgd = true;
-  }
-  if (flipY != y) {
-    flipY = y;
-    chgd = true;
-  }
-  if (chgd)
-    validRaw = validDebleached = false;
-}
-  
-
-void ROIData::setData(CCDData const *source0, bool noemit) {
-  if (source0==0 || source==0 ||
-      source->dataToCanvas() != source0->dataToCanvas()) {
-    validBlobROI = false;
-    if (source0) {
-      tinv = source0->dataToCanvas().inverse();
-      validTransform = true;
-    } else {
-      validTransform = false;
-    }
-  }
-  source = source0;
-  updateData(noemit);
+void ROIData::setData(CCDData const *src) {
+  if (src==0)
+    bitmap.unsetTransformAndClip();
+  else
+    bitmap.setTransformAndClip(src->dataToCanvas(),
+			       QRect(0,0, src->getSerPix(), src->getParPix()));
+  source = src;
+  updateData();
 }
 
-void ROIData::updateData(bool noemit) {
-  validRaw = false;
-  validDebleached = false;
+void ROIData::updateData() {
+  raw.invalidate();
+  debleached.invalidate();
 }
 
 
-
-void ROIData::setROI(ROICoords const *roi0) {
-  roi = roi0;
-  validBlobROI = false;
-  validBitmap = false;
-  validRaw = false;
-  validDebleached = false;
+void ROIData::setROI(ROICoords const *roi) {
+  bitmap.setROI(roi);
+  raw.invalidate();
+  debleached.invalidate();
 }
 
 bool ROIData::haveData() const {
@@ -125,100 +81,140 @@ Range ROIData::timeRange() const {
     return Range();
 }
 
-bool ROIData::ensureBitmap() {
+bool ROIData::ensureBitmap() const {
   /* The bitmap holds which pixels are inside the ROI and which are not.
      To avoid wasted effort, we only calculate inside a rectangular
      bounding box.
      It would not be too terribly hard to modify this function to produce
      a soft-edged ROI, but that's a luxury for later.
   */
-  if (validBitmap)
-    return true;
-
-  if (roi && roi->isBlob())
-    return makePolyBitmap();
-  else if (roi && roi->isXYRRA())
-    return makeXYRRABitmap();
-  else 
-    return makeNullBitmap();
+  return bitmap.validate();
 }
 
-bool ROIData::makeNullBitmap() {
-  Dbg() << "ROIData: Caution: no data, making null bitmap";
-  w=h=1;
-  if (bitmap)
-    delete bitmap;
-  bitmap = memalloc<bool>(w*h, "ROIData");
-  bitmap[0] = false;
-  validBitmap = true;
-  return true;
+//////////////////////////////////////////////////////////////////////
+ROIData::DataCache::DataCache() {
+  dat = 0;
+  len = 0;
 }
 
-bool ROIData::makePolyBitmap() {
-  if (!validTransform)
-    return false;
-  if (!roi->isBlob())
-    throw Exception("ROIData", "ROI is not Blob", "makePolyBitmap");
-  if (blobROI) 
+ROIData::DataCache::~DataCache() {
+  if (dat)
+    delete [] dat;
+}
+
+void ROIData::DataCache::resize(int len_) {
+  if (len_==len)
+    return;
+
+  if (dat)
+    delete [] dat;
+  dat = 0;
+  
+  len = len_;
+  if (len>0) 
+    dat = memalloc<double>(len, "ROIData");
+  valid = len==0;
+}
+
+//////////////////////////////////////////////////////////////////////
+ROIData::BitmapCache::BitmapCache() {
+  bm = 0;
+  roi = 0;
+  blobROI = 0;
+  haveTransformAndClip = 0;
+}
+
+ROIData::BitmapCache::~BitmapCache() {
+  if (bm)
+    delete bm;
+  if (blobROI)
     delete blobROI;
-  blobROI = new BlobROI(roi->blob(), tinv);
-  validBlobROI = true;
-  xl = blobROI->bitmapX0();
-  yt = blobROI->bitmapY0();
+}
+
+void ROIData::BitmapCache::setROI(ROICoords const *roi_) {
+  roi = roi_;
+  valid = false;
+}
+
+void ROIData::BitmapCache::unsetTransformAndClip() {
+  haveTransformAndClip = false;
+  valid = false;
+}
+
+void ROIData::BitmapCache::setTransformAndClip(Transform const &t_,
+					       QRect const &bb) {
+  if (haveTransformAndClip && t==t_ && clip==bb)
+    return;
+  t = t_;
+  clip = bb;
+  haveTransformAndClip = true;
+  valid = false;
+}
+
+void ROIData::BitmapCache::validator() {
+  if (roi && roi->isBlob())
+    makePolyBitmap(roi->blob());
+  else if (roi && roi->isXYRRA())
+    makeXYRRABitmap(roi->xyrra());
+}
+
+void ROIData::BitmapCache::makePolyBitmap(PolyBlob const &blob) {
+  if (!haveTransformAndClip)
+    return;
+  if (blobROI)
+    delete blobROI;
+  blobROI = 0;
+  blobROI = new BlobROI(blob, t.inverse(), clip);
+  int xl = blobROI->bitmapX0();
+  int yt = blobROI->bitmapY0();
   int w1 = blobROI->bitmapW();
   int h1 = blobROI->bitmapH();
   npix = blobROI->nPixels();
 
-  if (w1!=w || h1!=h) {
-    if (bitmap)
-      delete bitmap;
-    bitmap = 0;
-    w=w1;
-    h=h1;
+  if (bm && rec.width()*rec.height() != w1*h1) {
+    delete bm;
+    bm = 0;
   }
-  if (!bitmap)
-    bitmap = memalloc<bool>(w*h, "ROIData");
-  int r = blobROI->bitmap(bitmap,w*h);
-  if (r!=w*h)
+  rec = QRect(xl, yt, w1, h1);
+  int rectpix = w1*h1;
+  if (!bm)
+    bm = memalloc<bool>(rectpix, "ROIData");
+  int r = blobROI->bitmap(bm, rectpix);
+  if (r!=rectpix)
     throw Exception("ROIData",
-		    QString("Unexpected bitmap size: %1 instead of %2*%3")
-		    .arg(r).arg(w).arg(h));
-  validBitmap = true;
-  return true;
+		    QString("Unexpected bm size: %1 instead of %2*%3")
+		    .arg(r).arg(w1).arg(h1));
+  valid = true;
 }      
 
-bool ROIData::makeXYRRABitmap() {
-  if (!roi->isXYRRA())
-    throw Exception("ROIData", "ROI is not XYRRA", "makeXYRRABitmap");
-  if (!validTransform)
-    return false;
-  XYRRA xyrra = roi->xyrra();
-  xyrra.transform(tinv);
+void ROIData::BitmapCache::makeXYRRABitmap(XYRRA const &roi) {
+  if (!haveTransformAndClip)
+    return;
+  XYRRA xyrra = roi;
+  xyrra.transform(t.inverse());
   QRectF bb = xyrra.bbox();
-  int maxx = source ? source->getSerPix() : 0;
-  int maxy = source ? source->getParPix() : 0;
-  xl = rangelimit(floori(bb.left()),0,maxx);
-  int xr = rangelimit(ceili(bb.right()),0,maxx);
-  yt = rangelimit(floori(bb.top()),0,maxy);
-  int yb = rangelimit(ceili(bb.bottom()),0,maxy);
+  int xl = rangelimit(floori(bb.left()),clip.left(),clip.right()+1);
+  int xr = rangelimit(ceili(bb.right()),clip.left(),clip.right()+1);
+  int yt = rangelimit(floori(bb.top()),clip.top(),clip.bottom()+1);
+  int yb = rangelimit(ceili(bb.bottom()),clip.top(),clip.bottom()+1);
   int w1 = xr-xl;
   int h1 = yb-yt;
-  if (bitmap && (w!=w1 || h!=h1)) {
-    delete [] bitmap;
-    bitmap = 0;
+  if (bm && rec.width()*rec.height() != w1*h1) {
+    delete bm;
+    bm = 0;
   }
-  w = w1;
-  h = h1;
-  if (!bitmap) 
-    bitmap = memalloc<bool>(w*h, "ROIData");
-  bool *ptr = bitmap;
+  rec = QRect(xl, yt, w1, h1);
+  int rectpix = rec.width()*rec.height();
+  if (!bm) 
+    bm = memalloc<bool>(rectpix, "ROIData");
+  bool *ptr = bm;
   double cs = cos(xyrra.a);
   double sn = sin(xyrra.a);
   npix = 0;
   for (int y=yt; y<yb; y++) {
-    double dy = y-xyrra.y0;
+    double dy = y+0.5 - xyrra.y0;
     for (int x=xl; x<xr; x++) {
-      double dx = x-xyrra.x0;
+      double dx = x+0.5 - xyrra.x0;
       double xi = dx*cs + dy*sn;
       double eta = -dx*sn + dy*cs;
       bool isInside = sq(xi)/sq(xyrra.R) + sq(eta)/sq(xyrra.r) < 1;
@@ -227,128 +223,70 @@ bool ROIData::makeXYRRABitmap() {
 	npix++;
     }
   }
-  validBitmap = true;
-  return true;
+  valid = true;
 }
 
-double const *ROIData::getRaw() {
-  Dbg() << "ROIData::getRaw("<<this<<"). validraw="<<validRaw<<" dataraw="<<dataRaw<<" source="<<source;
-  if (validRaw)
-    return dataRaw;
+
+double const *ROIData::getRaw() const {
+  if (raw.isvalid())
+    return raw.data();
 
   if (!source)
     return 0;
 
-  int len = getNFrames();
-  
-  if (dataRaw && lengthRaw!=len) {
-    delete [] dataRaw;
-    dataRaw=0;
-  }
-
-  Dbg() << "ROIData:: len="<<len;
-  if (len==0) {
-    validRaw = true;
+  int N = getNFrames();  
+  raw.resize(N);
+  if (N==0)
     return 0;
-  }
-
-  if (!dataRaw) {
-    dataRaw = memalloc<double>(len, "ROIData");
-    lengthRaw = len;
-  }
 
   if (!ensureBitmap())
     return 0;
 
-  int W = source->getSerPix();
-  int H = source->getParPix();
-  int yt_eff = flipY ? H - 1 - yt : yt;
-  int ymul = W * (flipY ? -1 : 1);
-  int xl_eff = flipX ? W - 1 - xl : xl;
-  int xmul = flipX ? -1 : 1;
-
-  dbg("ROIData(%p): flipx=%i flipy=%i xl_eff=%i",this,flipX,flipY,xl_eff);
-  
-  int w_eff = w;
-  if (flipX) {
-    if (xl_eff>=W) {
-      w_eff -= 1 + xl_eff - W;
-      xl_eff = W-1;
-    }
-    if (xl_eff - w_eff < -1)
-      w_eff = xl_eff + 1;
-  } else {
-    if (xl_eff<0) {
-      w_eff += xl_eff;
-      xl_eff = 0;
-    }
-    if (xl_eff + w_eff > W)
-      w_eff = W - xl_eff;
-  }
-  
-  int h_eff = h;
-  if (flipY) {
-    if (yt_eff>=H) {
-      h_eff -= 1 + yt_eff - H;
-      yt_eff = H-1;
-    }
-    if (yt_eff - h_eff < -1)
-      h_eff = yt_eff + 1;
-  } else {
-    if (yt_eff < 0) {
-      h_eff += yt_eff;
-      yt_eff = 0;
-    }
-    if (yt_eff + h_eff > H) 
-      h_eff = H - yt_eff;
-  }
-
-  for (int n=0; n<len; n++) {
+  QRect rect = bitmap.rect();
+  int h = rect.height();
+  int w = rect.width();
+  int ymul = source->getSerPix();
+  double sum1 = bitmap.npixels();
+    double *data = raw.data();
+  for (int n=0; n<N; n++) {
     double sum=0;
-    double sum1=0;
-    uint16_t const *frm = source->frameData(n) + xl_eff
-      + yt_eff*source->getParPix();
-    bool *bm = bitmap;
-    for (int y=0; y<h_eff; y++) {
-      uint16_t const *row = frm + y*ymul;
-      for (int x=0; x<w_eff; x++) {
-	if (*bm++)
-	  sum+=*row;
-	sum1++;
-	row+=xmul;
+    uint16_t const *srcfrm = source->frameData(n)
+      + rect.left()
+      + rect.top()*ymul;
+    bool const *bitptr = bitmap.bitmap();
+    for (int y=0; y<h; y++) {
+      uint16_t const *srcrow = srcfrm + y*ymul;
+      for (int x=0; x<w; x++) {
+	if (*bitptr++)
+	  sum+=*srcrow;
+	srcrow++;
       }
     }
-    dataRaw[n] = sum/sum1;
+    data[n] = (sum1>0) ? sum/sum1 : 0;
   }
 
-  Dbg() << "ROIData: returning dataRaw=" << dataRaw;
+  Dbg() << "ROIData: returning dataRaw=" << data;
 
-  validRaw = true;
-  return dataRaw;
+  raw.validate();
+  return data;
 }
 
-double const *ROIData::getDebleachedDFF() {
-  dbg("getDebleachedDFF. valid=%c n=%i",validDebleached?'y':'n',getNFrames());
-  if (validDebleached)
-    return dataDebleached;
+double const *ROIData::getDebleachedDFF() const {
+  if (debleached.isvalid())
+    return debleached.data();
 
   if (!getRaw())
     return 0;
 
-  int len = getNFrames();
-  if (dataDebleached && lengthDebleached!=len) {
-    delete [] dataDebleached;
-    dataDebleached=0;
-  }
-  if (!dataDebleached) {
-    dataDebleached = memalloc<double>(len, "ROIData");
-    lengthDebleached = len;
-  }
+  int N = getNFrames();
+  debleached.resize(N);
 
+  double *dst = debleached.data();
+  double const *src = raw.data();
   switch (debleach) {
   case None:
-    for (int n=0; n<len; n++)
-      dataDebleached[n] = dataRaw[n];
+    for (int n=0; n<N; n++)
+      dst[n] = src[n];
     break;
   case Linear: case Exponential: {
     // We treat exponential like linear until I get around to coding it.
@@ -375,20 +313,20 @@ double const *ROIData::getDebleachedDFF() {
 
        Let's ignore first and last point; they are often messed up.
     */
-    double t0 = double(len-1)/2;
+    double t0 = double(N-1)/2;
     double sY=0;
-    for (int n=1; n<len-1; n++)
-      sY+=dataRaw[n];
-    double y0 = sY/(len-2);
+    for (int n=1; n<N-1; n++)
+      sY+=src[n];
+    double y0 = sY/(N-2);
 
     double sTT=0, sTY=0;
-    for (int n=1; n<len-1; n++) {
+    for (int n=1; n<N-1; n++) {
       sTT+=sq(n-t0);
-      sTY+=(n-t0)*(dataRaw[n]-y0);
+      sTY+=(n-t0)*(src[n]-y0);
     }
     double A = sTY/sTT;
-    for (int n=0; n<len; n++)
-      dataDebleached[n] = dataRaw[n] - A*(n-t0);
+    for (int n=0; n<N; n++)
+      dst[n] = dst[n] - A*(n-t0);
     // dbg("sTT=%g sTY=%g A=%g",sTT,sTY,A);
   } break;
   case Quadratic: {
@@ -432,87 +370,44 @@ double const *ROIData::getDebleachedDFF() {
        in all equations. This only affects C, which I don't actually
        need anyway.
     */
-    double t0 = double(len-1)/2;
+    double t0 = double(N-1)/2;
     double sY=0, s1=0;
-    for (int n=1; n<len-1; n++) {
-      sY+=dataRaw[n];
+    for (int n=1; n<N-1; n++) {
+      sY+=src[n];
       s1++;
     }
     double y0 = sY/s1;
     double sTY=0, sTTY=0;
     double sTT=0, sTTTT=0;
-    for (int n=1; n<len-1; n++) {
+    for (int n=1; n<N-1; n++) {
       sTT+=sq(n-t0);
       sTTTT+=sq(sq(n-t0));
-      double dy = dataRaw[n]-y0;
+      double dy = src[n]-y0;
       sTY+=(n-t0)*dy;
       sTTY+=sq(n-t0)*dy;
     }
     double A = sTTY*s1 / (sTTTT*s1 - sTT*sTT);
     double B = sTY / sTT;
-    for (int n=0; n<len; n++)
-      dataDebleached[n] = dataRaw[n] - A*sq(n-t0) - B*(n-t0);
+    for (int n=0; n<N; n++)
+      dst[n] = src[n] - A*sq(n-t0) - B*(n-t0);
   } break;
   }
 
   /* The final step is to normalize the debleached data. */
   double sY=0, sYY=0;
-  for (int n=1; n<len-1; n++) {
-    double x = dataDebleached[n];
+  for (int n=1; n<N-1; n++) {
+    double x = dst[n];
     sY+=x;
     sYY+=x*x;
   }
-  double avg = sY/(len-2);
-  double var = (sYY-sY*sY/(len-2))/(len-2);
+  double avg = sY/(N-2);
+  double var = (sYY-sY*sY/(N-2))/(N-2);
   dbg("getdebDFF: avg=%g var=%g",sY,avg,var);
 
-  for (int n=0; n<len; n++)
-    dataDebleached[n] = 100*((dataDebleached[n]/avg) - 1);
+  for (int n=0; n<N; n++)
+    dst[n] = 100*((dst[n]/avg) - 1);
   
-  validDebleached = true;
-  return dataDebleached;
+  debleached.validate();
+  return dst;
 }
 
-ROIData::ROIData(ROIData const &other): ROIData_(other) {
-  dataRaw=0;
-  dataDebleached=0;
-  bitmap=0;
-  blobROI=0;
-  copy(other);
-}
-
-void ROIData::copy(ROIData const &other) {
-  if (other.dataRaw) {
-    dataRaw = memalloc<double>(lengthRaw, "ROIData");
-    memcpy(dataRaw, other.dataRaw, lengthRaw*sizeof(double));
-  }
-  if (other.dataDebleached) {
-    dataDebleached = memalloc<double>(lengthDebleached, "ROIData");
-    memcpy(dataDebleached, other.dataDebleached,
-	   lengthDebleached*sizeof(double));
-  }
-  if (other.bitmap) {
-    bitmap = memalloc<bool>(w*h, "ROIData");
-    memcpy(bitmap, other.bitmap, w*h*sizeof(bool));
-  }
-  if (other.blobROI)
-    blobROI = new BlobROI(*other.blobROI);
-}
-
-ROIData &ROIData::operator=(ROIData const &other) {
-  if (dataRaw)
-    delete [] dataRaw;
-  if (dataDebleached)
-    delete [] dataDebleached;
-  if (bitmap)
-    delete [] bitmap;
-  if (blobROI)
-    delete blobROI;
-  *(ROIData_*)this = other;
-  dataRaw=0;
-  dataDebleached=0;
-  bitmap=0;
-  blobROI=0;
-  copy(other);
-  return *this;
-}

@@ -27,7 +27,7 @@ public:
    */
 public slots:
   void updateData();
-  void setRefTrace(int achn);
+  void setRefTrace(QString achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
 private:

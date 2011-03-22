@@ -95,13 +95,13 @@ QString UnitQty::unitEPhys() const {
     return uni;
 }
 
-QString UnitQty::pretty() const {
+QString UnitQty::pretty(int prec) const {
   double q = qty;
   if (fabs(q)<1e-15)
     return "0 " + uni;
 
   if (uni=="%" || uni=="") 
-    return QString("%1").arg(qty,0,'g',3) + uni;
+    return QString("%1").arg(qty,0,'g',prec) + uni;
 
   QString prf = "";
 

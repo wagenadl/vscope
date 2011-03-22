@@ -54,14 +54,7 @@ QStringList checkcam() {
       if (usingthis) {
 	Connections::CamCon const &cam = Connections::findCam(id);
 	s += QString("Size: %1 x %2 px\n").arg(cam.xpix).arg(cam.ypix);
-	s += QString("Flip:");
-	if (cam.flipx)
-	  s += " X";
-	if (cam.flipy)
-	  s += " Y";
-	if (!cam.flipx && !cam.flipy)
-	  s += " none";
-	s += "\n";
+	s += "Placement: " + cam.placement.stringRep() + "\n";
 	s += QString("Expose: %1 ms").arg(cam.focusexp_ms);
       }
       list.append(s);

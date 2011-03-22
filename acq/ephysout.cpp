@@ -14,7 +14,6 @@
 #include <daq/digitalout.h>
 #include <acq/ephysacq.h>
 #include "dutycyclelimit.h"
-#include <acq/trialsig.h>
 #include <video/videoprog.h>
 #include <QTimer>
 #include <QSet>
@@ -102,17 +101,19 @@ bool EPhysOut::prepareSnap(ParamTree const *ptree,
 }
 
 bool EPhysOut::createDAQ(ParamTree const *ptree) {
-  // perhaps we should use the ptree to figure out what device to use?
   QString devid = "";
   if (!DAQDevice::find(devid).ok())
     return false;
   
   if (!aout) {
     aout = new AnalogOut(0, devid);
-    connect(aout,SIGNAL(productionEnded(AnalogOut *, bool)),
-	    this,SLOT(aoutEnded()));
+    connect(aout, SIGNAL(productionEnded(AnalogOut *, bool)),
+	    this, SLOT(aoutEnded()));
   }
-  aout->setData(adata);
+  QList<AnalogOut::Channel> chlist;
+  foreach (QString id, channelList) 
+    chlist.append(AnalogOut::Channel(Connections::findAO(id).line));
+  aout->setData(adata, chlist);
   aout->setFrequency(ptree->find(PAR_OUTRATE).toDouble());
   
   if (!dout)
@@ -126,6 +127,8 @@ bool EPhysOut::createDAQ(ParamTree const *ptree) {
 void EPhysOut::setupDData_addStim(ParamTree const *ptree) {
   if (!ddata)
     throw Exception("EPhysOut","No digital buffer defined","setupDStim");
+
+  KeyGuard guard(*ddata);
 
   Enumerator *lines = Enumerator::find("DIGILINES");
   int nmax0 = lines->getLargestValue();
@@ -154,9 +157,9 @@ void EPhysOut::setupDData_addStim(ParamTree const *ptree) {
   int nscans = ddata->getNumScans();
   double freqhz = ptree->find(PAR_OUTRATE).toDouble();
   uint32_t one = 1;
-  uint32_t *dat = ddata->allData();
-  for (QList<int>::iterator i=channels.begin(); i!=channels.end(); ++i) {
-    int channel = *i;
+  uint32_t *dat = ddata->allData(guard.key());
+
+  foreach (int channel, channels) {
     uint32_t line = lines->lookup(QString("DO%1").arg(channel));
     uint32_t cmask = one<<line;
     double delayms =
@@ -202,60 +205,53 @@ void EPhysOut::setupAData_stim(ParamTree const *ptree) {
     throw Exception("EPhysOut","No analog buffer defined","setupAData_stim");
   if (!ddata)
     throw Exception("EPhysOut","No digital buffer defined","setupAData_stim");
-  
-  QList<int> channels;
-  QSet<int> chanIsStim;
-  Enumerator *aochan = Enumerator::find("AOCHAN");
-  int nmax = aochan->getLargestValue();
-  int vchanx = aochan->has("VidX") ? aochan->lookup("VidX") : -1;
-  int vchany = aochan->has("VidY") ? aochan->lookup("VidY") : -1;
+
+  QStringList avchs = Connections::analogOutputs();
+  QMap<AnalogOut::Channel, QString> useChannel;
+  QSet<QString> stimChannels;
   bool hasvid = ptree->find("stimVideo/enable").toBool();
-  for (int n=0; n<=nmax; n++) {
-    QString name = aochan->reverseLookup(n);
-    bool isvid = n==vchanx || n==vchany;
-    bool use;
-    if (isvid) {
+  foreach (QString id, avchs) {
+    bool use, genstim;
+    if (id=="VidX" || id=="VidY") {
       use = hasvid;
-    } else if (name=="SIGNATURE") {
-      use = true;
+      genstim = false;
     } else {
       Param const *p =
-	ptree->findp(QString("stimEphys/channel:%1/enable").arg(name));
-      use = p && p->toBool();
-      chanIsStim.insert(n);
+	ptree->findp(QString("stimEphys/channel:%1/enable").arg(id));
+      genstim = use = p && p->toBool();
     }
+    AnalogOut::Channel ach(Connections::findAO(id).line);
     if (use)
-      channels.push_back(n);
+      useChannel[ach] = id;
+    if (genstim)
+      stimChannels.insert(id);
   }
-  if (channels.size()==0) {
+  channelList = useChannel.values();
+  
+  if (channelList.isEmpty()) {
     setupAData_dummy();
     return;
   }
 
   int nscans = ddata->getNumScans(); // we copy scan count from ddata
-  int nchans = channels.size();
+  int nchans = channelList.size();
 
-  adata->reshape(nscans,nchans);
+  adata->reshape(nscans, nchans);
   int idx=0;
-  for (QList<int>::iterator i=channels.begin(); i!=channels.end(); ++i) {
-    int channel = *i;
-    QString name = aochan->reverseLookup(channel);
-    dbg("ephysout: idx=%i channel=%i",idx,channel);
-    adata->defineChannel(idx++,channel);
+  foreach (QString name, channelList) {
+    adata->defineChannel(idx++, name);
 
-    if (chanIsStim.contains(channel))
-      setupAData_mkStim(ptree, channel,
+    if (stimChannels.contains(name))
+      setupAData_mkStim(ptree, name,
 			QString("stimEphys/channel:%1/").arg(name));
-
-   if (name=="SIGNATURE")
-      TrialSig::sign(ptree->find("acquisition/_trialno").toInt(), adata);
   }
   dbg("ephysout:setupastim complete nch=%i nsc=%i",nchans,nscans);
 }
 
 void EPhysOut::setupAData_mkStim(ParamTree const *ptree,
-				 int channel, QString path) {
-  double *dat = adata->channelData(channel);
+				 QString channel, QString path) {
+  KeyGuard guard(*adata);
+  double *dat = adata->channelData(guard.key(), channel);
   double freqhz = ptree->find(PAR_OUTRATE).toDouble();
   int nscans = adata->getNumScans();
   int nchans = adata->getNumChannels();
@@ -320,10 +316,14 @@ void EPhysOut::setupAData_dummy() {
     throw Exception("EPhysOut","No analog buffer defined","setupAData_dummy");
   if (!ddata)
     throw Exception("EPhysOut","No digital buffer defined","setupAData_dummy");
-  
-  adata->reshape(ddata->getNumScans(),1);
-  adata->defineChannel(0,0);
-  double *ad = adata->allData();
+
+  KeyGuard guard(*adata);
+  QString cid = Connections::analogOutputs().first();
+  channelList.clear();
+  channelList.append(cid);
+  adata->reshape(ddata->getNumScans(), 1);
+  adata->defineChannel(0, cid);
+  double *ad = adata->allData(guard.key());
   int nscans = ddata->getNumScans();
   for (int i=0; i<nscans; i++)
     ad[i]=0;
@@ -374,16 +374,16 @@ void EPhysOut::start() {
     timer->setSingleShot(true);
     timer->setInterval(int(trialtime_ms));
     try {
-      QMap<int,double> sclmap = adata->writeInt16("/tmp/fakeout-analog.dat");
+      AnalogData::ScaleMap sclmap = adata->writeInt16("/tmp/fakeout-analog.dat");
       ddata->writeUInt32("/tmp/fakeout-digital.dat");
       FILE *fakeout = fopen("/tmp/fakeout-info.txt","w");
       if (!fakeout)
 	throw Exception("EPhysOut","Cannot write fakeout-info.txt");
-         for (int i=0; i<adata->getNumChannels(); i++) {
-	int c = adata->getChannelAtIndex(i);
-	fprintf(fakeout,"idx %i: chn AO%i step=%g mV\n",
-		i,c,
-		sclmap[c]*1e3);
+      for (int i=0; i<adata->getNumChannels(); i++) {
+	QString ch = adata->getChannelAtIndex(i);
+	fprintf(fakeout,"idx %i: chn %s step=%g mV\n",
+		i, qPrintable(ch),
+		sclmap[ch]*1e3);
       }
       fclose(fakeout);
     } catch (Exception) {

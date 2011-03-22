@@ -4,7 +4,7 @@
 #include <daq/dwNIDAQmx.h>
 #include <base/dbg.h>
 
-daqTask::daqTask(QString id) throw(daqException): dev(DAQDevice::find(id)) {
+daqTask::daqTask(QString id): dev(DAQDevice::find(id)) {
   pollPeriod = 0;
   dmabufsize = 0;
   timeout = 0;
@@ -19,20 +19,20 @@ daqTask::~daqTask() {
     fprintf(stderr,"daqTask destructed while still committed. Armageddon imminent.\n");
 }
 
-void daqTask::setTimeout(float secs) throw(daqException) {
+void daqTask::setTimeout(float secs) {
   timeout = secs;
 }
 
-void daqTask::setPollPeriod(int nscans) throw(daqException) {
+void daqTask::setPollPeriod(int nscans) {
   pollPeriod = nscans;
 }
 
-void daqTask::setFrequency(double freq_hz) throw(daqException) {
+void daqTask::setFrequency(double freq_hz) {
   uncommit();
   freqhz = freq_hz;
 }
 
-void daqTask::commit() throw(daqException) {
+void daqTask::commit() {
   dbg("daqtask(%p/%s)::commit",this,name());
   if (committed)
     return;
@@ -40,14 +40,14 @@ void daqTask::commit() throw(daqException) {
   postCommit();
 }
 
-void daqTask::preCommit() throw(daqException) {
+void daqTask::preCommit() {
   dbg("daqtask(%p/%s)::precommit sizeof(th)=%li\n",this,name(),sizeof(th));
   th=(TaskHandle)(-1);
   daqTry(DAQmxCreateTask("", &th),"daqTask","Task creation failed");
   dbg("  daqtask precommit: task created: %i\n",int(th));
 }
 
-void daqTask::postCommit() throw(daqException) {
+void daqTask::postCommit() {
   dbg("daqtask(%p/%s)::postcommit\n",this,name());
   if (startTrig) {
     char chname[64];
@@ -65,7 +65,7 @@ void daqTask::postCommit() throw(daqException) {
   committed = true;
 }
 
-void daqTask::uncommit() throw(daqException) {
+void daqTask::uncommit() {
   dbg("daqtask(%p/%s)::uncommit",this,name());
   // daqTry(DAQmxStopTask(th),"daqTask","Cannot stop task"); // should we do this?
 
@@ -97,7 +97,7 @@ void daqTask::callbackEvery(int) {
   // dbg("daqTask::callbackEvery\n");
 }
 
-void daqTask::preStart() throw(daqException) {
+void daqTask::preStart() {
   dbg("daqTask(%p/%s):prestart %i",this,name(), th);
   commit();
   
@@ -131,20 +131,20 @@ void daqTask::preStart() throw(daqException) {
   dbg("  daqtask:prestart: done");
 }
 
-void daqTask::postStart() throw(daqException) {
+void daqTask::postStart() {
   dbg("daqTask(%p/%s)::poststart %i",this,name(),th);
   daqTry(DAQmxStartTask(th),"daqTask","Cannot start task");
   dbg("  daqtask:poststart: started %i", th);
 }
 
-void daqTask::start() throw(daqException) {
+void daqTask::start() {
   dbg("daqTask(%p/%s)::start",this,name());
   preStart();
   postStart();
   dbg("daqTask(%p/%s)::start ok",this,name());
 }
 
-bool daqTask::isRunning() throw(daqException) {
+bool daqTask::isRunning() {
   if (!committed)
     return false;
   if (hasCompleted())
@@ -153,7 +153,7 @@ bool daqTask::isRunning() throw(daqException) {
   return true;
 }
 
-int daqTask::countScansAvailable() throw(daqException) {
+int daqTask::countScansAvailable() {
   if (!committed)
     return 0;
   uInt32 cnt;
@@ -162,7 +162,7 @@ int daqTask::countScansAvailable() throw(daqException) {
   return cnt;
 }
 
-bool daqTask::hasCompleted() throw(daqException) {
+bool daqTask::hasCompleted() {
   if (!committed)
     return false;
   bool32 data;
@@ -171,42 +171,42 @@ bool daqTask::hasCompleted() throw(daqException) {
   return data;
 }
 
-int daqTask::countScansSoFar() throw(daqException) {
+int daqTask::countScansSoFar() {
   throw daqException("daqTask","I don't know how to count scans abstractly");
 }
 
-void daqTask::setTriggering(bool trg) throw(daqException) {
+void daqTask::setTriggering(bool trg) {
   startTrig = trg;
 }
 
-void daqTask::preStop() throw(daqException) {
+void daqTask::preStop() {
   dbg("daqtask(%p/%s)::prestop %i",this,name(), th);
   daqTry(DAQmxStopTask(th),"daqTask","Cannot stop task");
 }
 
-void daqTask::postStop() throw(daqException) {
+void daqTask::postStop() {
   dbg("daqtask(%p/%s)::poststop %i",this,name(), th);
 }
 
-void daqTask::stop() throw(daqException) {
+void daqTask::stop() {
   dbg("daqtask(%p/%s)::stop",this,name());
   preStop();
   postStop();
   dbg("daqtask(%p/%s)::stop ok",this,name());
 }
 
-void daqTask::preAbort() throw(daqException) {
+void daqTask::preAbort() {
   dbg("daqtask(%p/%s)::preabort %i",this,name(), th);
   daqTry(DAQmxTaskControl(th,DAQmx_Val_Task_Abort),"daqTask","Cannot abort task");
 }
 
-void daqTask::postAbort() throw(daqException) {
+void daqTask::postAbort() {
   dbg("daqtask(%p/%s)::postabort %i",this,name(), th);
   stop();
   uncommit();
 }
 
-void daqTask::abort() throw(daqException) {
+void daqTask::abort() {
   dbg("daqtask(%p/%s)::abort",this,name());
   preAbort();
   postAbort();

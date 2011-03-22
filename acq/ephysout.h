@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <acq/ccdtimingdetail.h>
+#include <daq/analogout.h>
 
 class EPhysOut: public QObject {
   Q_OBJECT;
@@ -35,7 +36,7 @@ private:
   void setupAData_stim(class ParamTree const *ptree);
   void setupAData_dummy();
   bool createDAQ(class ParamTree const *ptree); // true iff hardware present
-  void setupAData_mkStim(ParamTree const *ptree, int channel, QString path);
+  void setupAData_mkStim(ParamTree const *ptree, QString ch, QString path);
 private:
   bool active;
   bool prep;
@@ -46,6 +47,7 @@ private:
   class DigitalOut *dout;
   class QTimer *timer; // for fake "Done" event generation
   class EPhysAcq *master, *oldmaster;
+  QList<QString> channelList;
 };
 
 #endif

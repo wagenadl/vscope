@@ -4,7 +4,7 @@
 #include <base/dbg.h>
 #include <base/xml.h>
 
-ROISet::ROISet(QObject *p): QObject(p) {
+ROISet::ROISet(QObject *p): IDKeyAccess(p) {
   lastid = 0;
 }
 
@@ -35,20 +35,22 @@ ROICoords const &ROISet::get(int id) const {
 		    QString("No ROI with ID=%1").arg(id),"get");
 }
 
-ROICoords &ROISet::checkout(int id) {
+ROICoords &ROISet::access(KeyAccess::WriteKey *key) {
+  int id = getID(key);
   if (map.contains(id))
-    return map[id];
+    return *map.find(id);
   else
     throw Exception("ROISet",
-		    QString("No ROI with ID=%1").arg(id),"get");
+		    QString("No ROI with ID=%1").arg(id),"access");
 }
 
-void ROISet::checkin(int id) {
-  //Dbg() << "ROISet::checkin("<<id<<")";
-  emit changed(id);
-}
-
-void ROISet::cancel(int) {
+ROICoords &ROISet::access(KeyAccess::WriteKey *key, int id) {
+  verifyAllKey(key);
+  if (map.contains(id))
+    return *map.find(id);
+  else
+    throw Exception("ROISet",
+		    QString("No ROI with ID=%1").arg(id),"access");
 }
 
 bool ROISet::contains(int id) const {
@@ -56,13 +58,13 @@ bool ROISet::contains(int id) const {
 }
 
 void ROISet::remove(int id) {
+  IDKeyGuard guard(*this, id);
   //Dbg() << "ROISet::remove("<<id<<")";
   if (!allids.contains(id))
     return;
   allids.remove(id);
   cams.remove(id);
   map.remove(id);
-  emit changed(id);
 }
 
 void ROISet::write(QDomElement dst) const {
@@ -77,8 +79,8 @@ void ROISet::write(QDomElement dst) const {
 }
 
 void ROISet::read(QDomElement src) {
-  //Dbg() << "ROISet::read";
-  clearNoSignal();
+  AllKeyGuard guard(*this);
+  clear();
   bool ok;
   lastid = 0;
   for (QDomElement e=src.firstChildElement("roi");
@@ -101,7 +103,6 @@ void ROISet::read(QDomElement src) {
       cams[id] = dfltcam;
     map[id].read(e);
   }
-  emit changedAll();
 }
 
 void ROISet::setDefaultCamPair(CamPair const &cp) {
@@ -120,18 +121,13 @@ QSet<int> ROISet::idsForCam(CamPair const &cam) const {
   return ids;
 }
 
-void ROISet::clearNoSignal() {
+void ROISet::clear() {
+  AllKeyGuard guard(*this);
   map.clear();
   cams.clear();
   allids.clear();
   lastid = 0;
 }
-
-void ROISet::clear() {
-  clearNoSignal();
-  emit changedAll();
-}
-
 
 void ROISet::save(QString fn) const {
   XML xml(0,"vsdscopeROIs");
@@ -141,21 +137,8 @@ void ROISet::save(QString fn) const {
 }
   
 void ROISet::load(QString fn) {
+  AllKeyGuard guard(*this);
   XML xml(fn);
   QDomElement roidoc = xml.find("rois");
   read(roidoc);
-}
-  
-ROIWriter::ROIWriter(ROISet &rs, int id):
-  roi(rs.checkout(id)), rs(rs), id(id)  {
-  canceled = false;
-}
-
-void ROIWriter::cancel() {
-  canceled = true;
-}
-
-ROIWriter::~ROIWriter() {
-  if (!canceled)
-    rs.checkin(id);
 }

@@ -29,10 +29,11 @@ VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent) {
   addGraph("ref",refgraph);
   reftrace = new TraceInfo();
   refgraph->addTrace("ref",reftrace);
-  refchn = 0;
   refgraph->autoSetXRange();
   refgraph->autoSetYRange();
-  connect(&Globals::trove->trial(), SIGNAL(newData()), SLOT(updateEPhysData()));
+  connect(&Globals::trove->trial(), SIGNAL(newData()),
+	  SLOT(updateEPhysData()));
+  Dbg(this) << "connected " << &Globals::trove->trial() << ":newData to my updateEphysData";
 
   allgraph = new VSDAllGraph(&Globals::trove->roidata(), this);
   addGraph("all",allgraph);
@@ -49,10 +50,9 @@ void VSDTraces::updateSelection(int id) {
   allgraph->updateSelection(id);
 }
 
-void VSDTraces::setRefTrace(int rf) {
-  //dbg("vsdtraces::setreftrace: %i",rf);
-  refchn = rf;
-  QString id = Enumerator::find("AICHAN")->reverseLookup(rf);
+void VSDTraces::setRefTrace(QString id) {
+  Dbg() << "vsdtraces::setreftrace: " << id;
+  refchn = id;
   refgraph->setTraceLabel("ref", Aliases::lookup(id));
   updateEPhysData();
 }
@@ -66,27 +66,30 @@ void VSDTraces::setRefFreq(double) {
 }
 
 void VSDTraces::updateEPhysData() {
+  Dbg() << "VSDTraces::updateEphysData";
   AnalogData const *adata = Globals::trove->trial().analogData();
-  if (!adata->contains(refchn)) {
-    int rf = adata->getChannelAtIndex(0);
-    if (adata->contains(rf)) {
-      setRefTrace(rf);
-      return;
-    }
-  }
+  //if (!adata->contains(refchn)) {
+  //  QString rf = adata->getChannelAtIndex(0);
+  //  if (adata->contains(rf)) {
+  //    setRefTrace(rf);
+  //    return;
+  //  }
+  //}
   DataPtr dp(adata->contains(refchn)
 	     ? adata->channelData(refchn)
 	     : adata->allData());
-  //dbg("vsdtraces::newephys. refchn=%i contained=%i. data=%p",
-  //      refchn,adata->contains(refchn), dp.ptr.dp_double);
   reftrace->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
 		    dp,
 		    adata->getNumScans(),
 		    adata->getNumChannels());
-  QString id = Enumerator::find("AICHAN")->reverseLookup(refchn);
-  Connections::AIChannel const &aich = Connections::findAI(id);
-  reftrace->setScaleFactor(aich.scale);
-  refgraph->setYLabel("("+aich.unit+")");
+  Connections::AIChannel const *aich = Connections::findpAI(refchn);
+  if (aich) {
+    reftrace->setScaleFactor(aich->scale);
+    refgraph->setYLabel("("+aich->unit+")");
+  } else {
+    reftrace->setScaleFactor(1);
+    refgraph->setYLabel("(a.u.)");
+  }
   refgraph->autoSetYRange();
   Range xr = allgraph->computeXRange();
   xr.expand(refgraph->computeXRange());

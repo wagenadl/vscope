@@ -64,14 +64,16 @@ void VisiBlob::drag(QMouseEvent *e) {
     return;
   switch (dragtype) {
   case CREATE:
-    newpoly->push_back(QPointF(e->x(),e->y()));
+    newpoly->push_back(Transform::pixelCenter(e->pos()));
     break;
   case DISTORT:
     pb->adjust(tinv(e->pos()), false);
     break;
   case MOVE:
     // dbg("Move!");
-    pb->recenter(startBlob + tinv(e->pos()-startScreen));
+    pb->recenter(startBlob
+		 + tinv.mapDisplacement(Transform::pixelCenter(e->pos())
+					- startScreen));
     break;
   }
   update();
@@ -111,7 +113,7 @@ void VisiBlob::startAdjust(class QMouseEvent *e) {
     return;
   dragtype = DISTORT;
   indrag = true;
-  pb->adjust(tinv(e->pos()), true);
+  pb->adjust(tinv(Transform::pixelCenter(e->pos())), true);
 }
 
 void VisiBlob::startMove(QMouseEvent *e) {
@@ -119,7 +121,7 @@ void VisiBlob::startMove(QMouseEvent *e) {
   if (!pb)
     return;
   dragtype = MOVE;
-  startScreen = e->posF();
+  startScreen = Transform::pixelCenter(e->pos());
   startBlob = QPointF(pb->x0(), pb->y0());
   indrag=true;
 }
@@ -140,9 +142,3 @@ void VisiBlob::mouseDoubleClickEvent(class QMouseEvent *) {
   dbg("visiblob: mouse doubleclick");
 }
 
-void VisiBlob::pbDies(QObject *x) {
-  //if (x==pb) {
-  //  Dbg() << "VisiBlob Warning: My blob is dying";
-  //  pb = 0;
-  //}
-}

@@ -26,7 +26,7 @@ public:
   virtual ~VSDTraces();
 public slots:
   void updateSelection(int id);
-  void setRefTrace(int chn);
+  void setRefTrace(QString chn);
   void setRefDigi(int chn);
   void setRefFreq(double frqhz);
 private slots:
@@ -37,7 +37,7 @@ private:
   class LineGraph *refgraph;
   class TraceInfo *reftrace;
   int selid;
-  int refchn;
+  QString refchn;
 };
 
 #endif

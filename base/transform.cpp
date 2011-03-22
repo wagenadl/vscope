@@ -167,25 +167,43 @@ QPointF Transform::operator()(QPointF const &p) const {
 }
 
 QSize Transform::operator()(QSize const &s) const {
-  return QSize(ax*s.width(), ay*s.height());
+  return QSize(fabs(ax)*s.width(), fabs(ay)*s.height());
 }
 
 QSizeF Transform::operator()(QSizeF const &s) const {
-  return QSizeF(ax*s.width(), ay*s.height());
+  return QSizeF(fabs(ax)*s.width(), fabs(ay)*s.height());
+}
+
+QPointF Transform::mapDisplacement(QPointF const &p) const {
+  return QPointF(ax*p.x(), ay*p.y());
 }
 
 QRect Transform::operator()(QRect const &r) const {
-  return QRect(operator()(r.topLeft()),operator()(r.size()));
+  QPoint tl = operator()(r.topLeft());
+  QSize s = operator()(r.size());
+  if (ax<0) 
+    tl.setX(tl.x()-s.width());
+  if (ay<0)
+    tl.setY(tl.y()-s.height());
+  return QRect(tl, s);
 }
 
 QRectF Transform::operator()(QRectF const &r) const {
-  return QRectF(operator()(r.topLeft()),operator()(r.size()));
+  QPointF tl = operator()(r.topLeft());
+  QSizeF s = operator()(r.size());
+  if (ax<0) 
+    tl.setX(tl.x()-s.width());
+  if (ay<0)
+    tl.setY(tl.y()-s.height());
+  return QRectF(tl, s);
 }
 
 Transform Transform::operator()(Transform const &t) const {
   // We do x'' = ax*x' + bx. t does x' = ax'*x + bx'.
   // We should produce: x'' = ax''*x + bx''.
   // Now: x'' = ax*(ax'*x + bx') + bx = ax*ax'*x + ax*bx' + bx.
+  // So, ax'' = ax*ax', and bx'' = ax*bx' + bx.
+  
   Transform tt;
   tt.ax = ax*t.ax;
   tt.bx = ax*t.bx + bx;
@@ -243,4 +261,16 @@ Transform Transform::inferred(QRectF src, QRectF dst) {
   t.by = y0D - t.ay*y0S;
   
   return t;
+}
+
+bool Transform::reflectsX() const {
+  return ax<0;
+}
+
+bool Transform::reflectsY() const {
+  return ay<0;
+}
+
+QString Transform::stringRep() const {
+  return QString("%1x%2+%3+%4").arg(ax).arg(ay).arg(bx).arg(by);
 }

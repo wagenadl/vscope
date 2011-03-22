@@ -11,7 +11,6 @@
 
 #include <QDateTime>
 
-#include <bzr_versioninfo.h>
 #include <base/dbg.h>
 #include <base/base26.h>
 #include <base/xml.h>
@@ -74,13 +73,15 @@ QWidget *makeBanner1(QWidget *parent) {
   QTextEdit *w = new QTextEdit(parent);
   w->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   w->setReadOnly(true);
-  QString txt = "<html><body><h1>VScope</h1>";
-  txt += QString() + "Revision #" + bzr_version_nick + ":" + bzr_version_revno
-    + " dd " + bzr_version_month + "/" + bzr_version_day
-    + "/" + bzr_version_year + ".<br>";
-  txt += QString() + "(C) Daniel A. Wagenaar 2008&ndash;"
-    + bzr_version_year + ".<br>";
-  txt += "For more info: email daw@caltech.edu.<br>";
+  XML vsndoc(":/version.xml");
+  QDomElement vsn = vsndoc.root();
+  QString txt = "<html><body><h1>VScope ";
+  txt += vsn.attribute("branch");
+  txt += ":" + vsn.attribute("rev") + "</h1>";
+  txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" + vsn.attribute("year");
+  txt += "<p>Last commit: " + vsn.attribute("date") + "<br>";
+  txt += "Build date: " + vsn.attribute("builddate");
+  txt += "<p>For more info: daw@caltech.edu";
 
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();
@@ -114,21 +115,6 @@ QWidget *makeBanner2(QWidget *parent) {
   txt += "</body></html>";
   w->setHtml(txt);
   return w;
-}
-
-void setFlips() {
-  QString id_donor = Connections::leaderCamera();
-  QString id_acceptor = Connections::findCam(id_donor).partnerid;
-  Connections::CamCon const &donCam = Connections::findCam(id_donor);
-  if (id_acceptor.isEmpty()) {
-    // only one camera
-    ROI3Data::setFlip(donCam.flipx, donCam.flipy, false, false);
-  } else {
-    // two cameras
-    Connections::CamCon const &accCam = Connections::findCam(id_acceptor);
-    ROI3Data::setFlip(donCam.flipx, donCam.flipy,
-		      accCam.flipx, accCam.flipy);
-  }
 }
 
 void setupAppStyle(QApplication &app) {
@@ -225,7 +211,6 @@ QDomElement setupGUI() {
 }
 
 void setupCams() {
-  setFlips();
   CamPool::initialize();
   QStringList sz = Connections::allCams();
   foreach (QString id, sz) {
@@ -262,8 +247,7 @@ void setupVSDTraces() {
   Globals::vsdtraces = new VSDTraces(Globals::rightplace);
   Globals::vsdtraces->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::vsdtraces->
-    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
-				.toInt()));
+    setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
   Globals::vsdtraces->hide();
 
   QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
@@ -304,8 +288,7 @@ void setupCoherence() {
   Globals::coherence->setCanvas(Globals::ccdw->currentCanvas());
   Globals::coherence->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::coherence->
-    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
-				    .toInt()));
+    setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
   Globals::coherence->
     setShowMode(ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs")
 				    .toInt()));
@@ -315,8 +298,7 @@ void setupCoherence() {
 				   Globals::rightplace);
   Globals::cohgraph->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::cohgraph->
-    setRefTrace(ROIData::Debleach(Globals::ptree->find("analysis/refTrace")
-				  .toInt()));
+    setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
   Globals::cohgraph->hide();
 
   QObject::connect(Globals::ccdw, SIGNAL(newZoom(QRect)),

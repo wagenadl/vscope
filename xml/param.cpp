@@ -229,6 +229,17 @@ void Param::set(QString s) {
   rangeCheck(v);
 }
 
+void Param::setStringList(QList<QString> const &ss) {
+  if (valueType=="set") {
+    QBitArray ar(enumerator->getLargestValue()+1);
+    foreach (QString s, ss)
+      ar.setBit(enumerator->lookup(s));
+    rangeCheck(QVariant(ar));
+  } else {
+    throw Exception("Param", "Only sets can be defined by lists of strings");
+  }
+}
+
 void Param::rangeCheck(QVariant const &v) {
   bool ok=true;
   if (min || max) {
@@ -353,17 +364,22 @@ bool Param::toBool() const {
   return value.toBool();
 }  
 
+QStringList Param::toStringList() const {
+  if (valueType!="set")
+    throw Exception("Param","Only sets can be represented as QSet<QString>");
+  QStringList ss;
+  QBitArray ar = value.toBitArray();
+  for (int i=0; i<=enumerator->getLargestValue(); i++) 
+    if (ar.at(i))
+      ss.append(enumerator->reverseLookup(i));
+  return ss;
+}
+
 QString Param::toString() const {
   if (valueType=="enum") {
     return enumerator->reverseLookup(value.toInt());
   } else if (valueType=="set") {
-    QStringList l;
-    QBitArray ar = value.toBitArray();
-    for (int i=0; i<=enumerator->getLargestValue(); i++) {
-      if (ar.at(i))
-	l.push_back(enumerator->reverseLookup(i));
-    }
-    return l.join(" ");
+    return toStringList().join(" ");
   } else if (valueType=="time") {
     double v = value.toDouble();
     if (fabs(v)>=180*1000) 

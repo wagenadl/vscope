@@ -161,6 +161,10 @@ double XYRRA::omegaToY(double omega) const {
 }
 
 
+double XYRRA::findNearest(QPointF const &xy) const {
+  return findNearest(xy.x(), xy.y());
+}
+
 double XYRRA::findNearest(double x, double y) const {
   if (r==0 || R==0)
     return 0;

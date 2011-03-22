@@ -8,17 +8,17 @@
 #include <base/roiset.h>
 #include <base/roidata.h>
 #include <base/roi3data.h>
-#include <QObject>
+#include <base/idkeyaccess.h>
 
 struct ROIData3Set_Data {
 public:
   QMap<int, class ROI3Data *> data;
   QMap<QString, class CCDData const *> ccdData; // we do not own this
   ROIData::Debleach lastDebleach;
-  ROISet const *roiset;
+  ROISet const *roiset; // we do not own this
 };
 
-class ROIData3Set: public QObject {
+class ROIData3Set: public IDKeyAccess {
   /*:C ROIData3Set
    *:D ROIData3Set maintains a collection of ROI3Datas, i.e., data extracted
        from a number of ROIs in a particular (donor,acceptor) image pair.
@@ -27,27 +27,25 @@ class ROIData3Set: public QObject {
 public:
   ROIData3Set(ROISet const *coordset);
   virtual ~ROIData3Set();
-  ROIData3Set(ROIData3Set const &other);
-  ROIData3Set &operator=(ROIData3Set const &other);
-  class ROI3Data *getData(int id) const; // exception if non-existant
+  class ROI3Data const *getData(int id) const; // exception if non-existant
+  class ROI3Data *accessData(IDKeyAccess::WriteKey *key);
+  class ROI3Data *accessData(IDKeyAccess::WriteKey *key, int id);
+  /*:F accessData
+   *:D Accesses a certain ROI3Data using either a key that checked out that
+       item, or using a key that checked out all (in which case the ID must be
+       supplied explicitly).
+  */
   ROICoords const &getCoords(int id) const;
   CamPair const &getCam(int id) const;
   ROISet const *getROISet() const { return d.roiset; }
   bool haveData(int id) const;
   QList<int> allIDs() const;
-  void setData(QString camid, class CCDData const *acceptor);
-  /*:F setData
-   *:N Does not call updateData. Therefore, does not cause emission of
-       changedXXX signals.
-  */
+  void setCCDData(QString camid, class CCDData const *data);
 public slots:
-  void changeROI(int id);
-  void changeROIs();
-  void updateData();
+  void updateROI(int id);
+  void updateROIs();
+  void updateCCDData();
   void setDebleach(ROIData::Debleach d);
-signals:
-  void changedOne(int id);
-  void changedAll();
 private:
   void changeROIcore(int id);
 private:

@@ -34,6 +34,17 @@ namespace Connections {
                     // i.e., 100.
     QString unit;   // e.g. "mV" or "pA".
   };
+
+  class AOChannel {
+    /*:C Connections::AOChannel
+     *:D Maintains information about an AO channel on the DAQ6229
+     */
+  public:
+    AOChannel(QString id="-");
+  public:
+    QString id;     // id of this channel (as in enum AOCHAN)
+    int line;       // line of this channel
+  };
   
   class DigiChannel {
   public:
@@ -53,7 +64,6 @@ namespace Connections {
     QString serno;  // serial number of this camera
     QString partnerid;
     int xpix, ypix; // number of pixels in full frame
-    bool flipx, flipy; // true if this image should be flipped
     double focusexp_ms;
     bool isdonor;
     bool isacceptor;
@@ -79,6 +89,16 @@ namespace Connections {
    */
   extern AIChannel const &findAI(QString id);
   /*:F findAI
+   *:D Returns a reference to a channel definition given an ID.
+   *:R Throws an exception if not found.
+   */
+  extern AOChannel const *findpAO(QString id);
+  /*:F findpAO
+   *:D Returns a pointer to a channel definition given an ID.
+   *:R Returns null if not found.
+   */
+  extern AOChannel const &findAO(QString id);
+  /*:F findAO
    *:D Returns a reference to a channel definition given an ID.
    *:R Throws an exception if not found.
    */
@@ -141,6 +161,11 @@ namespace Connections {
    *:D Returns a list of digital lines that are inputs according to
        our list of connections.
   */
+  QStringList analogInputs();
+  QStringList analogOutputs();
+  /*:F analogInputs, analogOutputs
+   *:D Return lists of all analog inputs and outputs
+   */
 };
   
 #endif

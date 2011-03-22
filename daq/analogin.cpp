@@ -7,7 +7,15 @@
 #include <math.h>
 #include <base/dbg.h>
 
-AnalogIn::AnalogIn(QString id) throw(daqException): daqTask(id) {
+
+AnalogIn::Channel::Channel(unsigned int c): chn(c) {
+}
+
+QString AnalogIn::Channel::name() const {
+  return "ai" + QString::number(chn);
+}
+
+AnalogIn::AnalogIn(QString id): daqTask(id) {
   dislave = 0;
   aoslave = 0;
   aborting = false;
@@ -16,12 +24,16 @@ AnalogIn::AnalogIn(QString id) throw(daqException): daqTask(id) {
 
 AnalogIn::~AnalogIn() {
   if (dislave)
-    fprintf(stderr,"AnalogIn: Dying while DI slave still attached. Armageddon imminent.\n");
+    fprintf(stderr,
+	    "AnalogIn: Dying while DI slave still attached."
+	    " Armageddon imminent.\n");
   if (aoslave)
-    fprintf(stderr,"AnalogIn: Dying while AO slave still attached. Armageddon imminent.\n");
+    fprintf(stderr,
+	    "AnalogIn: Dying while AO slave still attached."
+	    " Armageddon imminent.\n");
 }
 
-void AnalogIn::removeChannel(int ain) throw (daqException) {
+void AnalogIn::removeChannel(AnalogIn::Channel ain) {
   uncommit();
   if (ai_channel2index.contains(ain)) {
     int idx = ai_channel2index[ain];
@@ -32,7 +44,7 @@ void AnalogIn::removeChannel(int ain) throw (daqException) {
   }
 }
 
-void AnalogIn::clearChannels() throw (daqException) {
+void AnalogIn::clearChannels() {
   uncommit();
   ai_channel_list.clear();
   ai_channel2index.clear();
@@ -40,11 +52,8 @@ void AnalogIn::clearChannels() throw (daqException) {
   ai_ground_map.clear();
 }
 
-void AnalogIn::addChannel(int ain) throw(daqException) {
+void AnalogIn::addChannel(AnalogIn::Channel ain) {
   uncommit();
-  
-  if (ain<0)
-    throw daqException("AnalogIn", "Bad AI channel number");
   int index = ai_channel_list.size();
   ai_channel_list.push_back(ain);
   ai_range_map[ain] = 1.0; // default assume 1 V
@@ -52,32 +61,32 @@ void AnalogIn::addChannel(int ain) throw(daqException) {
   ai_channel2index[ain] = index;
 }
 
-void AnalogIn::setRange(int ain, double range_V) {
+void AnalogIn::setRange(AnalogIn::Channel ain, double range_V) {
   uncommit();
   ai_range_map[ain] = range_V;
 }
 
-double AnalogIn::getRange(int ain) throw(daqException) {
+double AnalogIn::getRange(AnalogIn::Channel ain) {
   if (ai_range_map.contains(ain))
     return ai_range_map[ain];
-  throw daqException("AnalogIn","Channel not in task","getRange");
+  throw Exception("AnalogIn","Channel not in task","getRange");
 }
 
-void AnalogIn::setGround(int ain, enum Ground ground) {
+void AnalogIn::setGround(AnalogIn::Channel ain, enum Ground ground) {
   uncommit();
   ai_ground_map[ain] = ground;
 }
 
-enum AnalogIn::Ground AnalogIn::getGround(int ain) throw(daqException) {
+enum AnalogIn::Ground AnalogIn::getGround(AnalogIn::Channel ain) {
   if (ai_ground_map.contains(ain))
     return ai_ground_map[ain];
-  throw daqException("AnalogIn","Channel not in task","getGround");
+  throw Exception("AnalogIn","Channel not in task","getGround");
 }
 
-int AnalogIn::getChannelAt(int idx) const throw(daqException) {
+AnalogIn::Channel AnalogIn::getChannelAt(int idx) const {
   if (idx>=0 && idx<ai_channel_list.size())
     return ai_channel_list[idx];
-  throw daqException("AnalogIn","Channel not in task","getChannelAt");
+  throw Exception("AnalogIn","Channel not in task","getChannelAt");
 }
 
 void AnalogIn::setAcqLength(int nscans_) {
@@ -85,7 +94,7 @@ void AnalogIn::setAcqLength(int nscans_) {
   nscans = nscans_;
 }
 
-void AnalogIn::commit() throw(daqException) {
+void AnalogIn::commit() {
   //  dbg("analogin(%p)::commit\n",this);
   if (committed)
     return;
@@ -94,13 +103,11 @@ void AnalogIn::commit() throw(daqException) {
   //  dbg("analogin::precommit ok\n");
 
   for (int n=0; n<ai_channel_list.size(); n++) {
-    int ain = ai_channel_list[n];
+    Channel ain = ai_channel_list[n];
     enum Ground ground = ai_ground_map[ain];
     double range = ai_range_map[ain];
-    char chname[64];
-    sprintf(chname,"%s/ai%i",deviceID().toAscii().constData(),ain);
-    //dbg("analogin: creating %i: %i: '%s'. ground=%i range=%g\n",n,ain,chname,ground,range);
-    daqTry(DAQmxCreateAIVoltageChan(th,chname,"",
+    QByteArray chname = channelName(ain).toAscii();
+    daqTry(DAQmxCreateAIVoltageChan(th,chname.constData(),"",
 				    ground==NRSE ? DAQmx_Val_NRSE :
 				    ground==RSE ? DAQmx_Val_RSE :
 				    ground==DIFF ? DAQmx_Val_Diff :
@@ -142,7 +149,7 @@ void AnalogIn::commit() throw(daqException) {
   //dbg("analogin: postcommit ok\n");
 }
 
-void AnalogIn::uncommit() throw(daqException) {
+void AnalogIn::uncommit() {
   if (!committed)
     return;
 
@@ -155,26 +162,26 @@ void AnalogIn::uncommit() throw(daqException) {
   daqTask::uncommit();
 }
 
-void AnalogIn::attachDI(DigitalIn *digin) throw(daqException) {
+void AnalogIn::attachDI(DigitalIn *digin) {
   uncommit();
   if (dislave && dislave!=digin)
     fprintf(stderr,"AnalogIn: Warning: Attaching a second DI slave. The first slave will not be used.\n");
   dislave = digin;
 }
 
-void AnalogIn::attachAO(AnalogOut *analin) throw(daqException) {
+void AnalogIn::attachAO(AnalogOut *analin) {
   uncommit();
   if (aoslave && aoslave!=analin)
     fprintf(stderr,"AnalogIn: Warning: Attaching a second AO slave. The first slave will not be used.\n");
   aoslave = analin;
 }
 
-void AnalogIn::detachDI() throw(daqException) {
+void AnalogIn::detachDI() {
   uncommit();
   dislave = 0;
 }
 
-void AnalogIn::detachAO() throw(daqException) {
+void AnalogIn::detachAO() {
   uncommit();
   aoslave = 0;
 }
@@ -190,7 +197,7 @@ void AnalogIn::callbackEvery(int nscans) {
     emit dataAvailable(this,nscans);
 }
 
-void AnalogIn::start() throw(daqException) {
+void AnalogIn::start() {
   dbg("AnalogIn(%p)::start",this);
   preStart();
 
@@ -202,7 +209,7 @@ void AnalogIn::start() throw(daqException) {
   postStart();
 }
 
-int AnalogIn::countScansSoFar() throw(daqException) {
+int AnalogIn::countScansSoFar() {
   if (!committed)
     return 0;
   uInt64 data;
@@ -212,30 +219,30 @@ int AnalogIn::countScansSoFar() throw(daqException) {
 }
   
 
-int AnalogIn::read(AnalogData *dest) throw(daqException) {
+int AnalogIn::read(AnalogData *dest) {
+  KeyGuard guard(*dest);
   int donescans = read(dest,0,0);
   dest->setNumScans(donescans);
   return donescans;
 }
 
-int AnalogIn::read(AnalogData *dest, int offset, int maxscans) throw(daqException) {
+int AnalogIn::read(AnalogData *dest, int offset, int maxscans) {
   if (!committed)
-    throw daqException("AnalogIn","Cannot read when not committed");
+    throw Exception("AnalogIn","Cannot read when not committed");
   int nchans = dest->getNumChannels();
   if (nchans != ai_channel_list.size())
-    throw daqException("AnalogIn: Cannot read into structure with wrong channel count");
-  for (int n=0; n<nchans; n++)
-    if (dest->getChannelAtIndex(n) != ai_channel_list[n])
-    throw daqException("AnalogIn: Cannot read into structure with wrong channel map");
+    throw Exception("AnalogIn",
+		    "Cannot read into structure with wrong channel count");
 
   int nscans = dest->getNumScans();
-
   if (maxscans==0)
     maxscans=nscans;
   if (maxscans>nscans-offset)
     maxscans=nscans-offset;
+
+  KeyGuard guard(*dest);
   
-  double *destdata = dest->allData();
+  double *destdata = dest->allData(guard.key());
   destdata += nchans*offset;
 
   int donescans = 0;
@@ -256,10 +263,10 @@ int AnalogIn::read(AnalogData *dest, int offset, int maxscans) throw(daqExceptio
 			      &scansread, 0),
 	   "AnalogIn","Read failure");
     if (scansread<0)
-      throw daqException("AnalogIn","Read fewer than zero scans!?");
+      throw Exception("AnalogIn", "Read fewer than zero scans!?");
     if (scansread==0)
       break;
-    //dbg("analogin read %i scans of %i channels\n",scansread,nchans);
+
     for (int c=0; c<nchans; c++) {
       double sum=0;
       double sumsum=0;
@@ -281,28 +288,7 @@ int AnalogIn::read(AnalogData *dest, int offset, int maxscans) throw(daqExceptio
   return donescans;
 }
 
-AnalogData *AnalogIn::read(int nscanslimit) throw(daqException) {
-  int navail = countScansAvailable();
-  if (nscanslimit>navail)
-    nscanslimit = navail;
-
-  AnalogData *dest = new AnalogData(nscanslimit, ai_channel_list.size(),
-				    freqhz);
-
-  try {
-    for (int n=0; n<ai_channel_list.size(); n++)
-      dest->defineChannel(n,ai_channel_list[n]);
-
-    if (read(dest) != nscanslimit) 
-      throw daqException("AnalogIn","Failure to read all available scans");
-  } catch (...) {
-    delete dest;
-    throw;
-  }
-  return dest;
-}
-
-void AnalogIn::stop() throw(daqException) {
+void AnalogIn::stop() {
   dbg("analogin(%p)::stop (aoslave=%p, dislave=%p)",this,aoslave,dislave);
   daqTask::preStop();
   if (!aborting) {
@@ -314,7 +300,7 @@ void AnalogIn::stop() throw(daqException) {
   daqTask::postStop();
 }
 
-void AnalogIn::abort() throw(daqException) {
+void AnalogIn::abort() {
   aborting = true;
   dbg("analogin(%p)::abort",this);
   try {
@@ -333,7 +319,7 @@ void AnalogIn::abort() throw(daqException) {
   }
 }
 
-void AnalogIn::setFrequency(double hz)  throw(daqException) {
+void AnalogIn::setFrequency(double hz) {
   daqTask::setFrequency(hz);
   if (aoslave)
     aoslave->setFrequency(hz);
@@ -343,6 +329,10 @@ void AnalogIn::setFrequency(double hz)  throw(daqException) {
 
 int AnalogIn::getNumChannels() const {
   return ai_channel_list.size();
+}
+
+QString AnalogIn::channelName(AnalogIn::Channel const &c) const {
+  return deviceID() + "/" + c.name();
 }
 
 char const *AnalogIn::name() const { return "AnalogIn"; }

@@ -46,23 +46,21 @@ public:
    *:D Redraws the current image
    */
 public slots:
+  virtual void newImage(uint16_t const *data, int X, int Y, Transform const &t);
   virtual void newImage(uint16_t const *data, int X, int Y,
-			bool flipX=false, bool flipY=false);
+			bool flipX, bool flipY);
   /*:F newImage
    *:D Provides new data to be used for drawing images.
    *:N The data is copied into a QImage, and does not need to remain
        available.
    *:N You must call autoRange or setRange before first calling newImage,
        because there is no default range.
-  */
-  virtual void placeImage(Transform const &t);
-  /*:F placeImage
    *:D Places the (unzoomed) image at a certain position in the widget's
        world coordinates.
    *:N For instance, to place a 256x128 image in the center 256x256 area
        of a 512x512 canvas, you would say:
          placeImage(Transform().scale(1,2).translate(128.128)).
-   */
+  */
   virtual void setCanvas(QRect canvasExtent);
   virtual void resetCanvas();
   virtual void recolor(QString);

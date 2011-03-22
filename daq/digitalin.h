@@ -22,8 +22,6 @@ public:
   virtual int countScansSoFar() throw(daqException);
   int read(DigitalData *dest) throw(daqException); // Returns number of scans actually read.
   /* This will wait until data available, except of course at end of acq. */
-  DigitalData *read(int nscanslimit) throw(daqException); // Reads all currently available data into a newly allocated structure.
-  /* The caller is responsible for eventually deleting the DigitalData structure. */
   void setChannelMask(uint32_t mask) throw(daqException);
   void addChannel(int lineno) throw(daqException);
   void removeChannel(int lineno) throw(daqException);

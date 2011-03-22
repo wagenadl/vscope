@@ -8,6 +8,8 @@
 #include <QStringList>
 #include <QMap>
 #include <QDomElement>
+#include <xml/connections.h>
+#include <daq/analogin.h>
 
 class LiveEPhys: public QFrame {
   Q_OBJECT;
@@ -32,7 +34,7 @@ protected slots:
   void contAcqAvailable(int ascans, int dscans);
 private:
   void addChannels(class MultiGraph *cc, QStringList const &list);
-  void addChannel(int cno, QString cid);
+  void addChannel(QString cid);
   bool isChannelTiny(QString id) const;
   void newData(class MultiGraph *cc);
   void feedVCO(int offset, int count);
@@ -48,8 +50,9 @@ private:
   QStringList potchs_right;
   class AnalogData *data;
   double dt_s;
-  QMap<int, class TraceInfo *> aitraces; // map from channel number to trace
-  QMap<int, class LineGraph *> aigraphs; // map from channel number to graph
+  QMap<QString, class TraceInfo *> aitraces; // map from channel ID to trace
+  QMap<QString, class LineGraph *> aigraphs; // map from channel ID to graph
+  QList<Connections::AIChannel const *> channels;
   bool first;
   double t0;
   int dataoffset;

@@ -18,6 +18,41 @@
 #define EPHYSACQ_CONTACQ_CHUNKSIZE 8192
 #define EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER 1
 
+static void makeFakeAData(AnalogData *adata) {
+  if (!adata)
+    return;
+  KeyGuard guard(*adata);
+  int C = adata->getNumChannels();
+  int N = adata->getNumScans();
+  for (int c=0; c<C; c++) {
+    QString chid = adata->getChannelAtIndex(c);
+    double *data = adata->channelData(guard.key(), chid);
+    for (int n=0; n<N; n++) {
+      *data = (n%(100+60*c)) / 1000.;
+      data += C;
+    }
+  }
+}
+
+static void makeFakeDData(DigitalData *ddata) {
+  if (!ddata)
+    return;
+  KeyGuard guard(*ddata);
+  int N = ddata->getNumScans();
+  DigitalData::DataType mask = ddata->getMask();
+  Dbg() << "makeFakeDData mask=" << QString::number(mask,16);
+  DigitalData::DataType *data = ddata->allData(guard.key());
+  DigitalData::DataType filler = 0;
+  DigitalData::DataType step = 0x11111111;
+  for (int n=0; n<N; n++) {
+    if (n%100==0)
+      filler += step;
+    *data++ = filler & mask;
+  }
+}
+
+
+
 EPhysAcq::EPhysAcq() {
   ain = 0;
   din = 0;
@@ -56,22 +91,26 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
 
   bool contEphys = ptree->find("acquisition/contEphys").toBool();
 
-  int nchans = 0;
-  QBitArray ba = ptree->find("acqEphys/aiChannels").toBitArray();
-  for (int i=0; i<ba.size(); i++)
-    if (ba.testBit(i))
-      nchans++;
-  
-  adata->reshape(contEphys ? EPHYSACQ_CONTACQ_CHUNKSIZE*EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER : nscans,nchans);
+  QStringList aic = ptree->find("acqEphys/aiChannels").toStringList();
+  QMap<AnalogIn::Channel, QString> chmap;
+  foreach (QString s, aic) 
+    chmap[AnalogIn::Channel(Connections::findAI(s).line)] = s;
+  int nchans = aic.size();
+
+  if (contEphys)
+    nscans =  EPHYSACQ_CONTACQ_CHUNKSIZE * EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER;
+  adata->reshape(nscans, nchans);
   int idx=0;
-  for (int i=0; i<ba.size(); ++i)
-    if (ba.testBit(i))
-      adata->defineChannel(idx++,i);
+  foreach (QString id, chmap.values())
+    adata->defineChannel(idx++, id);
   adata->setSamplingFrequency(samprate_hz);
 
-  ddata->reshape(contEphys
-		 ? EPHYSACQ_CONTACQ_CHUNKSIZE*EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER
-		 : nscans);
+  ddata->reshape(nscans);
+  QStringList dch = Connections::digiInputLines();
+  Enumerator *digilines = Enumerator::find("DIGILINES");
+  ddata->clearMask();
+  foreach (QString id, dch)
+    ddata->defineLine(digilines->lookup(id), id);
   prep = true;
 
   bool haveDevice = createDAQ(ptree);
@@ -83,31 +122,25 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   ain->setAcqLength(contEphys ? 0 : nscans);
   ain->setPollPeriod(contEphys ? EPHYSACQ_CONTACQ_CHUNKSIZE : 0);
   
-  Enumerator *aichan = Enumerator::find("AICHAN");
-  for (int i=0; i<ba.size(); ++i) {
-    if (ba.testBit(i)) {
-      Connections::AIChannel const &aic =
-	Connections::findAI(aichan->reverseLookup(i));
-      ain->addChannel(i);
-      ain->setRange(i,aic.range);
-      if (aic.ground=="RSE")
-	ain->setGround(i,AnalogIn::RSE);
-      else if (aic.ground=="NRSE")
-	ain->setGround(i,AnalogIn::NRSE);
-      else if (aic.ground=="DIFF")
-	ain->setGround(i,AnalogIn::DIFF);
-      else
-	throw Exception("EPhysAcq",
-			"Unknown grounding scheme '" + aic.ground
-			+ "' for '" + aic.id + "'", "prepare");
-    }
+  foreach (QString id, chmap.values()) {
+    Connections::AIChannel const &aic = Connections::findAI(id);
+    AnalogIn::Channel i(aic.line);
+    ain->addChannel(i);
+    ain->setRange(i,aic.range);
+    if (aic.ground=="RSE")
+      ain->setGround(i,AnalogIn::RSE);
+    else if (aic.ground=="NRSE")
+      ain->setGround(i,AnalogIn::NRSE);
+    else if (aic.ground=="DIFF")
+      ain->setGround(i,AnalogIn::DIFF);
+    else
+      throw Exception("EPhysAcq",
+		      "Unknown grounding scheme '" + aic.ground
+		      + "' for '" + aic.id + "'", "prepare");
   }
   
   din->setAcqLength(contEphys ? 0 : nscans);
   din->setPollPeriod(contEphys ? EPHYSACQ_CONTACQ_CHUNKSIZE : 0);
-  QStringList dch = Connections::digiInputLines();
-  // dbg("ephysacq: digiinputs:");
-  Enumerator *digilines = Enumerator::find("DIGILINES");
   din->setChannelMask(0);
   for (QStringList::iterator i=dch.begin(); i!=dch.end(); ++i) {
     // dbg("  digiinput: '%s'",qPrintable(*i));
@@ -158,6 +191,10 @@ void EPhysAcq::start() {
       timer = new QTimer(this);
       connect(timer,SIGNAL(timeout()), this,SLOT(ainEnded()));
     }
+
+    makeFakeAData(adata);
+    makeFakeDData(ddata);
+    
     timer->setSingleShot(true);
     timer->setInterval(int(trialtime_ms));
     timer->start();

@@ -19,7 +19,7 @@ class VSDAllGraph: public LineGraph {
 public:
   VSDAllGraph(class ROIData3Set *rs3d, QWidget *parent=0);
   virtual ~VSDAllGraph();
-  class ROI3Data *getData(int id);
+  class ROI3Data const *getData(int id);
   bool haveData(int id) const;
 public slots:
   void updateSelection(int id);

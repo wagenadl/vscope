@@ -22,10 +22,15 @@
   </enum>
 
   <enum id="AOCHAN">
-    <item tag="AO0" value="0"/>
-    <item tag="AO1" value="1"/>
-    <item tag="VidX" value="2"/>
-    <item tag="VidY" value="3"/>
+    <!-- Actual connections are defined below, in (connections) -->
+    <!-- Use of this enum is deprecated.
+	 New code should use the (connections).
+         This enum will automatically be filled with the data from
+         (connections).
+         Note that Param's "enum" and "set" types still need the enum,
+         and this is not changeable. Perhaps I should decouple the numeric
+         enum value from the line in the future. Or I should move to "string"
+         and "stringset" for the relevant params. -->
   </enum>
 
   <enum id="DIGILINES">
@@ -73,15 +78,21 @@
   <aichannel id="ExtVB4" line="23"
      ground="RSE" range="5V" unit="V" scale="1"/>
 
+  <aochannel id="AO0" line="0"/>
+  <aochannel id="AO1" line="1"/>
+  <aochannel id="VidX" line="2"/>
+  <aochannel id="VidY" line="3"/>
+  
   <camera id="Cc" serno="A08F101002" role="donor" order="0"
      xpix="512" ypix="512"
-     flipx="false" flipy="true" 
-     focusexpose="200 ms" partnerid="Ox"/>  <!-- back -->
+     focusexpose="200 ms" partnerid="Ox">  <!-- back -->
+    <transform ax="1" ay="-1" bx="0" by="512"/>
+  </camera>
   <camera id="Ox" serno="A08B101016" role="acceptor" order="1"
      xpix="512" ypix="512"
-     flipx="false" flipy="false"
-     focusexpose="3 ms" partnerid="Cc"/>  <!-- top -->
-
+     focusexpose="3 ms" partnerid="Cc">  <!-- top -->
+    <transform ax="1" ay="1" bx="0" by="0"/>
+  </camera>
   <dichannel id="FrameOx" line="28"/>
   <dichannel id="FrameCc" line="29"/>
   <dichannel id="TrigOxMon" line="26"/>

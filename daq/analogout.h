@@ -12,36 +12,48 @@ class AnalogOut: public daqTask {
   Q_OBJECT;
 public:
   static const double AO_RANGE_V = 10.0;
+  class Channel {
+  public:
+    explicit Channel(unsigned int c=0);
+    QString name() const;
+    bool operator==(Channel const &x) const { return chn==x.chn; }
+    bool operator<(Channel const &x) const { return chn<x.chn; }
+  private:
+    unsigned int chn;
+  };
 signals:
   void dataNeeded(AnalogOut *src, int nscans);
   void productionEnded(AnalogOut *src, bool ok);
 public:
   AnalogOut(class AnalogIn *master=0, QString id="");
   virtual ~AnalogOut();
-  void setMaster(class AnalogIn *master=0) throw(daqException);
-  void setData(class AnalogData *ad) throw(daqException);
+  void setMaster(class AnalogIn *master=0);
+  void setData(class AnalogData *ad, QList<Channel> const &channelmap);
   /* Data must stay available from start to stop.
      Data must be defined before calling commit or start. */
-  void setContinuous(int bufsize=1024) throw(daqException);
-  void setFiniteLength() throw(daqException);
-  virtual void commit() throw(daqException);
-  virtual void uncommit() throw(daqException);
-  virtual void start() throw(daqException);
-  virtual void stop() throw(daqException);
-  virtual void abort() throw(daqException);
-  void attachDO(class DigitalOut *slave) throw(daqException);
-  void detachDO() throw(daqException);
-  virtual int countScansSoFar() throw(daqException);
-  virtual int countScansAvailable() throw(daqException); // returns space available
-  virtual void setFrequency(double hz)  throw(daqException);
+  void setContinuous(int bufsize=1024);
+  void setFiniteLength();
+  virtual void commit();
+  virtual void uncommit();
+  virtual void start();
+  virtual void stop();
+  virtual void abort();
+  void attachDO(class DigitalOut *slave);
+  void detachDO();
+  virtual int countScansSoFar();
+  virtual int countScansAvailable(); // returns space available
+  virtual void setFrequency(double hz) ;
 private:
   class AnalogIn *master;
   class DigitalOut *doslave;
   class AnalogData *data;
   bool isCont;
+  QList<Channel> channelmap;
 public:
-  void writeData() throw(daqException);
+  void writeData();
   // Only to be used from within the dataNeeded callback.
+private:
+  QString channelName(Channel const &c) const;
 public: // for internal use
   virtual void callbackEvery(int nscans);
   virtual void callbackDone(int status);

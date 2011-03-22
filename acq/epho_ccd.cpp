@@ -15,6 +15,8 @@ EPhO_CCD::EPhO_CCD(CCDTimingDetail const &timing): timing(timing) {
 }
 
 void EPhO_CCD::prepare(DigitalData *ddata) const {
+  KeyGuard guard(*ddata);
+  
   Enumerator *lines = Enumerator::find("DIGILINES");
 
   int shtrline = lines->lookup("ExcShtr",-1);
@@ -47,7 +49,7 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
   if (ddata->getNumScans() < nscans)
     throw Exception("EPhO_CCD","Insufficient space in DigitalData","prepare");
 
-  uint32_t *data = ddata->allData();
+  uint32_t *data = ddata->allData(guard.key());
 
   for (int n=-timing.preHeatFrames(); n<timing.nframes(); n++) {
     int framestart = timing.startScans() + n*timing.periodScans();

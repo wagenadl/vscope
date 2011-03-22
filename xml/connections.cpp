@@ -10,6 +10,7 @@
 
 namespace Connections {
   QMap<QString,AIChannel *> aimap;
+  QMap<QString,AOChannel *> aomap;
   QMap<QString,DigiChannel *> digimap;
   QMap<QString,CamCon *> cammap;
   QMap<int, QString> camorder;
@@ -21,11 +22,14 @@ namespace Connections {
     scale = 1000;
     unit = "mV";
   }
-  
+
+  AOChannel::AOChannel(QString id): id(id) {
+    line = -1;
+  }
+
   CamCon::CamCon(QString id): id(id) {
     serno="-";
     partnerid="";
-    flipx = flipy = false;
     xpix = ypix = 512;
     focusexp_ms = 100;
   }
@@ -36,6 +40,16 @@ namespace Connections {
     in=true;
   }
   
+  void writeAOChannels(QDomElement doc) {
+    foreach (AOChannel const *aoc, aomap.values()) {
+      QDomElement e = doc.ownerDocument().createElement("aochannel");
+      doc.appendChild(e);
+      e.setAttribute("id",aoc->id);
+      if (aoc->line>=0)
+	e.setAttribute("line",QString("%1").arg(aoc->line));
+    }
+  }
+
   void writeAIChannels(QDomElement doc) {
     for (QMap<QString,AIChannel *>::const_iterator i=aimap.begin();
          i!=aimap.end(); ++i) {
@@ -64,8 +78,6 @@ namespace Connections {
       e.setAttribute("serno",cam.serno);
       e.setAttribute("xpix",QString::number(cam.xpix));
       e.setAttribute("ypix",QString::number(cam.ypix));
-      e.setAttribute("flipx",cam.flipx?"yes":"no");
-      e.setAttribute("flipy",cam.flipy?"yes":"no");
       Param expo("time"); expo.setDouble(cam.focusexp_ms);
       e.setAttribute("focusexpose",expo.toString());
       e.setAttribute("role", cam.isdonor ? "donor"
@@ -99,6 +111,7 @@ namespace Connections {
     }
 
     writeAIChannels(doc);
+    writeAOChannels(doc);
     writeDIOChannels(doc);
     writeCameras(doc);
   }
@@ -132,6 +145,21 @@ namespace Connections {
     }
   }
 
+    
+  void readAOChannels(QDomElement doc) {
+    Enumerator *ao = Enumerator::find("AOCHAN");
+    for (QDomElement e=doc.firstChildElement("aochannel");
+         !e.isNull(); e=e.nextSiblingElement("aochannel")) {
+      QString id = xmlAttribute(e,"id");
+      if (e.hasAttribute("line")) {
+	AOChannel *aoc = new AOChannel(id);
+	aomap[id] = aoc;
+	aoc->line = e.attribute("line").toInt();
+	ao->add(id, aoc->line);
+      }
+    }
+  }
+
   void readCameras(QDomElement doc) {
     for (QDomElement e=doc.firstChildElement("camera");
          !e.isNull(); e=e.nextSiblingElement("camera")) {
@@ -146,20 +174,12 @@ namespace Connections {
       cam->partnerid = e.attribute("partnerid");
       cam->xpix = e.attribute("xpix").toInt();
       cam->ypix = e.attribute("ypix").toInt();
-      QString flipx = e.attribute("flipx");
-      cam->flipx = flipx=="true" || flipx=="on" || flipx=="yes";
-      QString flipy = e.attribute("flipy");
-      cam->flipy = flipy=="true" || flipy=="on" || flipy=="yes";
       Param expo("time"); expo.set(e.attribute("focusexpose"));
       cam->focusexp_ms = expo.toDouble();
       QString role = e.attribute("role");
       cam->isdonor = role=="donor";
       cam->isacceptor = role=="acceptor";
-      QDomElement t = e.firstChildElement("transform");
-      if (t.isNull())
-	cam->placement = Transform();
-      else
-	cam->placement.read(t);
+      cam->placement.read(e);
     }
   }
 
@@ -199,17 +219,17 @@ namespace Connections {
     if (!aimap.isEmpty() || !digimap.isEmpty() || !cammap.isEmpty())
       dbg("Connections: Warning: Replacing old connections with new");
 
-    for (QMap<QString,AIChannel *>::iterator i=aimap.begin();
-         i!=aimap.end(); ++i)
-      delete i.value();
+    foreach (AIChannel *aic, aimap.values())
+      delete aic;
     aimap.clear();
-    for (QMap<QString,DigiChannel *>::iterator i=digimap.begin();
-         i!=digimap.end(); ++i)
-      delete i.value();
+    foreach (AOChannel *aoc, aomap.values())
+      delete aoc;
+    aomap.clear();
+    foreach (DigiChannel *dc, digimap.values())
+      delete dc;
     digimap.clear();
-    for (QMap<QString,CamCon *>::iterator i=cammap.begin();
-         i!=cammap.end(); ++i)
-      delete i.value();
+    foreach (CamCon *cc, cammap.values())
+      delete cc;
     cammap.clear();
     
     if (doc.tagName()!="connections")
@@ -218,6 +238,7 @@ namespace Connections {
       throw Exception("Connections","No <connections> element","read");
 
     readAIChannels(doc);
+    readAOChannels(doc);
     //Dbg() << "Connections: done reading AI channels. size="<<aimap.size();
     readDIChannels(doc);
     readDOChannels(doc);
@@ -227,7 +248,6 @@ namespace Connections {
 
   
   AIChannel const *findpAI(QString id) {
-    //Dbg() << "findpAI("<<id<<"). contains="<<aimap.contains(id)<<" size="<<aimap.size();
     if (aimap.contains(id))
       return aimap[id];
     else
@@ -240,6 +260,21 @@ namespace Connections {
       return *aic;
     throw Exception("Connections",
   		  "There is no channel named '" + id + "'","findAI");
+  }
+  
+  AOChannel const *findpAO(QString id) {
+    if (aomap.contains(id))
+      return aomap[id];
+    else
+      return 0;
+  }
+  
+  AOChannel const &findAO(QString id) {
+    AOChannel const *aoc = findpAO(id);
+    if (aoc)
+      return *aoc;
+    throw Exception("Connections",
+  		  "There is no channel named '" + id + "'","findAO");
   }
   
   CamCon const *findpCam(QString id) {
@@ -355,27 +390,29 @@ namespace Connections {
   		  "There is no di/do channel named '" + id + "'","findDig");
   }
   
-  QStringList digiOutputLines() {
-    QStringList l;
-    for (QMap<QString,DigiChannel *>::const_iterator i=digimap.begin();
-         i!=digimap.end(); ++i) {
-      DigiChannel const *c = i.value();
-      if (c->out)
-        l.push_back(c->id);
-    }
-    return l;
-  }
-    
   QStringList digiInputLines() {
     QStringList l;
     //dbg("connections:digiinputlines:");
-    for (QMap<QString,DigiChannel *>::const_iterator i=digimap.begin();
-         i!=digimap.end(); ++i) {
-      DigiChannel const *c = i.value();
-      //dbg("line id %s / %s",qPrintable(c->id),c->in? "in":"out");
-      if (c->in)
-        l.push_back(c->id);
-    }
+    foreach (DigiChannel const *ch, digimap.values())
+      if (ch->in)
+	l.append(ch->id);
     return l;
+  }
+
+  QStringList digiOutputLines() {
+    QStringList l;
+    //dbg("connections:digioutputlines:");
+    foreach (DigiChannel const *ch, digimap.values())
+      if (ch->out)
+	l.append(ch->id);
+    return l;
+  }
+
+  QStringList analogInputs() {
+    return aimap.keys();
+  }
+
+  QStringList analogOutputs() {
+    return aomap.keys();
   }
 }

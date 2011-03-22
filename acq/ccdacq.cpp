@@ -9,7 +9,60 @@
 #include <base/exception.h>
 #include <pvp/campool.h>
 #include "dutycyclelimit.h"
- 
+#include <math.h>
+
+static void generateMockData(CCDData *dest, CCDData::WriteKey *key, int seed) {
+  int wid = dest->getSerPix();
+  int hei = dest->getParPix();
+  int nfr = dest->getNFrames();
+  double frmdt_s = dest->getDTms()/1e3;
+  double f0_hz = 1;
+  int NX = 4; // number of patches
+  int NY = 4;
+  uint16_t *data = dest->frameData(key);
+  for (int n=0; n<nfr; n++) {
+    int x0 = 0;
+    for (int nx=0; nx<NX; nx++) {
+      int x1 = wid*(nx+1)/NX;
+      int y0 = 0;
+      for (int ny=0; ny<NY; ny++) {
+	int y1 = hei*(ny+1)/NY;
+	uint16_t *patch = data + n*(wid*hei) + y0*wid + x0;
+	double val0 = cos(2*3.14159265*f0_hz*(1+(nx&1)+(ny&1))*n*frmdt_s
+			 +nx*2345+ny*278+37*seed);
+	double val1 = 0;
+	for (int k=0; k<10; k++)
+	  val1 += double(rand())/RAND_MAX - 0.5;
+	uint16_t val = 2000+100*(nx^2)+50*(ny^2)+val0*100+val1*0;
+	int w = x1-x0;
+	int h = y1-y0;
+	for (int y=0; y<h; y++) {
+	  uint16_t *ptr = patch+y*wid;
+	  for (int x=0; x<w; x++)
+	    *ptr++ = val;
+	}
+	y0 = y1;
+      }
+      x0 = x1;
+    }
+    x0=30;
+    int x1=70;
+    int y0=50;
+    int y1=90;
+    if (x1>wid)
+      x1=wid;
+    if (y1>hei)
+      y1=hei;
+    double val0 = n%5;
+    uint16_t val = 2500+100*val0;
+    for (int y=y0; y<y1; y++) {
+      uint16_t *patch = data + n*(wid*hei) + y*wid;
+      for (int x=x0; x<x1; x++)
+	patch[x] = val;
+    }
+  }
+}
+
 CCDAcq::CCDAcq() {
   QStringList cams = Connections::allCams();
   ncams=0;
@@ -57,10 +110,10 @@ bool CCDAcq::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
   
     for (int k=0; k<ncams; k++) {
       ccdcfg[k] = cfg;
-      if (caminfo[k]->flipx)
-        ccdcfg[k].region = cfg.region.flipSerial(caminfo[k]->xpix);
-      if (caminfo[k]->flipy)
-        ccdcfg[k].region = cfg.region.flipParallel(caminfo[k]->ypix);
+      ccdcfg[k].region = CCDRegion(caminfo[k]->placement.inverse()(reg));
+      Dbg() << "Camera " << camids[k] << ": region "
+	    << ccdcfg[k].region.smin << ":" << ccdcfg[k].region.smax
+	    << " " << ccdcfg[k].region.pmin << ":" << ccdcfg[k].region.pmax;
     }
     
     for (int k=0; k<ncams; k++) {
@@ -69,10 +122,10 @@ bool CCDAcq::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
       Dbg() << "CCDAcq: camera "<< k << ": " << camids[k]<<" is " << cameras[k] << "; dest is " << dest[k];
 
 #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
-      //
+      // we are going to generate mock data
 #else
       if (!cameras[k])
-	ccdcfg[k].nframes=0; // never acquire from dummy camera
+	ccdcfg[k].nframes=0; // we won't acquire from dummy camera
 #endif
     }
 
@@ -108,6 +161,10 @@ void CCDAcq::abort() {
   for (int k=0; k<ncams; k++)
     if (cameras[k])
       cameras[k]->abort();
+
+  for (int k=0; k<ncams; k++)
+    dest[k]->checkin(keys[k]);
+  keys.clear();
   
   isActive=false;
   isGood=false;
@@ -123,20 +180,26 @@ void CCDAcq::start() {
     if (!dest[k] && cameras[k])
       throw Exception("CCDAcq","Cannot start without destination buffers");
 
-    for (int k=0; k<ncams; k++)
-      if (dest[k])
-	dest[k]->reshape(ccdcfg[k].getSerPix(),ccdcfg[k].getParPix(),
-			 ccdcfg[k].nframes);
+  for (int k=0; k<ncams; k++)
+    if (dest[k])
+      dest[k]->reshape(ccdcfg[k].getSerPix(),ccdcfg[k].getParPix(),
+		       ccdcfg[k].nframes);
+  
+  for (int k=0; k<ncams; k++) 
+    if (dest[k])
+      dest[k]->setTimeBase(t0_ms,dt_ms);
 
-    for (int k=0; k<ncams; k++) 
-      if (dest[k])
-	dest[k]->setTimeBase(t0_ms,dt_ms);
-
+  keys.clear();
+  for (int k=0; k<ncams; k++)
+    keys.append(dest[k]->checkout());
+  
   try {
     for (int k=0; k<ncams; k++)
       if (cameras[k])
-	cameras[k]->startFinite(dest[k]->frameData(),
+	cameras[k]->startFinite(dest[k]->frameData(keys[k]),
 				dest[k]->getTotalPix());
+      else if (dest[k])
+	generateMockData(dest[k], keys[k], k);
     isActive = true;
   } catch (Exception const &) {
     dbg("CCDAcq: exception during start");
@@ -177,12 +240,18 @@ bool CCDAcq::hasEnded() {
       isActive = false;
       isDone = true;
       isGood = true;
+      for (int k=0; k<ncams; k++)
+	dest[k]->checkin(keys[k]);
+      keys.clear();
     }
   } catch (Exception const &) {
     fprintf(stderr,"ccdAcq caught exception.\n");
     isActive = false;
     isDone = true;
     isGood = false;
+    for (int k=0; k<ncams; k++)
+      dest[k]->checkin(keys[k]);
+    keys.clear();
   }
 
   return isActive ? false : isDone;

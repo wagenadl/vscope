@@ -16,8 +16,8 @@ VSDGraph::VSDGraph(ROIData3Set *rs3d, QWidget *parent): LineGraph(parent) {
   trcRatio = new TraceInfo();
   autoSetXRange();
 
-  connect(data, SIGNAL(changedOne(int)), SLOT(updateROI(int)));
-  connect(data, SIGNAL(changedAll()), SLOT(updateROIs()));
+  connect(data, SIGNAL(newDatum(int)), SLOT(updateROI(int)));
+  connect(data, SIGNAL(newAll()), SLOT(updateROIs()));
 }
 
 VSDGraph::~VSDGraph() {
@@ -52,7 +52,7 @@ void VSDGraph::updateSelection(int id) {
   selid = id;
   if (data->haveData(selid)) {
     CamPair const &cams = data->getCam(selid);
-    ROI3Data *d3 = data->getData(selid);
+    ROI3Data const *d3 = data->getData(selid);
     bool plotDonor = d3->getDonorNFrames();
     bool plotAcceptor = d3->getAcceptorNFrames();
     bool plotRatio = d3->getRatioNFrames() && plotDonor && plotAcceptor;
@@ -92,7 +92,7 @@ void VSDGraph::paintEvent(class QPaintEvent *e) {
       setAutoRepaint(false);
 
     if (data->haveData(selid)) {
-      ROI3Data *d3 = data->getData(selid);
+      ROI3Data const *d3 = data->getData(selid);
       bool plotDonor = d3->getDonorNFrames();
       bool plotAcceptor = d3->getAcceptorNFrames();
       bool plotRatio = d3->getRatioNFrames() && plotDonor && plotAcceptor;

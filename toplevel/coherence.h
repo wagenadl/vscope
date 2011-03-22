@@ -31,7 +31,7 @@ public:
    */
   class CohData /*const*/ *getData() const { return data; }
 public slots:
-  void setRefTrace(int achn);
+  void setRefTrace(QString achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
   void setShowMode(ROIImage::ShowMode sm);

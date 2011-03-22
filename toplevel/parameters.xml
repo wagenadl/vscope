@@ -89,7 +89,7 @@
   </category>
 
   <category id="acqEphys">
-    <param id="acqTime" type="time" default="11 s" min="1 s" max="1 h"/>
+    <param id="acqTime" type="time" default="1.1 s" min="1 s" max="1 h"/>
     <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
     <param id="acqFreq" type="freq" default="10 kHz" min="100 Hz" max="100 kHz"/>
 
@@ -122,11 +122,11 @@
   </category>
 
   <category id="acqCCD">
-    <param id="enable" type="bool" default="false"/>
+    <param id="enable" type="bool" default="true"/>
     <param id="binning" type="geometry" default="1x1+0+0"/>
     <param id="region" type="geometry" default="512x512+0+0"/>
-    <param id="delay" type="time" default="500 ms" min="0 ms" max="1 h"/>
-    <param id="dur" type="time" default="10 s" min="100 ms" max="1 h"/>
+    <param id="delay" type="time" default="100 ms" min="0 ms" max="1 h"/>
+    <param id="dur" type="time" default=".8 s" min="100 ms" max="1 h"/>
     <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="100 Hz"/>
     <param id="preIllum" type="time" default="1.5 ms" min="0 ms" max="1 h"/>
     <param id="postIllum" type="time" default="0.1 ms" min="0 ms" max="1 h"/>
