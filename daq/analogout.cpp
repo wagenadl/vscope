@@ -72,7 +72,7 @@ void AnalogOut::commit() {
   dbg("  aout:channels created. bufsi=%i",bufsi);
   
   if (master) {
-    QByteArray clockname = (deviceID() + "/ai/SampleClock").toAscii();
+    QByteArray clockname = ("/" + deviceID() + "/ai/SampleClock").toAscii();
     if (isCont)
       throw Exception("AnalogOut",
 		      "Continuous output not possible as slave");
