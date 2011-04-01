@@ -5,7 +5,7 @@ TEMPLATE = app
 TARGET = ../vscope.bin
 include(../config.pro)
 
-HEADERS += vscopegui.h gt_slots.h version.h globals.h
+HEADERS += vscopegui.h gt_slots.h globals.h
 SOURCES += vscopegui.cpp main.cpp globals.cpp
 SOURCES += gt_slots.cpp gt_openclose.cpp gt_selected.cpp 
 SOURCES += gt_clicked.cpp gt_paramchanged.cpp

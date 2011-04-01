@@ -101,8 +101,10 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
     nscans =  EPHYSACQ_CONTACQ_CHUNKSIZE * EPHYSACQ_CONTACQ_CHUNKS_IN_BUFFER;
   adata->reshape(nscans, nchans);
   int idx=0;
-  foreach (QString id, chmap.values())
-    adata->defineChannel(idx++, id);
+  foreach (QString id, chmap.values()) {
+    Connections::AIChannel const &aic = Connections::findAI(id);
+    adata->defineChannel(idx++, id, aic.scale, aic.unit);
+  }
   adata->setSamplingFrequency(samprate_hz);
 
   ddata->reshape(nscans);

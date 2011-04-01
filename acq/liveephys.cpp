@@ -423,7 +423,10 @@ void LiveEPhys::newTimebase() {
     AnalogData const *src = contacq->adata();
     if (src) 
       for (int idx=0; idx<nchans; idx++) 
-	data->defineChannel(idx, src->getChannelAtIndex(idx));
+	data->defineChannel(idx,
+			    src->getChannelAtIndex(idx),
+			    src->getScaleAtIndex(idx),
+			    src->getUnitAtIndex(idx));
     else 
       throw Exception("LiveEPhys","No contacq src. This should not happen. (3)");
   } else {
