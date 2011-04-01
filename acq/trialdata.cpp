@@ -309,6 +309,7 @@ void TrialData::writeDigital(QString base) const {
 
 void TrialData::writeCCD(QString base) const {
   QDomElement ccd = xml->find("ccd");
+  ccd.setAttribute("cameras", QString::number(camids.size()));
   QString ccdfn = base + "-ccd.dat";
   QFile ccdf(ccdfn);
   if (!ccdf.open(QIODevice::WriteOnly))
