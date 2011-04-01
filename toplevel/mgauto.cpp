@@ -181,9 +181,10 @@ void MGAuto::newtraces() {
 		      DataPtr(aacq->channelData(c.id)),
 		      aacq->getNumScans(),
 		      aacq->getNumChannels());
-	  Connections::AIChannel const &aich = Connections::findAI(c.id);
-	  tr->setScaleFactor(aich.scale);
-	  g->setYLabel("("+aich.unit+")");
+	  tr->setScaleFactor(aacq->getScaleAtIndex(aacq->whereIsChannel(c.id)));
+	  g->setYLabel("("
+		       +aacq->getUnitAtIndex(aacq->whereIsChannel(c.id))
+		       +")");
 	}
 	break;
       case Channel::AO:
