@@ -349,10 +349,7 @@ void TrialData::readCCD(XML &myxml, QString base) {
   if (ccd.hasAttribute("type"))
     throw Exception("TrialData",
 		    "Loading of ancient CCD file format not yet implemented");
-  if (ccd.hasAttribute("rate"))
-    throw Exception("TrialData",
-		    "Loading of olde CCD file format not yet implemented");
-  // So now we know we are modern.
+  // So now we know we are modern or at least not ancient.
   QString ccdfn = base + "-ccd.dat";
   QFile ccdf(ccdfn);
   if (!ccdf.open(QIODevice::ReadOnly))
@@ -367,6 +364,12 @@ void TrialData::readCCD(XML &myxml, QString base) {
   for (QDomElement cam = ccd.firstChildElement("camera");
        !cam.isNull(); cam = cam.nextSiblingElement("camera")) {
     QString id = cam.attribute("name");
+    /* This is to make format (2) look like format (3). */
+    if (!cam.hasAttribute("rate"))
+      cam.setAttribute("rate", ccd.attribute("rate"));
+    if (!cam.hasAttribute("delay"))
+      cam.setAttribute("delay", ccd.attribute("delay"));
+    /* End of format conversion. */
     newset.insert(id);
     newcams.append(id);
     if (!oldset.contains(id))

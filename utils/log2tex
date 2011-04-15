@@ -318,7 +318,11 @@ EOF
 \def\capface{\normalfont\sffamily\itshape\scriptsize}
 \parindent=0.0cm
 \def\newdate#1{{\normalfont\normalsize\sffamily\bfseries#1}}
-\def\myfig#1#2{\kern3pt\mbox{}\kern.25cm\begin{minipage}[b]{.5in}\capface#2\vspace{2.27in}\end{minipage}~\includegraphics[width=2.5in]{#1}}
+\def\myfig#1#2{\kern2pt\begin{minipage}[t]{.5in}\capface#2\end{minipage}~\begin{minipage}[t]{2.5in}~\vspace{-7pt}\\\includegraphics[width=2.5in]{#1}\end{minipage}\vspace{1pt}}
+
+%\begin{tabular}{p{.5in}r}\capface#2&\includegraphics[width=2.5in]{#1}\\\end{tabular}}
+
+%\mbox{}\kern.25cm\begin{minipage}[b]{.5in}\capface#2\vspace{2.27in}\end{minipage}~\includegraphics[width=2.5in]{#1}}
 EOF
 
 # -- Start the document

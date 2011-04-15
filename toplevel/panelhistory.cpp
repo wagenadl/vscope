@@ -277,12 +277,12 @@ void PanelHistory::doubleClicked(QString id, QString) {
   else
     figno=1;
   lasttrial = newtrial;
-  QString figId = QString("%1").arg(figno,int(2),int(10),QChar('0'));
   QString path = filePath + "/" + exptname;
   QDir d; d.mkpath(path);
   QString leaf;
   QString fileName;
   while (true) {
+    QString figId = QString("%1").arg(figno,int(2),int(10),QChar('0'));
     leaf = trialid + "-fig-" + figId + "-" + what + ".png";
     fileName = path + "/" + leaf;
     QFile f(fileName);

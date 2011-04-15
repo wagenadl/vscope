@@ -121,7 +121,16 @@ void CCDData::read(QFile &f, QDomElement src) {
   
   reshape(nser, npar, nfrm);
   setTimeBase(t0_ms, rate_hz ? 1e3/rate_hz : 1);
-  Transform t(src);
+  Transform t;
+  if (src.hasAttribute("flipx")) {
+    /* Old style format with flipx and flipy instead of full transform. */
+    if (src.attribute("flipx")=="yes")
+      t.flipx(nser);
+    if (src.attribute("flipy")=="yes")
+      t.flipy(npar);
+  } else {
+    t.read(src);
+  }
   setDataToCanvas(t);
   
   int nbytes = nfrm*nser*npar*2;
