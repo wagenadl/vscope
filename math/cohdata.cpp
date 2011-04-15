@@ -298,6 +298,11 @@ void CohData::recalcReference() const {
       : refType==refANALOG ? adata->getNumScans()
       : refType==refFIXED ? 1000000000
       : 0;
+    double fs_hz =
+      refType==refDIGITAL ? ddata->getSamplingFrequency()
+      : refType==refANALOG ? adata->getSamplingFrequency()
+      : refType==refFIXED ? 1
+      : 0;
     dbg("CohData: adata=%p adata->data=%p asrc=%p ref_chn=%s",
 	adata,adata?adata->allData():0,asrc,qPrintable(ref_chn));
     
@@ -310,10 +315,11 @@ void CohData::recalcReference() const {
       for (int k=0; k<N; k++)
 	ref[k]=0;
       data.fstar_hz[cp] = 1;
-      return;
+      continue;
     }
+
     dbg("CohData:recRef: N=%i dt_ms=%g fs_hz=%g ephl=%i",
-	N,t.dt_ms(),t.fs_hz(),ephyslen);
+	N,t.dt_ms(),fs_hz,ephyslen);
     for (int k=0; k<N; k++) {
       double tstart = t.t0_ms()+(k+COH_STRIP_START)*t.dt_ms();
       double tend = tstart+t.dt_ms();
