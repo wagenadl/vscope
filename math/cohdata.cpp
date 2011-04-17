@@ -12,8 +12,10 @@
 #include <base/analogdata.h>
 #include <base/digitaldata.h>
 
-#define COH_STRIP_START 1
-#define COH_STRIP_END   2
+//#define COH_STRIP_START 1
+//#define COH_STRIP_END   2
+#define COH_STRIP_START 2
+#define COH_STRIP_END   0
 
 QSet<QString> CohData::warned;
 
@@ -301,7 +303,7 @@ void CohData::recalcReference() const {
     double fs_hz =
       refType==refDIGITAL ? ddata->getSamplingFrequency()
       : refType==refANALOG ? adata->getSamplingFrequency()
-      : refType==refFIXED ? 1
+      : refType==refFIXED ? 1e6
       : 0;
     dbg("CohData: adata=%p adata->data=%p asrc=%p ref_chn=%s",
 	adata,adata?adata->allData():0,asrc,qPrintable(ref_chn));
@@ -322,9 +324,9 @@ void CohData::recalcReference() const {
 	N,t.dt_ms(),fs_hz,ephyslen);
     for (int k=0; k<N; k++) {
       double tstart = t.t0_ms()+(k+COH_STRIP_START)*t.dt_ms();
-      double tend = tstart+t.dt_ms();
-      int istart = int(tstart/1e3*t.fs_hz());
-      int iend = int(tend/1e3*t.fs_hz());
+      double tend = tstart+t.dt_ms()*t.duty_percent()/100;
+      int istart = int(tstart/1e3*fs_hz);
+      int iend = int(tend/1e3*fs_hz);
       if (istart<0)
 	istart=0;
       if (iend>ephyslen)
@@ -398,13 +400,26 @@ void CohData::recalcReference() const {
       Tapers const &tapers = Taperbank::tapers(tid);
       psdest->compute(ref, dt_s, df_hz, tapers);
       double max=0;
+      double df2_best = numbers.inf;
       int N = psdest->psd.size();
       for (int n=0; n<N; n++) { // skip DC
 	dbg("psd at %5.2f Hz: %5.2f",psdest->freqbase[n],psdest->psd[n]);
-	if (n>0 && psdest->psd[n]>max) {
-	  max = psdest->psd[n];
-	  data.fstar_hz[cp] = psdest->freqbase[n];
+	bool best;
+	if (refType==refFIXED) {
+	  double f = psdest->freqbase[n];
+	  double df = f-ref_hz;
+	  double df2 = df*df;
+	  best = df2<df2_best;
+	  if (best)
+	    df2_best = df2;
+	} else {
+	  double y = psdest->psd[n];
+	  best = n>0 && y>max;
+	  if (best)
+	    max = y;
 	}
+	if (best)
+	  data.fstar_hz[cp] = psdest->freqbase[n];
       }
     } else {
       data.fstar_hz[cp] = 1;
@@ -412,7 +427,7 @@ void CohData::recalcReference() const {
 	warn(QString("Missing tapers '%1'. Please supply using preptaper('%2') in matlab.").arg(tid.name()).arg(tid.name()));
 	warned.insert(tid.name());
       }
-    }    
+    }
   }
 }
 
