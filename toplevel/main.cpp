@@ -377,6 +377,7 @@ void reportDAQSituation() {
 int main(int argc, char **argv) {
   GUIExc::setArgs(argc, argv);
   QApplication app(argc, argv);
+  Warning::enableGUIWarnings();
   try {
     checkTypes();
     setupAppStyle(app);

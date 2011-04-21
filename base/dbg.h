@@ -39,6 +39,12 @@ protected:
 class Warning: public Dbg {
 public:
   Warning() throw();
+  virtual ~Warning() throw();
+  static void enableGUIWarnings();
+  static void disableGUIWarnings();
+private:
+  QString t0;
+  static bool guiwarn_enabled;
 };
 
 class DbgFile {

@@ -147,10 +147,11 @@ bool CohData::validate() const {
 	  dbg("cohdata %i: %4.2f %3.0f",id,
 	      data.coh_mag[id],data.coh_pha[id]*180/3.1415);
 	} else if (!warned.contains(tid.name())) {
-	  warn(QString("Missing tapers '%1'.")
+	  Warning()
+	    << QString("Missing tapers '%1'.")
 	       .arg(tid.name())
-	       + QString("Please supply using preptaper('%2') in matlab.")
-	       .arg(tid.name()));
+	       +QString("Please supply using vscope_preptaper('%1') in matlab.")
+	       .arg(tid.name());
 	  warned.insert(tid.name());
 	}
       }
@@ -424,7 +425,11 @@ void CohData::recalcReference() const {
     } else {
       data.fstar_hz[cp] = 1;
       if (!warned.contains(tid.name())) {
-	warn(QString("Missing tapers '%1'. Please supply using preptaper('%2') in matlab.").arg(tid.name()).arg(tid.name()));
+	Warning()
+	  << QString("Missing tapers '%1'.")
+	  .arg(tid.name())
+	  +QString("Please supply using vscope_preptaper('%1') in matlab.")
+	  .arg(tid.name());
 	warned.insert(tid.name());
       }
     }

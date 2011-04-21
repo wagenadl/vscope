@@ -10,7 +10,9 @@
 class GUIExc {
 public:
   static void report(Exception const &e, QString reporter) throw();
+  // report calls saveSettings
   static void warn(QString txt) throw();
+  // warn does not call saveSettings
 public:
   static void setSettingsDir(QString path);
   static void setParamTree(class ParamTree const *ptree);

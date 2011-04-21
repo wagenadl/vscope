@@ -51,6 +51,7 @@ private:
   double ival_ms;
   QTimer timer;
   int lineno;
+  int loopno;
 };
 
 #endif

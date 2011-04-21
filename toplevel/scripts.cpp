@@ -225,6 +225,7 @@ void Scripts::run() {
   script.setText(editor->document()->toPlainText());
   it = script.contents().begin();
   lineno = 0;
+  loopno = 1;
   runSome();
 }
 
@@ -238,7 +239,9 @@ void Scripts::runSome() {
   while (it!=script.contents().end()) {
     Script::Command const &c(*it);
     ++it; ++lineno;
-    statusLabel->setText(QString("Running; at line %1").arg(lineno));
+    statusLabel->setText(QString("Running; at line %1 (iteration %2)")
+			 .arg(lineno)
+			 .arg(loopno));
     switch (c.kwd) {
     case Script::KW_SET:
       Globals::ptree->find(c.arg1).set(c.arg2);
@@ -260,6 +263,7 @@ void Scripts::runSome() {
       break;
     case Script::KW_LOOP:
       it=script.contents().begin();
+      loopno++;
       lineno=0;
       for (int k=0; k<c.argv-1; k++) {
 	++it;
@@ -276,7 +280,8 @@ void Scripts::runSome() {
 void Scripts::stop() {
   Dbg() << "Scripts::stop";
   timer.stop();
-  statusLabel->setText("Stopped");
+  statusLabel->setText(QString("Stopped (at line %1; iteration %2)")
+		       .arg(lineno).arg(loopno));
   active = false;
   Globals::ptree->find("scripts/_run").set("off");
   Globals::gui->findPage("scripts").open();

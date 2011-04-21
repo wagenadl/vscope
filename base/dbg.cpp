@@ -10,6 +10,7 @@
 #include <base/exception.h>
 #include <QRectF>
 #include <QLineF>
+#include <QMessageBox>
 
 Dbg::Dbg(QObject const *x) throw() {
   try {
@@ -31,14 +32,6 @@ Dbg::~Dbg() throw () {
     if (!dbgfile)
       dbgfile = new DbgFile();
     *dbgfile << txt;
-  } catch (...) {
-    ;
-  }
-}
-
-Warning::Warning() throw() {
-  try {
-    txt += "WARNING: ";
   } catch (...) {
     ;
   }
@@ -152,4 +145,34 @@ Dbg &Dbg::operator<<(QLine const &x) {
 
 Dbg &Dbg::operator<<(QLineF const &x) {
   return *this << x.p1() << "-" << x.p2();
+}
+
+//////////////////////////////////////////////////////////////////////
+Warning::Warning() throw() {
+  try {
+    txt += "WARNING: ";
+    t0 = txt;
+  } catch (...) {
+    ;
+  }
+}
+
+bool Warning::guiwarn_enabled = false;
+
+void Warning::enableGUIWarnings() {
+  guiwarn_enabled = true;
+}
+
+void Warning::disableGUIWarnings() {
+  guiwarn_enabled = false;
+}
+
+Warning::~Warning() throw() {
+  if (guiwarn_enabled) {
+    try {
+      QMessageBox::warning(0, "VScope Warning", txt.mid(t0.size()));
+    } catch (...) {
+      ;
+    }
+  }
 }

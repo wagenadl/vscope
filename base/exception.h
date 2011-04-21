@@ -72,21 +72,4 @@ class SysExc: public Exception {
    */
 };
 
-extern void warn(QString msg);
-/*:F warn
- *:D Emits a warning to stderr, and enqueues it for later gui handling
- */
-
-extern bool haveWarnings();
-/*:F haveWarnings
- *:D Returns true iff there are any warnings in the queue
- */
-
-extern QString getWarning();
-/*:F getWarning
- *:D Returns the oldest warning in the queue, or null if none.
- *:N The warning is removed from the queue, so you will not hear about it
-     again.
-*/
-
 #endif

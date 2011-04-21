@@ -161,24 +161,3 @@ SysExc::SysExc(QString issuer, QString msg, QString aux):
   addMessage(strerror(errno));
 }
 
-static QQueue<QString> warnlist;
-static bool havewarn = false;
-
-void warn(QString msg) {
-  fprintf(stderr,"%s\n",qPrintable(msg));
-  warnlist.enqueue(msg);
-  havewarn = true;
-}
-
-bool haveWarnings() {
-  return havewarn;
-}
-
-QString getWarning() {
-  QString res;
-  if (havewarn) {
-    res = warnlist.dequeue();
-    havewarn = !warnlist.isEmpty();
-  }
-  return res;
-}
