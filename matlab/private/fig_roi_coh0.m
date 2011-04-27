@@ -51,7 +51,7 @@ axis image;
 set(gca,'XTick',[]);
 set(gca,'YTick',[]);
 h=colorbar;
-set(h,'position',[.85 .1 .05 .8]);
+set(h,'position',[.85 .1 .05 .8], 'tag','Colorbar');
 title(title_string);
 
 % generate the ROI color map (for display only)

@@ -8,6 +8,9 @@ function str=vscope_cohere(x, ref, dff)
 %    loaded using VSCOPE_LOAD, or a structure loaded by VSCOPE_LOAD.
 %    VSCOPE_COHERE(x, ref, dff) prespecifies the signals. Otherwise, they
 %    are extracted using VSCOPE_RATIO with debleach set to 2.
+%    It is also allowed for REF to be a vector specifying a reference signal
+%    directly. In that case, REF must be the same length as the columns of
+%    DFF.
 
 frange=[.5 inf 1];
 f0=frange(1); f1=frange(2); fpre=frange(3);
@@ -23,9 +26,12 @@ if ischar(ref)
     error('Unknown reference channel');
   end
   f_star_hz = [];
-else
+elseif length(ref)==1
   chanidx = [];
   f_star_hz = ref;
+else
+  chanidx = [];
+  f_star_hz = [];
 end
 
 if nargin<3
@@ -39,7 +45,6 @@ alpha_ci = .31; % one-sigma error bars
 %alpha_ci = 1; % Do not show error bars
 alpha_thresh_single = .01; % Really, should be 10^-4 to avoid slew of false positives.
 %alpha_thresh_single=1;
-f_star = 1.; % Hz
 phase_delay_s = 0; %.10;
 
 show_rois = 1;
@@ -78,8 +83,10 @@ if ~isempty(chanidx)
   ephys_opt_freq = mean(diff(te)) / mean(diff(tt));
   [b,a] = butterlow1(3*ephys_opt_freq);
   y_ref = interp1(te,filtfilt(b,a,x.analog.dat(:,chanidx)),tt,'linear');
+elseif ~isempty(f_star_hz)
+  y_ref = sin(2*pi*tt*f_star_hz);
 else
-  y_ref = sin(2*pi*tt*f_star);
+  y_ref = ref(2:end);
 end
 
 
