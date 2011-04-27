@@ -20,6 +20,7 @@ end
 % figure out how many total plots there will be
 n_e_plots=sum(plot_tog);
 n_plots=n_e_plots+n_rois;
+n_plots = max(n_plots, 14);
 
 % setup time axis limits
 if n_rois==0
@@ -37,44 +38,57 @@ t_range = t_max-t_min;
 dff_bar_size=0.1;
 
 % set up the figure
-prepfig(7, 10, 3);
+prepfig(3.7, 11, 3);
 
 % do the optical plots
 plot_index=1;
 dy0 = .94/n_plots;
 yy0 = .03 + [n_plots-1:-1:0]*dy0;
+T = length(t_o);
+I0 = ceil(.1*T);
+I1 = ceil(.9*T);
+clr={'k','b'};
+clridx=1;
 for k=1:n_rois
   axes('Position',[0 yy0(k) 1 dy0], 'visible', 'off');
   hold on
-  plot(t_o, 100*roi_dff(:,k), 'k');
-  axis tight
-  a=axis;
-  y0 = (a(3)+a(4))/2;
-  plot([0 0] + t_max + .02*t_range, y0+[-.5 .5]*dff_bar_size, ...
-      'k', 'linewidth', 3);
-  text(t_min - .01*t_range, y0, roi_labels{k}, 'horizontala', 'right');
-  axis([t_min - .05*t_range, t_max + .03*t_range, a(3), a(4)]);
+  yy = 100*roi_dff(:,k);
+  plot(t_o, yy, 'color', clr{clridx});
+  ymin = min(yy(I0:I1));
+  ymax = max(yy(I0:I1));
+  y0 = (ymin + ymax)/2;
+  plot([0 0] + t_max + .01*clridx*t_range, y0+[-.5 .5]*dff_bar_size, ...
+      'color', clr{clridx}, 'linewidth', 3);
+  text(t_min - .01*t_range, y0, roi_labels{k}, ...
+      'color', clr{clridx}, 'horizontala', 'right');
+  axis([t_min - .05*t_range, t_max + .03*t_range, ymin, ymax]);
+  clridx = 3 - clridx;
 end
 
 % do the e-phys plots
 n_traces=size(e_phys,2);
 idx = n_rois + cumsum(plot_tog);
+T = length(t_e);
+I0 = ceil(.1*T);
+I1 = ceil(.9*T);
 for k=1:n_traces
   if plot_tog(k)
     axes('position', [0 yy0(idx(k)) 1 dy0], 'visible', 'off');
     hold on
-    plot(t_e, e_phys(:,k), 'k');
-    axis tight
-    a=axis;
-    y0 = (a(3)+a(4))/2;
+    yy = e_phys(:,k);
+    plot(t_e, yy, 'color', clr{clridx});
+    ymin = min(yy(I0:I1));
+    ymax = max(yy(I0:I1));
+    y0 = (ymin + ymax)/2;
     text(t_min - .05*t_range, y0, [ ' ' eph_info.chanid{k} ],...
-	'horizontala', 'left', 'interp', 'none');
-    dy = sensiblestep(a(4)-a(3));
+	'color', clr{clridx}, 'horizontala', 'left', 'interp', 'none');
+    dy = sensiblestep(ymax - ymin);
     plot([0 0] + t_max + .02*t_range, y0+[-.5 .5]*dy, ...
-	'k', 'linewidth', 3);
+	'color', clr{clridx}, 'linewidth', 3);
     text(t_max + .02*t_range, y0, sprintf('%g %s ',dy, eph_info.units{k}), ...
-	'horizontala', 'right');
-    axis([t_min - .05*t_range, t_max + .03*t_range, a(3), a(4)]);
+	'color', clr{clridx}, 'horizontala', 'right');
+    axis([t_min - .05*t_range, t_max + .03*t_range, ymin, ymax]);
+    clridx = 3 - clridx;
   end
 end
 
@@ -105,3 +119,5 @@ axis([t_min - .05*t_range, t_max + .03*t_range, -.5, .5]);
 text((t_min+t_max)/2, 0, title_string, ...
      'horizontalalignment', 'center',...
      'verticalalignment', 'middle');
+
+ set(findobj(gcf, 'type', 'line'), 'clipping', 'off');

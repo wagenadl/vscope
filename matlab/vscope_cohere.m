@@ -1,4 +1,4 @@
-function str=vscope_cohere(x, ref, dff)
+function str=vscope_cohere(x, ref, dff, ofnbase)
 % VSCOPE_COHERE - Calculate coherence between signals and reference
 %    VSCOPE_COHERE(x, f_hz) calculates and displays coherence
 %    for trial X to a sine wave of the given frequency.
@@ -11,12 +11,21 @@ function str=vscope_cohere(x, ref, dff)
 %    It is also allowed for REF to be a vector specifying a reference signal
 %    directly. In that case, REF must be the same length as the columns of
 %    DFF.
+%    VSCOPE_COHERE(..., ofnbase) saves the graphs
+%    str = VSCOPE_COHERE(...) returns the data
+%    If X is a number and OFNBASE is not given, it is automatically set.
 
-frange=[.5 inf 1];
+frange=[.2 inf 1];
 f0=frange(1); f1=frange(2); fpre=frange(3);
-ofnbase = '';
+
+if nargin<4
+  ofnbase=[];
+end
 
 if ~isstruct(x)
+  if nargin<4
+    ofnbase = sprintf('%03i-cohere', x);
+  end
   x = vscope_load(x);
 end
 
@@ -34,8 +43,8 @@ else
   f_star_hz = [];
 end
 
-if nargin<3
-  dff = vscope_ratio(x.ccd, x.rois, 2);
+if nargin<3 | isempty(dff)
+  dff = vscope_ratio(x, 2);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,7 +54,8 @@ alpha_ci = .31; % one-sigma error bars
 %alpha_ci = 1; % Do not show error bars
 alpha_thresh_single = .01; % Really, should be 10^-4 to avoid slew of false positives.
 %alpha_thresh_single=1;
-phase_delay_s = 0; %.10;
+f_star = 1.; % Hz
+phase_delay_s = .10;
 
 title_string = sprintf('%s #%03i',x.info.expt, x.info.trial);
 e_phys_plot_tog=zeros(1,length(x.analog.info.channo));
@@ -63,14 +73,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 y_sigs = dff(2:end,:);
-
-if filter_flag
-  [b,a] = butterhigh1(.05);
-  for n=1:N
-    y_sigs(:,n) = filtfilt(b,a,y_sigs(:,n));
-  end
-end
-
 tt = vscope_ccdtime(x); tt = tt(2:end);
 te = vscope_ephystime(x);
 
@@ -79,11 +81,11 @@ if ~isempty(chanidx)
   [b,a] = butterlow1(3*ephys_opt_freq);
   y_ref = interp1(te,filtfilt(b,a,x.analog.dat(:,chanidx)),tt,'linear');
 elseif ~isempty(f_star_hz)
-  y_ref = sin(2*pi*tt*f_star_hz);
+  y_ref = sin(2*pi*tt*f_star);
 else
   y_ref = ref(2:end);
 end
-
+y_ref = detrend(y_ref);
 
 % pick the frequency resolutions
 f_res_pow=1/3;  % Hz
@@ -93,15 +95,19 @@ f_res_coh=2/3;  % Hz
 [f_ref,P_ref]=pds_mtm0(tt,y_ref,f_res_pow);
 [f_sigs,P_sigs]=pds_mtm0(tt,y_sigs,f_res_pow);
 
-f_star = f_ref(argmax(P_ref))
+f_star = f_ref(argmax(P_ref));
 if f_star<f0 | f_star>f1
-  f_star=fpre
+  f_star=fpre;
 end
 phase_offset = 2*pi*phase_delay_s*f_star;
-figure(4); clf
-plot(f_ref,P_ref);
+prepfig(5,2,4);
+clf
+plot(f_ref, P_ref);
 hold on
-plot(f_star,max(P_ref),'r.');
+plot(f_star, max(P_ref), 'r.');
+xlabel 'Frequency (Hz)'
+ylabel 'Reference power (a.u.)'
+set(gca, 'box', 'off');
 
 rndn=randn(size(y_sigs))*1e-18;
 y_sigs(isnan(y_sigs))=rndn(isnan(y_sigs));
@@ -164,21 +170,27 @@ vscope_proofsheet(tt, sigs_sorted, sig_labels_sorted, ...
     title_string);
 
 if ~isempty(ofnbase)
-  for f=1:3
+  for f=1:4
     figure(f);
     printto(sprintf('%s-%i.eps',ofnbase,f));
   end
   fn=tempname;
   fd=fopen(fn,'w');
-  fprintf(fd,'panel "A" l=.4in b=.7in {\n  image %s-3.eps\n}\n',ofnbase); 
-  fprintf(fd,'panel "C" A.b l=A.r {\n  image %s-2.eps\n}\n',ofnbase);
-  fprintf(fd,'panel "B" b=C.t+.5in C.l {\n  image %s-1.eps\n}\n',ofnbase);
+  fprintf(fd,'panel "A" l=.4in b=.7in h=9.5in {\n  image %s-3.eps\n}\n', ...
+      ofnbase); 
+  fprintf(fd,'panel "B" A.t l=A.r+.2in w=3.5in {\n  image %s-1.eps\n}\n', ...
+      ofnbase);
+  fprintf(fd,'panel "C" t=B.b-.5in B.l B.w {\n  image %s-2.eps\n}\n', ...
+      ofnbase);
+  fprintf(fd,'panel "D" t=C.b-.5in B.l B.w {\n  image %s-4.eps\n}\n', ...
+      ofnbase);
   fclose(fd);
   unix(sprintf('panelist %s > %s.eps\n',fn,ofnbase));
   unix(sprintf('unlink %s',fn));
   unix(sprintf('unlink %s-1.eps',ofnbase));
   unix(sprintf('unlink %s-2.eps',ofnbase));
   unix(sprintf('unlink %s-3.eps',ofnbase));
+  unix(sprintf('unlink %s-4.eps',ofnbase));
 end
   
 str.mag_thresh = C_mag_thresh;

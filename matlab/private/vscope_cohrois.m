@@ -16,7 +16,7 @@ NVERT=16;
 roi_xx=cell(n_rois,1);
 roi_yy=cell(n_rois,1);
 for n=1:n_rois
-  [roi_xx{n}, roi_yy{n}] = vscope_roioutline(rois{n})
+  [roi_xx{n}, roi_yy{n}] = vscope_roioutline(rois{n});
 end
 
 if nargin<6
@@ -45,7 +45,7 @@ cc(:,:,2) = .65;
 cmap = colorspace('rgb<-hsv',cc);
 image(X*[4.03 4.09]/4, Y*[.95 .05], repmat(cmap, [1 2 1]));
 for ph=[0:90:360]
-  text(X*4.16/4, .95*Y-.9*Y*ph/360,sprintf('%g{}^{o}',ph));
+  text(X*4.16/4, .95*Y-.9*Y*ph/360,sprintf('%g{}^{\\circ}',ph));
 end
 caxis(ca);
 

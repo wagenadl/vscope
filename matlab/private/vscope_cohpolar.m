@@ -58,12 +58,12 @@ line(r_thresh*cos(th),...
 % annotate spokes in degrees
 rt = 1.01;
 text(rt, 0, '0^\circ', 'horizontala', 'left', 'verticala', 'middle');
-text(-rt, 0, '180^o', 'horizontala', 'right', 'verticala', 'middle');
-text(0, rt, '90^o', 'horizontala', 'center', 'verticala', 'bottom');
-text(0, -rt, '270^o', 'horizontala', 'center', 'verticala', 'top');
+text(-rt, 0, '180^\circ', 'horizontala', 'right', 'verticala', 'middle');
+text(0, rt, '90^\circ', 'horizontala', 'center', 'verticala', 'bottom');
+text(0, -rt, '270^\circ', 'horizontala', 'center', 'verticala', 'top');
 
 % set axis limits
-axis([-1 1 -1 1]*1.1);
+axis([-1 1 -1 1]*1.12);
 
 % calculate the color for each ROI
 cc = ones(N,1,3);
