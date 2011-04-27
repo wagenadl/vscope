@@ -10,9 +10,19 @@ function [rat, don, acc] = vscope_ratio(ccd, roi, deblch)
 %    debleaching or 2 for quadratic debleaching.
 %    [rat, don, acc] = VSCOPE_RATIO(...) also returns the donor and acceptor
 %    traces.
+%    rat = VSCOPE_RATIO(x, debleach) where X is straight from VSCOPE_LOAD
+%    is also permitted.
 
 if nargin<3
   deblch=0;
+end
+
+if isfield(ccd, 'ccd')
+  if nargin>=2
+    deblch = roi;
+  end
+  roi = ccd.rois;
+  ccd = ccd.ccd;
 end
 
 [Y X C T] = size(ccd.dat);

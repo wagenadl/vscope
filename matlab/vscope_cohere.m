@@ -47,14 +47,9 @@ alpha_thresh_single = .01; % Really, should be 10^-4 to avoid slew of false posi
 %alpha_thresh_single=1;
 phase_delay_s = 0; %.10;
 
-show_rois = 1;
-show_polar = 1;
-show_signals = 1;
 title_string = sprintf('%s #%03i',x.info.expt, x.info.trial);
 e_phys_plot_tog=zeros(1,length(x.analog.info.channo));
 e_phys_plot_tog(chanidx)=1;
-common_scale_flag = 0;
-filter_flag = 1;
 
 N=length(x.rois);
 sig_labels=cell(N,1);
@@ -119,9 +114,7 @@ y_sigs(isnan(y_sigs))=rndn(isnan(y_sigs));
 C_mag_thresh=...
   coh_mtm_control0(tt,y_sigs,y_ref,...
   f_res_coh,f_star,alpha_thresh_single);
-
-	      
-
+	    
 % extract the coherence and CIs for f=f_star
 C_mag_star=interp1(f_o,C_mag,f_star,'*linear');
 C_phase_star=interp1(f_o,C_phase,f_star,'*linear');
@@ -130,58 +123,45 @@ C_phase_lo_star=interp1(f_o,C_phase_lo,f_star,'*linear');
 C_mag_hi_star=interp1(f_o,C_mag_hi,f_star,'*linear');
 C_phase_hi_star=interp1(f_o,C_phase_hi,f_star,'*linear');
 
-% sort the sigs in order of their coherence magnitude
-[dummy,sort_indices]=sort(C_mag_star);
-sort_indices=flipdim(sort_indices,2);  % want descending
-sig_labels_sorted=sig_labels(sort_indices);
-sigs_sorted=y_sigs(:,sort_indices);
-
 % correct the coherence phases for the dye lag, for optical sigs
 C_phase_star_corrected=C_phase_star+phase_offset;
 C_phase_lo_star_corrected=C_phase_lo_star+phase_offset;
 C_phase_hi_star_corrected=C_phase_hi_star+phase_offset;
 
-% useful things for later
-clr_subthresh=0.75*[1 1 1];
-% mean_frame=mean(optical,3);
-significant_rois=C_mag_star(1:N)>C_mag_thresh;
-
-
 % plot the ROI frame
-if show_rois
-  % plot both mag and phase on the ROIs
-  mean_frame = mean(x.ccd.dat(:,:,1,:),4);
-  fig_roi_coh0(mean_frame,[],...
-      C_mag_star,...
-      C_phase_star_corrected,...
-      C_mag_thresh,...
-      clr_subthresh,...
-      title_string,x.rois,sig_labels);
-end
+% plot both mag and phase on the ROIs
+mean_frame = mean(x.ccd.dat(:,:,1,:),4);
+vscope_cohrois(mean_frame,...
+    x.rois, ...
+    sig_labels, ...
+    C_mag_star,...
+    C_phase_star_corrected,...
+    C_mag_thresh,...
+    title_string);
 
 % do the polar plot of coherence at f_star
-if show_polar
-  fig_coh_polar0(C_mag_star,C_phase_star_corrected,...
-      C_mag_lo_star,C_phase_lo_star_corrected,...
-      C_mag_hi_star,C_phase_hi_star_corrected,...
-      1:N,sig_labels,...
-      0,C_mag_thresh,...
-      1,...
-      clr_subthresh);    
-  text(.95,-.9,sprintf('f* = %.2f Hz',f_star),'horizontala','right');
-end
+vscope_cohpolar(...
+    { C_mag_star, C_mag_lo_star, C_mag_hi_star }, ...
+    { C_phase_star_corrected, C_phase_lo_star_corrected, ...
+    C_phase_hi_star_corrected }, ...
+    sig_labels,...
+    C_mag_thresh);
+text(1.05, -1.05, sprintf('f* = %.2f Hz', f_star), ...
+    'horizontala', 'right', 'verticala', 'middle');
+text(1.05, 1.05, title_string, ...
+    'horizontala', 'right', 'verticala', 'middle');
 
-if show_signals
-  if ~filter_flag
-    [b,a] = butterhigh1(.05);
-    for n=1:N
-      sigs_sorted(:,n) = filtfilt(b,a,sigs_sorted(:,n));
-    end
-  end
-  fig_proof_sheet0(tt,sigs_sorted,te,x.analog.dat,e_phys_plot_tog,...
-                  title_string,common_scale_flag,sig_labels_sorted,...
-                  C_mag_star(sort_indices)>C_mag_thresh);  
-end
+
+% sort the sigs in order of their coherence magnitude
+idx = find(C_mag_star>C_mag_thresh);
+[dummy,sort_indices]=sort(-C_mag_star(idx));
+sort_indices = idx(sort_indices);
+sig_labels_sorted=sig_labels(sort_indices);
+sigs_sorted=y_sigs(:,sort_indices);
+
+vscope_proofsheet(tt, sigs_sorted, sig_labels_sorted, ...
+    te, x.analog.dat, x.analog.info, e_phys_plot_tog,...
+    title_string);
 
 if ~isempty(ofnbase)
   for f=1:3
