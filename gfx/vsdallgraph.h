@@ -36,6 +36,8 @@ private:
   class ROIData3Set *data; // we do not own this
   QMap<int, class TraceInfo *> traces;
   int selectedId;
+  int halfMaxVisible; // when a trace is selected, we show it and up to 
+                      // halfMaxVisible others before and after it.
 private:
   VSDAllGraph(VSDAllGraph const &other);
   VSDAllGraph &operator=(VSDAllGraph const &other);

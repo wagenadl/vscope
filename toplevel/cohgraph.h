@@ -15,7 +15,6 @@
 class CohGraph: public RadialGraph {
   Q_OBJECT;
   /*:C CohGraph
-   *:D This class heavily depends on a VSDTraces for its data.
    */
 public:
   CohGraph(class CohData *dat, QWidget *parent=0);
@@ -30,11 +29,18 @@ public slots:
   void setRefTrace(QString achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
+  void updateSelection(int id);
+protected:
+  void mousePressEvent(class QMouseEvent *);
+signals:
+  void newSelection(int id);
 private:
   void perhapsRefresh();
 private:
   class CohData *data;
   bool owndata;
+  int selectedID;
+  QMap<int, QPointF> labelxy;
 private: // these will not be implemented
   CohGraph(CohGraph const &other);
   CohGraph &operator=(CohGraph const &other);

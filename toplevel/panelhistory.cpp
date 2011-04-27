@@ -69,6 +69,23 @@ void PanelHistory::makeButtons() {
   makeButtons("Right");
 }
 
+void PanelHistory::relabelAll() {
+  relabel("Left");
+  relabel("Right");
+}
+
+void PanelHistory::relabel(QString where) {
+  QString what = Globals::ptree->find("panel" + where).toString();
+  for (int k=1; k<=nButtons; k++) {
+    Button &b = barButton(where,k);
+    setItemAt(where,k,"");
+    if (itemAt(where,k) == what) 
+      b.setSelected(true);
+    else
+      b.setSelected(false); // ? do we need this?
+  }
+}
+
 void PanelHistory::makeButtons(QString where) {
   QString what = Globals::ptree->find("panel" + where).toString();
   for (int k=1; k<=nButtons; k++) {

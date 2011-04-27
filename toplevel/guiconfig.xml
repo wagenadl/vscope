@@ -50,8 +50,8 @@
     <item value="Stimuli"/>
     <break dx=".2"/>
     <item value="VSDTraces" label="VSD&#xA;Traces"/>
-    <item value="Coherence"/>
-    <item value="CohGraph"/>
+    <item value="Coherence" label="Coherence&#xA;Map"/>
+    <item value="CohGraph" label="Coherence&#xA;Graph"/>
   </menu>
   <menu id="panelRight"  rows="3">
     <break dx="0.2"/>
@@ -63,8 +63,8 @@
     <item value="Stimuli"/>
     <break dx=".2"/>
     <item value="VSDTraces" label="VSD&#xA;Traces"/>
-    <item value="Coherence"/>
-    <item value="CohGraph"/>
+    <item value="Coherence" label="Coherence&#xA;Map"/>
+    <item value="CohGraph" label="Coherence&#xA;Graph"/>
   </menu>
 
   <!-- ******************** EPHYS. RECORDING CONFIG PAGE ******************* -->

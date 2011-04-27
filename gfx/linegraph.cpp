@@ -142,17 +142,24 @@ void LineGraph::autoGrowYRange(double frc) {
 
 Range LineGraph::computeXRange() const {
   Range xx;
-  foreach (TraceInfo const *ti, traces) {
-    xx.include(ti->datax0);
-    xx.include(ti->datax0+ti->datadx*ti->N);
+  foreach (QString id, traces.keys()) {
+    if (traceVisible[id]) {
+      TraceInfo const *ti = traces[id];
+      xx.include(ti->datax0);
+      xx.include(ti->datax0+ti->datadx*ti->N);
+    }
   }
   return xx;
 }
 
 Range LineGraph::computeYRange(double frc) const {
   Range yy;
-  foreach (TraceInfo const *ti, traces) 
-    yy.expand(ti->zoomrange99(x0,x1,frc));
+  foreach (QString id, traces.keys()) {
+    if (traceVisible[id]) {
+      TraceInfo const *ti = traces[id];
+      yy.expand(ti->zoomrange99(x0,x1,frc));
+    }
+  }
   return yy;
 }
 
@@ -280,20 +287,24 @@ double LineGraph::computeFirstTick(double x0, double x1, double dx,
 bool LineGraph::addTrace(QString id, TraceInfo const *ti) {
   bool hadAlready = traces.contains(id);
   traces[id] = ti;
-  if (!hadAlready) 
+  if (!hadAlready) {
     tracePens[id] = lastTracePen;
+    traceVisible[id] = true;
+  }
   perhapsRepaint();
   return hadAlready;
 }
 
 bool LineGraph::removeTrace(QString id) {
   bool r = traces.remove(id) > 0;
+  traceVisible.remove(id);
   perhapsRepaint();
   return r;
 }
 
 void LineGraph::removeAllTraces() {
   traces.clear();
+  traceVisible.clear();
   perhapsRepaint();
 }
 
@@ -603,13 +614,15 @@ void LineGraph::paintEvent(class QPaintEvent *) {
   int dy_legend = p.fontMetrics().lineSpacing();
   int y0_legend = p.fontMetrics().height() + 2;
   int y = y0_legend;
-  for (Traces::iterator i=traces.begin(); i!=traces.end(); ++i) {
-    p.setPen(tracePens[i.key()]);
-    paintTrace(p, i.value());
-    p.drawText(0,0,width()-2,y,
-	       Qt::AlignRight|Qt::AlignBottom|Qt::TextSingleLine,
-	       traceLabels[i.key()]);
-    y += dy_legend;
+  foreach (QString id, traces.keys()) {
+    if (traceVisible[id]) {
+      p.setPen(tracePens[id]);
+      paintTrace(p, traces[id]);
+      p.drawText(0,0,width()-2,y,
+		 Qt::AlignRight|Qt::AlignBottom|Qt::TextSingleLine,
+		 traceLabels[id]);
+      y += dy_legend;
+    }
   }
   paintXAxis(p);
   paintYAxis(p);
@@ -676,3 +689,34 @@ void LineGraph::drawPoly() {
   drawMode = Poly;
   update();
 }
+
+QStringList LineGraph::allTraces() const {
+  return traces.keys();
+}
+
+void LineGraph::hideTrace(QString id) {
+  if (traceVisible.contains(id)) {
+    traceVisible[id] = false;
+    update();
+  }
+}
+
+void LineGraph::showTrace(QString id) {
+  if (traceVisible.contains(id)) {
+    traceVisible[id] = true;
+    update();
+  }
+}
+
+void LineGraph::hideAllTraces() {
+  foreach (QString id, traces.keys())
+    traceVisible[id] = false;
+  update();
+}
+
+void LineGraph::showAllTraces() {
+  foreach (QString id, traces.keys())
+    traceVisible[id] = true;
+  update();
+}
+

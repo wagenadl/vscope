@@ -84,3 +84,10 @@ void ROIImages::updateZoom(QRect zr) {
     imgs[id]->updateZoom(zr);
   }
 }
+
+void ROIImages::updateSelection(int sel) {
+  foreach (QString id, imgs.keys()) {
+    imgs[id]->updateSelection(sel);
+  }
+}
+  

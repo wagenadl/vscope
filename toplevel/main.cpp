@@ -303,6 +303,28 @@ void setupCoherence() {
 
   QObject::connect(Globals::ccdw, SIGNAL(newZoom(QRect)),
 		   Globals::coherence, SLOT(updateZoom(QRect)));
+  QObject::connect(Globals::coherence, SIGNAL(newZoom(QRect)),
+		   Globals::ccdw, SLOT(updateZoom(QRect)));
+
+  QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
+		   Globals::coherence, SLOT(updateSelection(int)));
+  QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
+		   Globals::cohgraph, SLOT(updateSelection(int)));
+
+  QObject::connect(Globals::coherence, SIGNAL(newSelection(int)),
+		   Globals::ccdw, SLOT(updateSelection(int)));
+  QObject::connect(Globals::coherence, SIGNAL(newSelection(int)),
+		   Globals::cohgraph, SLOT(updateSelection(int)));
+  QObject::connect(Globals::coherence, SIGNAL(newSelection(int)),
+		   Globals::vsdtraces, SLOT(updateSelection(int)));
+
+  QObject::connect(Globals::cohgraph, SIGNAL(newSelection(int)),
+		   Globals::ccdw, SLOT(updateSelection(int)));
+  QObject::connect(Globals::cohgraph, SIGNAL(newSelection(int)),
+		   Globals::coherence, SLOT(updateSelection(int)));
+  QObject::connect(Globals::cohgraph, SIGNAL(newSelection(int)),
+		   Globals::vsdtraces, SLOT(updateSelection(int)));
+
 }
  
 void setupAcquisition(QDomElement &guiConf) {

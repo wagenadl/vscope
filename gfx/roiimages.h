@@ -26,6 +26,7 @@ public slots:
   QRect const &currentCanvas() const { return canvas; }
   void setROIs(class ROISet *);
   void updateZoom(QRect); // rectangle in global coords
+  void updateSelection(int);
 signals:
   void newZoom(QRect); // rectangle in global coords
   void newSelection(int);

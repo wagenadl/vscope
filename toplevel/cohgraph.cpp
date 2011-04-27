@@ -23,11 +23,21 @@
 #include <math.h>
 #include <math/cohdata.h>
 #include <acq/datatrove.h>
+#include <QMouseEvent>
 
-CohGraph::CohGraph(CohData *dat, QWidget *p): RadialGraph(p) {
+#define MAXCLICKDIST 15
+
+CohGraph::CohGraph(CohData *dat, QWidget *parent): RadialGraph(parent) {
   data = dat;
   owndata = false;
+  selectedID = 0;  
+
   connect(data, SIGNAL(newData()), this, SLOT(updateData()));
+
+  QPalette p = palette();
+  p.setColor(QPalette::Window, QColor("black"));
+  setPalette(p);
+  setColors(QColor("#aaaaaa"), QColor("#666666"));
 }
 
 CohGraph::~CohGraph() {
@@ -45,6 +55,20 @@ void CohGraph::paintEvent(QPaintEvent *e) {
     return;
 
   QPainter p(this);
+
+  p.setPen(QColor("yellow"));
+  for (int deg=0; deg<360; deg+=90) {
+    double phi = numbers.pi*deg/180;
+    double x = toScreenX(cos(phi));
+    double y = toScreenX(-sin(phi));
+    p.drawText(QRectF(x-1,y-1,2,2),
+	       Qt::AlignCenter | Qt::TextDontClip,
+	       QString::number(deg));
+  }
+  QFont f0 = p.font();
+  QFont f1 = f0;
+  f1.setWeight(QFont::Bold);
+  labelxy.clear();
   foreach (int id, roiset->ids()) {
     if (id<=0)
       continue;
@@ -59,20 +83,21 @@ void CohGraph::paintEvent(QPaintEvent *e) {
     p.setBrush(c);
     p.setPen(QPen(Qt::NoPen));
     double x = toScreenX(mag*cos(pha));
-    double y = toScreenY(-mag*sin(pha));
-    // p.drawEllipse(QPointF(x,y), 2.0, 2.0);
-
-//    p.setPen(QColor("#000000"));
-//    p.drawText(QRectF(x,y-1,2,2),
-//	       Qt::AlignCenter | Qt::TextDontClip,
-//	       num2az(id));
-    p.setPen(c); // QColor("#ffffff")); // anti b.g.
+    double y = toScreenY(mag*sin(pha));
+    labelxy[id] = QPointF(x,y);
+    p.setPen(c); 
+    if (id==selectedID) {
+      p.setFont(f1);
+      p.setPen(QColor("white"));
+    }
     p.drawText(QRectF(x-1,y-1,2,2),
 	       Qt::AlignCenter | Qt::TextDontClip,
 	       num2az(id));
+    if (id==selectedID)
+      p.setFont(f0);
   }
   
-  p.setPen(QColor("#000000"));
+  p.setPen(QColor("white"));
   p.drawText(5,12,QString("f* = %1 Hz").arg(data->getTypicalFStarHz(),0,'f',2));
 }
 
@@ -112,3 +137,30 @@ void CohGraph::setRefFreq(double fref_hz) {
   perhapsRefresh();
 }
 
+void CohGraph::updateSelection(int id) {
+  selectedID = id;
+  update();
+}
+
+void CohGraph::mousePressEvent(QMouseEvent *e) {
+  QPointF xy0 = e->pos();
+  double d0 = 1e9;
+  int id0 = 0;
+  foreach (int id, labelxy.keys()) {
+    QPointF xy = labelxy[id];
+    double dx = xy.x()-xy0.x();
+    double dy = xy.y()-xy0.y();
+    double dd = dx*dx + dy*dy;
+    if (dd<d0) {
+      id0 = id;
+      d0 = dd;
+    }
+  }
+  if (d0>MAXCLICKDIST*MAXCLICKDIST)
+    id0 = 0;
+  updateSelection(id0);
+  newSelection(id0);
+}
+    
+      
+  

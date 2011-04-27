@@ -27,6 +27,7 @@
 #include <QDir>
 #include <toplevel/mainwindow.h>
 #include <base/roidata3set.h>
+#include <toplevel/panelhistory.h>
 
 Acquire::Acquire() {
   connect(Globals::trial,SIGNAL(ended(QString,QString)),
@@ -285,10 +286,12 @@ void Acquire::loadData(QString xmlfn) {
   displayCCD();
   displayEPhys();
   //  updateVSDTraces();
+  Globals::panelHistory->relabelAll();
   Globals::gui->open(); // make sure updated trial number visible.
   
   if (loadframe)
       loadframe->hide();
+
 }
 
 void Acquire::prepareLoad() {

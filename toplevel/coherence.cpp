@@ -25,6 +25,7 @@
 #include <acq/datatrove.h>
 #include <base/roidata3set.h>
 #include <xml/connections.h>
+#include <QRubberBand>
 
 Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
   if (dat) {
@@ -44,6 +45,7 @@ Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
     owndata = true;
   }
   connect(data, SIGNAL(newData()), SLOT(updateData()));
+  selectedID=0;
 }
 
 Coherence::~Coherence() {
@@ -84,21 +86,27 @@ void Coherence::paintEvent(QPaintEvent *e) {
 	roi.blob().paint(&p, canvasToScreen());
 
     if (showmode==ROIImage::SM_IDs || showmode==ROIImage::SM_Full) {
-      p.setPen(QColor("black"));
+      if (id==selectedID)
+	p.setPen(QColor("white"));
+      else
+	p.setPen(QColor("black"));
       p.drawText(QRectF(xy.x(),xy.y()-1,2,2),
 		 Qt::AlignCenter | Qt::TextDontClip,
 		 num2az(id));
-      p.setPen(QColor("white")); // anti b.g.
+      if (id==selectedID)
+	p.setPen(QColor("black"));
+      else
+	p.setPen(QColor("white")); // anti b.g.
       p.drawText(QRectF(xy.x()-1,xy.y(),2,2),
 		 Qt::AlignCenter | Qt::TextDontClip,
 		 num2az(id));
     }
   }
 
-  p.setPen(QColor("#000000"));
+  p.setPen(QColor("black"));
   double fstar = data->getTypicalFStarHz();
   p.drawText(5,10,QString("f* = %1 Hz").arg(fstar,0,'f',2));
-  p.setPen(QColor("#ffffff"));
+  p.setPen(QColor("white"));
   p.drawText(4,11,QString("f* = %1 Hz").arg(fstar,0,'f',2));
   
 }
@@ -146,3 +154,60 @@ void Coherence::setShowMode(ROIImage::ShowMode sm) {
   showmode = sm;
   update();
 } 
+
+void Coherence::mouseReleaseEvent(QMouseEvent *e) {
+  if (clickPoint.x()<0)
+    return;  // this is the release of a double click; we do not care.
+  QRect r = rubberband->geometry().normalized();
+  rubberband->hide();
+  if (r.width(),5 && r.height()<5) {
+    // This is a click. If inside a ROI, let's select it.
+    int id = insideROI(clickPoint);
+    if (id>0)
+      select(id);
+    else
+      CCDImage::mouseReleaseEvent(e);
+  } else {
+    CCDImage::mouseReleaseEvent(e);
+  }
+}
+
+inline double sq(double x) { return x*x; }
+
+inline double euclideanDist2(QPointF p1, QPointF p2) {
+  return sq(p1.x()-p2.x()) + sq(p1.y()-p2.y());
+}
+
+int Coherence::insideROI(QPoint xy) {
+  ROISet const *roiset = data->currentData()->getROISet();
+  if (!roiset)
+    return false;
+  // following code copied from roiimage.
+  Transform tinv = canvasToScreen().inverse();
+  QPointF xy_ = tinv(Transform::pixelCenter(xy));
+  int bestid=0;
+  double dd;
+  foreach (int id, roiset->ids()) {
+    double d = euclideanDist2(xy_, roiset->get(id).center());
+    if (bestid==0 || d<dd) {
+      bestid = id;
+      dd = d;
+    }
+  }
+  if (bestid) 
+    if (roiset->get(bestid).inside(xy_, 0))
+      return bestid;
+  return 0;
+}
+
+void Coherence::select(int id) {
+  selectedID = id;
+  emit newSelection(selectedID);
+  update();
+}
+
+
+void Coherence::updateSelection(int id) {
+  selectedID = id;
+  update();
+}

@@ -11,6 +11,8 @@ RadialGraph::RadialGraph(QWidget *parent): QFrame(parent) {
   p.setColor(QPalette::Window, QColor("white"));
   setPalette(p);
   hMargin = vMargin = 10;
+  minorColor = QColor("#aaaaaa");
+  majorColor = QColor("#666666");
 }
 
 double RadialGraph::toScreenX(double x) const {
@@ -28,13 +30,19 @@ QPointF RadialGraph::toScreen(double x, double y) const {
   return QPointF(toScreenX(x), toScreenY(y));
 }  
 
+void RadialGraph::setColors(QColor major, QColor minor) {
+  majorColor = major;
+  minorColor = minor;
+  update();
+}
+
 void RadialGraph::paintEvent(QPaintEvent *e) {
   QFrame::paintEvent(e);
   QPainter p(this);
-  p.setPen(QColor("#aaaaaa"));
+  p.setPen(minorColor);
   for (double r = 0.25; r<=1.1; r+=0.25) {
     if (r>.8)
-      p.setPen(QColor("#666666"));      
+      p.setPen(majorColor);
     p.drawEllipse(toScreen(0,0),
 		  toScreenX(r)-toScreenX(0),
 		  toScreenY(r)-toScreenY(0));

@@ -14,6 +14,7 @@ public:
   PanelHistory();
   virtual ~PanelHistory(); 
   void makeButtons();
+  void relabelAll();
   void newSelection(QString const &where);
   /*:F newSelection
    *:D User's selection on the given side (where is "Left" or "Right")
@@ -45,6 +46,7 @@ private:
   void open(QString where, QString what);
   int countButtons() const;
   void makeButtons(QString where);
+  void relabel(QString where);
 private:  
   class xmlButton &barButton(QString where, int n);
   /*:F barButton

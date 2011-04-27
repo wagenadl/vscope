@@ -13,6 +13,7 @@ class RadialGraph: public QFrame {
 public:
   RadialGraph(QWidget *parent=0);
   virtual void paintEvent(class QPaintEvent *);
+  void setColors(QColor major, QColor minor);
 public:
   QPointF toScreen(double x, double y) const;
   double toScreenX(double x) const;
@@ -20,6 +21,8 @@ public:
 private:
   int hMargin;
   int vMargin;
+  QColor majorColor;
+  QColor minorColor;
 };
 
 #endif

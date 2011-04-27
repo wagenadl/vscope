@@ -40,7 +40,7 @@ alpha_ci = .31; % one-sigma error bars
 alpha_thresh_single = .01; % Really, should be 10^-4 to avoid slew of false positives.
 %alpha_thresh_single=1;
 f_star = 1.; % Hz
-phase_delay_s = .10;
+phase_delay_s = 0; %.10;
 
 show_rois = 1;
 show_polar = 1;

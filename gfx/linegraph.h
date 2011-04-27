@@ -245,7 +245,18 @@ class LineGraph: public QFrame {
    *:D Determines whether or not text labels are printed for y-axis ticks.
    */
   void drawLines();
+  /*:F drawLines
+   *:D Set drawing mode to Lines and update.
+   */
   void drawPoly();
+  /*:F drawLines
+   *:D Set drawing mode to Poly (default) and update.
+   */
+  QStringList allTraces() const;
+  void hideTrace(QString id);
+  void showTrace(QString id);
+  void hideAllTraces();
+  void showAllTraces();
 public:
   Range computeXRange() const;
   /*:F computeXRange
@@ -392,6 +403,7 @@ protected:
   TracePens tracePens;
   typedef QMap<QString, QString> TraceLabels;
   TraceLabels traceLabels;
+  QMap<QString, bool> traceVisible;
 
   class QRubberBand *rubberband;
   QPoint clickPoint;

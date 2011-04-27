@@ -18,6 +18,7 @@ VSDAllGraph::VSDAllGraph(ROIData3Set *data, QWidget *parent):
   connect(data, SIGNAL(newDatum(int)), SLOT(updateROI(int)));
   connect(data, SIGNAL(newAll()), SLOT(updateROIs()));
   connect(data, SIGNAL(newAll()), SLOT(updateData()));
+  halfMaxVisible = 8;
 }
 
 VSDAllGraph::~VSDAllGraph() {
@@ -93,6 +94,16 @@ void VSDAllGraph::updateSelection(int id) {
   selectedId = traces.contains(id) ? id : 0;
   if (selectedId)
     setTracePen(num2az(selectedId),QColor("#ff0000"));
+  if (selectedId) {
+    foreach (int id, traces.keys()) {
+      if (id>=selectedId-halfMaxVisible && id<=selectedId+halfMaxVisible)
+	showTrace(num2az(id));
+      else
+	hideTrace(num2az(id));
+    }
+  } else {
+    showAllTraces();
+  }
   update();
 }
 

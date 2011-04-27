@@ -265,9 +265,13 @@ Range TraceInfo::zoomrange99(double x0, double x1,
   int n0 = int((x0-datax0)/datadx);
   if (n0<0)
     n0=0;
+  else if (n0>N)
+    n0=N;
   int n1 = int((x1-datax0)/datadx);
   if (n1>N)
     n1=N;
+  else if (n1<n0)
+    n1=n0;
   return range99(n0,n1,frc0,frc1);
 }
 
@@ -317,6 +321,8 @@ double TraceInfo::getDatum(int n) const {
     
 Range TraceInfo::range99(int n0, int n1, double frc0, double frc1) const {
   Range r;
+  if (n1<=n0)
+    return r;
   switch (dataptr.typ) {
   case DataPtr::dataNone:
     return r;

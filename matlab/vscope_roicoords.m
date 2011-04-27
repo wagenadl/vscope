@@ -76,8 +76,8 @@ else
   end
   if nargin>=3
     ok = find(xx>=1 & xx<=X & yy>=1 & yy<=Y);
-    xx = xx(ok);
-    yy = yy(ok);
+    xx = xx(ok,1);
+    yy = yy(ok,1);
   end
   if nargout<2
     xx=[xx yy];
