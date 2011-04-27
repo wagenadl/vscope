@@ -508,8 +508,6 @@ while 1
     if isnan(npar)
       % New style
       cnframes  = atoi(vsdl_getval(kv,'frames'));
-      kv.keys
-      kv.values
       if cnframes==0
 	ncams = ncams - 1;
 	ccd.info.ncams = ccd.info.ncams - 1;

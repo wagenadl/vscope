@@ -10,12 +10,12 @@ function tt = vscope_ccdtime(x, id)
 %    KNOW ABOUT MULTIPLE CAMERAS WITH DIFFERENT TIMINGS.
 
 if isfield(x,'ccd')
-  t0 = x.ccd.info.delay_ms/1e3;
-  f = x.ccd.info.rate_hz;
+  t0 = x.ccd.info.delay_ms{1}/1e3;
+  f = x.ccd.info.rate_hz{1};
   n = x.ccd.info.nframes{1};
 else
-  t0 = x.info.delay_ms/1e3;
-  f = x.info.rate_hz;
+  t0 = x.info.delay_ms{1}/1e3;
+  f = x.info.rate_hz{1};
   n = x.info.nframes{1};
 end
 

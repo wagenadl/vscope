@@ -29,7 +29,10 @@ if iscell(roi)
   end
 else
   S = size(roi);
-  if prod(S)==5
+  if prod(S)==0
+      xx = [];
+      yy = [];
+  elseif prod(S)==5
     % This is xyrra style
     el = elbuild_xyrra(roi);
     [xx,yy] = elplot_xyrra(roi);

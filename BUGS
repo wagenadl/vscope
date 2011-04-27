@@ -1,0 +1,24 @@
+Rotating list of bugs and feature requests.
+Move bugs to below dotted line when solved.
+
+======================================================================
+Of immediate utility:
+
+110426: CohGraph should be labeled "Coherence Graph"
+110426: Coherence should be labeled "Coherence Map"
+110426: Clicking on CohGraph letters should select ROI
+110426: Clicking on Coherence ROIs should select ROI
+110426: CohGraph letters should be bold for selected
+110426: VSDTraces should scroll labels to have selected visible
+110426: PanelHistory labels get desynced with contents
+110426: VSDTraces should show only 5+sel+5 if any selected, else all
+110426: How hard would it be to display significance ring in CohGraph?
+
+======================================================================
+Not worth doing for now:
+
+
+======================================================================
+Solved bugs and implemented features:
+
+
