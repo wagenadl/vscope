@@ -10,6 +10,8 @@ function dat=vscope_load(ifn,wht,frmno,camno)
 %     - analog: analog data
 %     - digital: digital data
 %     - ccd: vsd data
+%    IFN may also be a number N, in which case the file NNN.xml is loaded,
+%    or a cell array {dir, n} in which case the file DIR/NNN.XML is loaded.
 %    dat = VSCOPE_LOAD(ifn,letters), where IFN is a ".xml" file and letters
 %      is a sequence containing some of the letters 'a', 'd', 'c', or 'r',
 %      loads the .xml and only some data (analog, digital, ccd, and/or rois).
@@ -30,7 +32,11 @@ function dat=vscope_load(ifn,wht,frmno,camno)
 %      flipped. That is, the data for camera 1 is upside downed.
 
 if ~ischar(ifn)
-  ifn = sprintf('%03i.xml',ifn);
+  if iscell(ifn)
+    ifn = sprintf('%s%s%03i.xml',ifn{1}, filesep, ifn{2});
+  else
+    ifn = sprintf('%03i.xml',ifn);
+  end
 end
 
 ifd=fopen(ifn,'r');
@@ -556,7 +562,7 @@ end
 ccd.info.flipx = flipx;
 ccd.info.flipy = flipy;
 
-if getdat
+if getdat & ncams>0
   ifd = fopen(strrep(ifn,'.xml','-ccd.dat'),'rb');
   if ifd==0
     error('vscope_load: Cannot read ccd data');

@@ -62,6 +62,7 @@ void LineGraph::setXRange(Range const &xx, bool nextAuto) {
 }
 
 void LineGraph::setYRange(Range const &yy) {
+  Dbg() << "LineGraph::setYRange" << yy.min << yy.max;
   if (yy.empty()) {
     autoSetYRange();
   } else {
@@ -103,6 +104,7 @@ void LineGraph::autoSetXRange() {
 }
 
 void LineGraph::autoSetYRange(double frc, double margfac) {
+  Dbg() << "autoSetYRange";
   Range yy = computeYRange(frc);
   if (yy.empty()) {
     y0=-1;
@@ -131,6 +133,7 @@ void LineGraph::autoGrowXRange() {
 }
 
 void LineGraph::autoGrowYRange(double frc) {
+  Dbg() << "autoGrowYRange";
   Range yy = computeYRange(frc);
   yy.include(y0);
   yy.include(y1);
@@ -607,8 +610,8 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 }
 
 void LineGraph::paintEvent(class QPaintEvent *) {
-  //dbg("linegraph(%p)::paintevent\n",this);
-  //dbg("linegraph: xx=(%g:%g) yy=(%g:%g)",x0,x1,y0,y1);
+  dbg("linegraph(%p)::paintevent\n",this);
+  dbg("linegraph: xx=(%g:%g) yy=(%g:%g)",x0,x1,y0,y1);
   QPainter p(this);
   p.setFont(traceFont);
   int dy_legend = p.fontMetrics().lineSpacing();
@@ -657,23 +660,34 @@ void LineGraph::mouseReleaseEvent(QMouseEvent *e) {
   rubberband->setGeometry(QRect(clickPoint,e->pos()).normalized());
   QRect r = rubberband->geometry();
   int x0pix, x1pix;
+  int y0pix, y1pix;
   if (r.width()<5 && r.height()<5) {
     // it's a click -> zoom in
     x0pix = clickPoint.x()-rect().width()/4;
     x1pix = clickPoint.x()+rect().width()/4;
+    y0pix = y1pix = 0;
   } else {
     x0pix = r.left();
     x1pix = r.right();
+    y0pix = r.top();
+    y1pix = r.bottom();
   }
   delete rubberband;
   rubberband=0;
   //  dbg("zoomreq x0=%i x1=%i",x0pix,x1pix);
-  emit zoomRequest(Range(screenToDataX(x0pix),screenToDataX(x1pix)));
+  if (y1pix-y0pix > x1pix-x0pix) {
+    // vertical shape
+    setYRange(Range(screenToDataY(y1pix), screenToDataY(y0pix)));
+  } else {
+    // horizontal shape
+    emit zoomRequest(Range(screenToDataX(x0pix),screenToDataX(x1pix)));
+  }
 }
 
 void LineGraph::mouseDoubleClickEvent(QMouseEvent *) {
   clickPoint = QPoint(-1,-1);
   emit zoomRequest(Range());
+  autoSetYRange(.001,.5);
 }
 
 void LineGraph::setAutoRepaint(bool ar) {

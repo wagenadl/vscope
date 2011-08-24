@@ -59,8 +59,8 @@ for k=1:n_rois
   y0 = (ymin + ymax)/2;
   plot([0 0] + t_max + .01*clridx*t_range, y0+[-.5 .5]*dff_bar_size, ...
       'color', clr{clridx}, 'linewidth', 3);
-  text(t_min - .01*t_range, y0, roi_labels{k}, ...
-      'color', clr{clridx}, 'horizontala', 'right');
+  text(t_min - .05*t_range, y0, roi_labels{k}, ...
+      'color', clr{clridx}, 'horizontala', 'left');
   axis([t_min - .05*t_range, t_max + .03*t_range, ymin, ymax]);
   clridx = 3 - clridx;
 end
