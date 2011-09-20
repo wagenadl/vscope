@@ -293,6 +293,9 @@ xmlButton *xmlPage::addButton(xmlPage::Geom &g, QDomElement doc) {
 	    master,SIGNAL(buttonDeselected(QString,QString)));
     connect(b,SIGNAL(activated(QString,QString)),
 	    master,SIGNAL(buttonClicked(QString,QString)));
+    Dbg() << "Connecting doubleclicked" << id;
+    connect(b,SIGNAL(doubleClicked(QString,QString)),
+	    master,SIGNAL(buttonDoubleClicked(QString,QString)));
   }
   
   if (g.rows>0 && g.nextrow>=g.rows) {
@@ -506,7 +509,8 @@ void xmlPage::addTriangle(QString id) {
 
 void xmlPage::removeTriangle(QString id) {
   QStringList path = id.split("/"); id = path.last();
-  dbg("xmlPage::removeTriangle. id=%s",qPrintable(id));
+  dbg("xmlPage::removeTriangle. id=%s was=%s",
+      qPrintable(id), qPrintable(triID));
   if (triID == id)
     triID = "";
   update();
@@ -516,7 +520,6 @@ void xmlPage::paintEvent(class QPaintEvent *e) {
   //  dbg("xmlPage::paintevent. triID=%s",qPrintable(triID));
   if (triID=="")
     return;
-  QFrame::paintEvent(e);
   QPainter p(this);
   p.setBrush(triColor);
   p.setPen(QPen(Qt::NoPen));
@@ -526,6 +529,7 @@ void xmlPage::paintEvent(class QPaintEvent *e) {
   //   dbg("xmlPage: polygon[%i] = (%i,%i)",k,x,y);
   // }
   p.drawPolygon(triangle);
+  QFrame::paintEvent(e);
 }
 
 xmlPage *xmlPage::addTabbedPage(xmlPage::Geom &g, QDomElement doc) {
@@ -533,7 +537,7 @@ xmlPage *xmlPage::addTabbedPage(xmlPage::Geom &g, QDomElement doc) {
   QString id=doc.attribute("id");
   xmlButton *penable = p->buttons.contains("enable")
     ? p->buttons["enable"] : 0;
-  dbg("addTabbedPage: penable=%p",penable);
+  //  dbg("addTabbedPage: penable=%p",penable);
   
   if (groups.contains(id)) {
     for (QMap<QString,QString>::iterator i=groupedButton.begin();
@@ -555,6 +559,9 @@ xmlPage *xmlPage::addTabbedPage(xmlPage::Geom &g, QDomElement doc) {
 	if (penable)
 	  connect(b,SIGNAL(doubleClicked(QString,QString)),
 		  penable,SLOT(toggleSelected()));
+	Dbg() << "Connecting doubleclicked" << id;
+	connect(b,SIGNAL(doubleClicked(QString,QString)),
+		master,SIGNAL(buttonDoubleClicked(QString,QString)));
       }
     }
   }

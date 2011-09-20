@@ -76,8 +76,9 @@ public:
   class guiGeom const &geom() const { return *geom_; }
 signals:
   void buttonClicked(QString path, QString text);
-  /*:F buttonClicked
-   *:D Emitted whenever an action button is clicked.
+  void buttonDoubleClicked(QString path, QString text);
+  /*:F buttonClicked, buttonDoubleClicked
+   *:D Emitted whenever an action button is clicked / double clicked.
    *:A path: the full path to the button, not including array instantiations.
              (Use pathInstantiate() to get the current instantiation.)
        text: the current text displayed in the button.

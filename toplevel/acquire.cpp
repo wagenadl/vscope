@@ -233,6 +233,33 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     Globals::exptlog->addNote(brightMsg);
 }
 
+void Acquire::gotoFrame(int n) {
+  TrialData const &trial = Globals::trove->trial();
+  CCDData const *src0 = trial.ccdData(Connections::leaderCamera());
+  if (!src0)
+    return;
+  int N = src0->getNFrames();
+  if (N<=0)
+    return;
+  
+  foreach (QString id, Connections::allCams()) {
+    CCDData const *src = trial.ccdData(id);
+    if (!src)
+      continue;
+    int N1 = src->getNFrames();
+    if (N1<=0)
+      continue;
+    int n1 = n*N1/N;
+    if (n1<0)
+      n1=0;
+    else if (n1>=N1)
+      n1=N1-1;
+    CCDImage *img = Globals::ccdw->get(id);
+    img->newImage(src->frameData(n1), src->getSerPix(), src->getParPix(),
+		  trial.ccdPlacement(id));
+  }
+}
+
 void Acquire::displayEPhys() {
   Globals::mgstim->rebuild();
   Globals::mgintra->rebuild();

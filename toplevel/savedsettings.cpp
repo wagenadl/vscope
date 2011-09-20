@@ -99,6 +99,27 @@ void SavedSettings::visualdeselect() {
   lastsel = "";
 }
 
+void SavedSettings::deleteCurrent() {
+  if (lastsel=="")
+    return;
+  
+  QString fn = lastsel;
+  if (!fn.startsWith("/"))
+    fn = Globals::ptree->find("_filePath").toString()
+      +"/_settings/" + fn;
+  if (!fn.endsWith(".xml"))
+    fn += ".xml";
+
+  Dbg() << "SavedSettings::deleteCurrent: " << fn;
+
+  QFile f(fn);
+  f.remove();
+  
+  visualdeselect();
+  hide();
+  show();
+}
+
 void SavedSettings::prepareSave() {
   if (!savedlg) {
     saveframe = new QFrame(Globals::mainwindow);

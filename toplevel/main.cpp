@@ -41,6 +41,7 @@
 #include <gfx/roiimages.h>
 #include <gfx/multigraph.h>
 #include <gfx/colors.h>
+#include <gfx/ccdscroll.h>
 
 #include <acq/liveephys.h>
 #include <acq/focus.h>
@@ -226,7 +227,19 @@ void setupMainWindow(QApplication &app) {
   Globals::leftplace->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::rightplace = makeBanner2(Globals::mainwindow);
   Globals::rightplace->setGeometry(512,0,512,Globals::mainwindow->basey());
-}  
+}
+
+void setupCCDScroll() {
+  QWidget &acqPage = Globals::gui->findPage("acquisition");
+  CCDScroll *bar = new CCDScroll(&acqPage);
+  bar->setGeometry(acqPage.width()/5+12, acqPage.height()*4/5+8,
+		   acqPage.width()*4/5-17,acqPage.height()/5-15);
+  QObject::connect(Globals::trove->trial().ccdData(Connections::leaderCamera()),
+		   SIGNAL(newData()),
+		   bar, SLOT(newCCDData()));
+  QObject::connect(bar, SIGNAL(gotoFrame(int)),
+		   Globals::acquire, SLOT(gotoFrame(int)));
+}
 
 void setupCCDImages() {
   Globals::ccdw = new ROIImages(QRect(0,0,512,512));
@@ -436,6 +449,7 @@ int main(int argc, char **argv) {
 
     Globals::gui = new vscopeGui(Globals::mainwindow, Globals::ptree,guiConf);
     Globals::gtslots = new gt_slots(Globals::gui);
+    setupCCDScroll();
 
     setupTimeButtons();
 

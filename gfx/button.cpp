@@ -171,10 +171,14 @@ void Button::mouseDoubleClickEvent(class QMouseEvent *) {
   if (vtype==VTAction) {
     setFrameShadow(QFrame::Sunken);
   }
-  if (isAction) 
+  Dbg() << "Button::mouseDoubleClickEvent";
+  if (false && isAction) {
+    Dbg() << "  Emitting activated()";
     emit activated(myID,text());
-  else  
+  } else {
+    Dbg() << "  Emitting doubleClicked()";
     emit doubleClicked(myID,text());
+  }
 }
 
 void Button::representState() {

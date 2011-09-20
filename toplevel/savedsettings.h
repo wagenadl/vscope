@@ -15,6 +15,7 @@ public slots:
   void loadSettings(QString fn);
   void saveSettings(QString fn);
   void prepareSave();
+  void deleteCurrent();
   void anythingChanged();
 protected:
   virtual void showEvent(class QShowEvent *);

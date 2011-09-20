@@ -14,6 +14,7 @@ public:
   virtual ~gt_slots();
 public slots:
   void clicked(QString p);
+  void doubleClicked(QString p);
   void selected(QString p);
   void deselected(QString p);
   void paramchanged(QString p, QString val);

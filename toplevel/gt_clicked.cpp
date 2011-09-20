@@ -18,10 +18,25 @@
 #include <toplevel/vscopegui.h>
 #include <toplevel/scripts.h>
 #include <toplevel/mainwindow.h>
+#include <base/dbg.h>
 
 static void dimple(QString p) {
   xmlButton *b = Globals::gui->findpButton(p);
   if (b) {
+  }
+}
+
+void gt_slots::doubleClicked(QString p) {
+  try {
+    dimple(p);
+    Dbg() << "Double clicked: " << p;
+    if (p=="analysis/roiDeleteAll") {
+      Globals::trove->rois().clear();
+    } else if (p=="savedSettings/delete") {
+      Globals::savedSettings->deleteCurrent();
+    }
+  } catch (Exception const &e) {
+    report(e,"button double click");
   }
 }
 

@@ -10,6 +10,8 @@
 gt_slots::gt_slots(xmlGui *master) {
   QObject::connect(master,SIGNAL(buttonClicked(QString,QString)),
 		   this,SLOT(clicked(QString)));
+  QObject::connect(master,SIGNAL(buttonDoubleClicked(QString,QString)),
+		   this,SLOT(doubleClicked(QString)));
   QObject::connect(master,SIGNAL(buttonSelected(QString,QString)),
 		   this,SLOT(selected(QString)));
   QObject::connect(master,SIGNAL(buttonDeselected(QString,QString)),

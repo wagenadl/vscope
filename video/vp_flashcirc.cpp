@@ -24,9 +24,9 @@ bool VP_FlashCirc::setpar(unsigned int parno, double value) {
 QString VP_FlashCirc::parsuggest(unsigned int parno) {
   switch (parno) {
   case 1:
-    return "0.5:1:1.5:2:3:5";
+    return "0.2:0.3:0.5:0.7:1:1.5:2:3:5";
   case 2:
-    return "10:20:30:40:50:60:70:80:90";
+    return "5:10:20:25:30:33:40:50:60:67:70:75:80:90:100";
   }
   return "";
 }

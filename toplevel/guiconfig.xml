@@ -900,21 +900,21 @@
   <page id="acquisition" subdxr="4.1">
     <button id="_exptname" label="Expt. Name:&#xA;%1" x="3.1" y="0" editcaption="Experiment Name" bg="#88aaff"/>
     <button id="_trialno" label="Trial No.:&#xA;%1" editcaption="Trial Number" bg="#77bbff"/>
-    <button id="_dummy" label="Dummy" type="bool" bg="#ffffff"/>
-    <button id="log"  label="Log Note..." y="3" bg="#eeeecc"/>
-    <button id="load"  label="Load Old&#xA;Data..." bg="#88ffff"/>
+    <button id="load"  label="Load Old&#xA;Data..." y="3" bg="#88ffff"/>
     <break/>
     <button id="singleframe" label="Single Frame" bg="#ddbbff"/>
     <button id="singletrial" label="Single Trial" bg="#bb99ff"/>
-    <button id="contEphys" label="Cont. E'phys&#xA;Disabled" type="bool" bg="#22ff77"/>
+    <button id="_dummy" label="Dummy" type="bool" bg="#ffffff"/>
+    <button id="log"  label="Log Note..." bg="#eeeecc"/>
+    <button id="contEphys" label="Cont. E'phys&#xA;Disabled" x="2.1" y="1" type="bool" bg="#22ff77"/>
     <button id="autoRun"  label="Auto Run&#xA;Disabled" type="bool" bg="#9977ff"/>
     <group id="a">
       <button id="trialPeriod" label="Trial period:&#xA;%1" bg="#44ffaa"/>
-      <button id="_camvalsCc" label="Coumarin:&#xA;%1" x="1.05" y="0" bg="#8888ff" value="-/-/-"/>
-      <button id="_camvalsOx" label="Oxonol:&#xA;%1" x="2.05" y="0" bg="#ff8888" value="-/-/-"/>
+      <button id="_camvalsCc" label="Coumarin:&#xA;%1" x="1.1" y="0" bg="#8888ff" value="-/-/-"/>
+      <button id="_camvalsOx" label="Oxonol:&#xA;%1" x="2.1" y="0" bg="#ff8888" value="-/-/-"/>
     </group>
 
-    <button id="_walltime" label="%1" x="2.05" y="2" bg="#99aa99"/>
+    <button id="_walltime" label="%1" x="1.1" y="1" bg="#99aa99"/>
     <button id="_exptelapsed" label="Since Start:&#xA;%1" bg="#88bb88"/>
     <button id="_trialelapsed" label="Since Last:&#xA;%1" bg="#77cc77"/>
 
@@ -957,11 +957,11 @@
     <button id="roiDelete" label="Delete ROI" x="4.1" y="3" bg="#ff8833"/>
     <group id="subs">
       <button id="refType" label="Ref. Type:&#xA;%1" x="3.1" y="3" bg="#44ffee"/>
-      <button id="refTrace" label="Ref. Trace:&#xA;%1" x="3.1" y="4" bg="#66ffaa" hidewhendisabled="yes"/>
-      <button id="refDigi" label="Digi. Ref.:&#xA;%1" x="3.1" y="4" bg="#66ffaa" hidewhendisabled="yes"/>
-      <button id="refFreq" label="Ref. Freq.:&#xA;%1" x="3.1" y="4" bg="#66ffaa" hidewhendisabled="yes"/>
-      <button id="showROIs" label="ROIs:&#xA;%1" x="2.1" y="3" bg="#44ff88"/>
-      <button id="debleach" label="Debleach:&#xA;%1" x="2.1" y="4" bg="#88ff88"/>
+      <button id="refTrace" label="Ref. Trace:&#xA;%1" x="3.1" y="4" bg="#55ccdd" hidewhendisabled="yes"/>
+      <button id="refDigi" label="Digi. Ref.:&#xA;%1" x="3.1" y="4" bg="#55ccdd" hidewhendisabled="yes"/>
+      <button id="refFreq" label="Ref. Freq.:&#xA;%1" x="3.1" y="4" bg="#55ccdd" hidewhendisabled="yes"/>
+      <button id="showROIs" label="ROIs:&#xA;%1" x="2.1" y="3" bg="#66eedd"/>
+      <button id="debleach" label="Debleach:&#xA;%1" x="2.1" y="4" bg="#66ddff"/>
     </group>
     <button id="roiDeleteAll" label="Delete All ROIs" x="4.1" y="4" bg="#ff4411"/>
     <button id="zoomIn" label="Zoom In" x="4.1" y="1" bg="#55eecc"/>
@@ -1154,7 +1154,8 @@
   </page>
 
   <page id="savedSettings" subdxr="1.1">
-    <button id="save" label="Save..." x="4.1" y="4" bg="#ff99cc"/>
+    <button id="save" label="Save..." x="4.1" y="0" bg="#ff99cc"/>
+    <button id="delete" label="Delete" x="4.1" y="4" bg="#ff4433"/>
     <button id="_name" label="(name)" x="10" y="0"/>
     <menu id="_name">
       <item value="(..)"/>
