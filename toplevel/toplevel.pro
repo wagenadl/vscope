@@ -20,6 +20,8 @@ HEADERS += panelhistory.h
 SOURCES += panelhistory.cpp
 HEADERS += scripts.h
 SOURCES += scripts.cpp
+HEADERS += ccdscroll.h
+SOURCES += ccdscroll.cpp
  
 LIBS += -L../base -L../gfx -L../xml -L../gui
 LIBS += -lvscope-base -lvscope-gfx -lvscope-xml -lvscope-gui

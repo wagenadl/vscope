@@ -135,8 +135,11 @@ bool CohData::validate() const {
       if (N>0) {
 	TaperID tid(N, dt_s, df_hz);
 	trc.resize(N);
-	if (Taperbank::hasTaper(tid)) {
-	  Tapers const &tapers = Taperbank::tapers(tid);
+	if (Taperbank::bank().canProvide(tid)) {
+	  /* We should be using the prepare() interface to do this
+	     in the background. Later.
+	  */
+	  Tapers const &tapers = Taperbank::bank().find(tid);
 	  double const *src = rs3d->getData(id)->dataRatio();
 	  for (int t=0; t<N; t++)
 	    trc[t]=src[t+COH_STRIP_START];
@@ -397,8 +400,8 @@ void CohData::recalcReference() const {
     //dbg("coherence:recalcref: isdigi=%i chn=%i",ref_is_digital,ref_chn);
     TaperID tid(N, dt_s, df_hz);
     data.taperIDs[cp] = tid;
-    if (Taperbank::hasTaper(tid)) {
-      Tapers const &tapers = Taperbank::tapers(tid);
+    if (Taperbank::bank().contains(tid)) {
+      Tapers const &tapers = Taperbank::bank().find(tid);
       psdest->compute(ref, dt_s, df_hz, tapers);
       double max=0;
       double df2_best = numbers.inf;

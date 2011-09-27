@@ -24,7 +24,6 @@ public slots:
   void loadData(QString fn); // usu. "/PATH/EXPT/TRIAL.xml"
   void trialDone();
   void abort();
-  void gotoFrame(int n);
 private slots:
   void chgDir(QString dir);
   void autoRunEvent();

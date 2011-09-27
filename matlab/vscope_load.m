@@ -31,12 +31,10 @@ function dat=vscope_load(ifn,wht,frmno,camno)
 %      zero, but cameras are counted from one. The images are properly 
 %      flipped. That is, the data for camera 1 is upside downed.
 
-if ~ischar(ifn)
-  if iscell(ifn)
-    ifn = sprintf('%s%s%03i.xml',ifn{1}, filesep, ifn{2});
-  else
-    ifn = sprintf('%03i.xml',ifn);
-  end
+if iscell(ifn)
+  ifn = sprintf('%s/%03i.xml',ifn{1}, ifn{2});
+elseif ~ischar(ifn)
+  ifn = sprintf('%03i.xml',ifn);
 end
 
 ifd=fopen(ifn,'r');

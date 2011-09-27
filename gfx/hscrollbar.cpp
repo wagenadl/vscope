@@ -122,8 +122,8 @@ void HScrollBar::mouseMoveEvent(QMouseEvent *e) {
   x0_dragcurrent = x0_dragstart +
     (xs0_dragcurrent-xs0_dragstart)*w_range/(width()-4);
 
-  if (x0_dragcurrent<0)
-    x0_dragcurrent = 0;
+  if (x0_dragcurrent < x0_range)
+    x0_dragcurrent = x0_range;
   if (x0_dragcurrent >= x0_range + w_range - w_slider)
     x0_dragcurrent = x0_range + w_range - w_slider;
   //dbg("hsb:drag xs0=%i/%i x0=%g/%g",xs0_dragstart,xs0_dragcurrent,

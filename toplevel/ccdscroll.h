@@ -12,14 +12,9 @@ public:
   CCDScroll(QWidget *parent);
   virtual ~CCDScroll();			    
 public slots:
-  void setNFrames(int n);
-  void newCCDData();
-signals:
-  void gotoFrame(int n);
+  void newData();
 protected slots:
-  void sliderMove(double x0);
-private:
-  int oldpos;
+  void sliderMove(double t_ms);
 };
 
 #endif

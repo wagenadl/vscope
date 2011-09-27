@@ -41,7 +41,7 @@
 #include <gfx/roiimages.h>
 #include <gfx/multigraph.h>
 #include <gfx/colors.h>
-#include <gfx/ccdscroll.h>
+#include <toplevel/ccdscroll.h>
 
 #include <acq/liveephys.h>
 #include <acq/focus.h>
@@ -234,11 +234,9 @@ void setupCCDScroll() {
   CCDScroll *bar = new CCDScroll(&acqPage);
   bar->setGeometry(acqPage.width()/5+12, acqPage.height()*4/5+8,
 		   acqPage.width()*4/5-17,acqPage.height()/5-15);
-  QObject::connect(Globals::trove->trial().ccdData(Connections::leaderCamera()),
+  QObject::connect(&Globals::trove->trial(),
 		   SIGNAL(newData()),
-		   bar, SLOT(newCCDData()));
-  QObject::connect(bar, SIGNAL(gotoFrame(int)),
-		   Globals::acquire, SLOT(gotoFrame(int)));
+		   bar, SLOT(newData()));
 }
 
 void setupCCDImages() {
