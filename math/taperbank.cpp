@@ -109,6 +109,7 @@ bool Taperbank::canProvide(TaperID const &id) {
   mkdpss.start("mkdpss", args);
   bool ok = mkdpss.waitForStarted() && mkdpss.waitForFinished();
   Dbg() << "Taperbank::canProvide " << id.name() << ": " << ok;
+  return ok;
 }
 
 void Taperbank::prepare(TaperID const &id) {
