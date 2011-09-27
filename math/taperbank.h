@@ -43,6 +43,10 @@ public:
        canProvide does not guarantee that a subsequent call to find() will
        actually succeed. After all, mkdpss can fail.
    */
+  bool couldExist(TaperID const &id);
+  /*:F couldExist
+   *:D Returns true iff the taper is legal, i.e., if K>0.
+   */
   Tapers const &find(TaperID const &id);
   /*:F find
    *:D Returns a taper for a given id, or throws an exception if the taper

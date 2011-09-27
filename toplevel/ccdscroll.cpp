@@ -11,8 +11,8 @@
 #include <gfx/roiimages.h>
 
 CCDScroll::CCDScroll(QWidget *parent): HScrollBar(parent) {
-  setRange(0, 1);
-  setSlider(0, 1);
+  t0=t1=ival=0;
+  rerange(0, 1, 1);
   connect(this, SIGNAL(moved(double)),
 	  this, SLOT(sliderMove(double)));
   connect(this, SIGNAL(moving(double)),
@@ -44,9 +44,18 @@ void CCDScroll::newData() {
     
     first = false;
   }
-  setRange(t0ms, t1ms-t0ms);
-  setSlider(t0ms, ival);
-  sliderMove(t0ms);
+  rerange(t0ms, t1ms, ival);
+}
+
+void CCDScroll::rerange(double t0_, double t1_, double ival_) {
+  if (t0_==t0 && t1_==t1 && ival_==ival)
+    return;
+  t0 = t0_;
+  t1 = t1_;
+  ival = ival_;
+  setRange(t0, t1-t0);
+  setSlider(t0, ival);
+  sliderMove(t0);
 }
 
 void CCDScroll::sliderMove(double t_ms) {

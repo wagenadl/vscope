@@ -15,6 +15,10 @@ public slots:
   void newData();
 protected slots:
   void sliderMove(double t_ms);
+private:
+  void rerange(double t0, double t1, double ival);
+private:
+  double t0, t1, ival;
 };
 
 #endif

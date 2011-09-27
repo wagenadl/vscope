@@ -79,6 +79,7 @@ void Taperbank::destroy(TaperID const &id) {
 
 void Taperbank::instaPrep(TaperID const &id) {
   QString fn = buildfn(id);
+  Dbg() << "Taperbank::instaPrep: " << id.name() << ": " << fn;
   QProcess mkdpss(this);
   QStringList args;
   args.append(QString::number(id.N));
@@ -90,7 +91,12 @@ void Taperbank::instaPrep(TaperID const &id) {
     throw Exception("Taperbank", "Cannot run mkdpss");
 }
 
+bool Taperbank::couldExist(TaperID const &id) {
+  return id.K>0;
+}
+
 bool Taperbank::canProvide(TaperID const &id) {
+  Dbg() << "Taperbank::canProvide: " << id.name() << " K="<<id.K;
   if (contains(id))
     return true;
 
@@ -101,7 +107,8 @@ bool Taperbank::canProvide(TaperID const &id) {
   QStringList args;
   args.append("--help");
   mkdpss.start("mkdpss", args);
-  return mkdpss.waitForStarted() && mkdpss.waitForFinished();
+  bool ok = mkdpss.waitForStarted() && mkdpss.waitForFinished();
+  Dbg() << "Taperbank::canProvide " << id.name() << ": " << ok;
 }
 
 void Taperbank::prepare(TaperID const &id) {

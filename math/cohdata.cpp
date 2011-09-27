@@ -149,7 +149,8 @@ bool CohData::validate() const {
 	  data.coh_pha[id] = cohest->phase[0];
 	  dbg("cohdata %i: %4.2f %3.0f",id,
 	      data.coh_mag[id],data.coh_pha[id]*180/3.1415);
-	} else if (!warned.contains(tid.name())) {
+	} else if (Taperbank::bank().couldExist(tid) &&
+		   !warned.contains(tid.name())) {
 	  Warning()
 	    << QString("Missing tapers '%1'.")
 	       .arg(tid.name())
@@ -324,8 +325,6 @@ void CohData::recalcReference() const {
       continue;
     }
 
-    dbg("CohData:recRef: N=%i dt_ms=%g fs_hz=%g ephl=%i",
-	N,t.dt_ms(),fs_hz,ephyslen);
     for (int k=0; k<N; k++) {
       double tstart = t.t0_ms()+(k+COH_STRIP_START)*t.dt_ms();
       double tend = tstart+t.dt_ms()*t.duty_percent()/100;
@@ -337,7 +336,6 @@ void CohData::recalcReference() const {
 	iend=ephyslen;
       if (iend<istart)
 	iend=istart;
-      dbg("CohData:recRef: k=%i istart=%i iend=%i",k,istart,iend);
       if (iend>istart) {
 	double v=0;
 	switch (refType) {
@@ -400,14 +398,13 @@ void CohData::recalcReference() const {
     //dbg("coherence:recalcref: isdigi=%i chn=%i",ref_is_digital,ref_chn);
     TaperID tid(N, dt_s, df_hz);
     data.taperIDs[cp] = tid;
-    if (Taperbank::bank().contains(tid)) {
+    if (Taperbank::bank().canProvide(tid)) {
       Tapers const &tapers = Taperbank::bank().find(tid);
       psdest->compute(ref, dt_s, df_hz, tapers);
       double max=0;
       double df2_best = numbers.inf;
       int N = psdest->psd.size();
       for (int n=0; n<N; n++) { // skip DC
-	dbg("psd at %5.2f Hz: %5.2f",psdest->freqbase[n],psdest->psd[n]);
 	bool best;
 	if (refType==refFIXED) {
 	  double f = psdest->freqbase[n];
@@ -427,7 +424,8 @@ void CohData::recalcReference() const {
       }
     } else {
       data.fstar_hz[cp] = 1;
-      if (!warned.contains(tid.name())) {
+      if (Taperbank::bank().couldExist(tid) &&
+	  !warned.contains(tid.name())) {
 	Warning()
 	  << QString("Missing tapers '%1'.")
 	  .arg(tid.name())
