@@ -63,9 +63,11 @@ void CCDScroll::sliderMove(double t_ms) {
   Dbg() << "CCDScroll: " << t_ms;
   foreach (QString id, trial.cameras()) {
     CCDData const *src = trial.ccdData(id);
+    int N = src->getNFrames();
+    if (N<=0)
+      continue;
     double t0 = src->getT0ms();
     double dt = src->getDTms();
-    int N = src->getNFrames();
     int n = int((t_ms-t0)/dt);
     Dbg() << "   " << id << ": " << n;
     if (n<0)
