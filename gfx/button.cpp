@@ -15,7 +15,7 @@ char const *BUTTON_FontFamily = "Arial";
 int BUTTON_Width = 80;
 int BUTTON_Height = 27;
 char const *BUTTON_Foreground = "black";
-char const *BUTTON_Background = "#eeeecc";
+char const *BUTTON_Background = "#eeeeee";
 
 static QColor deeper(QColor const &a, double amt=2) {
   int h, s, v;
@@ -53,6 +53,8 @@ Button::Button(QWidget *parent, int lx, int ty, QString myID):
   setLineWidth(1);
   setMidLineWidth(2);
   setBackground(QColor("#eeeeee"));
+  setBackground(QColor(BUTTON_Background));
+  setForeground(QColor(BUTTON_Foreground));
   setAutoFillBackground(true);
   setAlignment(Qt::AlignCenter);
 }

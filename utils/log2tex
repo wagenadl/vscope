@@ -135,6 +135,8 @@ for my $line (@loglines) {
     if ($havefigs) {
       writeout();
       writeautofigures($tri);
+    } else {
+      writeout() if $html;
     }
   } elsif ($msg =~ /Note: (.*)/) {
     next if $1 eq "";

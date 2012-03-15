@@ -75,20 +75,19 @@ void VSDTraces::updateEPhysData() {
   //    return;
   //  }
   //}
-  DataPtr dp(adata->contains(refchn)
-	     ? adata->channelData(refchn)
-	     : adata->allData());
-  reftrace->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
-		    dp,
-		    adata->getNumScans(),
-		    adata->getNumChannels());
-  Connections::AIChannel const *aich = Connections::findpAI(refchn);
-  if (aich) {
-    reftrace->setScaleFactor(aich->scale);
-    refgraph->setYLabel("("+aich->unit+")");
+  if (adata->contains(refchn)) {
+    DataPtr dp(adata->channelData(refchn));
+    int idx = adata->whereIsChannel(refchn);
+    reftrace->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
+		      dp,
+		      adata->getNumScans(),
+		      adata->getNumChannels());
+    reftrace->setScaleFactor(adata->getScaleAtIndex(idx));
+    refgraph->setYLabel("("+adata->getUnitAtIndex(idx)+")");
   } else {
-    reftrace->setScaleFactor(1);
-    refgraph->setYLabel("(a.u.)");
+    DataPtr dp(adata->allData());
+    reftrace->setData(0,1e4,dp,0,1);
+    refgraph->setYLabel("(-)");
   }
   refgraph->autoSetYRange();
   Range xr = allgraph->computeXRange();
