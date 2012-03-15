@@ -15,7 +15,7 @@ FileChooser::FileChooser(QWidget *parent, FileList *alt_child):
   if (alt_child) {
     list = alt_child;
     list->setParent(this);
-    dbg("filechooser %p accepts alt_child %p",this,alt_child);
+    //    dbg("filechooser %p accepts alt_child %p",this,alt_child);
   } else {
     list = new FileList(this);
   }
@@ -52,7 +52,7 @@ FileChooser::~FileChooser() {
 
 void FileChooser::populateFiles(QDir const &src, QString extn, bool hideextn) {
   list->populateFiles(src,extn,hideextn);
-  dbg("fc:popdirs");
+  //  dbg("fc:popdirs");
   isDirs=false;
   relayout();
   scrollTo();
@@ -60,7 +60,7 @@ void FileChooser::populateFiles(QDir const &src, QString extn, bool hideextn) {
 
 void FileChooser::populateDirs(QDir const &src) {
   list->populateDirs(src);
-  dbg("fc:popdirs");
+  //  dbg("fc:popdirs");
   isDirs=true;
   relayout();
   scrollTo();

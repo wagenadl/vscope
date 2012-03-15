@@ -69,6 +69,10 @@ Trial::~Trial() {
     delete dat; // eventually, this will not be here any more
 }
 
+void Trial::reconstructStim(ParamTree const *ptree) {
+  ephysout->prepare(ptree, dat->timing());
+}
+
 void Trial::prepare(ParamTree const *ptree) {
   if (active)
     throw Exception("Trial","Cannot prepare for new trial while active");

@@ -21,7 +21,7 @@ void UnitQty::set(QString v) {
     uni="";
     return;
   }
-  Dbg() << "UnitQty: " << v;
+  //Dbg() << "UnitQty: " << v;
 
   QString u;
   if (v.endsWith("Hz"))
@@ -38,7 +38,7 @@ void UnitQty::set(QString v) {
   }
   v = v.simplified();
 
-  Dbg() << "  u="<<u << " v="<<v;
+  //  Dbg() << "  u="<<u << " v="<<v;
   
   bool ok;
   double q = v.toDouble(&ok);

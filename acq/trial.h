@@ -19,6 +19,7 @@ public:
   virtual ~Trial();
   void prepare(class ParamTree const *ptree);
   void prepareSnapshot(class ParamTree const *ptree);
+  void reconstructStim(class ParamTree const *ptree);
   bool isPrepared() const { return dat->isPrepared(); }
   bool isActive() const { return isPrepared() ? active : false; }
   // TrialData const &data() const { return *dat; }

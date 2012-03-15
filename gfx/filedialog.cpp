@@ -77,7 +77,7 @@ void FileDialog::relayout() {
 
   int nc_dir = dirs->countItems();
   int nc_fil = files->countItems();
-  Dbg() << "filedialog dir="<<nc_dir<<" fil="<<nc_fil;
+  //  Dbg() << "filedialog dir="<<nc_dir<<" fil="<<nc_fil;
   int w_dir = 0;
   int x0_fil = 2;
   if (nc_fil<=0)
@@ -137,7 +137,7 @@ void FileDialog::goDir(QString path0) {
   pathbar->setAsPath(path);
   dirs->populateDirs(dir);
   files->populateFiles(dir,extn,true);
-  dbg("path = %s",qPrintable(path));
+  //  dbg("path = %s",qPrintable(path));
   relayout();
   emit changedDir(path);
 }

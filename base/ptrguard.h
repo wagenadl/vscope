@@ -8,8 +8,8 @@
 
 template <class X> class PtrGuard {
 public:
-  PtrGuard(X *x): x(x)  { dbg("PtrGuard(%p)=%p",this,x); }
-  ~PtrGuard() { dbg("~PtrGuard(%p)=%p",this,x); delete x; }
+  PtrGuard(X *x): x(x)  { }
+  ~PtrGuard() { delete x; }
   operator X*() { return x; }
   X *ptr() { return x; }
 private:

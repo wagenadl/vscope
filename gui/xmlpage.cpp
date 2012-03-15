@@ -293,7 +293,7 @@ xmlButton *xmlPage::addButton(xmlPage::Geom &g, QDomElement doc) {
 	    master,SIGNAL(buttonDeselected(QString,QString)));
     connect(b,SIGNAL(activated(QString,QString)),
 	    master,SIGNAL(buttonClicked(QString,QString)));
-    Dbg() << "Connecting doubleclicked" << id;
+    //    Dbg() << "Connecting doubleclicked" << id;
     connect(b,SIGNAL(doubleClicked(QString,QString)),
 	    master,SIGNAL(buttonDoubleClicked(QString,QString)));
   }
@@ -458,13 +458,13 @@ xmlPage *xmlPage::addPage(xmlPage::Geom &g, QDomElement doc,
 void xmlPage::addTriangle(QString id) {
   QStringList path = id.split("/"); id = path.last();
   triID = id;
-  dbg("xmlPage::addTriangle. id=%s",qPrintable(id));
+  //  dbg("xmlPage::addTriangle. id=%s",qPrintable(id));
   xmlButton *b = buttons.contains(id) ? buttons[id] : 0;
   int idx = id.indexOf("*");
   if (idx>0)
     id=id.left(idx);
   xmlPage *p = subPages.contains(id) ? subPages[id] : 0;
-  dbg("xmlPage::addTriangle. b=%p p=%p",b,p);
+  //  dbg("xmlPage::addTriangle. b=%p p=%p",b,p);
   if (b && p) {
     QRect br = b->geometry();
     QRect pr = p->geometry();
@@ -509,8 +509,7 @@ void xmlPage::addTriangle(QString id) {
 
 void xmlPage::removeTriangle(QString id) {
   QStringList path = id.split("/"); id = path.last();
-  dbg("xmlPage::removeTriangle. id=%s was=%s",
-      qPrintable(id), qPrintable(triID));
+  //dbg("xmlPage::removeTriangle. id=%s was=%s", qPrintable(id), qPrintable(triID));
   if (triID == id)
     triID = "";
   update();
@@ -559,7 +558,7 @@ xmlPage *xmlPage::addTabbedPage(xmlPage::Geom &g, QDomElement doc) {
 	if (penable)
 	  connect(b,SIGNAL(doubleClicked(QString,QString)),
 		  penable,SLOT(toggleSelected()));
-	Dbg() << "Connecting doubleclicked" << id;
+	//Dbg() << "Connecting doubleclicked" << id;
 	connect(b,SIGNAL(doubleClicked(QString,QString)),
 		master,SIGNAL(buttonDoubleClicked(QString,QString)));
       }
@@ -789,7 +788,7 @@ void xmlPage::representTabEnabled(QString id) {
 		p->toBool() ? QColor("#ff2200") : QColor("#884444"));
     b->setPalette(pa);
   }
-  Dbg() << "representTabEnabled: " << id << " " << triID;
+  //  Dbg() << "representTabEnabled: " << id << " " << triID;
   if (id==triID)
     addTriangle(id);
 }

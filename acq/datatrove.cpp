@@ -65,14 +65,14 @@ void DataTrove::read(QString dir, QString exptname, QString trialid) {
   trial_->read(dir, exptname, trialid, ptree_);
   rois_->load(QString("%1/%2/%3-rois.xml")
 	      .arg(dir).arg(exptname).arg(trialid));
-  Dbg() << "DataTrove::read: "
-	<< trial_->exptName() << "/" << trialid;
+  //Dbg() << "DataTrove::read: "
+  //	<< trial_->exptName() << "/" << trialid;
   dummy = d;
 }
 
 void DataTrove::write() {
   if (dummy) {
-    Dbg() << "DataTrove::write: not saving: dummy";
+    //Dbg() << "DataTrove::write: not saving: dummy";
     return;
   }
 
@@ -86,11 +86,11 @@ void DataTrove::setDummy(bool d) {
 
 void DataTrove::saveROIs() {
   if (dummy) {
-    Dbg() << "DataTrove::saveROIs: not saving: dummy";
+    //Dbg() << "DataTrove::saveROIs: not saving: dummy";
     return;
   }
   
-  Dbg() << "DataTrove::saveROIs" << trial_->exptName() << "/" << trial_->trialID();
+  //  Dbg() << "DataTrove::saveROIs" << trial_->exptName() << "/" << trial_->trialID();
   try {
     rois_->save(QString("%1/%2/%3-rois.xml")
 		.arg(trial_->filePath())

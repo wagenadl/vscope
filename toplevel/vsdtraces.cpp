@@ -33,7 +33,7 @@ VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent) {
   refgraph->autoSetYRange();
   connect(&Globals::trove->trial(), SIGNAL(newData()),
 	  SLOT(updateEPhysData()));
-  Dbg(this) << "connected " << &Globals::trove->trial() << ":newData to my updateEphysData";
+  //  Dbg(this) << "connected " << &Globals::trove->trial() << ":newData to my updateEphysData";
 
   allgraph = new VSDAllGraph(&Globals::trove->roidata(), this);
   addGraph("all",allgraph);
@@ -51,7 +51,7 @@ void VSDTraces::updateSelection(int id) {
 }
 
 void VSDTraces::setRefTrace(QString id) {
-  Dbg() << "vsdtraces::setreftrace: " << id;
+  //  Dbg() << "vsdtraces::setreftrace: " << id;
   refchn = id;
   refgraph->setTraceLabel("ref", Aliases::lookup(id));
   updateEPhysData();
@@ -66,7 +66,7 @@ void VSDTraces::setRefFreq(double) {
 }
 
 void VSDTraces::updateEPhysData() {
-  Dbg() << "VSDTraces::updateEphysData";
+  //  Dbg() << "VSDTraces::updateEphysData";
   AnalogData const *adata = Globals::trove->trial().analogData();
   //if (!adata->contains(refchn)) {
   //  QString rf = adata->getChannelAtIndex(0);

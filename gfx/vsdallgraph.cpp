@@ -27,7 +27,7 @@ VSDAllGraph::~VSDAllGraph() {
 }
 
 void VSDAllGraph::updateData() {
-  Dbg() << "VSDAllGraph("<<this<<"): updateData() data="<<data;
+  // Dbg() << "VSDAllGraph("<<this<<"): updateData() data="<<data;
   Range tt;
   if (!data)
     return;
@@ -49,7 +49,7 @@ bool VSDAllGraph::haveData(int id) const {
 }
 
 void VSDAllGraph::updateROIs() {
-  Dbg() << "VSDAllGraph("<<this<<"): updateROIs()";
+  // Dbg() << "VSDAllGraph("<<this<<"): updateROIs()";
   QSet<int> ids = QSet<int>::fromList(data->allIDs());
   ids += QSet<int>::fromList(traces.keys());
   foreach (int id, ids) 
@@ -75,7 +75,7 @@ void VSDAllGraph::updateROIcore(int id) {
 }  
 
 void VSDAllGraph::updateROI(int id) {
-  Dbg() << "VSDAllGraph("<<this<<"): updateROI("<<id<<")";
+  // Dbg() << "VSDAllGraph("<<this<<"): updateROI("<<id<<")";
   updateROIcore(id);
   newOffsets();
   update();
@@ -88,7 +88,7 @@ void VSDAllGraph::newOffsets() {
 }
 
 void VSDAllGraph::updateSelection(int id) {
-  Dbg() << "VSDAllGraph("<<this<<"): updateSelection("<<id<<") was:"<<selectedId;
+  // Dbg() << "VSDAllGraph("<<this<<"): updateSelection("<<id<<") was:"<<selectedId;
   if (selectedId)
     setTracePen(num2az(selectedId),QColor("#000000"));
   selectedId = traces.contains(id) ? id : 0;

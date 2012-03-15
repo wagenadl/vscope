@@ -169,7 +169,7 @@ void CCDImage::recolor(QString act) {
   } else if (act=="whiteMin") {
     adjust_white /= 1.3;
   }
-  dbg("recolor: black: %.2f white %.2f",adjust_black, adjust_white);
+  // dbg("recolor: black: %.2f white %.2f",adjust_black, adjust_white);
   rebuildGammaTable();
 }
 

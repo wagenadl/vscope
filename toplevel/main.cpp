@@ -134,6 +134,8 @@ void setupParsAndConns() {
     fpath = envpath;
   else
     fpath = fpath + "/vsddata";
+  Dbg() << "ENVPATH:"<<envpath;
+  Dbg() << "fpath:"<<fpath;
 
   QString parafn = fpath + "/_settings/_parameters.xml";
   if (true || !QFile::exists(parafn))
@@ -160,6 +162,7 @@ void setupParsAndConns() {
   Enumerator::readAll(cons); // This must happen before ptree is init'ed
   Connections::readXML(connDoc.root());
   Globals::ptree = new ParamTree(pars);
+  Dbg() << "fpath2:"<<fpath;
   Globals::ptree->find("_filePath").set(fpath);
 }
 

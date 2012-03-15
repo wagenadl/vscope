@@ -72,7 +72,8 @@ bool EPhysOut::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
     setupAData_dummy();
   }
   adata->setSamplingFrequency(ptree->find(PAR_OUTRATE).toDouble());
-
+  ddata->setSamplingFrequency(ptree->find(PAR_OUTRATE).toDouble());
+  
   if (ptree->find("stimVideo/enable").toBool())
     VideoProg::find().prepStim(ptree, timing, adata, ddata);
   

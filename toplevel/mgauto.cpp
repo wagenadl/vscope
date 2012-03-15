@@ -37,13 +37,13 @@ MGAuto::Channel::Channel(QDomElement c) {
     isDigi = false;
   } else if (ctyp=="di") {
     typ=DI;
-    chn = Enumerator::find("DIGILINES")->lookup(id);
+    //chn = Enumerator::find("DIGILINES")->lookup(id);
     label = Aliases::lookup(id);
     isOut = false;
     isDigi = true;
   } else if (ctyp=="do") {
     typ=DO;
-    chn = Enumerator::find("DIGILINES")->lookup(id);
+    //chn = Enumerator::find("DIGILINES")->lookup(id);
     label = Aliases::lookup(id);
     isOut = true;
     isDigi = true;
@@ -105,16 +105,22 @@ void MGAuto::rebuild() {
     switch ((*i).typ) {
     case Channel::AI:
       if (Globals::trove->trial().analogData() &&
-	  Globals::trove->trial().analogData()->contains(id)) {
+	  Globals::trove->trial().analogData()->contains(id)) 
 	newset.insert(id);
-      } else {
-	;
-      }
       break;
     case Channel::AO:
+      if (Globals::trove->trial().analogStimuli() &&
+	  Globals::trove->trial().analogStimuli()->contains(id)) 
+	newset.insert(id);
+      break;
     case Channel::DI:
+      if (Globals::trove->trial().digitalData() &&
+	  Globals::trove->trial().digitalData()->hasLine(id)) 
+	newset.insert(id);
     case Channel::DO:
-      newset.insert(id); // digital inputs are always enabled
+      if (Globals::trove->trial().digitalStimuli() &&
+	  Globals::trove->trial().digitalStimuli()->hasLine(id)) 
+	newset.insert(id);
       break;
     }
   }
@@ -167,6 +173,7 @@ void MGAuto::newtraces() {
   AnalogData const *astim = Globals::trove->trial().analogStimuli();
   DigitalData const *dstim = Globals::trove->trial().digitalStimuli();
   double outrate_hz = Globals::ptree->find(PAR_OUTRATE).toDouble();
+  Dbg() << "MGAuto: outrate: " << outrate_hz;
 
   foreach (Channel c, pool) {
     if (actual.contains(c.id)) {
@@ -189,24 +196,27 @@ void MGAuto::newtraces() {
 	break;
       case Channel::AO:
 	if (astim) {
+	  Dbg() << "MGAuto: AO:"<< c.id<<": " << astim->contains(c.id) << "="<<astim->whereIsChannel(c.id)<<" scale="<<astim->getScaleAtIndex(astim->whereIsChannel(c.id));
 	  tr->setData(0,1/outrate_hz,
 		      DataPtr(astim->channelData(c.id)),
 		      astim->getNumScans(),
 		      astim->getNumChannels());
+	  tr->setScaleFactor(astim->getScaleAtIndex
+			     (astim->whereIsChannel(c.id)));
 	  g->setYLabel("(V)"); // AO always in volts for now
 	}
 	break;
       case Channel::DI:
 	if (dacq) {
 	  tr->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
-		      DataPtr(dacq->allData(),c.chn),
+		      DataPtr(dacq->allData(),dacq->findLine(c.id)),
 		      dacq->getNumScans());
 	}
 	break;
       case Channel::DO:
 	if (dstim) {
 	  tr->setData(0,1/outrate_hz,
-		      DataPtr(dstim->allData(),c.chn),
+		      DataPtr(dstim->allData(),dstim->findLine(c.id)),
 		      dstim->getNumScans());
 	}
 	break;

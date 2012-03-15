@@ -28,7 +28,7 @@ public:
     enum Type { AI, AO, DI, DO };
     QString id;
     QString label;
-    int chn; // used for digital line, not for analog
+    //    int chn; // used for digital line, not for analog
     Type typ;
     bool tiny;
     bool isOut;

@@ -78,6 +78,7 @@ public:
   unsigned int findLine(QString id) const;
   DataType maskForLine(QString id) const;
   DataType maskForLine(unsigned int line) const;
+  void reportLines() const;
 private:
   void ensureIDs();
 private:

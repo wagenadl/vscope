@@ -113,6 +113,8 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   ddata->clearMask();
   foreach (QString id, dch)
     ddata->defineLine(digilines->lookup(id), id);
+  ddata->setSamplingFrequency(samprate_hz);
+
   prep = true;
 
   bool haveDevice = createDAQ(ptree);

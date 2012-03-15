@@ -17,7 +17,7 @@ FileDlgKey::FileDlgKey(QWidget *parent, bool expts): QFrame(parent) {
   hdr->setFont(f);
   hdr->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
 
-  dbg("filedlgkey: expts=%i",expts);
+  //  dbg("filedlgkey: expts=%i",expts);
   
   if (expts) 
     fd = new ExptFileDialog(this);

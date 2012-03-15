@@ -17,7 +17,7 @@ HScrollBar::~HScrollBar() {
 }
 
 void HScrollBar::setRange(double x0, double w) {
-  Dbg() << "HScrollBar::setRange("<<x0<<","<<w<<")";
+  // Dbg() << "HScrollBar::setRange("<<x0<<","<<w<<")";
   x0_range = x0;
   w_range = w;
   if (w_slider>w_range)
@@ -30,7 +30,7 @@ void HScrollBar::setRange(double x0, double w) {
 }
 
 void HScrollBar::setSlider(double x0, double w, bool constrain) {
-  Dbg() << "HScrollBar::setSlider("<<x0<<","<<w<<")";
+  // Dbg() << "HScrollBar::setSlider("<<x0<<","<<w<<")";
   x0_slider = x0;
   w_slider = w;
   if (constrain) {
@@ -46,7 +46,7 @@ void HScrollBar::setSlider(double x0, double w, bool constrain) {
     if (x0_range+w_range<x0_slider+w_slider)
       w_range=x0_slider+w_slider-x0_range;
   }
-  Dbg() << "->("<<x0_slider<<","<<w_slider<<")";
+  // Dbg() << "->("<<x0_slider<<","<<w_slider<<")";
   update();
 }
 

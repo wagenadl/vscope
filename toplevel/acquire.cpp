@@ -275,6 +275,7 @@ void Acquire::loadData(QString xmlfn) {
   } catch (Exception const &e) {
     GUIExc::report(e,"load data");
   }
+  Globals::trial->reconstructStim(Globals::ptree);
 
   Globals::ptree->find("acquisition/_exptname").set(exptbit);
   Globals::ptree->find("acquisition/_trialno").set(trialbit);

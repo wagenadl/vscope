@@ -265,7 +265,7 @@ double const *ROIData::getRaw() const {
     data[n] = (sum1>0) ? sum/sum1 : 0;
   }
 
-  Dbg() << "ROIData: returning dataRaw=" << data;
+  //  Dbg() << "ROIData: returning dataRaw=" << data;
 
   raw.validate();
   return data;
@@ -402,7 +402,7 @@ double const *ROIData::getDebleachedDFF() const {
   }
   double avg = sY/(N-2);
   double var = (sYY-sY*sY/(N-2))/(N-2);
-  dbg("getdebDFF: avg=%g var=%g",sY,avg,var);
+  //  dbg("getdebDFF: avg=%g var=%g",sY,avg,var);
 
   for (int n=0; n<N; n++)
     dst[n] = 100*((dst[n]/avg) - 1);

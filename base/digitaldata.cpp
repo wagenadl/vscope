@@ -62,7 +62,7 @@ void DigitalData::write(QString ofn, QDomElement elt) {
   elt.setAttribute("typebytes","4");
   elt.setAttribute("scans", QString::number(nscans));
   foreach (unsigned int n, line2id.keys()) {
-    Dbg(this) << "write n="<<n<<" id="<<line2id[n];
+    //Dbg(this) << "write n="<<n<<" id="<<line2id[n];
     QDomElement line = elt.ownerDocument().createElement("line");
     elt.appendChild(line);
     line.setAttribute("idx", QString::number(n));
@@ -88,10 +88,11 @@ void DigitalData::read(QString ifn, QDomElement elt) {
     throw Exception("DigitalData", "Scan count mismatch between data and xml");
 
   clearMask();
-  for (QDomElement line = elt.firstChildElement("line");
-       !elt.isNull(); elt = elt.nextSiblingElement("line")) {
-    int idx = elt.attribute("idx").toInt();
-    QString id = elt.attribute("id");
+  for (QDomElement e = elt.firstChildElement("line");
+       !e.isNull(); e = e.nextSiblingElement("line")) {
+    int idx = e.attribute("idx").toInt();
+    QString id = e.attribute("id");
+    //Dbg() << "ddata:read: " << idx << "=" << id;
     defineLine(idx, id);
   }  
 }
@@ -165,12 +166,20 @@ void DigitalData::addLine(unsigned int line) {
 }
 
 void DigitalData::defineLine(unsigned int line, QString id) {
-  Dbg(this) << "defineLine: " << line << ":" << id << " mask="<<cmask;
+  //  Dbg(this) << "defineLine: " << line << ":" << id << " mask="<<cmask;
   KeyGuard guard(*this);
   addLine(line);
   id2line.remove(line2id[line]);
   line2id[line] = id;
   id2line[id] = line;
+}
+
+void DigitalData::reportLines() const {
+  Dbg() << "Digital Lines:";
+  for (int i=0; i<32; i++) {
+    if (line2id.contains(i))
+      Dbg() << i << ": " << line2id[i];
+  }
 }
 
 bool DigitalData::hasLine(QString id) const {

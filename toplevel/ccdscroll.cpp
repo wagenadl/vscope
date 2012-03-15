@@ -23,7 +23,7 @@ CCDScroll::~CCDScroll() {
 }
 
 void CCDScroll::newData() {
-  Dbg() << "CCDScroll::newData";
+  // Dbg() << "CCDScroll::newData";
   TrialData const &trial = Globals::trove->trial();
   double t0ms = 0;
   double t1ms = 1000;
@@ -34,7 +34,7 @@ void CCDScroll::newData() {
     double t0a = cam->getT0ms();
     double ivala = cam->getDTms();
     double t1a = t0a + ivala*cam->getNFrames();
-    Dbg() << "CCDScroll " << id << ": " << t0a << " - " << t1a << ": " << ivala;
+    // Dbg() << "CCDScroll " << id << ": " << t0a << " - " << t1a << ": " << ivala;
     if (first || t0a<t0ms)
       t0ms = t0a;
     if (first || t1a>t1ms)
@@ -60,7 +60,7 @@ void CCDScroll::rerange(double t0_, double t1_, double ival_) {
 
 void CCDScroll::sliderMove(double t_ms) {
   TrialData const &trial = Globals::trove->trial();
-  Dbg() << "CCDScroll: " << t_ms;
+  // Dbg() << "CCDScroll: " << t_ms;
   foreach (QString id, trial.cameras()) {
     CCDData const *src = trial.ccdData(id);
     int N = src->getNFrames();
@@ -69,7 +69,7 @@ void CCDScroll::sliderMove(double t_ms) {
     double t0 = src->getT0ms();
     double dt = src->getDTms();
     int n = int((t_ms-t0)/dt);
-    Dbg() << "   " << id << ": " << n;
+    // Dbg() << "   " << id << ": " << n;
     if (n<0)
       n=0;
     else if (n>=N)

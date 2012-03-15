@@ -62,7 +62,7 @@ void LineGraph::setXRange(Range const &xx, bool nextAuto) {
 }
 
 void LineGraph::setYRange(Range const &yy) {
-  Dbg() << "LineGraph::setYRange" << yy.min << yy.max;
+  //  Dbg() << "LineGraph::setYRange" << yy.min << yy.max;
   if (yy.empty()) {
     autoSetYRange();
   } else {
@@ -104,7 +104,7 @@ void LineGraph::autoSetXRange() {
 }
 
 void LineGraph::autoSetYRange(double frc, double margfac) {
-  Dbg() << "autoSetYRange";
+  //  Dbg() << "autoSetYRange";
   Range yy = computeYRange(frc);
   if (yy.empty()) {
     y0=-1;
@@ -133,7 +133,7 @@ void LineGraph::autoGrowXRange() {
 }
 
 void LineGraph::autoGrowYRange(double frc) {
-  Dbg() << "autoGrowYRange";
+  //  Dbg() << "autoGrowYRange";
   Range yy = computeYRange(frc);
   yy.include(y0);
   yy.include(y1);
@@ -610,8 +610,8 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
 }
 
 void LineGraph::paintEvent(class QPaintEvent *) {
-  dbg("linegraph(%p)::paintevent\n",this);
-  dbg("linegraph: xx=(%g:%g) yy=(%g:%g)",x0,x1,y0,y1);
+  //  dbg("linegraph(%p)::paintevent\n",this);
+  //  dbg("linegraph: xx=(%g:%g) yy=(%g:%g)",x0,x1,y0,y1);
   QPainter p(this);
   p.setFont(traceFont);
   int dy_legend = p.fontMetrics().lineSpacing();
