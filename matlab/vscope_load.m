@@ -276,7 +276,7 @@ else
 end
 
 function b = vsdl_bool(str)
-if strcmp(str,'true') | strcmp(str,'yes') | strcmp(str,'1')
+if strcmp(str,'true') || strcmp(str,'yes') || strcmp(str,'1')
   b=1;
 else
   b=0;
@@ -351,7 +351,7 @@ while ~sngl
     break;
   else
     kv = vsdl_params(str);
-    if strcmp(kv.elt,'category') | strcmp(kv.elt,'array') | ...
+    if strcmp(kv.elt,'category') || strcmp(kv.elt,'array') || ...
 	  strcmp(kv.elt,'elt')
       sub = vsdl_addcatg(sub,vsdl_getval(kv,'id'),kv.single, ifd, kv.elt);
     elseif strcmp(kv.elt,'pval')
@@ -474,6 +474,12 @@ rate = vsdl_getval(kv,'rate');
 
 flipx = zeros(ncams,1); flipx(1) = johnsscope;
 flipy = zeros(ncams,1); flipy(1) = ~johnsscope;
+for c=1:ncams
+  ccd.info.xform{c}.ax=1;
+  ccd.info.xform{c}.ay=1;
+  ccd.info.xform{c}.bx=0;
+  ccd.info.xform{c}.by=0;
+end
 
 typ = vsdl_getval(kv,'type');
 if isempty(rate)
@@ -523,7 +529,7 @@ while 1
       ccd.info.pix{idx+1} = [cnser cnpar];
       ccd.info.nframes{idx+1} = cnframes;
       typ1 = vsdl_getval(kv,'type');
-      if ~isempty(typ) & ~strcmp(typ,typ1)
+      if ~isempty(typ) && ~strcmp(typ,typ1)
         error('vscope_load: cannot deal with unequal pixel types');
       end
       typ=typ1;
@@ -540,8 +546,12 @@ while 1
                   break;
               elseif ~isempty(findstr(str,'transform'))
                 kv = vsdl_params(str);
-                flipx(idx+1) = str2double(vsdl_getval(kv,'ax'))<0;
-                flipy(idx+1) = str2double(vsdl_getval(kv,'ay'))<0;
+                flipx(idx+1) = atoi(vsdl_getval(kv,'ax'))<0;
+                flipy(idx+1) = atoi(vsdl_getval(kv,'ay'))<0;
+		ccd.info.xform{idx+1}.ax = atoi(vsdl_getval(kv,'ax'));
+		ccd.info.xform{idx+1}.ay = atoi(vsdl_getval(kv,'ay'));
+		ccd.info.xform{idx+1}.bx = atoi(vsdl_getval(kv,'bx'));
+		ccd.info.xform{idx+1}.by = atoi(vsdl_getval(kv,'by'));
               end
           end
       else
@@ -560,7 +570,7 @@ end
 ccd.info.flipx = flipx;
 ccd.info.flipy = flipy;
 
-if getdat & ncams>0
+if getdat && ncams>0
   ifd = fopen(strrep(ifn,'.xml','-ccd.dat'),'rb');
   if ifd==0
     error('vscope_load: Cannot read ccd data');
@@ -572,7 +582,7 @@ if getdat & ncams>0
     npar = ccd.info.pix{1}(2);
     nframes = ccd.info.nframes{1};
     for k=2:ncams
-      if ccd.info.pix{k}(1)~=nser | ccd.info.pix{k}(2)~=npar
+      if ccd.info.pix{k}(1)~=nser || ccd.info.pix{k}(2)~=npar
 	error('vscope_load: cannot deal with unequal frame sizes');
       end
       if ccd.info.nframes{k}~=nframes
