@@ -50,7 +50,6 @@
   <aichannel id="ME2_I" line="3"
      ground="RSE" range="5V" unit="nA" scale="10"/>    
      <!-- That is, 1V of output corresponds to 10 nA of input -->
-  <!-- I need to check all these numbers. -->
   <aichannel id="Stim0Mon" line="4"
      ground="RSE" range="5V" unit="V" scale="1"/> 
   <aichannel id="Stim1Mon" line="5"
