@@ -165,7 +165,7 @@ void xmlPage::addButtonGroup(xmlPage::Geom &g, QDomElement doc) {
   int cols = doc.hasAttribute("cols") ? doc.attribute("cols").toInt(&ok) : 1;
   int col=0;
   QObject *bg = new QObject(this);
-  //  QButtonGroup *bg = new QButtonGroup(this);
+
   groups[id] = bg;
   double startrow = g.nextrow;
   for (QDomElement e=doc.firstChildElement(); !e.isNull();
@@ -178,7 +178,7 @@ void xmlPage::addButtonGroup(xmlPage::Geom &g, QDomElement doc) {
 				   ? 2
 				   : (master->geom().intx*(cols-1))),
 		  b->height());
-      ButtonGrouper::add(b,bg);// bg->addButton(b);
+      ButtonGrouper::add(b,bg);
       b->makeRadio();
       b->setVisualType(b->getID().contains("panel") ?
 		       Button::VTPanelOpen : Button::VTGrouped);
@@ -450,7 +450,7 @@ xmlPage *xmlPage::addPage(xmlPage::Geom &g, QDomElement doc,
     }
     QString t = b->text();
     if (t.indexOf(":")<0 && t.indexOf("...")<0)
-      b->setText(t + " ...");
+      b->setText(t + "&nbsp;...");
   }
   return p;
 }
@@ -586,6 +586,10 @@ xmlPage *xmlPage::addMenuPage(xmlPage::Geom &g, QDomElement doc) {
 		this,SLOT(childItemCustomized(QString,int,QString)));
     }
   }
+  QString id=xmlAttribute(doc,"id");
+  if (buttons.contains(id)) 
+    buttons[id]->ensureValueInLabel();
+
   return p;
 }
 
@@ -705,11 +709,12 @@ void xmlPage::openLeaf(Param *pp) {
 	Param const *custpar = master->findpParam(QString("custom/%1-%3")
 						  .arg(pathDeinstantiate(myPath))
 						  .arg(b->customNo()));
-	if (custpar)
+	if (custpar) {
 	  b->setValue(custpar->toString());
-	else
+	} else {
 	  fprintf(stderr,"xmlPage(%s): Warning: no value for custom %i\n",
 		  qPrintable(myPath), b->customNo());
+	}
       }
       try {
 	copy.set(b->getValue());
@@ -899,7 +904,7 @@ void xmlPage::updateEnabled() {
       bool ena = p->isEnabled();
       i.value()->setEnabled(ena &&
 			    (pageEna
-			     || i.key().startsWith("_")
+			     || i.key().startsWith("@")
 			     || i.key()=="enable"));
       if (!ena) {
 	//	p->restore();
@@ -915,7 +920,7 @@ void xmlPage::setEnabled(bool enable, QString enabler) {
        i!=buttons.end(); ++i) {
     // Dbg() << "  key: " << i.key();
     if (i.key()!=enabler) {
-      if (enable || i.key().startsWith("@") || i.key().startsWith("_@")) {
+      if (enable || i.key().startsWith("@")) {
 	Param *p = ptree->findp(i.key());
 	bool ena = p ? p->isEnabled() : true;
 	// Dbg() << "  value: " << i.value() << " ena=" << ena;
@@ -937,10 +942,6 @@ void xmlPage::setEnabled(bool enable, QString enabler) {
 }
 
 void xmlPage::childItemSelected(QString path, QString) {
-  // fprintf(stderr,"xmlPage(%s)::childItemSelected(%s,%s)\n",
-  //         qPrintable(myPath),
-  //         qPrintable(path),
-  //         qPrintable(text));
   QString parpath = master->pathInstantiate(path);
   QStringList plist = parpath.split('/');
   QString v = plist.takeLast(); // That's the value, not the realpath
@@ -951,23 +952,16 @@ void xmlPage::childItemSelected(QString path, QString) {
 
   xmlButton *b=findpButton(local.split('/'));
   QString value = b?b->getValue() : "0";
-  //   fprintf(stderr,"  parpath=%s. value=%s. local=%s. child=%s. b=%p v=%s\n",
-  //           qPrintable(parpath),
-  //           qPrintable(value),
-  //           qPrintable(local),
-  //           qPrintable(child),
-  // 	  b,
-  // 	  qPrintable(v));
   if (b) {
     if (b->isCustom()) {
       if (master->canSetParam(parpath,value)) {
 	master->setParam(parpath,value);
-	buttons[child]->setValue(value); // this already happened???
+	buttons[child]->setValue(value);
       } else {
 	fprintf(stderr,"INVALID CUSTOM VALUE\n");
       }
     } else if (subPages[child]->myTag=="checklist") {
-      master->setParam(parpath,"+"+value);
+      master->setParam(parpath, "+" + value);
     } else {
       master->setParam(parpath,value);
       buttons[child]->setValue(value);
@@ -1016,7 +1010,7 @@ void xmlPage::childItemCustomized(QString path, int cno, QString text) {
     if (!b)
       throw Exception("xmlPage","Cannot find custom button","(childItemCustomized)");
     QString v = master->findParam(parampath).toString();
-    b->setValue(v);
+    b->setValue(v); 
     if (cno>0)
       b->setSelected(true);
     b->closeEditor();

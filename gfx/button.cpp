@@ -57,6 +57,9 @@ Button::Button(QWidget *parent, int lx, int ty, QString myID):
   setForeground(QColor(BUTTON_Foreground));
   setAutoFillBackground(true);
   setAlignment(Qt::AlignCenter);
+  setWordWrap(true);
+  setTextFormat(Qt::RichText);
+  setMargin(1);
 }
 
 Button::~Button() {
@@ -279,7 +282,9 @@ void Button::setID(QString id) {
 }
 
 void Button::setText(QString txt) {
-  QLabel::setText(txt);
+  QString t = txt;
+  t.replace(QRegExp("_([^ _]+)_?"), "<sub>\\1</sub>");
+  QLabel::setText(t);
   emit textChanged(myID, txt);
 }
 

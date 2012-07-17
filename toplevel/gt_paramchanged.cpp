@@ -75,7 +75,7 @@ void gt_slots::paramchanged(QString p, QString val) {
   try {
     // Most parameters' side effects go in the following switch.
 
-    if (p!="savedSettings/_name") {
+    if (p!="savedSettings/name") {
       Globals::savedSettings->anythingChanged();
     }
     
@@ -133,23 +133,22 @@ void gt_slots::paramchanged(QString p, QString val) {
     
     // Parameters that should not be reported as a parameter change
     // get worked on here.
-    if (p=="acquisition/_exptname") {
+    if (p=="acquisition/exptname") {
       Globals::exptelapsed->setFormat("Since Start:\n%1");
       Globals::exptelapsed->startCountUp();
       Globals::exptlog->newExptName();
       if (!dbgfile)
 	dbgfile = new DbgFile();
-      dbgfile->setDir(Globals::ptree->find("_filePath").toString()
-		      + "/" + val);
+      dbgfile->setDir(Globals::filePath() + "/" + val);
       int lastmax = Acquire::maxTrial();
       Dbg() << "trial for " << val << " is " << lastmax;
-      Globals::ptree->find("acquisition/_trialno").setInt(lastmax);
+      Globals::ptree->find("acquisition/trialno").setInt(lastmax);
       xmlPage *pg = Globals::gui->findpPage("acquisition");
       if (pg && pg->isVisible())
 	pg->open();
     } else if (p=="acquisition/contEphys") {
       Globals::acquire->setContEphys();
-    } else if (p=="acquisition/_dummy") {
+    } else if (p=="acquisition/dummy") {
       bool dummy = Globals::ptree->find(p).toBool();
       Globals::trove->setDummy(dummy);
       xmlButton *b = Globals::gui->findpButton(p);
@@ -161,9 +160,9 @@ void gt_slots::paramchanged(QString p, QString val) {
       else
         Globals::exptlog->addNote("Auto run: Disabled");
       Globals::acquire->setAutoRun();
-    } else if (p=="stimVideo/_@lightOn") {
+    } else if (p=="stimVideo/@lightOn") {
       VideoLight::set(Globals::ptree->find(p).toBool());
-    } else if (p=="scripts/_run") {
+    } else if (p=="scripts/run") {
       Globals::scripts->setRunning(Globals::ptree->find(p).toBool());
     } else if (p.startsWith("panel")) {
       ;

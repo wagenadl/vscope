@@ -7,6 +7,7 @@
 #include <gui/xmlgui.h>
 #include <QEvent>
 #include <base/dbg.h>
+#include <xml/aliases.h>
 
 xmlButton::xmlButton(class QWidget *parent,
 		     QDomElement doc, QString mypath, xmlGui *master):
@@ -62,10 +63,13 @@ void xmlButton::setFormat(QString f) {
 
 void xmlButton::setValue(QString v) {
   value=v;
-  if (format.indexOf("%1")>=0)
-    setText(format.arg(value));
-  else
+  if (format.indexOf("%1")>=0) {
+    if (Aliases::has(v))
+      v = Aliases::lookup(v);
+    setText(format.arg(v));
+  } else {
     setText(format);
+  }
 }
 
 void xmlButton::mouseDoubleClickEvent(class QMouseEvent *e) {
@@ -139,3 +143,10 @@ void xmlButton::changeEvent(QEvent *e) {
   }
 }
     
+void xmlButton::ensureValueInLabel() {
+  if (!format.contains("%1")) {
+    if (!format.endsWith(":"))
+      format += ":";
+    format += "<br>%1";
+  }
+}

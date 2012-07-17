@@ -117,8 +117,8 @@ void TrialData::generalPrep(ParamTree const *ptree, bool concams) {
   if (xml)
     delete xml;
 
-  fpath = ptree->find("_filePath").toString();
-  exptname = ptree->find("acquisition/_exptname").toString();
+  fpath = ptree->find("filePath").toString();
+  exptname = ptree->find("acquisition/exptname").toString();
   trialid = trialname(ptree);
 
   xml = new XML(0,"vsdscopeTrial");
@@ -144,7 +144,7 @@ void TrialData::generalPrep(ParamTree const *ptree, bool concams) {
   }
   if (contEphys) {
     QString conttri = QString("%1")
-      .arg(ptree->find("acquisition/_contephys_trialno").toInt(),
+      .arg(ptree->find("acquisition/contephys_trialno").toInt(),
 	   int(3),int(10),QChar('0'));
     info.setAttribute("contephys", conttri);
   } else {
@@ -224,7 +224,7 @@ void TrialData::prepareSnapshot(ParamTree const *ptree) {
 }
 
 QString TrialData::trialname(ParamTree const *ptree) {
-  int t = ptree->find("acquisition/_trialno").toInt();
+  int t = ptree->find("acquisition/trialno").toInt();
   return QString("%1").arg(t,int(3),int(10),QChar('0'));
 }
 
@@ -269,8 +269,8 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
     ptree_dest->read(settings);
 
   //dbg("trialdata: read ptree");
-  ptree_dest->find("acquisition/_exptname").set(exptname);
-  ptree_dest->find("acquisition/_trialno").set(trialid);
+  ptree_dest->find("acquisition/exptname").set(exptname);
+  ptree_dest->find("acquisition/trialno").set(trialid);
   
   contEphys = info.attribute("contephys")=="1";
   

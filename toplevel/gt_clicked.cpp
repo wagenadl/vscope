@@ -73,11 +73,11 @@ void gt_slots::clicked(QString p) {
       Globals::exptlog->prepareUserNote();
     } else if (p=="savedSettings/save") {
       Globals::savedSettings->prepareSave();
-    } else if (p=="acquisition/_exptelapsed") {
+    } else if (p=="acquisition/exptelapsed") {
       Globals::exptelapsed->setFormat("Since Click:\n%1");
       Globals::exptelapsed->startCountUp();
       Globals::exptlog->addNote("Timer reset");
-    } else if (p.startsWith("acquisition/_camvals")) {
+    } else if (p.startsWith("acquisition/camvals")) {
       QStringList bits = p.split("/");
       QString leaf = bits.takeLast();
       QString id = bits.last().mid(8);

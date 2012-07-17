@@ -284,9 +284,9 @@ void PanelHistory::doubleClicked(QString id, QString) {
   if (gry<8)
     img.invertPixels();
   
-  QString filePath = Globals::ptree->find("_filePath").toString();
-  QString exptname = Globals::ptree->find("acquisition/_exptname").toString();
-  int trialno = Globals::ptree->find("acquisition/_trialno").toInt();
+  QString filePath = Globals::filePath();
+  QString exptname = Globals::ptree->find("acquisition/exptname").toString();
+  int trialno = Globals::ptree->find("acquisition/trialno").toInt();
   QString trialid = QString("%1").arg(trialno,int(3),int(10),QChar('0'));
   QString newtrial = filePath + "/" + exptname + "/" + trialid;
   if (newtrial==lasttrial)

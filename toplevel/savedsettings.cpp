@@ -36,9 +36,9 @@ void SavedSettings::showEvent(class QShowEvent *e) {
   dbg("SavedSettings::showEvent");
   FileChooser::showEvent(e);
 
-  QWidget *p = Globals::gui->findpPage("savedSettings/_name");
+  QWidget *p = Globals::gui->findpPage("savedSettings/name");
   if (!p)
-    throw Exception("SavedSettings","Cannot find savedSettings/_name page",
+    throw Exception("SavedSettings","Cannot find savedSettings/name page",
 		    "showEvent");
   setParent(p->parentWidget());
   QRect r(p->geometry());
@@ -52,8 +52,7 @@ void SavedSettings::showEvent(class QShowEvent *e) {
       tl.x(),tl.y(),br.x(),br.y());
   //     r1.left(),r1.top(), r1.right(),r1.bottom());
   // setGeometry(r1);
-  populateFiles(QDir(Globals::ptree->find("_filePath").toString()
-		     +"/_settings"),"xml");
+  populateFiles(QDir(Globals::filePath()+"/_settings"),"xml");
   show();
 }
 
@@ -61,8 +60,7 @@ void SavedSettings::loadSettings(QString fn) {
   QString bfn = fn;
   dbg("loadSettings %s",qPrintable(fn));
   if (!fn.startsWith("/"))
-    fn = Globals::ptree->find("_filePath").toString()
-      +"/_settings/" + fn;
+    fn = Globals::filePath() + "/_settings/" + fn;
   if (!fn.endsWith(".xml"))
     fn += ".xml";
   try {
@@ -85,7 +83,7 @@ void SavedSettings::loadSettings(QString fn) {
 }
 
 void SavedSettings::anythingChanged() {
-  Globals::ptree->find("savedSettings/_name").set("Modified");
+  Globals::ptree->find("savedSettings/name").set("Modified");
   visualdeselect();
 }
 
@@ -105,8 +103,7 @@ void SavedSettings::deleteCurrent() {
   
   QString fn = lastsel;
   if (!fn.startsWith("/"))
-    fn = Globals::ptree->find("_filePath").toString()
-      +"/_settings/" + fn;
+    fn = Globals::filePath() + "/_settings/" + fn;
   if (!fn.endsWith(".xml"))
     fn += ".xml";
 
@@ -143,8 +140,7 @@ void SavedSettings::prepareSave() {
 	    saveframe,SLOT(hide()));
   }
   
-  savedlg->goDir(Globals::ptree->find("_filePath").toString()
-		 +"/_settings");
+  savedlg->goDir(Globals::filePath() + "/_settings");
   savedlg->show();
   saveframe->show();
 }
@@ -160,7 +156,6 @@ void SavedSettings::saveSettings(QString fn) {
     dbg("SavedSettings::saveSettings: Caught exception");
   }
   if (isVisible())
-    populateFiles(QDir(Globals::ptree->find("_filePath").toString()
-		       +"/_settings"),"xml");
+    populateFiles(QDir(Globals::filePath() + "/_settings"),"xml");
 }
 

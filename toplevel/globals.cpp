@@ -1,4 +1,5 @@
 #include "globals.h"
+#include "xml/paramtree.cpp"
 
 vscopeGui *Globals::gui;
 gt_slots *Globals::gtslots;
@@ -41,3 +42,6 @@ Scripts *Globals::scripts;
 
 PanelHistory *Globals::panelHistory;
 
+QString Globals::filePath() {
+  return ptree->find("filePath").toString();
+}

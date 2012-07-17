@@ -21,6 +21,7 @@ void ParamTree::construct() {
     if (base.isNull())
       throw Exception("ParamTree","No <params> found.");
   }
+  decideSavable(base);
   if (base.tagName()=="param") {
     // this is a leaf
     leaf_ = new Param(base);
@@ -50,6 +51,7 @@ void ParamTree::construct() {
 ParamTree::ParamTree(QDomElement doc, QString elt): base(doc) {
   // this private constructor requires that doc is <array>
   leaf_=0;
+  decideSavable(doc);
   arrayElement = elt;
   for (QDomElement e=base.firstChildElement();
        !e.isNull(); e=e.nextSiblingElement())
@@ -157,11 +159,10 @@ void ParamTree::write(QDomElement doc) const {
        i!=children.end(); ++i) {
     ParamTree *c = i.value();
     QString id = i.key();
-    if (id.startsWith("_"))
-      continue; // don't write anything starting with "_".
-    //fprintf(stderr,"  -> writing '%s' (%s)\n",qPrintable(id),c->leaf_?"leaf":"tree");
+    if (!c->savable)
+      continue; // don't write non-savable children.
     if (c->leaf_) {
-      // Child is a leaf, we should write a pval.
+      /* Child is a leaf, we should write a pval. */
       bool found=false;
       for (QDomElement e=doc.firstChildElement("pval"); !e.isNull();
 	   e=e.nextSiblingElement()) {
@@ -175,9 +176,6 @@ void ParamTree::write(QDomElement doc) const {
 	QDomElement e = doc.ownerDocument().createElement("pval");
 	e.setAttribute("id",id);
 	c->leaf_->write(e);
-	//fprintf(stderr,"About to append leaf <%s> '%s' to <%s> '%s'\n",
-	//	qPrintable(e.tagName()),qPrintable(e.attribute("id")),
-	//	qPrintable(doc.tagName()),qPrintable(doc.attribute("id")));
 	doc.appendChild(e);
       }
     } else {
@@ -187,12 +185,10 @@ void ParamTree::write(QDomElement doc) const {
       QString childType = c->base.tagName();
       if (childType=="array" && !c->arrayElement.isEmpty())
 	childType="elt";
-      //fprintf(stderr,"  child is <%s> '%s'\n",qPrintable(childType),qPrintable(c->base.attribute("id")));
       bool found=false;
       for (QDomElement e=doc.firstChildElement(childType); !e.isNull();
 	   e=e.nextSiblingElement()) {
 	if (xmlAttribute(e,"id")==id) {
-	  //fprintf(stderr,"-> will write to <%s> '%s'\n",qPrintable(e.tagName()),qPrintable(id));
 	  c->write(e);
 	  found=true;
 	  break;
@@ -201,9 +197,6 @@ void ParamTree::write(QDomElement doc) const {
       if (!found) {
 	QDomElement e = doc.ownerDocument().createElement(childType);
 	e.setAttribute("id",id);
-	//fprintf(stderr,"About to append tree <%s> '%s' to <%s> '%s'\n",
-	//	qPrintable(e.tagName()),qPrintable(e.attribute("id")),
-	//	qPrintable(doc.tagName()),qPrintable(doc.attribute("id")));
 	doc.appendChild(e);
 	c->write(e);
       }
@@ -381,4 +374,20 @@ ParamTree::ParamTree(ParamTree &other): base(other.base) {
   read(xml.root());
 }
 
-  
+bool ParamTree::isSavable() const {
+  return savable;
+}
+
+void ParamTree::setSavable(bool f) {
+  savable = f;
+}
+
+void ParamTree::decideSavable(QDomElement e) {
+    if (e.hasAttribute("save")) {
+    Param s("bool");
+    s.set(xmlAttribute(e, "save"));
+    savable = s.toBool();
+  } else {
+    savable = true;
+  }
+}

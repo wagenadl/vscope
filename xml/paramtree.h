@@ -28,7 +28,8 @@ public:
    *:D This reads all values in doc, into the tree.
        Values that are not defined in doc are unaffected. Values defined
        in doc but not in our tree cause a warning.
-   *:A doc: a <settings>, < element or an element containing a <settings> element.
+   *:A doc: a <settings>, < element or an element containing a <settings>
+       element.
   */
   void write(QDomElement doc) const;
   /*:F write
@@ -37,6 +38,9 @@ public:
        New child nodes are created inside doc as needed.
    *:N If doc contains children that are not matched by our own children, those
        are not affected.
+   *:N The "savable" flag of this ParamTree itself is irrelevant, but the
+       "savable" flag of children determines whether those children are saved
+       or not.
   */
   void reset();
   /*:F reset
@@ -98,6 +102,17 @@ public:
    *:N This function does not check if PATH is legitimate and returns true
        for paths that have no enable flag or that do not exist at all.
   */
+  bool isSavable() const;
+  /*:F isSavable
+   *:D Returns whether or not this tree should be saved according to the
+       value of the "save" attribute from the XML that first defined it.
+   *:N Tree defined using the non-xml constructor default to savable
+       as do trees read from XML without a "save" attribute.
+  */
+  void setSavable(bool);
+  /*:F setSavable
+   *:D Define whether or not this parameter should be saved.
+   */    
 protected:
   ParamTree(QDomElement doc, QString elt);
   /*:F constructor
@@ -108,12 +123,14 @@ protected:
   /*:F buildEnablers
    *:D This creates the cond-attribute links between elements.
    */
+  void decideSavable(QDomElement e);
 protected:
   QDomElement base;
   QString arrayElement;
   Param *leaf_;
   //  ParamTree *parent;
   QMap<QString, ParamTree *> children;
+  bool savable;
 #if PARAM_DBG
 public:
   QString dbgPath;
