@@ -119,7 +119,10 @@ int pvpCamera::pvpExposureTime(double t_ms, double *reso_ms_out)
   throw(pvpException) {
   int best_reso_idx = 0;
   for (int n=0; n<expres.size(); n++) {
-    if (expres[n] > t_ms/1e4 && expres[n]<expres[best_reso_idx]) {
+    //if (expres[n] > t_ms/1e4 && expres[n]<expres[best_reso_idx]) {
+    if (expres[n] > .1 & expres[n] < 10) {
+      // Select the one that is 1 ms; the 1 us one is broken in the pvcam
+      // library.
       best_reso_idx = n;
     }
   }

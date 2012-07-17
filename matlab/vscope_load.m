@@ -555,14 +555,22 @@ while 1
               end
           end
       else
-          fx = vsdl_getval(kv,'flipx');
-          if ~isempty(fx)
-              flipx(idx+1) = vsdl_bool(fx);
-          end
-          fy = vsdl_getval(kv,'flipy');
-          if ~isempty(fy)
-              flipy(idx+1) = vsdl_bool(fy);
-          end
+	fx = vsdl_getval(kv,'flipx');
+	if ~isempty(fx)
+	  flipx(idx+1) = vsdl_bool(fx);
+	end
+	fy = vsdl_getval(kv,'flipy');
+	if ~isempty(fy)
+	  flipy(idx+1) = vsdl_bool(fy);
+	end
+	if flipx(idx+1)
+	  ccd.info.xform{idx+1}.ax=-1;
+	  ccd.info.xform{idx+1}.by=cnser;
+	end
+	if flipy(idx+1)
+	  ccd.info.xform{idx+1}.ay=-1;
+	  ccd.info.xform{idx+1}.by=cnpar;
+	end
       end
     end
   end
@@ -604,9 +612,15 @@ if getdat && ncams>0
   for k=1:ncams
     if flipy(k)
       ccd.dat(:,:,k,:) = ccd.dat(end:-1:1,:,k,:);
+      ccd.info.xform{k}.ay=-ccd.info.xform{k}.ay;
+      ccd.info.xform{k}.by=ccd.info.xform{k}.by ...
+	  - ccd.info.xform{k}.ay*ccd.info.pix{k}(2);
     end
     if flipx(k)
       ccd.dat(:,:,k,:) = ccd.dat(:,end:-1:1,k,:);
+      ccd.info.xform{k}.ax=-ccd.info.xform{k}.ax;
+      ccd.info.xform{k}.bx=ccd.info.xform{k}.bx ...
+	  - ccd.info.xform{k}.ax*ccd.info.pix{k}(1);
     end
   end
   

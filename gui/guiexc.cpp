@@ -82,7 +82,9 @@ void GUIExc::report(class Exception const &e, QString reporter) throw() {
 void GUIExc::warn(QString txt) throw() {
   try {
     Warning() << txt;
+    Dbg() << "Issuing warning: " << txt;
     QMessageBox::warning(0, "VScope Warning", txt);
+    Dbg() << "Done with warning: " << txt;
   } catch (...) {
     ;
   }
