@@ -27,6 +27,7 @@ xmlPage::xmlPage(class QWidget *parent,
 		 class QRect const &geom): QFrame(parent) {
   setLineWidth(0);
   neverOpened=true;
+  autoInfo.hasAutoItems = false;
   setGeometry(geom);
 
   master = master_;
@@ -126,6 +127,8 @@ xmlPage::xmlPage(class QWidget *parent,
       addSpace(g,e);
     else if (tag=="break") 
       addBreak(g,e);
+    else if (tag=="auto")
+      addAuto(g, e);
     else
       fprintf(stderr,"Warning: xmlPage: Unexpected tag <%s>.\n",
 	      qPrintable(tag));
@@ -636,6 +639,7 @@ void xmlPage::open() {
 	b->setSelected(true);
       }
     }
+    buildAutoItems();
   }
   for (QMap<QString,xmlPage *>::iterator i=subPages.begin();
        i!=subPages.end(); ++i) {
@@ -1034,4 +1038,24 @@ QList<xmlButton *> xmlPage::getGroup(QString id) const {
     if (i.value()==id)
       list.push_back(buttons[i.key()]);
   return list;
+}
+
+
+void xmlPage::addAuto(xmlPage::Geom &g, QDomElement doc) {
+  autoInfo.hasAutoItems = true;
+  autoInfo.doc = doc;
+  autoInfo.geom = g;
+}
+
+void xmlPage::buildAutoItems() {
+  if (!autoInfo.hasAutoItems)
+    return;
+  Dbg() << "xmlPage::buildAutoItems " << myPath;
+  Geom g = autoInfo.geom;
+  if (!ptree->leafp())
+    throw Exception("xmlPage", "Cannot have <auto> outside of a menu");
+  Enumerator const *e = ptree->leafp()->getEnum();
+  Dbg() << "  bai: enum="<<e;
+  Dbg() << "  bai: items = " << e->getAllTags().join(" ");
+  
 }

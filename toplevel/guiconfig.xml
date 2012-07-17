@@ -167,6 +167,7 @@
       </group>
   
       <menu id="pulseType" caption="Pulse type" rows="4" cols="1">
+	<auto/>
         <item value="TTL"/>
         <item value="Square"/>
         <item value="Biphasic"/>

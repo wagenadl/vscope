@@ -13,6 +13,7 @@ xmlGui::xmlGui(QWidget *parent,
 	       ParamTree *ptree_, QDomElement doc) {
   geom_ = new guiGeom(doc.firstChildElement("geometry"));
   ptree = ptree_;
+  root = 0; // let xmlPages know that Master doesn't have a root yet
   root = new xmlPage(parent, ptree,
 		     doc.firstChildElement("page"),
 		     this,

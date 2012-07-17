@@ -158,6 +158,10 @@ private:
   /*:F addSpace
    *:D Inserts a vertical space between buttons, as per the <space> element.
    */
+  void addAuto(Geom &g, QDomElement elt);
+  /*:F addAuto
+   *:D Automatically adds a number of <item> buttons according to an enum.
+   */
 public:
   QList<class xmlButton *> getGroup(QString id) const;
   /*:F getGroup
@@ -328,11 +332,18 @@ private:
 private slots:
   void addTriangle(QString id);
   void removeTriangle(QString id);
-  private:
+private:
   QPolygon triangle;
   QString triID;
   QColor triColor;
-  
+private:
+  void buildAutoItems();
+  class AutoInfo {
+  public:
+    bool hasAutoItems;
+    QDomElement doc;
+    Geom geom;
+  } autoInfo;
 };
 
 #endif
