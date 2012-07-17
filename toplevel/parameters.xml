@@ -59,15 +59,15 @@
     <item tag="Coherence" />
     <item tag="VideoMon" />
     <item tag="CohGraph" />
-    <item tag="-" value="-1"/>
+    <item tag="Welcome" value="-1"/>
   </enum>
 
 </enums>
 
 <params>
   <param id="filePath" type="string" save="false"/>
-  <param id="panelLeft" type="enum" enum="SHOWWHAT" default="-"/>
-  <param id="panelRight" type="enum" enum="SHOWWHAT" default="-"/>
+  <param id="panelLeft" type="enum" enum="SHOWWHAT" default="Welcome"/>
+  <param id="panelRight" type="enum" enum="SHOWWHAT" default="Welcome"/>
   <category id="panelHistory">
     <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="VSDCc"/>
     <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysInt"/>

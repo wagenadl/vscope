@@ -6,17 +6,22 @@ BASE=$2
 TMP=version.tmp
 rm -f $TMP
 BZR=$BASE/.bzr
+REPO=$BZR/repository
+CHKO=$BZR/checkout
+[ -d $REPO ] || REPO=$BASE/../.bzr/repository
 
-if [ -d $BZR/repository ] && [ -d $BZR/checkout ]; then
+if [ -d $CHKO ] && [ -d $REPO ]; then
     # We have bazaar
-    [ -f $OUT ] && [ $OUT -nt $BZR/repository ] && [ $OUT -nt $BZR/checkout ] && [ $OUT -nt $0 ] && exit 0
+    [ -f $OUT ] && [ $OUT -nt $CHKO ] && [ $OUT -nt $REPO ] && [ $OUT -nt $0 ] && exit 0
     if bzr version-info > $TMP; then
 	vDATE=`grep '^date:' $TMP | cut -c7-`
 	vREVNO=`grep '^revno:' $TMP | cut -c8-`
 	vBRANCH=`grep '^branch-nick:' $TMP | cut -c14-`
 	vBUILDDATE=`grep '^build-date:' $TMP | cut -c13-`
 	vYEAR=`grep '^date:' $TMP | cut -c7-10`
+	echo gotcha
     else
+	echo nover
 	[ -f $OUT ] && exit 0
 	vDATE="?"
 	vREVNO="?"
@@ -25,6 +30,7 @@ if [ -d $BZR/repository ] && [ -d $BZR/checkout ]; then
 	vYEAR=`date '+%Y'`
     fi
 else
+    echo nobazaar
     # We do not have bazaar
     [ -f $OUT ] && exit 0
     vDATE="?"
