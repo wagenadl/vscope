@@ -258,10 +258,12 @@ void Param::rangeCheck(QVariant const &v) {
       }
     }
   }
-  if (ok)
+  if (ok) {
     value=v;
-  else
+  } else {
+    Dbg() << "Param " << dbgPath << " value " << v.toDouble() << " out of bounds";
     throw Exception("Param","Value out of bounds");
+  }
 }
 
 void Param::setBitArray(QBitArray const &ar) {

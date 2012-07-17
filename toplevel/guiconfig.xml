@@ -76,26 +76,26 @@
     </group>
     <!-- ********************* MENUS FOR EPHYS. RECORDING ******************** -->
     <checklist id="aiChannels" caption="Input channels" rows="4" cols="4">
-      <!-- "values" match "tags" in AICHAIN enum -->
-      <item value="ME1_10Vm" label="V_m"/>
-      <item value="ME2_Vm"   label="V_2"/>
-      <item value="ME1_I"    label="I_m"/>
-      <item value="ME2_I"    label="I_2"/>
+      <!-- "values" match "tags" in AICHAN enum -->
+      <item value="ME1_10Vm"/>
+      <item value="ME2_Vm"  />
+      <item value="ME1_I"   />
+      <item value="ME2_I"   />
       <break/>
-      <item value="ExtVA1"   label="V_A1"/>
-      <item value="ExtVA2"   label="V_A2"/>
-      <item value="ExtVA3"   label="V_A3"/>
-      <item value="ExtVA4"   label="V_A4"/>
+      <item value="ExtVA1"  />
+      <item value="ExtVA2"  />
+      <item value="ExtVA3"  />
+      <item value="ExtVA4"  />
       <break/>
-      <item value="ExtVB1"   label="V_B1"/>
-      <item value="ExtVB2"   label="V_B2"/>
-      <item value="ExtVB3"   label="V_B3"/>
-      <item value="ExtVB4"   label="V_B4"/>
+      <item value="ExtVB1"  />
+      <item value="ExtVB2"  />
+      <item value="ExtVB3"  />
+      <item value="ExtVB4"  />
       <break/>
-        <item value="Stim0Mon" label="AO_0"/>
-        <item value="Stim1Mon" label="AO_1"/>
-        <item value="Stim2Mon" label="X_video"/>
-        <item value="Stim3Mon" label="Y_video"/>
+      <item value="Stim0Mon"/>
+      <item value="Stim1Mon"/>
+      <item value="Stim2Mon"/>
+      <item value="Stim3Mon"/>
     </checklist>
 
     <menu id="acqTime" caption="Trial duration" rows="6" cols="3">
@@ -417,28 +417,28 @@
       <button id="dutyCycle" label="Duty cycle" bg="#4444ff"/>
      </group>
 
-    <menu id="binning" caption="CCD Binning" rows="4" cols="2">
-      <item value="1x1+0+0" label="1 x 1"/>
+    <menu id="binning" caption="CCD Binning" rows="4" cols="3">
+      <item value="1x1+0+0"/>
       <break/>
-      <item value="1x2+0+0" label="1 x 2"/>
-      <item value="1x3+0+0" label="1 x 3"/>
-      <item value="1x4+0+0" label="1 x 4"/>
+      <item value="1x2+0+0"/>
+      <item value="1x3+0+0"/>
+      <item value="1x4+0+0"/>
       <break/>
-      <item value="2x2+0+0" label="2 x 2"/>
-      <item value="3x3+0+0" label="3 x 3"/>
-      <item value="4x4+0+0" label="4 x 4"/>
+      <item value="2x2+0+0"/>
+      <item value="3x3+0+0"/>
+      <item value="4x4+0+0"/>
     </menu>
   
     <menu id="region" caption="CCD Region" rows="5">
-      <item value="512x512+0+0" label="Full (512x512)"/>
+      <item value="512x512+0+0"/>
       <space dy="1"/>
-      <item value="384x384+64+64" label="Central Half (384x384)"/>
-      <item value="256x256+128+128" label="Central Quarter (256x256)"/>
+      <item value="384x384+64+64"/>
+      <item value="256x256+128+128"/>
       <break/>
-      <item value="256x256+0+0" label="NW Quarter (256x256)"/>
-      <item value="256x256+256+0" label="NE Quarter (256x256)"/>
-      <item value="256x256+0+256" label="SW Quarter (256x256)"/>
-      <item value="256x256+256+256" label="SE Quarter (256x256)"/>
+      <item value="256x256+0+0"/>
+      <item value="256x256+256+0"/>
+      <item value="256x256+0+256"/>
+      <item value="256x256+256+256"/>
     </menu>
   
     <menu id="rate" caption="CCD frame rate (fps)" rows="5" cols="2">
@@ -994,37 +994,37 @@
     </menu>
 
     <menu id="refDigi" caption="Digital lines" rows="5" cols="3">
-      <item value="DO0mon" label="DO0"/>
-      <item value="DO1mon" label="DO1"/>
-      <item value="DO2mon" label="DO2"/>
-      <item value="DO3mon" label="DO3"/>
-      <item value="VideoLightMon" label="Video light"/>
-      <item value="ExcShtrMon" label="Excitation Shutter"/>
-      <item value="TrigCcMon" label="Coumarin Trigger"/>
-      <item value="TrigOxMon" label="Oxonol Trigger"/>
-      <item value="FrameCc" label="Coumarin Frame"/>
-      <item value="FrameOx" label="Oxonol Frame"/>
+      <item value="DO0mon"/>
+      <item value="DO1mon"/>
+      <item value="DO2mon"/>
+      <item value="DO3mon"/>
+      <item value="VideoLightMon"/>
+      <item value="ExcShtrMon"/>
+      <item value="TrigCcMon"/>
+      <item value="TrigOxMon"/>
+      <item value="FrameCc"/>
+      <item value="FrameOx"/>
     </menu>
 
     <menu id="refTrace" caption="Input channels" rows="5" cols="3">
       <!-- ID values match defines for "AI_xxx" in channels.h -->
-      <item value="ME1_10Vm" label="V_m"/>
-      <item value="ME2_Vm"   label="V_2"/>
-      <item value="ME1_I"    label="I_m"/>
-      <item value="ME2_I"    label="I_2"/>
-      <item value="Stim0Mon" label="AO0m"/>
+      <item value="ME1_10Vm" />
+      <item value="ME2_Vm"   />
+      <item value="ME1_I"    />
+      <item value="ME2_I"    />
+      <item value="Stim0Mon" />
       <break/>
-      <item value="ExtVA1"   label="V_A1"/>
-      <item value="ExtVA2"   label="V_A2"/>
-      <item value="ExtVA3"   label="V_A3"/>
-      <item value="ExtVA4"   label="V_A4"/>
-      <item value="Stim1Mon" label="AO1m"/>
+      <item value="ExtVA1"   />
+      <item value="ExtVA2"   />
+      <item value="ExtVA3"   />
+      <item value="ExtVA4"   />
+      <item value="Stim1Mon" />
       <break/>
-      <item value="ExtVB1"   label="V_B1"/>
-      <item value="ExtVB2"   label="V_B2"/>
-      <item value="ExtVB3"   label="V_B3"/>
-      <item value="ExtVB4"   label="V_B4"/>
-      <item value="60HzRef"  label="60 Hz ref."/>
+      <item value="ExtVB1"   />
+      <item value="ExtVB2"   />
+      <item value="ExtVB3"   />
+      <item value="ExtVB4"   />
+      <item value="60HzRef"  />
     </menu>
 
     <menu id="showROIs" caption="Show ROIs" rows="5" cols="1">
@@ -1076,56 +1076,53 @@
     <page id="liveEphys" subdxr="1.1">
       <group id="a" default="timeBase">
       <button id="timeBase" label="Time Base" x="2" bg="#dd9999"/>
-      <button id="aiChannels" label="Analog: Inputs" bg="#ddbb99"/>
-      <!--button id="diChannels" label="Digital: inputs" bg="#ddbb99"/-->
+      <button id="aiChannels" label="Analog Inputs" bg="#ddbb99"/>
+      <!--button id="diChannels" label="Digital Inputs" bg="#ddbb99"/-->
       <button id="vcoSource" label="VCO" bg="#ddbb99"/>
       </group>
       <button id="autoRange" label="Auto Range" x="2" y="4" bg="#dddd99"/>
     <!-- ********************* MENUS FOR LIVE EPHYS. ******************** -->
       <checklist id="diChannels" caption="Digital inputs" rows="4" cols="4">
-        <item value="DO0Mon" label="DO0"/>
-        <item value="DO1Mon" label="DO1"/>
-        <item value="DO2Mon" label="DO2"/>
-        <item value="DO3Mon" label="DO3"/>
+        <item value="DO0Mon"/>
+        <item value="DO1Mon"/>
+        <item value="DO2Mon"/>
+        <item value="DO3Mon"/>
 
-        <item value="VideoFrame" label="VFrame"/>
-        <item value="VideoLightMon" label="VLight"/>
-
-        <!--item value="ExcShtrMon" label="ExcShtr"/-->
-        <!--item value="VideoShtrMon" label="VShtr"/-->
+        <item value="VideoFrame" />
+        <item value="VideoLightMon"/>
         <break/>
-        <item value="TrigCcMon" label="TrgCc"/>
-        <item value="TrigOxMon" label="TrgOx"/>
-        <item value="FrameCc" label="FrmCc"/>
-        <item value="FrameOx" label="FrmOx"/>
+        <item value="TrigCcMon"/>
+        <item value="TrigOxMon"/>
+        <item value="FrameCc"/>
+        <item value="FrameOx"/>
       </checklist>
       <checklist id="aiChannels" caption="Input channels" rows="4" cols="4">
         <!-- "values" match "tags" in AICHAIN enum -->
-        <item value="ME1_10Vm" label="V_m"/>
-        <item value="ME2_Vm"   label="V_2"/>
-        <item value="ME1_I"    label="I_m"/>
-        <item value="ME2_I"    label="I_2"/>
+        <item value="ME1_10Vm" />
+        <item value="ME2_Vm"   />
+        <item value="ME1_I"    />
+        <item value="ME2_I"    />
         <break/>
-        <item value="ExtVA1"   label="V_A1"/>
-        <item value="ExtVA2"   label="V_A2"/>
-        <item value="ExtVA3"   label="V_A3"/>
-        <item value="ExtVA4"   label="V_A4"/>
+        <item value="ExtVA1"   />
+        <item value="ExtVA2"   />
+        <item value="ExtVA3"   />
+        <item value="ExtVA4"   />
         <break/>
-        <item value="ExtVB1"   label="V_B1"/>
-        <item value="ExtVB2"   label="V_B2"/>
-        <item value="ExtVB3"   label="V_B3"/>
-        <item value="ExtVB4"   label="V_B4"/>
+        <item value="ExtVB1"   />
+        <item value="ExtVB2"   />
+        <item value="ExtVB3"   />
+        <item value="ExtVB4"   />
         <break/>
-        <item value="Stim0Mon" label="AO0m"/>
-        <item value="Stim1Mon" label="AO1m"/>
-        <item value="Stim2Mon" label="VidXm"/>
-        <item value="Stim3Mon" label="VidYm"/>
+        <item value="Stim0Mon" />
+        <item value="Stim1Mon" />
+        <item value="Stim2Mon" />
+        <item value="Stim3Mon" />
         <!--item value="60HzRef"  label="60 Hz ref."/-->
       </checklist>
       <menu id="vcoSource" caption="VCO Channel" rows="5" cols="1">
-        <item value="off" label="Off"/>
-        <item value="ME1_10Vm" label="V_m"/>
-        <item value="ME2_Vm"   label="V_2"/>
+        <item value="off" />
+        <item value="ME1_10Vm" />
+        <item value="ME2_Vm"   />
       </menu>
       <menu id="timeBase" caption="Time Base" rows="6" cols="3">
         <item value="10 ms"/>
@@ -1239,6 +1236,8 @@
 </multigraph>
 
 <aliases>
+  <alias id="off" label="Off"/>
+
   <!-- Analog inputs -->
   <alias id="ME1_10Vm" label="V_m"/>
   <alias id="ME2_Vm" label="V_2"/>
@@ -1246,8 +1245,8 @@
   <alias id="ME2_I" label="I_2"/>
   <alias id="Stim0Mon" label="AO_0"/>
   <alias id="Stim1Mon" label="AO_1"/>
-  <alias id="Stim2Mon" label="AO_2"/>
-  <alias id="Stim3Mon" label="AO_3"/>
+  <alias id="Stim2Mon" label="X_video"/>
+  <alias id="Stim3Mon" label="Y_video"/>
   <alias id="60HzRef" label="line"/>
   <alias id="ExtVA1" label="V_A1"/>
   <alias id="ExtVA2" label="V_A2"/>
@@ -1272,7 +1271,6 @@
   <alias id="VideoFrame" label="Frm_vid" />
   <alias id="VideoCmdMon" label="Cmd_vid" />
   <alias id="VideoLightMon" label="Light_vid" />
-  <!--alias id="VideoShtrMon" label="VShtrM" /-->
 
   <!-- Digital outputs -->
   <alias id="ExcShtr" label="Shtr_exc"/>
@@ -1289,6 +1287,24 @@
   <alias id="VideoLight" label="Light_vid"/>
   <alias id="VideoCmd" label="Cmd_vid"/>
   <alias id="VideoTrig" label="Trig_vid"/>
+
+  <!-- For binning -->
+  <alias id="1x1+0+0" label="1 x 1"/>
+  <alias id="1x2+0+0" label="1 x 2"/>
+  <alias id="1x3+0+0" label="1 x 3"/>
+  <alias id="1x4+0+0" label="1 x 4"/>
+  <alias id="2x2+0+0" label="2 x 2"/>
+  <alias id="3x3+0+0" label="3 x 3"/>
+  <alias id="4x4+0+0" label="4 x 4"/>
+
+  <!-- For region -->
+  <alias id="512x512+0+0" label="Full (512x512)"/>
+  <alias id="384x384+64+64" label="Central Half (384x384)"/>
+  <alias id="256x256+128+128" label="Central Quarter (256x256)"/>
+  <alias id="256x256+0+0" label="NW Quarter (256x256)"/>
+  <alias id="256x256+256+0" label="NE Quarter (256x256)"/>
+  <alias id="256x256+0+256" label="SW Quarter (256x256)"/>
+  <alias id="256x256+256+256" label="SE Quarter (256x256)"/>
 </aliases>
 
 <colors>
