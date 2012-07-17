@@ -648,7 +648,7 @@ void LineGraph::mouseMoveEvent(QMouseEvent *e) {
   if (!rubberband)
     return; // this shouldn't happen
   rubberband->setGeometry(QRect(clickPoint,e->pos()).normalized());
-  QRect g = rubberband->geometry();
+  // QRect g = rubberband->geometry();
   //  dbg("rb %i-%i (%i)",g.left(),g.right(),g.width());
 }
 

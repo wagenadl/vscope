@@ -24,6 +24,10 @@ public:
      *:D This form explicitly sets the edges of the interval.
      */
   }
+  void reset() {
+    min = numbers.inf;
+    max = -numbers.inf;
+  }
   void include(double x) {
     /*:F include
      *:D If x is not currently inside the interval, the interval is 

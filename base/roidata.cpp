@@ -401,7 +401,7 @@ double const *ROIData::getDebleachedDFF() const {
     sYY+=x*x;
   }
   double avg = sY/(N-2);
-  double var = (sYY-sY*sY/(N-2))/(N-2);
+  //double var = (sYY-sY*sY/(N-2))/(N-2);
   //  dbg("getdebDFF: avg=%g var=%g",sY,avg,var);
 
   for (int n=0; n<N; n++)

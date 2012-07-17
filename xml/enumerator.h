@@ -7,6 +7,7 @@
 #include <QDomElement>
 #include <QMap>
 #include <QString>
+#include <QStringList>
 
 class Enumerator {
   /*:C Enumerator
@@ -20,18 +21,27 @@ class Enumerator {
          </enum>
   */
 public:
-  Enumerator();
+  Enumerator(QString name="-");
   /*:F constructor
    *:D This constructor creates a null enumerator, without any constants. 
-   *:N This is not very useful.
    */
   ~Enumerator();
   Enumerator(QDomElement def);
   /*:F constructor
    *:D This reads values from an <enum> xml element
    *:A def: should be of type <enum>; this is not explicitly verified.
+   *:N The <enum> may define the name of this enumerator through its "id" tag.
+       It should define values through <item tag="KEY" value="VAL"/> elements.
    */
+  void add(QString s);
   void add(QString s, int n);
+  void add(QDomElement def);
+  /*:F add
+   *:D Add a new value or a lot of values from an <enum> xml.
+   *:N DEF may be an <enum> or <item> element.
+   *:N The first form automatically assigns a new value larger than any
+       previous value.
+   */
   int lookup(QString s) const;
   int lookup(QString s, int dflt) const;
   /*:F lookup
@@ -60,23 +70,34 @@ public:
   /*:F getName
    *:D Returns the name of this enumeration, i.e., the value of its "id" tag.
    */
-  int getLargestValue() const { return largestValue; }
+  int getLargestValue() const { return largestVal; }
   /*:F getLargestValue
    *:D Returns the largest numerical value included in this set.
-   *:N If the set is empty, returns -1000.
+   *:N If the set is empty, return value is undefined.
    */
-  int getSmallestValue() const { return smallestValue; }
+  int getSmallestValue() const { return smallestVal; }
   /*:F getSmallestValue
    *:D Returns the smallest numerical value included in this set.
-   *:N If the set is empty, returns 1000.
+   *:N If the set is empty, return value is undefined.
    */
-  bool isEmpty() const { return values.empty(); }
+  bool isEmpty() const { return tag2val.empty(); }
+  /*:F isEmpty
+   *:D Returns true if there are no actual definitions in this enum
+   */
   QStringList getAllTags() const;
+  /*:F getAllTags
+   *:D Returns a list of all tags, in the order in which they were introduced.
+   */
+  void reset();
+  /*:F reset
+   *:D Drops all tags
+   */
 private:
-  QMap<QString,int> values;
-  QMap<int,QString> tags;
-  int smallestValue, largestValue;
+  QMap<QString,int> tag2val;
+  QMap<int,QString> val2tag;
+  int smallestVal, largestVal;
   QString myname;
+  QStringList orderedTags;
 public:
   static Enumerator *find(QString e);
   /*:F find

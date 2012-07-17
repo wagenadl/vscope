@@ -13,65 +13,79 @@ Enumerator::Enumerator(QDomElement def) {
     myname = def.attribute("id");
   else
     myname = "-";
-  largestValue=-1000;
-  smallestValue=1000;
-  bool first=true;
-  for (QDomElement e=def.firstChildElement("item"); !e.isNull();
-       e=e.nextSiblingElement("item")) {
-    if (e.hasAttribute("tag") && e.hasAttribute("value")) {
-      QString tag = e.attribute("tag");
-      int value = e.attribute("value").toInt(0,0);
-      values[tag] = value;
-      tags[value] = tag;
-      if (first || value<smallestValue)
-	smallestValue = value;
-      if (first || value>largestValue)
-	largestValue = value;
-      first = false;
-    }
-  }
   enums[myname] = this;
+  reset();
+  add(def);
 }
 
-Enumerator::Enumerator() {
-  myname = "-";
+Enumerator::Enumerator(QString name) {
+  myname = name;
   enums[myname] = this;
+  reset();
+}
+
+void Enumerator::reset() {
+  val2tag.clear();
+  tag2val.clear();
+  orderedTags.clear();
+}
+
+void Enumerator::add(QDomElement def) {
+  if (def.tagName()=="item") {
+    if (def.hasAttribute("tag")) {
+	if (def.hasAttribute("value"))
+	  add(def.attribute("tag"), def.attribute("value").toInt());
+	else
+	  add(def.attribute("tag"));
+      }
+  } else {
+    for (QDomElement e=def.firstChildElement("item"); !e.isNull();
+	 e=e.nextSiblingElement("item")) {
+      add(e);
+    }
+  }
+}
+
+void Enumerator::add(QString s) {
+  int n = isEmpty() ? 0 : largestVal + 1;
+  add(s, n);
 }
 
 void Enumerator::add(QString s, int n) {
-  values[s] = n;
-  tags[n] = s;
-  if (n<smallestValue)
-    smallestValue = n;
-  if (n>largestValue)
-    largestValue = n;
+  if (isEmpty() || n<smallestVal)
+    smallestVal = n;
+  if (isEmpty() || n>largestVal)
+    largestVal = n;
+  tag2val[s] = n;
+  val2tag[n] = s;
+  orderedTags.append(s);
 }
 
 int Enumerator::lookup(QString s, int dflt) const {
   if (has(s))
-    return values[s];
+    return tag2val[s];
   else
     return dflt;
 }
 
 int Enumerator::lookup(QString s) const {
   if (has(s))
-    return values[s];
+    return tag2val[s];
   else
     throw Exception("Enumerator ", myname + " does not define '" + s + "'");
 }
 
 bool Enumerator::has(QString s) const {
- return values.contains(s);
+ return tag2val.contains(s);
 }
 
 bool Enumerator::has(int n) const {
-  return tags.contains(n);
+  return val2tag.contains(n);
 }
 
 QString Enumerator::reverseLookup(int n) const {
-  if (tags.contains(n))
-    return tags[n];
+  if (val2tag.contains(n))
+    return val2tag[n];
   else
     throw Exception("Enumerator", myname + " does not contain " + QString::number(n));
 }
@@ -81,7 +95,7 @@ Enumerator::~Enumerator() {
 }
 
 QStringList Enumerator::getAllTags() const {
-  return QStringList(values.keys());
+  return orderedTags;
 }
 
 QMap<QString,Enumerator *> Enumerator::enums;
