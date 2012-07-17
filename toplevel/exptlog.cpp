@@ -23,7 +23,7 @@ ExptLog::ExptLog(QObject *parent): QObject(parent) {
   suppressFurtherROI = false;
   //  addNote("VScope starting");
   addNote("New experiment: "
-	  + Globals::ptree->find("acquisition/_exptname").toString());
+	  + Globals::ptree->find("acquisition/exptname").toString());
   makeConnections();
 }
 
@@ -33,7 +33,7 @@ ExptLog::~ExptLog() {
 }
 
 QString ExptLog::trialID() {
-  int t = Globals::ptree->find("acquisition/_trialno").toInt();
+  int t = Globals::ptree->find("acquisition/trialno").toInt();
   return QString("%1").arg(t,int(3),int(10),QChar('0'));
 }
 
@@ -66,8 +66,8 @@ void ExptLog::openFile() {
   if (outputStream)
     return;
 
-  QString exptname = Globals::ptree->find("acquisition/_exptname").toString();
-  QString basedir = Globals::ptree->find("_filePath").toString();
+  QString exptname = Globals::ptree->find("acquisition/exptname").toString();
+  QString basedir = Globals::filePath();
   QDir d; d.mkpath(basedir + "/" + exptname);
   outputFile = new QFile(basedir + "/" + exptname + "/log.txt");
   bool preexist = outputFile->exists();
@@ -149,7 +149,7 @@ void ExptLog::newExptName() {
   olddate="";
   oldtime="";
   addNote("New experiment: "
-	  + Globals::ptree->find("acquisition/_exptname").toString());
+	  + Globals::ptree->find("acquisition/exptname").toString());
 }
 
 void ExptLog::markSnap() {
@@ -229,8 +229,8 @@ void ExptLog::acceptDoubleClick(QString, QString txt) {
 
 void ExptLog::makeConnections() {
   QStringList buts;
-  buts.append("acquisition/_ccvals");
-  buts.append("acquisition/_oxvals");
+  buts.append("acquisition/ccvals");
+  buts.append("acquisition/oxvals");
   foreach (QString s, buts) {
     Button *b = Globals::gui->findpButton(s);
     if (b)

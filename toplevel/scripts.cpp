@@ -78,7 +78,7 @@ void Scripts::prepareLoad() {
 	    loadframe,SLOT(hide()));
   }
   if (true || lastdir.isEmpty())
-    lastdir = Globals::ptree->find("_filePath").toString() + "/_scripts";
+    lastdir = Globals::filePath() + "/_scripts";
   loaddlg->goDir(lastdir);
   loaddlg->show();
   loadframe->show();  
@@ -111,8 +111,7 @@ void Scripts::prepareSave() {
   }
 
   if (true || lastdir.isEmpty())
-    lastdir = Globals::ptree->find("_filePath").toString()
-      +"/_scripts";
+    lastdir = Globals::filePath() + "/_scripts";
   savedlg->goDir(lastdir);
   savedlg->show();
   saveframe->show();
@@ -215,7 +214,7 @@ void Scripts::timeout() {
 void Scripts::run() {
   if (!status()) {
     GUIExc::warn("Cannot run script with errors");
-    Globals::ptree->find("scripts/_run").set("off");
+    Globals::ptree->find("scripts/run").set("off");
     Globals::gui->findPage("scripts").open();
     return;
   }
@@ -283,7 +282,7 @@ void Scripts::stop() {
   statusLabel->setText(QString("Stopped (at line %1; iteration %2)")
 		       .arg(lineno).arg(loopno));
   active = false;
-  Globals::ptree->find("scripts/_run").set("off");
+  Globals::ptree->find("scripts/run").set("off");
   Globals::gui->findPage("scripts").open();
 }
 

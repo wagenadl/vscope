@@ -79,10 +79,10 @@ QString ContAcq::prepare(class ParamTree *ptree) {
     throw Exception("ContAcq","Cannot prepare while active");
   ephysacq->prepare(ptree);
 
-  dummy = ptree->find("acquisition/_dummy").toBool();
-  QString dir = ptree->find("_filePath").toString();
-  exptname = ptree->find("acquisition/_exptname").toString();
-  int trialno = ptree->find("acquisition/_trialno").toInt();
+  dummy = ptree->find("acquisition/dummy").toBool();
+  QString dir = ptree->find("filePath").toString();
+  exptname = ptree->find("acquisition/exptname").toString();
+  int trialno = ptree->find("acquisition/trialno").toInt();
   trialid = QString("%1").arg(trialno,int(3),int(10),QChar('0'));
   QDir d; d.mkpath(QString("%1/%2").arg(dir).arg(exptname));
   int append=0;
@@ -129,7 +129,7 @@ QString ContAcq::prepare(class ParamTree *ptree) {
     digitalStream = new QDataStream(digitalFile);
   }
 
-  ptree->find("acquisition/_contephys_trialno").setInt(trialno);
+  ptree->find("acquisition/contephys_trialno").setInt(trialno);
   QDomElement settings = xml->append("settings");
   ptree->write(settings);
 

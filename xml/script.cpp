@@ -133,7 +133,8 @@ bool Script::ok(ParamTree &ptree0) {
 	}
       } else if (c.kwd==KW_LOADSETTINGS) {
 	try {
-	  XML xml(ptree.find("_filePath").toString()+"/_settings/" + c.arg1 + ".xml");
+	  XML xml(ptree.find("filePath").toString()
+		  + "/_settings/" + c.arg1 + ".xml");
 	  ptree.read(xml.root());
 	} catch (...) {
 	  err = QString("Cannot read settings file at line %1: %2")

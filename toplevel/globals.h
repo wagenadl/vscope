@@ -47,6 +47,7 @@ public:
 
   static class PanelHistory *panelHistory;
 
+  static QString filePath();
 };
 
 #endif

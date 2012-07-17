@@ -24,10 +24,10 @@ Param::Param(QDomElement defn) {
 }
 
 void Param::newDefn(QDomElement defn) {
-  QString type=xmlAttribute(defn,"type");
+  QString type = xmlAttribute(defn, "type");
   QString enumname="";
   if (type=="enum" || type=="set")
-    enumname=xmlAttribute(defn,"enum");
+    enumname=xmlAttribute(defn, "enum");
   newType(type,enumname);
   if (type=="set") {
     value=QVariant(QBitArray(enumerator->getLargestValue()+1));
@@ -41,14 +41,14 @@ void Param::newDefn(QDomElement defn) {
     }
   }
   if (defn.hasAttribute("min")) {
-    min = new Param(type,enumname);
-    min->set(xmlAttribute(defn,"min"));
+    min = new Param(type, enumname);
+    min->set(xmlAttribute(defn, "min"));
   } else {
     min = 0;
   }
   if (defn.hasAttribute("max")) {
-    max = new Param(type,enumname);
-    max->set(xmlAttribute(defn,"max"));
+    max = new Param(type, enumname);
+    max->set(xmlAttribute(defn, "max"));
   } else {
     max = 0;
   }
@@ -258,10 +258,12 @@ void Param::rangeCheck(QVariant const &v) {
       }
     }
   }
-  if (ok)
+  if (ok) {
     value=v;
-  else
+  } else {
+    Dbg() << "Param " << dbgPath << " value " << v.toDouble() << " out of bounds";
     throw Exception("Param","Value out of bounds");
+  }
 }
 
 void Param::setBitArray(QBitArray const &ar) {

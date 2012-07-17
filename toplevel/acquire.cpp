@@ -43,9 +43,9 @@ Acquire::~Acquire() {
 }
 
 void Acquire::incTrialNo() {
-  Param &ptrial = Globals::ptree->find("acquisition/_trialno");
-  QString fpath = Globals::ptree->find("_filePath").toString();
-  QString expt = Globals::ptree->find("acquisition/_exptname").toString();
+  Param &ptrial = Globals::ptree->find("acquisition/trialno");
+  QString fpath = Globals::filePath();
+  QString expt = Globals::ptree->find("acquisition/exptname").toString();
   int trialno = ptrial.toInt() + 1;
   while (QFile(QString("%1/%2/%3.xml").
 	       arg(fpath).arg(expt).arg(trialno,int(3),int(10),QChar('0')))
@@ -55,7 +55,7 @@ void Acquire::incTrialNo() {
 }
 
 void Acquire::acqFrame() {
-  bool dummy = Globals::ptree->find("acquisition/_dummy").toBool();
+  bool dummy = Globals::ptree->find("acquisition/dummy").toBool();
   blockout = true;
   Globals::blackout->show();
   if (dummy) {
@@ -81,7 +81,7 @@ void Acquire::acqFrame() {
 }
 
 void Acquire::acqTrial() {
-  bool dummy = Globals::ptree->find("acquisition/_dummy").toBool();
+  bool dummy = Globals::ptree->find("acquisition/dummy").toBool();
   blockout = true;
   Globals::blackout->show();
   if (dummy) {
@@ -180,7 +180,7 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
 
   QVector<xmlButton *> btn;
   foreach (QString id, camname)
-    btn.push_back(&Globals::gui->findButton("acquisition/_camvals" + id));
+    btn.push_back(&Globals::gui->findButton("acquisition/camvals" + id));
 
   QVector<CCDData const *> src;
   foreach (QString id, camname)
@@ -277,9 +277,9 @@ void Acquire::loadData(QString xmlfn) {
   }
   Globals::trial->reconstructStim(Globals::ptree);
 
-  Globals::ptree->find("acquisition/_exptname").set(exptbit);
-  Globals::ptree->find("acquisition/_trialno").set(trialbit);
-  Globals::ptree->find("acquisition/_dummy").set("true");
+  Globals::ptree->find("acquisition/exptname").set(exptbit);
+  Globals::ptree->find("acquisition/trialno").set(trialbit);
+  Globals::ptree->find("acquisition/dummy").set("true");
   
   Globals::trove->roidata().
     setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach")
@@ -324,7 +324,7 @@ void Acquire::prepareLoad() {
   dbg("lastdir = [%s]",qPrintable(lastdir));
 
   if (lastdir.isEmpty())
-    lastdir = Globals::ptree->find("_filePath").toString();
+    lastdir = Globals::filePath();
   loaddlg->goDir(lastdir);
   loaddlg->show();
   loadframe->show();
@@ -386,8 +386,8 @@ void Acquire::autoRunEvent() {
 }
 
 int Acquire::maxTrial() {
-  QDir dir(Globals::ptree->find("_filePath").toString() + "/"
-	   + Globals::ptree->find("acquisition/_exptname").toString());
+  QDir dir(Globals::filePath() + "/"
+	   + Globals::ptree->find("acquisition/exptname").toString());
   if (!dir.exists())
     return 0;
   QStringList flt; flt << "*.xml";

@@ -60,6 +60,11 @@ public:
   /*:F hideWhenDisabled
    *:D Returns whether or not this button hides itself when disabled.
    */
+  void ensureValueInLabel();
+  /*:F ensureValueInLabel
+   *:D For use by xmlPage: ensure that the label contains "%1" so that
+       menu values can be represented.
+  */
 protected:
   virtual void mouseDoubleClickEvent(class QMouseEvent *);
   /*:F mouseDoubleClickEvent

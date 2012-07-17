@@ -20,7 +20,7 @@ INCLUDEPATH += $(QTDIR)/include/QtXml
 INCLUDEPATH += $(QTDIR)/include/QtNetwork
 INCLUDEPATH += '/cygdrive/c/Program Files/National Instruments/NI-DAQ/DAQmx ANSI C Dev/include'
 
-exists('/cygdrive/c/Program Files/Photometrics/PVCam/sdk/headers') {
+exists('c:/Program Files/Photometrics/PVCam/sdk/headers') {
   INCLUDEPATH += '/cygdrive/c/Program Files/Photometrics/PVCam/sdk/headers'
 } else {
   INCLUDEPATH += '/cygdrive/c/Program Files/Photometrics/PVCam32/sdk/inc'
@@ -28,7 +28,7 @@ exists('/cygdrive/c/Program Files/Photometrics/PVCam/sdk/headers') {
 
 LIBS += '/cygdrive/c/Program Files/National Instruments/NI-DAQ/DAQmx ANSI C Dev/lib/msvc/NIDAQmx.lib'
 
-exists('/cygdrive/c/Program Files/Photometrics/PVCam/sdk/libs/Pvcam32.lib') {
+exists('c:/Program Files/Photometrics/PVCam/sdk/libs/Pvcam32.lib') {
   LIBS += '/cygdrive/c/Program Files/Photometrics/PVCam/sdk/libs/Pvcam32.lib'
 } else {
   LIBS += '/cygdrive/c/Program Files/Photometrics/PVCam32/sdk/lib/i386/Pvcam32.lib'

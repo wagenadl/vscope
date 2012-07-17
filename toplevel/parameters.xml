@@ -4,10 +4,7 @@
 
 <!-- *************************** VERSIONING ****************************** -->
 
-<!-- The major version ought to be encoded in the compiled program and must match; the minor version is for changes that will not require recompilation. -->
-<version major="20080917" minor="0"/>
-
-<!--filepath p="c:/cygwin/home/wagenaar/vsddata"/-->
+<version date="20120716"/>
 
 <!-- ************************** ENUMERATIONS ***************************** -->
 <enums>
@@ -68,9 +65,7 @@
 </enums>
 
 <params>
-  <!-- Note that parameters with ID starting with "_" are never written to settings files -->
-
-  <param id="_filePath" type="string"/>
+  <param id="filePath" type="string" save="false"/>
   <param id="panelLeft" type="enum" enum="SHOWWHAT" default="-"/>
   <param id="panelRight" type="enum" enum="SHOWWHAT" default="-"/>
   <category id="panelHistory">
@@ -139,7 +134,7 @@
   <category id="stimVideo">
     <param id="enable" type="bool" default="false"/>
     <param id="avoidCCD" type="bool" default="false"/>
-    <param id="_@lightOn" type="bool" default="false"/>
+    <param id="@lightOn" type="bool" default="false" save="false"/>
     <param id="delay" type="time" default="100 ms" min="10 ms" max="1 h"/>
     <param id="dur" type="time" default="10 s" min="100 ms" max="1 h"/>
     <param id="prog" type="string" default="1"/>
@@ -158,15 +153,15 @@
   </category>
 
   <category id="acquisition">
-    <param id="_exptname" type="string" default="nn"/>
-    <param id="_trialno" type="int" default="0"/>
-    <param id="_contephys_trialno" type="int" default="0"/>
+    <param id="exptname" type="string" default="nn" save="false"/>
+    <param id="trialno" type="int" default="0" save="false"/>
+    <param id="contephys_trialno" type="int" default="0" save="false"/>
     <param id="autoRun" type="bool" default="false"/>
     <param id="contEphys" type="bool" default="false"/>
-    <param id="_dummy" type="bool" default="false"/>
+    <param id="dummy" type="bool" default="false" save="false"/>
     <param id="trialPeriod" type="time" default="300 s" min="1 s" max="1000 h"/>
-    <category id="_camvalsCc"/>
-    <category id="_camvalsOx"/>
+    <category id="camvalsCc" save="false"/>
+    <category id="camvalsOx" save="false"/>
   </category>
   <category id="analysis">
     <param id="refType" type="enum" enum="REFTYPE" default="Analog"/>
@@ -239,11 +234,11 @@
     </category>
   </category>
   <category id="savedSettings">
-    <param id="_name" type="string" default="Default"/>
+    <param id="name" type="string" default="Default" save="false"/>
   </category>
   <category id="scripts">
-    <param id="_run" type="bool" default="off"/>
-    <param id="_name" type="string" default=""/>
+    <param id="run" type="bool" default="off" save="false"/>
+    <param id="name" type="string" default="" save="false"/>
   </category>
 </params>
 </vsdscopeDefs>

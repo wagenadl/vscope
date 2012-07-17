@@ -163,11 +163,11 @@ void setupParsAndConns() {
   Connections::readXML(connDoc.root());
   Globals::ptree = new ParamTree(pars);
   Dbg() << "fpath2:"<<fpath;
-  Globals::ptree->find("_filePath").set(fpath);
+  Globals::ptree->find("filePath").set(fpath);
 }
 
 void setupDefaultSettings() {
-  QString settingsfn = Globals::ptree->find("_filePath").toString()
+  QString settingsfn = Globals::filePath()
     + "/_settings/Default.xml";
   if (QFile::exists(settingsfn)) {
     Dbg() << "Reading settings from: " << settingsfn;
@@ -178,14 +178,14 @@ void setupDefaultSettings() {
 }
 
 void setupExptName() {
-  QString fpath = Globals::ptree->find("_filePath").toString();
+  QString fpath = Globals::filePath();
   QString exptname = QDateTime::currentDateTime().toString("yyMMdd");
   QString addn = "";
   int adno=0;
   QDir d;
   while (d.exists(fpath + "/" + exptname + addn)) 
     addn = num2az(++adno);
-  Globals::ptree->find("acquisition/_exptname").set(exptname + addn);
+  Globals::ptree->find("acquisition/exptname").set(exptname + addn);
   if (!dbgfile)
     dbgfile = new DbgFile();
   dbgfile->setDir(fpath + "/" + exptname + addn);
@@ -202,7 +202,7 @@ void setupDAQ() {
 }  
 
 QDomElement setupGUI() {
-  QString fpath = Globals::ptree->find("_filePath").toString();
+  QString fpath = Globals::filePath();
   QString guifn = fpath + "/_settings/_guiconfig.xml";
   if (!QFile::exists(guifn))
     guifn = ":/guiconfig.xml";
@@ -353,13 +353,13 @@ void setupAcquisition(QDomElement &guiConf) {
 void setupTimeButtons() {
   Globals::walltime =
     new TimeButton(0,
-		   &Globals::gui->findButton("acquisition/_walltime"));
+		   &Globals::gui->findButton("acquisition/walltime"));
   Globals::exptelapsed =
     new TimeButton(0,
-		   &Globals::gui->findButton("acquisition/_exptelapsed"));
+		   &Globals::gui->findButton("acquisition/exptelapsed"));
   Globals::trialelapsed =
     new TimeButton(0,
-		   &Globals::gui->findButton("acquisition/_trialelapsed"));
+		   &Globals::gui->findButton("acquisition/trialelapsed"));
   Globals::walltime->showWallTime();
 }  
 
@@ -419,7 +419,7 @@ int main(int argc, char **argv) {
     setupAppStyle(app);
     setupParsAndConns();
 
-    QString fpath = Globals::ptree->find("_filePath").toString();
+    QString fpath = Globals::filePath();
     Globals::trove = new DataTrove(Globals::ptree);
     Globals::trove->rois().setDefaultCamPair(Connections::leaderCamPair());
     GUIExc::setParamTree(Globals::ptree);
