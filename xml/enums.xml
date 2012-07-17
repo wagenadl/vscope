@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone='yes'?>
+<!DOCTYPE vscope>
+<vscope version="20120717">
+  <enums>
+    <enum id="PULSETYPE" prefix="PT">
+      <item tag="TTL"/>
+      <item tag="Square"/>
+      <item tag="Biphasic"/>
+      <item tag="Ramp"/>
+    </enum>
+  
+    <enum id="SHOWROIS" prefix="SR">
+      <item tag="Hidden"/>
+      <item tag="Centers"/>
+      <item tag="Outlines"/>
+      <item tag="IDs"/>
+      <item tag="Full"/>
+    </enum>
+  
+    <enum id="REFTYPE" prefix="RT">
+      <item tag="Analog"/>
+      <item tag="Digital"/>
+      <item tag="Frequency"/>
+    </enum>
+      
+    <enum id="DEBLEACH" prefix="DB">
+      <item tag="None"/>
+      <item tag="Linear"/>
+      <item tag="Quadratic"/>
+      <item tag="Exponential"/>
+    </enum>
+  </enums>
+</vscope>
