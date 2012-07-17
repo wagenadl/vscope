@@ -127,7 +127,7 @@
     <param id="region" type="geometry" default="512x512+0+0"/>
     <param id="delay" type="time" default="100 ms" min="0 ms" max="1 h"/>
     <param id="dur" type="time" default=".8 s" min="100 ms" max="1 h"/>
-    <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="100 Hz"/>
+    <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="1000 Hz"/>
     <param id="preIllum" type="time" default="1.5 ms" min="0 ms" max="1 h"/>
     <param id="postIllum" type="time" default="0.1 ms" min="0 ms" max="1 h"/>
     <param id="preShutter" type="time" default="50 ms" min="0 ms" max="1 h"/>

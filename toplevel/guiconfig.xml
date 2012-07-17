@@ -441,7 +441,7 @@
       <item value="256x256+256+256" label="SE Quarter&#xA;(256x256)"/>
     </menu>
   
-    <menu id="rate" caption="CCD frame rate (fps)" rows="5" cols="2">
+    <menu id="rate" caption="CCD frame rate (fps)" rows="5" cols="4">
       <item value="1 Hz"/> <!-- "label" is automatic for most types based on "value" -->
       <item value="2 Hz"/>
       <item value="3 Hz"/>
@@ -452,7 +452,19 @@
       <item value="15 Hz"/>
       <item value="20 Hz"/>
       <item value="30 Hz"/>
-      <item custom="1" editcaption="Custom CCD frame rate"/> <!-- "custom" creates a user editable button. The value will be overwritten in the local.xml settings file. -->
+      <item value="50 Hz"/>
+      <break/>
+      <item value="70 Hz"/>
+      <item value="100 Hz"/>
+      <item value="150 Hz"/>
+      <item value="200 Hz"/>
+      <item value="300 Hz"/>
+      <break/>
+      <item value="500 Hz"/>
+      <item value="700 Hz"/>
+      <item value="1000 Hz"/>
+      <space dy="1"/>
+      <item custom="1" editcaption="Custom CCD frame rate"/>
     </menu>
   
     <menu id="delay" caption="Delay before image acquisition" rows="6" cols="4">
