@@ -22,14 +22,14 @@ inline int rangelimit(int x, int min, int max) {
 
 ROIData::ROIData() {
   source = 0;
-  debleach = None;
+  debleach = "None";
 }
 
 ROIData::~ROIData() {
   // real destruction done by caches.
 }
 
-void ROIData::setDebleach(ROIData::Debleach d) {
+void ROIData::setDebleach(QString d) {
   if (d!=debleach) {
     debleach = d;
     debleached.invalidate();
@@ -283,13 +283,10 @@ double const *ROIData::getDebleachedDFF() const {
 
   double *dst = debleached.data();
   double const *src = raw.data();
-  switch (debleach) {
-  case None:
+  if (debleach == "None") {
     for (int n=0; n<N; n++)
       dst[n] = src[n];
-    break;
-  case Linear: case Exponential: {
-    // We treat exponential like linear until I get around to coding it.
+  } else if (debleach == "Linear") {
     /* I will fit the data y to A*(t-t0)+B, where t0 is the half-length
        of the data, then subtract A*(t-t0).
        Start with: chi2 = sum_t (A*(t-t0)+B - y(t))^2,
@@ -328,8 +325,7 @@ double const *ROIData::getDebleachedDFF() const {
     for (int n=0; n<N; n++)
       dst[n] = dst[n] - A*(n-t0);
     // dbg("sTT=%g sTY=%g A=%g",sTT,sTY,A);
-  } break;
-  case Quadratic: {
+  } else if (debleach == "Quadratic") {
     /* I will fit the data y to A*(t-t0)^2 + B*(t-t0) + C, where
        t0 is the half-length of the data, then subtract
        A*(t-t0)^2 + B*(t-t0).
@@ -390,7 +386,10 @@ double const *ROIData::getDebleachedDFF() const {
     double B = sTY / sTT;
     for (int n=0; n<N; n++)
       dst[n] = src[n] - A*sq(n-t0) - B*(n-t0);
-  } break;
+  } else {
+    Dbg() << "Warning: Unknown debleach method: " << debleach;
+    for (int n=0; n<N; n++)
+      dst[n] = src[n];
   }
 
   /* The final step is to normalize the debleached data. */

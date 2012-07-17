@@ -268,8 +268,7 @@ void setupVSDTraces() {
 		   Globals::vsdtraces, SLOT(updateSelection(int)));
 
   Globals::trove->roidata().
-    setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach")
-				    .toInt()));
+    setDebleach(Globals::ptree->find("analysis/debleach").toString());
 }
 
 void setupMGAuto(QDomElement &guiConf) {

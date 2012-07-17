@@ -64,8 +64,7 @@ void gt_slots::everythingChanged() {
   Globals::ccdw->showROIs(sm);
   Globals::coherence->setShowMode(sm);
   Globals::trove->roidata().
-    setDebleach(ROIData::Debleach(Globals::ptree->find("analysis/debleach").
-				  toInt()));
+    setDebleach(Globals::ptree->find("analysis/debleach").toString());
   Globals::acquire->newTrialPeriod();
   Globals::acquire->setContEphys();
   Globals::acquire->setAutoRun();
@@ -106,7 +105,7 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::coherence->setShowMode(sm);
     } else if (p=="analysis/debleach") {
       Globals::trove->roidata().
-	setDebleach(ROIData::Debleach(Globals::ptree->find(p).toInt()));
+	setDebleach(Globals::ptree->find(p).toString());
     } else if (p=="acquisition/trialPeriod") {
       Globals::acquire->newTrialPeriod();
     } else if (p=="panelLeft") {

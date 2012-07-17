@@ -9,10 +9,10 @@
 <!-- ************************** ENUMERATIONS ***************************** -->
 <enums>
   <enum id="PULSETYPE">
-    <item tag="TTL" value="0"/>
-    <item tag="Square" value="1"/>
-    <item tag="Biphasic" value="2"/>
-    <item tag="Ramp" value="3"/>
+    <item tag="TTL"/>
+    <item tag="Square"/>
+    <item tag="Biphasic"/>
+    <item tag="Ramp"/>
   </enum>
 
   <enum id="STIMCHS">
@@ -28,38 +28,38 @@
   </enum>
 
   <enum id="SHOWROIS">
-    <item tag="Hidden" value="0"/>
-    <item tag="Centers" value="1"/>
-    <item tag="Outlines" value="2"/>
-    <item tag="IDs" value="3"/>
-    <item tag="Full" value="4"/>
+    <item tag="Hidden"/>
+    <item tag="Centers"/>
+    <item tag="Outlines"/>
+    <item tag="IDs"/>
+    <item tag="Full"/>
   </enum>
 
   <enum id="REFTYPE">
-    <item tag="Analog" value="0"/>
-    <item tag="Digital" value="1"/>
-    <item tag="Frequency" value="2"/>
+    <item tag="Analog"/>
+    <item tag="Digital"/>
+    <item tag="Frequency"/>
   </enum>
     
 
-  <enum id="DEBLEACH"> <!-- Keep in sync with ROIData::Debleach! -->
-    <item tag="None" value="0"/>
-    <item tag="Linear" value="1"/>
-    <item tag="Quadratic" value="2"/>
-    <item tag="Exponential" value="3"/>
+  <enum id="DEBLEACH">
+    <item tag="None"/>
+    <item tag="Linear"/>
+    <item tag="Quadratic"/>
+    <item tag="Exponential"/>
   </enum>
 
   <enum id="SHOWWHAT">
+    <item tag="VSDCc" />
+    <item tag="VSDOx" />
+    <item tag="EphysInt" />
+    <item tag="EphysExt" />
+    <item tag="Stimuli" />
+    <item tag="VSDTraces" />
+    <item tag="Coherence" />
+    <item tag="VideoMon" />
+    <item tag="CohGraph" />
     <item tag="-" value="-1"/>
-    <item tag="VSDCc" value="0"/>
-    <item tag="VSDOx" value="1"/>
-    <item tag="EphysInt" value="2"/>
-    <item tag="EphysExt" value="3"/>
-    <item tag="Stimuli" value="4"/>
-    <item tag="VSDTraces" value="5"/>
-    <item tag="Coherence" value="6"/>
-    <item tag="VideoMon" value="7"/>
-    <item tag="CohGraph" value="8"/>
   </enum>
 
 </enums>

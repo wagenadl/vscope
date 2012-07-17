@@ -14,7 +14,7 @@ struct ROIData3Set_Data {
 public:
   QMap<int, class ROI3Data *> data;
   QMap<QString, class CCDData const *> ccdData; // we do not own this
-  ROIData::Debleach lastDebleach;
+  QString lastDebleach;
   ROISet const *roiset; // we do not own this
 };
 
@@ -45,7 +45,7 @@ public slots:
   void updateROI(int id);
   void updateROIs();
   void updateCCDData();
-  void setDebleach(ROIData::Debleach d);
+  void setDebleach(QString d);
 private:
   void changeROIcore(int id);
 private:

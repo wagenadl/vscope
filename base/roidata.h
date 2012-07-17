@@ -19,13 +19,9 @@ class ROIData {
        (polygonal) ROIs.
   */
 public:
-  enum Debleach { // This *must* match DEBLEACH in parameters.xml
-    None=0, Linear=1, Quadratic=2, Exponential=3,
-  };
-public:
   ROIData();
   ~ROIData();
-  void setDebleach(Debleach d);
+  void setDebleach(QString s);
   /*:F setDebleach
    *:D Specifies how DebleachedDFF gets calculated.
    *:N This does not cause immediate recomputation.
@@ -106,7 +102,7 @@ private:
     int len;
   };
   class CCDData const *source;
-  Debleach debleach;
+  QString debleach;
 
   mutable DataCache raw;
   mutable DataCache debleached;
