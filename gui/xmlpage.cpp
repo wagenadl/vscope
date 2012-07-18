@@ -18,6 +18,7 @@
 #include <gfx/buttongrouper.h>
 #include <QPainter>
 #include <QPen>
+#include <gui/guibuttongroup.h>
 
 xmlPage::xmlPage(class QWidget *parent,
 		 class ParamTree *ptree_,
@@ -25,7 +26,8 @@ xmlPage::xmlPage(class QWidget *parent,
 		 class xmlGui *master_,
 		 QString mypath,
 		 class QRect const &geom):
-  AbstractPage(parent, ptree_, doc, master_, mypath, geom) {
+  AbstractPage(parent, ptree_, doc, master_, mypath, geom),
+  buildGeom(this), autoInfo(this) {
 
   setLineWidth(0);
   neverOpened=true;
@@ -37,12 +39,8 @@ xmlPage::xmlPage(class QWidget *parent,
 
   setDefaultColors(doc);
 
-  caption = doc.attribute("caption");
-  caption = ""; // Current style is to not use captions
-  Geom g = buttonGeometry(doc);
-  addCaption(g);
-
-  buildChildren(g, doc);
+  buildGeom.setup(doc);
+  addChildren(buildGeom, doc);
 
   hide();
 }
@@ -53,66 +51,34 @@ xmlPage::~xmlPage() {
     delete i.value();
 }
 
-void xmlPage::addSpace(xmlPage::Geom &g, QDomElement doc) {
+void xmlPage::addSpace(PageBuildGeom &g, QDomElement doc) {
   bool ok;
   double dy = doc.hasAttribute("dy") ? doc.attribute("dy").toDouble(&ok) : 0.2;
   g.nextrow += dy;
 }
 
-void xmlPage::addBreak(xmlPage::Geom &g, QDomElement doc) {
+void xmlPage::addBreak(PageBuildGeom &g, QDomElement doc) {
   bool ok;
   double dx = doc.hasAttribute("dx") ? doc.attribute("dx").toDouble(&ok) : 0;
   g.nextrow = 0;
   g.nextcol += 1+dx;
 }
 
-void xmlPage::addButtonGroup(xmlPage::Geom &g, QDomElement doc) {
-  bool ok;
-  QString id=xmlAttribute(doc,"id","xmlPage (addButtonGroup)",
-			  "Cannot read id");
-  int cols = doc.hasAttribute("cols") ? doc.attribute("cols").toInt(&ok) : 1;
-  int col=0;
-  QObject *bg = new QObject(this);
-
-  groups[id] = bg;
-  double startrow = g.nextrow;
-  for (QDomElement e=doc.firstChildElement(); !e.isNull();
-       e=e.nextSiblingElement()) {
-    QString tag = e.tagName();
-    if (tag=="button") {
-      xmlButton *b = addButton(g,e);
-      if (cols>1)
-	b->resize(b->width()/cols-((col==cols-1)
-				   ? 2
-				   : (master->geom().intx*(cols-1))),
-		  b->height());
-      ButtonGrouper::add(b,bg);
-      b->makeRadio();
-      b->setVisualType(b->getID().contains("panel") ?
-		       Button::VTPanelOpen : Button::VTGrouped);
-      groupedButton[e.attribute("id")] = id;
-    } else if (tag=="break") {
-      g.nextcol += 1./cols;
-      col++;
-      g.nextrow=startrow;
-    } else {
-      fprintf(stderr,"Warning: xmlPage: Unexpected tag <%s> in group.\n",
-	      qPrintable(tag));
-    }
-  }
-  g.nextrow=startrow;
-  g.nextcol += 1./cols;
-
-  if (doc.hasAttribute("default"))
-    groupDefaults[id] = doc.attribute("default"); 
+void xmlPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
+  guiButtonGroup *bg = new guiButtonGroup(this);
+  bg->build(g, doc);
+  groups[bg->groupId()] = bg;
+  foreach (QString s, bg->childIDs())
+    groupedButton[s] = bg->groupId();
 }
 
-xmlButton *xmlPage::addItem(xmlPage::Geom &g, QDomElement doc) {
-  QObject *bg;
+xmlButton *xmlPage::addItem(PageBuildGeom &g, QDomElement doc) {
+  guiButtonGroup *bg;
   if (groups.contains(":items")) {
     bg = groups[":items"];
   } else {
-    bg = new QObject(this);
+    bg = new guiButtonGroup(this);
+    /* I will probably want an ItemGroup */
     groups[":items"] = bg;
   }
   QString id;
@@ -151,7 +117,7 @@ xmlButton *xmlPage::addItem(xmlPage::Geom &g, QDomElement doc) {
   return b;
 }
 
-xmlButton *xmlPage::addButton(xmlPage::Geom &g, QDomElement doc) {
+xmlButton *xmlPage::addButton(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "xmlPage (addButton)","Cannot read button ID");
   xmlButton *b = new xmlButton(this,doc,pathToGlobal(id),master);
@@ -227,7 +193,7 @@ xmlButton *xmlPage::addButton(xmlPage::Geom &g, QDomElement doc) {
 }
 
 
-xmlPage *xmlPage::addPage(xmlPage::Geom &g, QDomElement doc,
+xmlPage *xmlPage::addPage(PageBuildGeom &g, QDomElement doc,
 			  Button::VisualType vt) {
   QString id=xmlAttribute(doc,"id",
 			  "xmlPage (addPage)","Cannot read subpage ID");
@@ -361,7 +327,7 @@ void xmlPage::paintEvent(class QPaintEvent *e) {
   QFrame::paintEvent(e);
 }
 
-xmlPage *xmlPage::addTabbedPage(xmlPage::Geom &g, QDomElement doc) {
+xmlPage *xmlPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
   xmlPage *p = addPage(g,doc);
   QString id=doc.attribute("id");
   xmlButton *penable = p->buttons.contains("enable")
@@ -403,7 +369,7 @@ xmlPage *xmlPage::addTabbedPage(xmlPage::Geom &g, QDomElement doc) {
   return p;
 }
 
-xmlPage *xmlPage::addMenuPage(xmlPage::Geom &g, QDomElement doc) {
+xmlPage *xmlPage::addMenuPage(PageBuildGeom &g, QDomElement doc) {
   xmlPage *p = addPage(g,doc,Button::VTVarOpen);  
   for (QMap<QString,xmlButton *>::iterator i=p->buttons.begin();
        i!=p->buttons.end(); ++i) {
@@ -423,7 +389,7 @@ xmlPage *xmlPage::addMenuPage(xmlPage::Geom &g, QDomElement doc) {
   return p;
 }
 
-xmlPage *xmlPage::addCheckListPage(xmlPage::Geom &g, QDomElement doc) {
+xmlPage *xmlPage::addCheckListPage(PageBuildGeom &g, QDomElement doc) {
   xmlPage *p = addPage(g,doc,Button::VTVarOpen);
   for (QMap<QString,xmlButton *>::iterator i=p->buttons.begin();
        i!=p->buttons.end(); ++i) {
@@ -438,16 +404,6 @@ xmlPage *xmlPage::addCheckListPage(xmlPage::Geom &g, QDomElement doc) {
   return p;
 }
 
-void xmlPage::addCaption(xmlPage::Geom &g) {
-  if (caption.isEmpty())
-    return;
-  QLabel *lbl = new QLabel(this);
-  lbl->setText(caption);
-  lbl->setGeometry(0,0,width(),g.caph);
-  lbl->setFont(master->geom().buttonFont);
-  lbl->setAlignment(Qt::AlignHCenter);
-}
-
 void xmlPage::open() {
   emit opening(pathInstantiate(myPath),(QWidget*)(this));
   Param *pp = ptree->leafp();
@@ -458,14 +414,8 @@ void xmlPage::open() {
     openNode();
   if (neverOpened) {
     neverOpened = false;
-    for (QMap<QString,QString>::iterator i=groupDefaults.begin();
-	 i!=groupDefaults.end(); ++i) {
-      QString butname = i.value();
-      if (buttons.contains(butname)) {
-	xmlButton *b = buttons[butname];
-	b->setSelected(true);
-      }
-    }
+    foreach (guiButtonGroup *bg, groups) 
+      bg->selectDefaultButton();
     buildAutoItems();
   }
   for (QMap<QString,xmlPage *>::iterator i=subPages.begin();
@@ -488,10 +438,6 @@ void xmlPage::open(QString p) {
   QString ar = (idx>=0) ? elt.left(idx) : "";
   elt = elt.mid(idx+1);
   currentElement = elt;
-
-  //fprintf(stderr,"xmlPage(%s):open(%s) ar='%s' elt='%s'\n",
-  //        qPrintable(myPath),qPrintable(p),
-  //        qPrintable(ar),qPrintable(elt));
 
   reTree(0);
   open();
@@ -829,23 +775,20 @@ QList<xmlButton *> xmlPage::getGroup(QString id) const {
 }
 
 
-void xmlPage::addAuto(xmlPage::Geom &g, QDomElement doc) {
-  autoInfo.hasAutoItems = true;
-  autoInfo.doc = doc;
-  autoInfo.geom = g;
+void xmlPage::addAuto(PageBuildGeom &g, QDomElement doc) {
+  autoInfo.setup(g, doc);
 }
 
 void xmlPage::buildAutoItems() {
   if (!autoInfo.hasAutoItems)
     return;
   Dbg() << "xmlPage::buildAutoItems " << myPath;
-  Geom g = autoInfo.geom;
+  // PageBuildGeom g = autoInfo.initialGeom;
   if (!ptree->leafp())
     throw Exception("xmlPage", "Cannot have <auto> outside of a menu");
   Enumerator const *e = ptree->leafp()->getEnum();
   Dbg() << "  bai: enum="<<e;
   Dbg() << "  bai: items = " << e->getAllTags().join(" ");
-  
 }
 
 void xmlPage::setDefaultColors(QDomElement doc) {
@@ -866,58 +809,7 @@ void xmlPage::setDefaultColors(QDomElement doc) {
   }    
 }
 
-xmlPage::Geom xmlPage::buttonGeometry(QDomElement doc) {
-  /* Construct geometry for buttons */
-  Geom g;
-
-  QRect geom = geometry();
-  
-  bool ok;
-  g.page.dxl = int(master->geom().buttondx*doc.attribute("subdxl")
-		   .toDouble(&ok)); // default to 0.
-  g.page.dxr = int(master->geom().buttondx*doc.attribute("subdxr")
-		   .toDouble(&ok)); // default to 0.
-  g.page.dyt = int(master->geom().buttondy*doc.attribute("subdyt")
-		   .toDouble(&ok)); // default to 0.
-  g.page.dyb = int(master->geom().buttondy*doc.attribute("subdyb")
-		   .toDouble(&ok)); // default to 0.
-
-  g.rows = doc.attribute("rows").toInt(&ok); // default to 0.
-  g.cols = doc.attribute("cols").toInt(&ok); // default to 0.
-  g.caph = caption.isEmpty() ? master->geom().topy : master->geom().menucaph;
-  g.button.dx = master->geom().buttondx;
-  g.button.w = master->geom().buttonw;
-  g.button.dy = master->geom().buttondy;
-  g.button.h = master->geom().buttonh;
-  g.button.y0 = g.caph;
-  g.button.x0 = master->geom().leftx;
-  if (g.rows>0) {
-    if (geom.height()-g.caph<g.button.dy*g.rows) {
-      g.button.dy = double(geom.height()
-			   -g.caph-master->geom().bottomy+master->geom().inty)
-	/ g.rows;
-      g.button.h = int(g.button.dy) - master->geom().inty;
-    } else {
-      resize(width(),int(g.button.dy*(g.rows+1)-g.button.h));
-    }
-  }
-  if (g.cols>0) {
-    if (geom.width()<g.button.dx*g.cols) {
-      g.button.dx = double(geom.width()-master->geom().leftx
-			   -master->geom().rightx+master->geom().intx)
-	/ g.cols;
-      g.button.w = int(g.button.dx) - master->geom().intx;
-    } else {
-      resize(int(g.button.dx*(g.cols+1)-g.button.w),height());
-    }
-  }
-  g.nextcol = 0;
-  g.nextrow = 0;
-
-  return g;
-}
-
-void xmlPage::buildChildren(xmlPage::Geom g, QDomElement doc) {
+void xmlPage::addChildren(PageBuildGeom g, QDomElement doc) {
   /* Build children */
   for (QDomElement e=doc.firstChildElement(); !e.isNull();
        e=e.nextSiblingElement()) {

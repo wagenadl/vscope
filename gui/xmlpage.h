@@ -12,6 +12,8 @@
 #include <QDomElement>
 #include <gfx/button.h>
 #include <gui/abstractpage.h>
+#include <gui/autoiteminfo.h>
+#include <gui/pagebuildgeom.h>
 
 class xmlPage: public AbstractPage {
   Q_OBJECT;
@@ -52,30 +54,16 @@ public:
   /*:F buttonp, button
    *:D Get pointer or reference to button that is an immediate child of our page.
    */
-private:
-  struct Geom {
-    /*:C Geom
-     *:D Information about geometry used while building this page.
-     */
-    double nextcol, nextrow; // location of next button
-    struct ButtonPlacement {
-      int x0, y0; // pixel position of button grid origin
-      int w, h; // size of buttons
-      double dx, dy; // grid spacing
-    } button;
-    struct SubPagePlacement {
-      int dxl, dxr, dyt, dyb; // pixel count of how much smaller subpages compared to us.
-    } page; 
-    int rows, cols; // number of rows,cols of buttons, or 0 if not specified.
-    int caph; // height of caption widget, or 0 if none.
-  };
-  class xmlButton *addButton(Geom &g, QDomElement elt);
+public:
+  /* Only guiButtonGroup should use these. */
+  class xmlButton *addButton(PageBuildGeom &g, QDomElement elt);
   /*:F addButton
    *:D Adds a new button to this page.
    *:N This function also connects the button's selected/deselected/activated
        signals to the corresponding xmlGui's signals.
    */
-  class xmlButton *addItem(Geom &g, QDomElement elt);
+protected:
+  class xmlButton *addItem(PageBuildGeom &g, QDomElement elt);
   /*:F addItem
    *:D Adds a new item button to this page.
    *:N Items are automatically placed in a button group with radio-style
@@ -86,48 +74,42 @@ private:
        attribute, or else the value attribute of the <item>.
    *:N By "tail ID" I mean the part of the path after the last "/".
    */
-  void addButtonGroup(Geom &g, QDomElement elt);
+  void addButtonGroup(PageBuildGeom &g, QDomElement elt);
   /*:F addButtonGroup
    *:D Adds a new button group and any contained buttons to this page.
    */
-  class xmlPage *addPage(Geom &g, QDomElement elt,
+  class xmlPage *addPage(PageBuildGeom &g, QDomElement elt,
 			 Button::VisualType vt=Button::VTPageOpen);
   /*:F addPage
    *:D Adds a new sub-page to this page.
    *:N This connects the selected/deselected signals from any button with the
        same name as this page to its open/close slots.
    */
-  class xmlPage *addTabbedPage(Geom &g, QDomElement elt);
+  class xmlPage *addTabbedPage(PageBuildGeom &g, QDomElement elt);
   /*:F addTabbedPage
    *:D As addPage, but with added functionality for tabbed pages.
    */
-  class xmlPage *addMenuPage(Geom &g, QDomElement elt);
+  class xmlPage *addMenuPage(PageBuildGeom &g, QDomElement elt);
   /*:F addMenuPage
    *:D As addPage, but with added functionality for menus.
    *:N This connects the selected signal from menu items in that
        page to our childItemXXX slots.
    */
-  class xmlPage *addCheckListPage(Geom &g, QDomElement elt);
+  class xmlPage *addCheckListPage(PageBuildGeom &g, QDomElement elt);
   /*:F addChecklistPage
    *:D As addPage, but with added functionality for checklists.
    *:N This connects the selected/deselected signals from items in that
        page to our childItemXXX slots.
    */
-  void addCaption(Geom &g);
-  /*:F addCaption
-   *:D Adds a caption widget to a menu.
-   *:N This uses the 'caption' member; if the caption is empty, it does
-       not create a widget.
-  */
-  void addBreak(Geom &g, QDomElement elt);
+  void addBreak(PageBuildGeom &g, QDomElement elt);
   /*:F addBreak
    *:D Inserts a column break between buttons, as per the <break> element.
    */
-  void addSpace(Geom &g, QDomElement elt);
+  void addSpace(PageBuildGeom &g, QDomElement elt);
   /*:F addSpace
    *:D Inserts a vertical space between buttons, as per the <space> element.
    */
-  void addAuto(Geom &g, QDomElement elt);
+  void addAuto(PageBuildGeom &g, QDomElement elt);
   /*:F addAuto
    *:D Automatically adds a number of <item> buttons according to an enum.
    */
@@ -217,7 +199,7 @@ private:
   /*:V buttons
    *:D All our buttons by ID. (ID is leaf, not full path).
    */
-  QMap<QString, class QObject *> groups;
+  QMap<QString, class guiButtonGroup *> groups;
   /*:V groups
    *:D All our button groups by ID. (ID is leaf, not full path).
    */
@@ -230,14 +212,6 @@ private:
    *:D For pages that represent arrays (tabbed pages), this is the ID of the
        currently open tab.
   */
-  QString caption;
-  /*:V caption
-   *:D Caption text to be placed above this page.
-   */
-  QMap<QString,QString> groupDefaults;
-  /*:V groupDefaults
-   *:D Map of default button names for each group that has one.
-   */
   bool neverOpened;
   /*:V neverOpened
    *:D True if this page has never yet been opened.
@@ -251,15 +225,10 @@ private:
   QColor triColor;
 private:
   void setDefaultColors(QDomElement);
-  Geom buttonGeometry(QDomElement);
-  void buildChildren(Geom, QDomElement);
+  void addChildren(PageBuildGeom, QDomElement);
   void buildAutoItems();
-  class AutoInfo {
-  public:
-    bool hasAutoItems;
-    QDomElement doc;
-    Geom geom;
-  } autoInfo;
+  PageBuildGeom buildGeom;
+  AutoItemInfo autoInfo;
 protected:
   virtual QString getCurrentElement() const;
 };

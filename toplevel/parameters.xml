@@ -198,6 +198,7 @@
     <category id="stimEphys">
       <category id="channel">
         <param id="nTrains-1" type="int" default="50"/>
+        <param id="nPulses-1" type="int" default="50"/>
         <param id="delay-1" type="time" default="50 ms"/>
         <param id="trainPeriod-1" type="time" default="60 s"/>
         <param id="pulsePeriod-1" type="time" default="60 s"/>

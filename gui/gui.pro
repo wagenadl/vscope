@@ -11,8 +11,10 @@ HEADERS += xmlbutton.h xmlpage.h xmlgui.h guigeom.h \
 SOURCES += xmlbutton.cpp xmlpage.cpp xmlgui.cpp guigeom.cpp \
 	timebutton.cpp guiexc.cpp overridecursor.cpp \
 	videogui.cpp
-HEADERS += abstractpage.h
-SOURCES += abstractpage.cpp
+HEADERS += abstractpage.h pagebuildgeom.h autoiteminfo.h
+SOURCES += abstractpage.cpp pagebuildgeom.cpp autoiteminfo.cpp
+HEADERS += guibuttongroup.h
+SOURCES += guibuttongroup.cpp
 
 LIBS += -L../base -lvscope-base -L../gfx -lvscope-gfx -L../xml -lvscope-xml
 LIBS += -L../video -lvscope-video

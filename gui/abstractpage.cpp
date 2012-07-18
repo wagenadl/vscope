@@ -27,7 +27,7 @@ AbstractPage::AbstractPage(class QWidget *parent,
   myTag = doc.tagName();
 }
 
-void AbstractPage::addChildren(QDomElement doc) {
+void AbstractPage::addChildren(QDomElement) {
 }
 
 void AbstractPage::removeChildren() {

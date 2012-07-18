@@ -106,7 +106,7 @@ public:
   /*:F buttonp, button
    *:D Get pointer or reference to button that is an immediate child of our page.
    */
-  
+  xmlGui const *masterp() const { return master; }
 protected:
   class xmlGui *master;
   /*:V master
