@@ -70,12 +70,3 @@ Button *ButtonGrouper::selectedSibling(Button *child) {
   }
 }
 
-QSet<Button *> const &ButtonGrouper::allSiblings(Button *child) {
-  if (button2parent.contains(child)) {
-    QObject *parent = button2parent[child];
-    return parent2buttons[parent];
-  } else {
-    dbg("ButtonGrouper::allSiblings(%p)",child);
-    throw Exception("Button","Unknown button","allSiblings");
-  }
-}  

@@ -15,7 +15,6 @@ public:
   static void select(Button *); // throws exc. if not found
   static void deselect(Button *); // throws exc. if not found
   static Button *selectedSibling(Button *); // may return 0 or self
-  static QSet<Button *> const &allSiblings(Button *); // throws exc. if not found
 private:
   static QMap<Button *, QObject *> button2parent;
   static QMap<QObject *,QSet<Button *> > parent2buttons;
