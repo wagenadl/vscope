@@ -57,6 +57,26 @@ AbstractPage &AbstractPage::findPage(QStringList path) {
     throw Exception("AbstractPage", "Cannot find page '" + path.join("/") + "'");
 }
 
+xmlButton *AbstractPage::findpButton(QStringList path) {
+  if (path.isEmpty())
+    return 0;
+  QString tail = path.takeLast();
+  AbstractPage *page = findpPage(path);
+  if (page)
+    return page->buttonp(tail);
+  else
+    return 0;
+}
+
+xmlButton &AbstractPage::findButton(QStringList path) {
+  xmlButton *b = findpButton(path);
+  if (b)
+    return *b;
+  else
+    throw Exception("AbstractPage", "Cannot find button '" + path.join("/") +"'");
+}
+
+
 QString AbstractPage::pathToLocal(QString path) const {
   QStringList list = path.split("/");
   QStringList us = myPath.split("/");
@@ -64,9 +84,6 @@ QString AbstractPage::pathToLocal(QString path) const {
   while (!us.isEmpty() && !myPath.isEmpty()) {
     QString ushead = us.takeFirst(); 
     QString themhead = list.takeFirst();
-    // dbg("path='%s' mypath='%s' ushead='%s' themhead='%s'",
-    //     qPrintable(path),qPrintable(myPath),
-    //     qPrintable(ushead),qPrintable(themhead));
     int colonidx = themhead.indexOf(':');
     if (colonidx>=0) {
       if (us.isEmpty())
@@ -108,36 +125,39 @@ QString AbstractPage::pathDeinstantiate(QString path) const {
 QString AbstractPage::pathInstantiate(QString path) const {
   if (path=="")
     return "";
-  QStringList list = path.split("/");
-  QStringList us = myPath.split("/");
-  if (myPath.isEmpty())
-    us=QStringList();
-  if (list.size()<us.size())
-    return path;
-  if (myTag=="tabbedpage") {
-    QString mybit = list[us.size()-1];
-    int colonidx = mybit.indexOf(':');
-    if (colonidx<0)
-      list[us.size()-1] += ":" + getCurrentElement();
-  }
-  if (list.size()>us.size()) {
-    QString child = list[us.size()];
-    int colonidx = child.indexOf(':');
-    if (colonidx>=0)
-      child=child.left(colonidx);
-    if (subPages.contains(child))
-      return subPages[child]->pathInstantiate(list.join("/"));
-    else // if (buttons.contains(child))
-      return list.join("/");
-    //else
-    //throw Exception("AbstractPage","'"+path+"' does not name a page or button","pathInstantiate");
-  } else {
-    return list.join("/");
-  }
-}
+  
+  QStringList pathBits = path.split("/");
+  int myDepth = myPath.isEmpty() ? -1 : myPath.split("/").size()-1;
 
-QString AbstractPage::getCurrentElement() const {
-  /* This really should be called only on tabbed pages */
-  return "";
+  if (pathBits.size()<=myDepth)
+    return path;
+
+  if (myDepth>=0) {
+    QString elt = getCurrentElement();
+    if (!elt.isEmpty()) {
+      QString mybit = pathBits[myDepth];
+      int colonidx = mybit.indexOf(':');
+      if (colonidx>=0)
+	pathBits[myDepth] = pathBits[myDepth].left(colonidx);
+      pathBits[myDepth] += ":" + elt;
+      path = pathBits.join("/");
+    }
+  }
+
+  if (pathBits.size()<=myDepth+1)
+    return path;
+  
+  QString child = pathBits[myDepth+1];
+  int colonidx = child.indexOf(':');
+  if (colonidx>=0)
+    child=child.left(colonidx);
+  if (subPages.contains(child))
+    return subPages[child]->pathInstantiate(path);
+  else if (buttonp(child))
+    return path;
+  else
+    throw Exception("AbstractPage",
+		    "'"+path+"' does not name a page or button",
+		    "pathInstantiate");
 }
 

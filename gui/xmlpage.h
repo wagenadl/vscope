@@ -41,18 +41,17 @@ public:
   /*:F destructor
    *:D Destructs this page and all of its children.
    */
-  class xmlButton *findpButton(QStringList path);
-  /*:F findpButton
-   *:D Returns a pointer to a button given a path, or null if that button
-       does not (currently) exist.
-   *:N A path with arrays must be represented in the abstract, as in:
-       "page.array.button", not "page.array:element.button".
-  */
-  class xmlButton &findButton(QStringList path);
-  /*:F findButton
-   *:D Like findpButton, but returns a reference, and throws an exception
-       if the path does not indicate a button.
-  */
+  xmlPage *findpPage(QStringList path);
+  xmlPage &findPage(QStringList path);
+  /*:F findpPage, findPage
+   *:D As in AbstractPage, but returns pointer to xmlPage
+   */
+  virtual xmlButton const *buttonp(QString id) const;
+  virtual xmlButton *buttonp(QString id);
+  virtual xmlButton &button(QString id);
+  /*:F buttonp, button
+   *:D Get pointer or reference to button that is an immediate child of our page.
+   */
 private:
   struct Geom {
     /*:C Geom
@@ -262,7 +261,7 @@ private:
     Geom geom;
   } autoInfo;
 protected:
-  QString getCurrentElement() const;
+  virtual QString getCurrentElement() const;
 };
 
 #endif

@@ -3,7 +3,7 @@
 #include "ephysout.h"
 
 #include <xml/enumerator.h>
-#include <xml/enums.h>
+#include <base/enums.h>
 #include <xml/paramtree.h>
 #include <xml/connections.h>
 #include <base/dbg.h>

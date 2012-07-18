@@ -26,7 +26,7 @@ xmlPage::xmlPage(class QWidget *parent,
 		 QString mypath,
 		 class QRect const &geom):
   AbstractPage(parent, ptree_, doc, master_, mypath, geom) {
-  /* Basic prep */
+
   setLineWidth(0);
   neverOpened=true;
   autoInfo.hasAutoItems = false;
@@ -44,16 +44,12 @@ xmlPage::xmlPage(class QWidget *parent,
 
   buildChildren(g, doc);
 
-  /* Hide */
   hide();
 }
 
 xmlPage::~xmlPage() {
   for (QMap<QString, xmlButton *>::iterator i=buttons.begin();
        i!=buttons.end(); ++i)
-    delete i.value();
-  for (QMap<QString, xmlPage *>::iterator i=subPages.begin();
-       i!=subPages.end(); ++i)
     delete i.value();
 }
 
@@ -66,7 +62,7 @@ void xmlPage::addSpace(xmlPage::Geom &g, QDomElement doc) {
 void xmlPage::addBreak(xmlPage::Geom &g, QDomElement doc) {
   bool ok;
   double dx = doc.hasAttribute("dx") ? doc.attribute("dx").toDouble(&ok) : 0;
-  g.nextrow=0;
+  g.nextrow = 0;
   g.nextcol += 1+dx;
 }
 
@@ -661,29 +657,6 @@ void xmlPage::childTabEnabled(QString path) {
   }
 }
 
-xmlButton *xmlPage::findpButton(QStringList path) {
-  QString head = path.takeFirst();
-  if (path.isEmpty()) {
-    if (buttons.contains(head))
-      return buttons[head];
-    else
-      return 0;
-  } else {
-    if (subPages.contains(head))
-      return subPages[head]->findpButton(path);
-    else
-      return 0;
-  }
-}
-
-xmlButton &xmlPage::findButton(QStringList path) {
-  xmlButton *b = findpButton(path);
-  if (b)
-    return *b;
-  else
-    throw Exception("xmlPage", "Cannot find button '" + path.join("/") +"'");
-}
-
 void reportqbit(QBitArray const &ba) {
   fprintf(stderr,"n=%i [",ba.size());
   for (int i=0; i<ba.size(); i++)
@@ -977,4 +950,37 @@ void xmlPage::buildChildren(xmlPage::Geom g, QDomElement doc) {
 
 QString xmlPage::getCurrentElement() const {
   return currentElement;
+}
+
+xmlButton const *xmlPage::buttonp(QString id) const {
+  if (buttons.contains(id))
+    return buttons[id];
+  else
+    return 0;
+}
+
+xmlButton *xmlPage::buttonp(QString id) {
+  if (buttons.contains(id))
+    return buttons[id];
+  else
+    return 0;
+}
+
+xmlButton &xmlPage::button(QString id) {
+  xmlButton *b = buttonp(id);
+  if (b)
+    return *b;
+  else
+    throw Exception("xmlPage",
+		    "No button named '" + id + "' in page '" + myPath + "'");
+}
+
+xmlPage *xmlPage::findpPage(QStringList path) {
+  AbstractPage *p = AbstractPage::findpPage(path);
+  return dynamic_cast<xmlPage *>(p);
+}
+
+xmlPage &xmlPage::findPage(QStringList path) {
+  AbstractPage &p = AbstractPage::findPage(path);
+  return dynamic_cast<xmlPage &>(p);
 }

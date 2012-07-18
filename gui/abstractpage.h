@@ -60,6 +60,18 @@ public:
    *:D Like findpPage, but returns a reference, and throws an exception
        if the path does not indicate a page.
   */
+ class xmlButton *findpButton(QStringList path);
+  /*:F findpButton
+   *:D Returns a pointer to a button given a path, or null if that button
+       does not (currently) exist.
+   *:N A path with arrays must be represented in the abstract, as in:
+       "page.array.button", not "page.array:element.button".
+  */
+ class xmlButton &findButton(QStringList path);
+  /*:F findButton
+   *:D Like findpButton, but returns a reference, and throws an exception
+       if the path does not indicate a button.
+  */
   QString pathToLocal(QString path) const;
   /*:F pathToLocal
    *:D Given a global path (that must include this page as a head), removes
@@ -88,6 +100,13 @@ public:
   /*:F pathDeinstantiate
    *:D Given a global path, removes any ":elt" array indexing.
    */
+  virtual xmlButton const *buttonp(QString id) const=0;
+  virtual xmlButton *buttonp(QString id)=0;
+  virtual xmlButton &button(QString id)=0;
+  /*:F buttonp, button
+   *:D Get pointer or reference to button that is an immediate child of our page.
+   */
+  
 protected:
   class xmlGui *master;
   /*:V master
@@ -113,12 +132,12 @@ protected:
   /*:V myPath
    *:D Full path to this page.
    */
-  QString myTag;
+  QString myTag; // do I really need this variable any more?
   /*:V myTag
    *:D xml tag for this page, i.e., "page", "tabbedpage", "menu", or "checklist".
    */
 protected:
-  virtual QString getCurrentElement() const;
+  virtual QString getCurrentElement() const=0;
 };  
   
 #endif
