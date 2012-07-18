@@ -25,6 +25,7 @@ xmlPage::xmlPage(class QWidget *parent,
 		 class xmlGui *master_,
 		 QString mypath,
 		 class QRect const &geom): QFrame(parent) {
+  /* Basic prep */
   setLineWidth(0);
   neverOpened=true;
   autoInfo.hasAutoItems = false;
@@ -39,100 +40,16 @@ xmlPage::xmlPage(class QWidget *parent,
   myTag = doc.tagName();
   triID = "";
 
-  QString bg = doc.attribute("bg");
-  if (!bg.isEmpty()) {
-    QPalette p=palette();
-    p.setColor(QPalette::Window,QColor(bg));
-    setPalette(p);
-    setAutoFillBackground(true);
-    setFrameStyle(QFrame::Panel | QFrame::Raised);
-  } else {
-    ;
-  }
-  if (doc.hasAttribute("bbg")) {
-    QString bg = doc.attribute("bbg");
-    QPalette p=palette();
-    p.setColor(QPalette::Button,QColor(bg));
-    setPalette(p);
-  }    
+  setDefaultColors(doc);
 
-  Geom g;
-  bool ok;
-  g.page.dxl = int(master->geom().buttondx*doc.attribute("subdxl")
-		   .toDouble(&ok)); // default to 0.
-  g.page.dxr = int(master->geom().buttondx*doc.attribute("subdxr")
-		   .toDouble(&ok)); // default to 0.
-  g.page.dyt = int(master->geom().buttondy*doc.attribute("subdyt")
-		   .toDouble(&ok)); // default to 0.
-  g.page.dyb = int(master->geom().buttondy*doc.attribute("subdyb")
-		   .toDouble(&ok)); // default to 0.
-
-  g.rows = doc.attribute("rows").toInt(&ok); // default to 0.
-  g.cols = doc.attribute("cols").toInt(&ok); // default to 0.
   caption = doc.attribute("caption");
   caption = ""; // Current style is to not use captions
-  g.caph = caption.isEmpty() ? master->geom().topy : master->geom().menucaph;
-  g.button.dx = master->geom().buttondx;
-  g.button.w = master->geom().buttonw;
-  g.button.dy = master->geom().buttondy;
-  g.button.h = master->geom().buttonh;
-  g.button.y0 = g.caph;
-  g.button.x0 = master->geom().leftx;
-  if (g.rows>0) {
-    if (geom.height()-g.caph<g.button.dy*g.rows) {
-      g.button.dy = double(geom.height()
-			   -g.caph-master->geom().bottomy+master->geom().inty)
-	/ g.rows;
-      g.button.h = int(g.button.dy) - master->geom().inty;
-    } else {
-      resize(width(),int(g.button.dy*(g.rows+1)-g.button.h));
-    }
-  }
-  if (g.cols>0) {
-    if (geom.width()<g.button.dx*g.cols) {
-      g.button.dx = double(geom.width()-master->geom().leftx
-			   -master->geom().rightx+master->geom().intx)
-	/ g.cols;
-      g.button.w = int(g.button.dx) - master->geom().intx;
-    } else {
-      // int w0 = width();
-      resize(int(g.button.dx*(g.cols+1)-g.button.w),height());
-      // dbg("g.page.dxl=%i dxr=%i",g.page.dxr,g.page.dxl);
-      // if (g.page.dxr)
-      //   move(geometry().left()+50/*w0-width()*/,geometry().top());
-    }
-  }
-  g.nextcol = g.nextrow = 0;
-
+  Geom g = buttonGeometry(doc);
   addCaption(g);
-  
-  for (QDomElement e=doc.firstChildElement(); !e.isNull();
-       e=e.nextSiblingElement()) {
-    QString tag = e.tagName();
-    if (tag=="group")
-      addButtonGroup(g,e);
-    else if (tag=="button")
-      addButton(g,e);
-    else if (tag=="item")
-      addItem(g,e);
-    else if (tag=="tabbedpage")
-      addTabbedPage(g,e);
-    else if (tag=="page")
-      addPage(g,e);
-    else if (tag=="menu")
-      addMenuPage(g,e);
-    else if (tag=="checklist")
-      addCheckListPage(g,e);
-    else if (tag=="space")
-      addSpace(g,e);
-    else if (tag=="break") 
-      addBreak(g,e);
-    else if (tag=="auto")
-      addAuto(g, e);
-    else
-      fprintf(stderr,"Warning: xmlPage: Unexpected tag <%s>.\n",
-	      qPrintable(tag));
-  }
+
+  buildChildren(g, doc);
+
+  /* Hide */
   hide();
 }
 
@@ -143,9 +60,6 @@ xmlPage::~xmlPage() {
   for (QMap<QString, xmlPage *>::iterator i=subPages.begin();
        i!=subPages.end(); ++i)
     delete i.value();
-  // for (QMap<QString, QButtonGroup *>::iterator i=groups.begin();
-  //      i!=groups.end(); ++i)
-  //   delete i.value(); // not needed, our children auto-reaped by qt.
 }
 
 void xmlPage::addSpace(xmlPage::Geom &g, QDomElement doc) {
@@ -1058,4 +972,104 @@ void xmlPage::buildAutoItems() {
   Dbg() << "  bai: enum="<<e;
   Dbg() << "  bai: items = " << e->getAllTags().join(" ");
   
+}
+
+void xmlPage::setDefaultColors(QDomElement doc) {
+  /* Set color and default button color */
+  QString bg = doc.attribute("bg");
+  if (!bg.isEmpty()) {
+    QPalette p=palette();
+    p.setColor(QPalette::Window, QColor(bg));
+    setPalette(p);
+    setAutoFillBackground(true);
+    setFrameStyle(QFrame::Panel | QFrame::Raised);
+  }
+  if (doc.hasAttribute("bbg")) {
+    QString bg = doc.attribute("bbg");
+    QPalette p=palette();
+    p.setColor(QPalette::Button, QColor(bg));
+    setPalette(p);
+  }    
+}
+
+xmlPage::Geom xmlPage::buttonGeometry(QDomElement doc) {
+  /* Construct geometry for buttons */
+  Geom g;
+
+  QRect geom = geometry();
+  
+  bool ok;
+  g.page.dxl = int(master->geom().buttondx*doc.attribute("subdxl")
+		   .toDouble(&ok)); // default to 0.
+  g.page.dxr = int(master->geom().buttondx*doc.attribute("subdxr")
+		   .toDouble(&ok)); // default to 0.
+  g.page.dyt = int(master->geom().buttondy*doc.attribute("subdyt")
+		   .toDouble(&ok)); // default to 0.
+  g.page.dyb = int(master->geom().buttondy*doc.attribute("subdyb")
+		   .toDouble(&ok)); // default to 0.
+
+  g.rows = doc.attribute("rows").toInt(&ok); // default to 0.
+  g.cols = doc.attribute("cols").toInt(&ok); // default to 0.
+  g.caph = caption.isEmpty() ? master->geom().topy : master->geom().menucaph;
+  g.button.dx = master->geom().buttondx;
+  g.button.w = master->geom().buttonw;
+  g.button.dy = master->geom().buttondy;
+  g.button.h = master->geom().buttonh;
+  g.button.y0 = g.caph;
+  g.button.x0 = master->geom().leftx;
+  if (g.rows>0) {
+    if (geom.height()-g.caph<g.button.dy*g.rows) {
+      g.button.dy = double(geom.height()
+			   -g.caph-master->geom().bottomy+master->geom().inty)
+	/ g.rows;
+      g.button.h = int(g.button.dy) - master->geom().inty;
+    } else {
+      resize(width(),int(g.button.dy*(g.rows+1)-g.button.h));
+    }
+  }
+  if (g.cols>0) {
+    if (geom.width()<g.button.dx*g.cols) {
+      g.button.dx = double(geom.width()-master->geom().leftx
+			   -master->geom().rightx+master->geom().intx)
+	/ g.cols;
+      g.button.w = int(g.button.dx) - master->geom().intx;
+    } else {
+      resize(int(g.button.dx*(g.cols+1)-g.button.w),height());
+    }
+  }
+  g.nextcol = 0;
+  g.nextrow = 0;
+
+  return g;
+}
+
+void xmlPage::buildChildren(xmlPage::Geom g, QDomElement doc) {
+  /* Build children */
+  for (QDomElement e=doc.firstChildElement(); !e.isNull();
+       e=e.nextSiblingElement()) {
+    QString tag = e.tagName();
+    if (tag=="group")
+      addButtonGroup(g,e);
+    else if (tag=="button")
+      addButton(g,e);
+    else if (tag=="item")
+      addItem(g,e);
+    else if (tag=="tabbedpage")
+      addTabbedPage(g,e);
+    else if (tag=="page")
+      addPage(g,e);
+    else if (tag=="menu")
+      addMenuPage(g,e);
+    else if (tag=="checklist")
+      addCheckListPage(g,e);
+    else if (tag=="space")
+      addSpace(g,e);
+    else if (tag=="break") 
+      addBreak(g,e);
+    else if (tag=="auto")
+      addAuto(g, e);
+    else
+      fprintf(stderr,"Warning: xmlPage: Unexpected tag <%s>.\n",
+	      qPrintable(tag));
+  }
 }

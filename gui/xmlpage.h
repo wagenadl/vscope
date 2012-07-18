@@ -337,6 +337,9 @@ private:
   QString triID;
   QColor triColor;
 private:
+  void setDefaultColors(QDomElement);
+  Geom buttonGeometry(QDomElement);
+  void buildChildren(Geom, QDomElement);
   void buildAutoItems();
   class AutoInfo {
   public:
