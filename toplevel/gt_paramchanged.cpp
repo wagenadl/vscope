@@ -59,12 +59,11 @@ void gt_slots::everythingChanged() {
   Globals::mgstim->rebuild();
   setRefTrace();
 
-  ROIImage::ShowMode sm =
-    ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs").toInt());
+  SHOWROIS sm = (SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt();
   Globals::ccdw->showROIs(sm);
   Globals::coherence->setShowMode(sm);
   Globals::trove->roidata().
-    setDebleach(Globals::ptree->find("analysis/debleach").toString());
+    setDebleach((DEBLEACH)Globals::ptree->find("analysis/debleach").toInt());
   Globals::acquire->newTrialPeriod();
   Globals::acquire->setContEphys();
   Globals::acquire->setAutoRun();
@@ -99,13 +98,12 @@ void gt_slots::paramchanged(QString p, QString val) {
 	       p=="analysis/refDigi" || p=="analysis/refFreq") {
       setRefTrace();
     } else if (p=="analysis/showROIs") {
-      ROIImage::ShowMode sm =
-	ROIImage::ShowMode(Globals::ptree->find(p).toInt());
+      SHOWROIS sm = (SHOWROIS)Globals::ptree->find(p).toInt();
       Globals::ccdw->showROIs(sm);
       Globals::coherence->setShowMode(sm);
     } else if (p=="analysis/debleach") {
       Globals::trove->roidata().
-	setDebleach(Globals::ptree->find(p).toString());
+	setDebleach((DEBLEACH)Globals::ptree->find(p).toInt());
     } else if (p=="acquisition/trialPeriod") {
       Globals::acquire->newTrialPeriod();
     } else if (p=="panelLeft") {

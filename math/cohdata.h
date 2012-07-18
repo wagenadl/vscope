@@ -13,11 +13,10 @@
 #include <base/campair.h>
 #include <math/taperid.h>
 #include <base/keyaccess.h>
+#include <base/enums.h>
 
 class CohData: public KeyAccess {
   Q_OBJECT;
-public:
-  enum { refANALOG, refDIGITAL, refFIXED } refType;
 public:
   CohData();
   virtual ~CohData();
@@ -54,9 +53,10 @@ private:
   class AnalogData const *adata; // we do not own this
   class DigitalData const *ddata; // we do not own this
 private:
-  QString ref_chn; // for refANALOG mode
-  int ref_line; // for refDIGITAL mode
-  double ref_hz; // for refFIXED mode
+  REFTYPE refType;
+  QString ref_chn; // for RT_Analog mode
+  int ref_line; // for RT_Digital mode
+  double ref_hz; // for RT_Frequency mode
   struct Data {
     QMap<int, double> coh_mag;
     QMap<int, double> coh_pha;

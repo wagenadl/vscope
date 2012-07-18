@@ -350,7 +350,7 @@ int Param::toInt() const {
   if (ok)
     return r;
   else
-    throw Exception("Param",QString("Cannot convert '") + valueType +"' to integer");
+    throw Exception("Param",QString("Cannot convert ") + valueType +" '" + toString() + "' to integer");
 }
 
 double Param::toDouble() const {

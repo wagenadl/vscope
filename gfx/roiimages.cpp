@@ -41,7 +41,7 @@ void ROIImages::setMode(ROIImage::ClickMode cm) {
     ri->setMode(cm);
 }
 
-void ROIImages::showROIs(ROIImage::ShowMode sm) {
+void ROIImages::showROIs(SHOWROIS sm) {
   foreach (ROIImage *ri, imgs.values())
     ri->showROIs(sm);
 }

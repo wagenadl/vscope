@@ -45,4 +45,11 @@ SOURCES += base26.cpp \
         tests.cpp
 
 
+HEADERS += enums.h
+RESOURCES += base.qrc
 
+QMAKE_EXTRA_TARGETS += enums
+PRE_TARGETDEPS += enums.h
+enums.target = enums.h
+enums.commands = enums2c.pl
+enums.depends = enums.xml

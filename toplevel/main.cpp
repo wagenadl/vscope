@@ -128,28 +128,26 @@ void setupAppStyle(QApplication &app) {
 }  
 
 void setupParsAndConns() {
-  QString fpath = getenv("HOME");
+
+  XML enumsDoc(":/enums.xml");
+  XML paramsDoc(":/parameters.xml");
+  QDomElement enums = enumsDoc.root();
+  QDomElement pars = paramsDoc.root();
+  
   char const *envpath = getenv("VSCOPEPATH");
+  QString fpath = "/";
   if (envpath)
     fpath = envpath;
-  else
-    fpath = fpath + "/vsddata";
-  Dbg() << "ENVPATH:"<<envpath;
-  Dbg() << "fpath:"<<fpath;
-
-  QString parafn = fpath + "/_settings/_parameters.xml";
-  if (true || !QFile::exists(parafn))
-    parafn = ":/parameters.xml";
-  Dbg() << "Reading parameters from: " << parafn;
-  XML paramsDoc(parafn);
-  QDomElement pars = paramsDoc.root();
-  QDomElement e_path = pars.firstChildElement("filepath");
-  if (!envpath && !e_path.isNull())
-    fpath = e_path.attribute("p");
-  
-  if (!envpath)
-    fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
-	    qPrintable(fpath));
+  else {
+    QDomElement e_path = pars.firstChildElement("filepath");
+    if (e_path.isNull())
+      fpath = QString(getenv("HOME")) + "/vsddata";
+    else
+      fpath = e_path.attribute("p");
+    if (!envpath)
+      fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
+	      qPrintable(fpath));
+  }
   
   QString connfn = fpath + "/_settings/_connections.xml";
   if (!QFile::exists(connfn))
@@ -157,10 +155,13 @@ void setupParsAndConns() {
   Dbg() << "Reading connections from: " << connfn;
   XML connDoc(connfn);
   QDomElement cons = connDoc.root();
-  
+
+  Enumerator::readAll(enums);
   Enumerator::readAll(pars);
   Enumerator::readAll(cons); // This must happen before ptree is init'ed
-  Connections::readXML(connDoc.root());
+  
+  Connections::readXML(cons);
+  
   Globals::ptree = new ParamTree(pars);
   Dbg() << "fpath2:"<<fpath;
   Globals::ptree->find("filePath").set(fpath);
@@ -172,8 +173,7 @@ void setupDefaultSettings() {
   if (QFile::exists(settingsfn)) {
     Dbg() << "Reading settings from: " << settingsfn;
     XML valuesDoc(settingsfn);
-    QDomElement vals = valuesDoc.root();
-    Globals::ptree->read(vals);
+    Globals::ptree->read(valuesDoc.root());
   }
 }
 
@@ -252,8 +252,7 @@ void setupCCDImages() {
     img->hide();
   }
   Globals::ccdw->setROIs(&Globals::trove->rois());
-  ROIImage::ShowMode sm =
-    ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs").toInt());
+  SHOWROIS sm = (SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt();
   Globals::ccdw->showROIs(sm);
 }
 
@@ -268,7 +267,7 @@ void setupVSDTraces() {
 		   Globals::vsdtraces, SLOT(updateSelection(int)));
 
   Globals::trove->roidata().
-    setDebleach(Globals::ptree->find("analysis/debleach").toString());
+    setDebleach((DEBLEACH)Globals::ptree->find("analysis/debleach").toInt());
 }
 
 void setupMGAuto(QDomElement &guiConf) {
@@ -303,8 +302,7 @@ void setupCoherence() {
   Globals::coherence->
     setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
   Globals::coherence->
-    setShowMode(ROIImage::ShowMode(Globals::ptree->find("analysis/showROIs")
-				    .toInt()));
+    setShowMode((SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt());
   Globals::coherence->hide();
 
   Globals::cohgraph = new CohGraph(Globals::coherence->getData(),

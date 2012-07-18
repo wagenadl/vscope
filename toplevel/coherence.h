@@ -12,6 +12,7 @@
 #include <math/cvec.h>
 #include <QSet>
 #include <base/ccdtiming.h>
+#include <base/enums.h>
 
 class Coherence: public CCDImage {
   Q_OBJECT;
@@ -34,7 +35,7 @@ public slots:
   void setRefTrace(QString achn);
   void setRefDigi(int digiline);
   void setRefFreq(double fref_hz);
-  void setShowMode(ROIImage::ShowMode sm);
+  void setShowMode(SHOWROIS sm);
   void updateSelection(int);
 signals:
   void newSelection(int);
@@ -55,7 +56,7 @@ private:
   int insideROI(QPoint xy);
   void select(int id);
 private:
-  ROIImage::ShowMode showmode;
+  SHOWROIS showmode;
 private:
   class CohData *data;
   bool owndata;

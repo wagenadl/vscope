@@ -8,7 +8,7 @@
 
 ROIData3Set::ROIData3Set(ROISet const *rs) {
   d.roiset = rs;
-  d.lastDebleach = "None";
+  d.lastDebleach = DB_None;
 
   connect(rs, SIGNAL(newDatum(int)),
 	  SLOT(updateROI(int)));
@@ -94,7 +94,7 @@ bool ROIData3Set::haveData(int id) const {
   return d.data.contains(id);
 }
 
-void ROIData3Set::setDebleach(QString db) {
+void ROIData3Set::setDebleach(DEBLEACH db) {
   AllKeyGuard guard(*this);
   d.lastDebleach = db;
   foreach (ROI3Data *rd, d.data.values())

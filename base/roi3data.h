@@ -44,7 +44,7 @@ public:
    *:N This is a static function that applies to any ROI3Datas created in the
        future. It DOES NOT affect pre-existing ROI3Datas.
   */    
-  void setDebleach(QString d);
+  void setDebleach(DEBLEACH d);
   /*:F setDebleach
    *:D Specifies how we debleach.
        This does not cause recomputation and is thus trivially fast.
@@ -99,7 +99,7 @@ public:
 protected:
   ROIData datDonor, datAcceptor;
   mutable double *datRatio;
-  QString debleach;
+  DEBLEACH debleach;
   int nRatio;
   double t0Ratio_ms, dtRatio_ms;
   mutable bool validRatio;

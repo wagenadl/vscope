@@ -9,6 +9,7 @@
 #include <base/range.h>
 #include <base/transform.h>
 #include <base/cache.h>
+#include <base/enums.h>
 
 class ROIData {
   /*:C ROIData
@@ -21,7 +22,7 @@ class ROIData {
 public:
   ROIData();
   ~ROIData();
-  void setDebleach(QString s);
+  void setDebleach(DEBLEACH s);
   /*:F setDebleach
    *:D Specifies how DebleachedDFF gets calculated.
    *:N This does not cause immediate recomputation.
@@ -102,7 +103,7 @@ private:
     int len;
   };
   class CCDData const *source;
-  QString debleach;
+  DEBLEACH debleach;
 
   mutable DataCache raw;
   mutable DataCache debleached;

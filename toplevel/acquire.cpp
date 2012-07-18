@@ -282,7 +282,7 @@ void Acquire::loadData(QString xmlfn) {
   Globals::ptree->find("acquisition/dummy").set("true");
   
   Globals::trove->roidata().
-    setDebleach(Globals::ptree->find("analysis/debleach").toString());
+    setDebleach((DEBLEACH)Globals::ptree->find("analysis/debleach").toInt());
   displayCCD();
   displayEPhys();
   //  updateVSDTraces();

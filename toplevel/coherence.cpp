@@ -85,7 +85,7 @@ void Coherence::paintEvent(QPaintEvent *e) {
     else if (roi.isBlob())
 	roi.blob().paint(&p, canvasToScreen());
 
-    if (showmode==ROIImage::SM_IDs || showmode==ROIImage::SM_Full) {
+    if (showmode==SR_IDs || showmode==SR_Full) {
       if (id==selectedID)
 	p.setPen(QColor("white"));
       else
@@ -150,7 +150,7 @@ void Coherence::setRefFreq(double fref_hz) {
   perhapsRefresh();
 }
 
-void Coherence::setShowMode(ROIImage::ShowMode sm) {
+void Coherence::setShowMode(SHOWROIS sm) {
   showmode = sm;
   update();
 } 

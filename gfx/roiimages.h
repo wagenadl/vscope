@@ -9,6 +9,7 @@
 #include <QRect>
 #include <QSignalMapper>
 
+#include <base/enums.h>
 #include <gfx/roiimage.h>
 
 class ROIImages: public QObject {
@@ -21,7 +22,7 @@ public:
   ROIImage *first();
 public slots:
   void setMode(ROIImage::ClickMode cm);
-  void showROIs(ROIImage::ShowMode sm);
+  void showROIs(SHOWROIS sm);
   void setCanvas(QRect const &r);
   QRect const &currentCanvas() const { return canvas; }
   void setROIs(class ROISet *);

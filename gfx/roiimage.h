@@ -8,6 +8,7 @@
 #include <QDomElement>
 #include <base/roicoords.h>
 #include <base/roiset.h>
+#include <base/enums.h>
 
 class ROIImage: public CCDImage {
   /*:C ROIImage
@@ -16,13 +17,6 @@ class ROIImage: public CCDImage {
    */
   Q_OBJECT;
 public:
-  enum ShowMode { // how to display with non-selected ROIs
-    SM_Hidden=0,
-    SM_Centers,
-    SM_Outlines,
-    SM_IDs,
-    SM_Full,
-  };
   enum ClickMode {
     CM_None=0,
     CM_Zoom,
@@ -55,7 +49,7 @@ public:
   void setCamPair(class CamPair const &);
 public slots:
   void setMode(ClickMode cm);
-  void showROIs(ShowMode sm);
+  void showROIs(SHOWROIS sm);
   /*:F showROIs
    *:D Enables plotting of ROIs on top of the image
    */
@@ -134,7 +128,7 @@ public:
 protected:
   int selectedroi; // ID of selected ROI or 0 if none.
   ClickMode clickMode; // what to do when user clicks mouse
-  ShowMode showMode; // how non-selected ROIs are shown
+  SHOWROIS showMode; // how non-selected ROIs are shown
   class Ellipse *ellipse; // used for current XYRRA ROI
   class VisiBlob *visiblob; // used for current PolyBlob ROI
   /* Note that the semantics for XYRRA or Blob ROIs are not the same:

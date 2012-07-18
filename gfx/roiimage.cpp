@@ -28,7 +28,7 @@ inline double euclideanDist2(QPointF p1, QPointF p2) {
 
 ROIImage::ROIImage(QWidget *parent): CCDImage(parent) {
   clickMode = CM_None;
-  showMode = SM_Outlines;
+  showMode = SR_Outlines;
   selectedroi = 0;
   editing = 0;
   roiset = dummyrois;
@@ -126,21 +126,21 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
   bool resetPen = true;
 
   foreach (int id, roiset->ids()) {
-    bool showID = showMode==SM_Full || showMode==SM_IDs;
-    bool showDot = showMode==SM_Centers && !id==selectedroi;
-    bool showOutline = showMode==SM_Full || showMode==SM_Outlines ||
+    bool showID = showMode==SR_Full || showMode==SR_IDs;
+    bool showDot = showMode==SR_Centers && !id==selectedroi;
+    bool showOutline = showMode==SR_Full || showMode==SR_Outlines ||
       id==selectedroi;
     if (editing && id==selectedroi)
       showID = showDot = showOutline = false;
 
     if (id==selectedroi) {
       p.setPen(QColor("#ff0000"));
-      if (showMode==SM_Centers)
+      if (showMode==SR_Centers)
 	p.setBrush(QColor("#ff0000"));
       resetPen = true;
     } else if (resetPen) {
       p.setPen(QColor("#ffff00"));
-      if (showMode==SM_Centers)
+      if (showMode==SR_Centers)
 	p.setBrush(QColor("#ffff00"));
       resetPen = false;
     }      
@@ -414,7 +414,7 @@ void ROIImage::recalcEllipse() {
   }
 }
 
-void ROIImage::showROIs(ShowMode sm) {
+void ROIImage::showROIs(SHOWROIS sm) {
   showMode = sm;
   update();
 }

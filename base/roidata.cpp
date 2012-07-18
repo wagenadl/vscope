@@ -22,14 +22,14 @@ inline int rangelimit(int x, int min, int max) {
 
 ROIData::ROIData() {
   source = 0;
-  debleach = "None";
+  debleach = DB_None;
 }
 
 ROIData::~ROIData() {
   // real destruction done by caches.
 }
 
-void ROIData::setDebleach(QString d) {
+void ROIData::setDebleach(DEBLEACH d) {
   if (d!=debleach) {
     debleach = d;
     debleached.invalidate();
@@ -283,10 +283,10 @@ double const *ROIData::getDebleachedDFF() const {
 
   double *dst = debleached.data();
   double const *src = raw.data();
-  if (debleach == "None") {
+  if (debleach == DB_None) {
     for (int n=0; n<N; n++)
       dst[n] = src[n];
-  } else if (debleach == "Linear") {
+  } else if (debleach == DB_Linear) {
     /* I will fit the data y to A*(t-t0)+B, where t0 is the half-length
        of the data, then subtract A*(t-t0).
        Start with: chi2 = sum_t (A*(t-t0)+B - y(t))^2,
@@ -325,7 +325,7 @@ double const *ROIData::getDebleachedDFF() const {
     for (int n=0; n<N; n++)
       dst[n] = dst[n] - A*(n-t0);
     // dbg("sTT=%g sTY=%g A=%g",sTT,sTY,A);
-  } else if (debleach == "Quadratic") {
+  } else if (debleach == DB_Quadratic) {
     /* I will fit the data y to A*(t-t0)^2 + B*(t-t0) + C, where
        t0 is the half-length of the data, then subtract
        A*(t-t0)^2 + B*(t-t0).

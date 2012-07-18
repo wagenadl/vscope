@@ -2,6 +2,7 @@
 
 #include <xml/enumerator.h>
 #include <base/exception.h>
+#include <base/dbg.h>
 
 #include <QStringList>
 
@@ -40,9 +41,8 @@ void Enumerator::add(QDomElement def) {
       }
   } else {
     for (QDomElement e=def.firstChildElement("item"); !e.isNull();
-	 e=e.nextSiblingElement("item")) {
+	 e=e.nextSiblingElement("item")) 
       add(e);
-    }
   }
 }
 
@@ -59,6 +59,7 @@ void Enumerator::add(QString s, int n) {
   tag2val[s] = n;
   val2tag[n] = s;
   orderedTags.append(s);
+  Dbg() << "Added " << s << ": " << n << " to enum " << myname;
 }
 
 int Enumerator::lookup(QString s, int dflt) const {

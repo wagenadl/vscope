@@ -11,7 +11,7 @@ ROI3Data::ROI3Data() {
   t0Ratio_ms = 0;
   dtRatio_ms = 0;
   validRatio=false;
-  debleach="None";
+  debleach=DB_None;
 }
 
 ROI3Data::~ROI3Data() {
@@ -52,7 +52,7 @@ void ROI3Data::updateData() {
   validRatio = false;
 }
 
-void ROI3Data::setDebleach(QString d) {
+void ROI3Data::setDebleach(DEBLEACH d) {
   if (d!=debleach) {
     debleach = d;
     datDonor.setDebleach(d);

@@ -3,6 +3,7 @@
 #include "ephysout.h"
 
 #include <xml/enumerator.h>
+#include <xml/enums.h>
 #include <xml/paramtree.h>
 #include <xml/connections.h>
 #include <base/dbg.h>
@@ -265,7 +266,7 @@ void EPhysOut::setupAData_mkStim(ParamTree const *ptree,
   double pulsedur2ms = ptree->find(path+"pulseDur2").toDouble();
   double pulseampmV = ptree->find(path+"pulseAmp").toDouble();
   double pulseamp2mV = ptree->find(path+"pulseAmp2").toDouble();
-  QString pulseType = ptree->find(path+"pulseType").toString();
+  PULSETYPE pulseType = (PULSETYPE)ptree->find(path+"pulseType").toInt();
   
   for (int s=0; s<nscans; s++)
     dat[s*nchans] = 0;
@@ -280,20 +281,20 @@ void EPhysOut::setupAData_mkStim(ParamTree const *ptree,
       /* This way of rounding ensures that the pulseperiod is the same
 	 for each pulse in the train, even if that makes the entire
 	 train duration imperfectly rounded. */
-      if (pulseType=="TTL") {
+      if (pulseType==PT_TTL) {
 	pulseampmV=5000;
-	pulseType="Square";
+	pulseType=PT_Square;
       }
-      if (pulseType=="Square" || pulseType=="Biphasic") {
+      if (pulseType==PT_Square || pulseType==PT_Biphasic) {
 	int s1=mini(s0+pulsedur1scans,nscans);
 	for (int s=s0; s<s1; s++)
 	  dat[s*nchans] = pulseampmV/1000;
-	if (pulseType=="Biphasic") {
+	if (pulseType==PT_Biphasic) {
 	  int s2=mini(s1+pulsedur2scans,nscans);
 	  for (int s=s1; s<s2; s++)
 	    dat[s*nchans] = pulseamp2mV/1000;
 	}
-      } else if (pulseType=="Ramp") {	  
+      } else if (pulseType==PT_Ramp) {	  
 	int s1=mini(s0+pulsedur1scans,nscans);
 	int ds = s1-s0-1;
 	if (ds<1)
@@ -302,7 +303,8 @@ void EPhysOut::setupAData_mkStim(ParamTree const *ptree,
 	for (int s=s0; s<s1; s++) 
 	  dat[s*nchans] = pulseampmV/1000 + dV*(s-s0);
       } else
-	throw Exception("EPhysOut","Unknown pulse type: '"+pulseType+"'",
+	throw Exception("EPhysOut","Unknown pulse type: '"
+			+ ptree->find(path+"pulseType").toString() + "'",
 			"setupAData_mkStim");
     }
   }
