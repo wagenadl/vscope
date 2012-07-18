@@ -24,20 +24,15 @@ xmlPage::xmlPage(class QWidget *parent,
 		 QDomElement doc,
 		 class xmlGui *master_,
 		 QString mypath,
-		 class QRect const &geom): QFrame(parent) {
+		 class QRect const &geom):
+  AbstractPage(parent, ptree_, doc, master_, mypath, geom) {
   /* Basic prep */
   setLineWidth(0);
   neverOpened=true;
   autoInfo.hasAutoItems = false;
-  setGeometry(geom);
-
-  master = master_;
-  ptree = origptree = ptree_;
 
   currentElement = "";
 
-  myPath = mypath;
-  myTag = doc.tagName();
   triID = "";
 
   setDefaultColors(doc);
@@ -235,84 +230,6 @@ xmlButton *xmlPage::addButton(xmlPage::Geom &g, QDomElement doc) {
   return b;
 }
 
-QString xmlPage::pathToLocal(QString path) const {
-  QStringList list = path.split("/");
-  QStringList us = myPath.split("/");
-  QString elt = "";
-  while (!us.isEmpty() && !myPath.isEmpty()) {
-    QString ushead = us.takeFirst();
-    QString themhead = list.takeFirst();
-    // dbg("path='%s' mypath='%s' ushead='%s' themhead='%s'",
-    //     qPrintable(path),qPrintable(myPath),
-    //     qPrintable(ushead),qPrintable(themhead));
-    int colonidx = themhead.indexOf(':');
-    if (colonidx>=0) {
-      if (us.isEmpty())
-	elt = themhead.mid(colonidx);
-      themhead = themhead.left(colonidx);
-    }
-    if (themhead!=ushead)
-      throw Exception("xmlPage","'"+path+"' is not a descendent of '"
-		      +myPath+"'","pathToLocal");
-  }
-  if (!elt.isEmpty())
-    list.push_front(elt);
-  return list.join("/");
-}
-
-QString xmlPage::pathToGlobal(QString leaf) const {
-  QString path = myPath;
-  if (!path.isEmpty() && !leaf.isEmpty() && leaf.left(1)!=":")
-    path += "/";
-  path+=leaf;
-  return path;
-}
-
-QString xmlPage::pathDeinstantiate(QString path) const {
-  if (path=="")
-    return "";
-  QStringList list = path.split("/");
-  QStringList build;
-  while (!list.isEmpty()) {
-    QString bit = list.takeFirst();
-    int colonidx = bit.indexOf(':');
-    if (colonidx>=0)
-      bit=bit.left(colonidx);
-    build.push_back(bit);
-  }
-  return build.join("/");
-}
-
-QString xmlPage::pathInstantiate(QString path) const {
-  if (path=="")
-    return "";
-  QStringList list = path.split("/");
-  QStringList us = myPath.split("/");
-  if (myPath.isEmpty())
-    us=QStringList();
-  if (list.size()<us.size())
-    return path;
-  if (myTag=="tabbedpage") {
-    QString mybit = list[us.size()-1];
-    int colonidx = mybit.indexOf(':');
-    if (colonidx<0)
-      list[us.size()-1] += ":" + currentElement;
-  }
-  if (list.size()>us.size()) {
-    QString child = list[us.size()];
-    int colonidx = child.indexOf(':');
-    if (colonidx>=0)
-      child=child.left(colonidx);
-    if (subPages.contains(child))
-      return subPages[child]->pathInstantiate(list.join("/"));
-    else if (buttons.contains(child))
-      return list.join("/");
-    else
-      throw Exception("xmlPage","'"+path+"' does not name a page or button","pathInstantiate");
-  } else {
-    return list.join("/");
-  }
-}
 
 xmlPage *xmlPage::addPage(xmlPage::Geom &g, QDomElement doc,
 			  Button::VisualType vt) {
@@ -624,9 +541,10 @@ void xmlPage::openLeaf(Param *pp) {
       xmlButton *b = i.value();
 
       if (b->isCustom()) {
-	Param const *custpar = master->findpParam(QString("custom/%1-%3")
-						  .arg(pathDeinstantiate(myPath))
-						  .arg(b->customNo()));
+	Param const *custpar = master->paramTree().
+	  findp(QString("custom/%1-%3")
+		.arg(pathDeinstantiate(myPath))
+		.arg(b->customNo()));
 	if (custpar) {
 	  b->setValue(custpar->toString());
 	} else {
@@ -741,24 +659,6 @@ void xmlPage::childTabEnabled(QString path) {
     //fprintf(stderr,"  childTabEnabled but='%s'\n",qPrintable(but));
     representTabEnabled(but);
   }
-}
-
-xmlPage *xmlPage::findpPage(QStringList path) {
-  if (path.isEmpty())
-    return this;
-  QString head = path.takeFirst();
-  if (subPages.contains(head))
-    return subPages[head]->findpPage(path);
-  else
-    return 0;
-}
-
-xmlPage &xmlPage::findPage(QStringList path) {
-  xmlPage *pg = findpPage(path);
-  if (pg)
-    return *pg;
-  else
-    throw Exception("xmlPage", "Cannot find page '" + path.join("/") + "'");
 }
 
 xmlButton *xmlPage::findpButton(QStringList path) {
@@ -926,8 +826,9 @@ void xmlPage::childItemCustomized(QString path, int cno, QString text) {
       master->setCustom(pathDeinstantiate(parampath),cno,text);
     xmlButton *b = findpButton(pathToLocal(path).split('/'));
     if (!b)
-      throw Exception("xmlPage","Cannot find custom button","(childItemCustomized)");
-    QString v = master->findParam(parampath).toString();
+      throw Exception("xmlPage","Cannot find custom button",
+		      "(childItemCustomized)");
+    QString v = master->paramTree().find(parampath).toString();
     b->setValue(v); 
     if (cno>0)
       b->setSelected(true);
@@ -1072,4 +973,8 @@ void xmlPage::buildChildren(xmlPage::Geom g, QDomElement doc) {
       fprintf(stderr,"Warning: xmlPage: Unexpected tag <%s>.\n",
 	      qPrintable(tag));
   }
+}
+
+QString xmlPage::getCurrentElement() const {
+  return currentElement;
 }

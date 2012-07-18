@@ -27,38 +27,6 @@ xmlGui::~xmlGui() {
   delete root;
 }
 
-xmlButton *xmlGui::findpButton(QString path) {
-  return root->findpButton(path.split(QChar('/')));
-}
-
-xmlButton &xmlGui::findButton(QString path) {
-  return root->findButton(path.split(QChar('/')));
-}
-
-xmlPage *xmlGui::findpPage(QString path) {
-  return root->findpPage(path.split(QChar('/')));
-}
-
-xmlPage &xmlGui::findPage(QString path) {
-  return root->findPage(path.split(QChar('/')));
-}
-
-Param const *xmlGui::findpParam(QString path) {
-  return ptree->findp(path);
-}
-
-Param const &xmlGui::findParam(QString path) {
-  return ptree->find(path);
-}
-
-Param *xmlGui::accesspParam(QString path) {
-  return ptree->findp(path);
-}
-
-Param &xmlGui::accessParam(QString path) {
-  return ptree->find(path);
-}
-
 void xmlGui::open() {
   root->open();
 }
@@ -112,3 +80,21 @@ bool xmlGui::canSetParam(QString path, QString newval) {
   }
   return true;
 }
+
+xmlButton *xmlGui::findpButton(QString path) {
+  return root->findpButton(path.split(QChar('/')));
+}
+
+xmlButton &xmlGui::findButton(QString path) {
+  return root->findButton(path.split(QChar('/')));
+}
+
+xmlPage *xmlGui::findpPage(QString path) {
+  return dynamic_cast<xmlPage*>(root->findpPage(path.split(QChar('/'))));
+}
+
+xmlPage &xmlGui::findPage(QString path) {
+  return dynamic_cast<xmlPage&>(root->findPage(path.split(QChar('/'))));
+}
+
+

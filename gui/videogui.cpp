@@ -110,7 +110,7 @@ void VideoGUI::failure(Exception const &e, xmlGui *gui, ParamTree *ptree) {
 
 void VideoGUI::populateProgNames(xmlPage *gui) {
   dbg("VideoGUI::populateProgNames");
-  xmlPage &pg(gui->findPage(QStringList(QString("prog"))));
+  xmlPage &pg = dynamic_cast<xmlPage&>(gui->findPage(QStringList(QString("prog"))));
   QList<xmlButton *> buttons = pg.getGroup(":items");
   QList<xmlButton *>::iterator but_i = buttons.begin();
   QMap<int, QString> const &names = vprog.progNames();
@@ -141,8 +141,9 @@ void VideoGUI::populateProgNames(xmlPage *gui) {
 void VideoGUI::populateParValues(xmlPage *gui, int prog, int par) {
   Dbg() << "VideoGUI::populateParValues: " << prog << " " << par;
   QStringList const &values = vprog.parValues(prog,par);
-  xmlPage &pg(gui->findPage(QStringList(QString("par%1").
-					arg(QString('A'+par-1)))));
+  xmlPage &pg =
+    dynamic_cast<xmlPage&>(gui->findPage(QStringList(QString("par%1").
+						     arg(QString('A'+par-1)))));
   QList<xmlButton *> buttons = pg.getGroup(":items");
   QList<xmlButton *>::iterator but_i = buttons.begin();
   for (QStringList::const_iterator i=values.begin();

@@ -5,9 +5,12 @@
 #define XMLGUI_H
 
 #include <xml/param.h>
+#include <xml/paramtree.h>
 #include <QDomElement>
 #include <QObject>
 #include <gui/xmlbutton.h>
+#include <gui/xmlpage.h>
+#include <gui/guigeom.h>
 
 class xmlGui: public QObject {
   /*:C xmlGui
@@ -31,49 +34,37 @@ public:
   virtual ~xmlGui();
   /*:F destructor
    */
-  class xmlButton *findpButton(QString path);
+  xmlPage &rootPage() { return *root; }
+  /*:F rootPage
+   *:D Returns a reference to our root page.
+   */
+   ParamTree &paramTree() { return *ptree; }
+   guiGeom const &geom() const { return *geom_; }
+   xmlButton *findpButton(QString path);
   /*:F findpButton
    *:D Returns a pointer to a button given a path, or null if that button
        does not (currently) exist.
    *:N A path with arrays must be represented in the abstract, as in:
        "page.array.button", not "page.array:element.button".
   */
-  class xmlPage *findpPage(QString path);
+   xmlPage *findpPage(QString path);
   /*:F findpPage
    *:D Returns a pointer to a page given a path, or null if that button
        does not (currently) exist.
    *:N A path with arrays must be represented in the abstract, as in:
        "page.array", not "page.array:element".
   */
-  Param const *findpParam(QString path);
-  /*:F findpParam
-   *:D Returns a pointer to a parameter given a path, or null if no such
-       parameter exists.
-   *:N The path must reference arrays specifically, as in:
-       "page.array:element.param"; parameters do not exist in the abstract.
-   *:N This returns a const pointer; to set a parameter, use the setParam()
-       family of functions.
-  */
-  class xmlButton &findButton(QString path);
+   xmlButton &findButton(QString path);
   /*:F findButton
    *:D Like findpButton, but returns a reference, and throws an exception
        if the path does not indicate a button.
   */
-  class xmlPage &findPage(QString path);
+   xmlPage &findPage(QString path);
   /*:F findpPage
    *:D Like findpPage, but returns a reference, and throws an exception
        if the path does not indicate a page.
   */
-  class xmlPage &rootPage() { return *root; }
-  /*:F rootPage
-   *:D Returns a reference to our root page.
-   */
-  Param const &findParam(QString path);
-  /*:F findpParam
-   *:D Like findpParam, but returns a reference, and throws an exception
-       if the path does not indicate a parameter.
-  */
-  class guiGeom const &geom() const { return *geom_; }
+  
 signals:
   void buttonClicked(QString path, QString text);
   void buttonDoubleClicked(QString path, QString text);

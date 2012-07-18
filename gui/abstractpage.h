@@ -1,0 +1,124 @@
+// abstractpage.h
+/* Base for xmlpage.h that knows about the hierarchy but not about visuals. */
+
+#ifndef ABSTRACTPAGE_H
+#define ABSTRACTPAGE_H
+
+#include <QFrame>
+#include <QString>
+#include <QStringList>
+#include <QList>
+#include <QMap>
+#include <QDomElement>
+#include <gfx/button.h>
+
+class AbstractPage: public QFrame {
+  Q_OBJECT;
+  /*:C AbstractPage
+   *:D Base class for xmlPage that knows about the hierarchy but not
+       about visuals.
+  */
+signals:
+  void opening(QString mypath, QWidget *me);
+  /*:S opening
+   *:D Emitted just before this page opens.
+   *:A mypath: instantiated string path of this page
+       me: pointer to this page as a widget
+  */
+  void opened(QString mypath, QWidget *me);
+  /*:S opened
+   *:D Emitted just after this page opens.
+   *:A mypath: instantiated string path of this page
+       me: pointer to this page as a widget
+  */
+  void closed(QString mypath, QWidget *me);
+  /*:S closed
+   *:D Emitted just after this page is closed.
+   *:A mypath: instantiated string path of this page
+       me: pointer to this page as a widget
+  */
+public:
+  AbstractPage(class QWidget *parent,
+	       class ParamTree *ptree,
+	       QDomElement doc,
+	       class xmlGui *master,
+	       QString mypath,
+	       class QRect const &geom);
+  virtual void addChildren(QDomElement doc);
+  virtual void removeChildren();
+  virtual ~AbstractPage();
+
+  AbstractPage *findpPage(QStringList path);
+  /*:F findpPage
+   *:D Returns a pointer to a page given a path, or null if that button
+       does not (currently) exist.
+   *:N A path with arrays must be represented in the abstract, as in:
+       "page.array", not "page.array:element".
+  */
+  AbstractPage &findPage(QStringList path);
+  /*:F findpPage
+   *:D Like findpPage, but returns a reference, and throws an exception
+       if the path does not indicate a page.
+  */
+  QString pathToLocal(QString path) const;
+  /*:F pathToLocal
+   *:D Given a global path (that must include this page as a head), removes
+       the head part and returns only the part local to us.
+   *:N For example, if we are called "stim/ephys" and the path is
+       "stim/ephys/channel:A00/ntrains", this returns "channel:A00/ntrains".
+       Note that this works even if there are any instantiated arrays
+       upstream. For instance, if we are "stim/ephys/channel/ntrains", then
+       "stim/ephys/channel:A01/ntrains/5" becomes "5", and if we are
+       "stim/ephys/channel", then "stim/ephys/channel:A01" becomes ":A01".
+   *:E If path does not reference something in our scope, an exception is
+       thrown.
+  */
+  QString pathToGlobal(QString path) const;
+  /*:F pathToGlobal
+   *:D Given a local path, prepends our path to it to create a global path.
+   *:N The local path may start with ":" if it specifies an array element.
+   *:N We do not check whether path is actually a descendent of ours.
+   */
+  QString pathInstantiate(QString path) const;
+  /*:F pathInstantiate
+   *:D Given a global path, instantiates any uninstantiated arrays by their
+       currently open element.
+  */
+  QString pathDeinstantiate(QString path) const;
+  /*:F pathDeinstantiate
+   *:D Given a global path, removes any ":elt" array indexing.
+   */
+protected:
+  class xmlGui *master;
+  /*:V master
+   *:D xmlGui that created us or our root. Used for its ParamTree and its
+       geometry info.
+  */
+  QMap<QString, class xmlPage *> subPages;
+  /*:V subPages
+   *:D All our subpages by ID. (ID is leaf, not full path).
+   */
+  class ParamTree *ptree;
+  /*:V ptree
+   *:D This points to the parameter tree of this page. For pages that represent
+       arrays (tabbed pages), this either points to the full array (if
+       currentElement is empty), or to a specific element.
+  */
+  class ParamTree *origptree;
+  /*:V origptree
+   *:D For pages that represent arrays this is the pointer to the tree of the
+       full array.
+  */
+  QString myPath;
+  /*:V myPath
+   *:D Full path to this page.
+   */
+  QString myTag;
+  /*:V myTag
+   *:D xml tag for this page, i.e., "page", "tabbedpage", "menu", or "checklist".
+   */
+protected:
+  virtual QString getCurrentElement() const;
+};  
+  
+#endif
