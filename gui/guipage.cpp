@@ -301,7 +301,6 @@ void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
 
   guiButton *penable = p->buttons.contains("enable")
     ? p->buttons["enable"] : 0;
-  //  dbg("addTabbedPage: penable=%p",penable);
   
   if (groups.contains(id)) {
     for (QMap<QString,QString>::iterator i=groupedButton.begin();
@@ -315,24 +314,24 @@ void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
 		   master,SIGNAL(buttonDeselected(QString,QString)));
 	disconnect(b,SIGNAL(activated(QString,QString)),
 		   master,SIGNAL(buttonClicked(QString,QString)));
-	connect(b,SIGNAL(selected(QString,QString)),
+	connect(b, SIGNAL(selected(QString,QString)),
 		this,SLOT(addTriangle(QString)));
-	connect(b,SIGNAL(deselected(QString,QString)),
-		this,SLOT(removeTriangle(QString)));
+	connect(b, SIGNAL(deselected(QString,QString)),
+		this, SLOT(removeTriangle(QString)));
 	b->setVisualType(Button::VTArrayCtrl);
 	if (penable)
-	  connect(b,SIGNAL(doubleClicked(QString,QString)),
+	  connect(b, SIGNAL(doubleClicked(QString,QString)),
 		  penable,SLOT(toggleSelected()));
 	//Dbg() << "Connecting doubleclicked" << id;
-	connect(b,SIGNAL(doubleClicked(QString,QString)),
-		master,SIGNAL(buttonDoubleClicked(QString,QString)));
+	connect(b, SIGNAL(doubleClicked(QString,QString)),
+		master, SIGNAL(buttonDoubleClicked(QString,QString)));
       }
     }
   }
   if (penable) {
-    connect(p->buttons["enable"],SIGNAL(selected(QString,QString)),
+    connect(p->buttons["enable"], SIGNAL(selected(QString,QString)),
 	    this,SLOT(childTabEnabled(QString)));
-    connect(p->buttons["enable"],SIGNAL(deselected(QString,QString)),
+    connect(p->buttons["enable"], SIGNAL(deselected(QString,QString)),
 	    this,SLOT(childTabEnabled(QString)));
   }
 }
@@ -759,20 +758,20 @@ void guiPage::buildAutoItems() {
 
 void guiPage::setDefaultColors(QDomElement doc) {
   /* Set color and default button color */
+  setAutoFillBackground(true);
+  setFrameStyle(QFrame::Panel | QFrame::Raised);
   QString bg = doc.attribute("bg");
   if (!bg.isEmpty()) {
     QPalette p=palette();
     p.setColor(QPalette::Window, QColor(bg));
     setPalette(p);
-    setAutoFillBackground(true);
-    setFrameStyle(QFrame::Panel | QFrame::Raised);
   }
-  if (doc.hasAttribute("bbg")) {
-    QString bg = doc.attribute("bbg");
+  QString bbg = doc.attribute("bbg");
+  if (!bbg.isEmpty()) {
     QPalette p=palette();
-    p.setColor(QPalette::Button, QColor(bg));
+    p.setColor(QPalette::Button, QColor(bbg));
     setPalette(p);
-  }    
+  }
 }
 
 void guiPage::addChildren(PageBuildGeom g, QDomElement doc) {
