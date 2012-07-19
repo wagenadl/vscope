@@ -117,7 +117,7 @@
       <item value="121 s"/>
       <item value="181 s"/>
       <space dy="1"/>
-      <item custom="1"  editcaption="Custom trial duration"/>
+      <item custom="1"  editcaption="Trial duration"/>
     </menu>
   
     <menu id="acqFreq" caption="Sample rate" rows="5" cols="2">
@@ -131,7 +131,7 @@
       <item value="15 kHz"/>
       <item value="20 kHz"/>
       <item value="30 kHz"/>
-      <item custom="1"  editcaption="Custom sample rate"/> <!-- "custom" creates a user editable button. The value will be overwritten in the local.xml settings file. -->
+      <item custom="1"  editcaption="Sample rate"/> <!-- "custom" creates a user editable button. The value will be overwritten in the local.xml settings file. -->
     </menu>
 
   </page>
@@ -191,7 +191,7 @@
         <item value="15"/>
         <item value="20"/>
         <item value="30"/>
-        <item custom="1"  editcaption="Custom number of trains"/>
+        <item custom="1"  editcaption="Number of trains"/>
       </menu>
     
       <menu id="nPulses" caption="Pulses per train" rows="5" cols="3">
@@ -211,12 +211,12 @@
         <item value="15"/>
         <item value="20"/>
         <item value="30"/>
-        <item custom="1" editcaption="Custom number of pulses per train"/>
+        <item custom="1" editcaption="Number of pulses per train"/>
       </menu>
     
       <menu id="delay" caption="Train period" rows="6" cols="4">
         <item value="0 ms"/>
-        <item custom="1" editcaption="Custom train period" y="5"/>
+        <item custom="1" editcaption="Train period" y="5"/>
         <break/>
         <item value="10 ms"/>
         <item value="15 ms"/>
@@ -260,7 +260,7 @@
         <item value="20 s"/>
         <item value="30 s"/>
         <item value="50 s"/>
-        <item custom="1" editcaption="Custom train period"/>
+        <item custom="1" editcaption="Train period"/>
       </menu>
     
       <menu id="pulsePeriod" label="Pulse period" rows="6" cols="3">
@@ -283,7 +283,7 @@
         <item value="2 s"/>
         <item value="3 s"/>
         <item value="5 s"/>
-        <item custom="1" editcaption="Custom pulse period"/>
+        <item custom="1" editcaption="Pulse period"/>
       </menu>
     
       <menu id="pulseDur" caption="Pulse duration" rows="6" cols="4">
@@ -313,7 +313,7 @@
         <item value="200 ms"/>
         <item value="300 ms"/>
         <item value="500 ms"/>
-        <item custom="1" editcaption="Custom pulse duration"/>
+        <item custom="1" editcaption="Pulse duration"/>
       </menu>
     
       <menu id="pulseDur2" caption="Duration of second phase" rows="6" cols="4">
@@ -343,7 +343,7 @@
         <item value="200 ms"/>
         <item value="300 ms"/>
         <item value="500 ms"/>
-        <item custom="1" editcaption="Custom duration of 2nd phase"/>
+        <item custom="1" editcaption="Duration of 2nd phase"/>
       </menu>
     
       <menu id="pulseAmp" caption="Pulse amplitude (initial for ramp)" rows="6" cols="4">
@@ -370,7 +370,7 @@
         <item value="7 V"/>
         <break/>
         <item value="10 V"/>
-        <item custom="1" editcaption="Custom pulse amplitude (initial for ramp)"/>
+        <item custom="1" editcaption="Pulse amplitude (initial for ramp)"/>
       </menu>
     
       <menu id="pulseAmp2" caption="Final pulse amplitude (2nd phase or end of ramp)" rows="6" cols="4">
@@ -397,7 +397,7 @@
         <item value="7 V"/>
         <break/>
         <item value="10 V"/>
-        <item custom="1" editcaption="Custom final pulse amplitude (2nd phase or end of ramp)"/>
+        <item custom="1" editcaption="Final pulse amplitude (2nd phase or end of ramp)"/>
       </menu>
     </tabbedpage>
   </page>
@@ -465,7 +465,7 @@
       <item value="700 Hz"/>
       <item value="1000 Hz"/>
       <space dy="1"/>
-      <item custom="1" editcaption="Custom CCD frame rate"/>
+      <item custom="1" editcaption="CCD frame rate"/>
     </menu>
   
     <menu id="delay" caption="Delay before image acquisition" rows="6" cols="4">
@@ -494,7 +494,7 @@
       <item value="120 s"/>
       <item value="180 s"/>
       <space dy="1"/>
-      <item custom="1" editcaption="Custom delay before image acquisition"/>
+      <item custom="1" editcaption="Delay before image acquisition"/>
     </menu>
 
     <menu id="dur" caption="Duration of image acquisition" rows="6" cols="4">
@@ -523,7 +523,7 @@
       <item value="120 s"/>
       <item value="180 s"/>
       <space dy="1"/>
-      <item custom="1" editcaption="Custom duration of image acquisition"/>
+      <item custom="1" editcaption="Duration of image acquisition"/>
     </menu>
   
     <menu id="preIllum" caption="Pre-illumination time" rows="6" cols="3">
@@ -546,7 +546,7 @@
       <item value="200 ms"/>
       <item value="300 ms"/>
       <item value="500 ms"/>
-      <item custom="1"  editcaption="Custom pre-illumination time"/>
+      <item custom="1"  editcaption="Pre-illumination time"/>
     </menu>
   
     <menu id="postIllum" caption="Post-illumination time" rows="6" cols="3">
@@ -569,7 +569,7 @@
       <item value="20 ms"/>
       <item value="30 ms"/>
       <item value="50 ms"/>
-      <item custom="1"  editcaption="Custom post-illumination time"/>
+      <item custom="1"  editcaption="Post-illumination time"/>
     </menu>
 
     <menu id="preHeat" caption="Pre-heating time" rows="6" cols="3">
@@ -592,7 +592,7 @@
       <item value="20 s"/>
       <item value="30 s"/>
       <item value="0  s"/>
-      <item custom="1"  editcaption="Custom pre-heating time"/>
+      <item custom="1"  editcaption="Pre-heating time"/>
     </menu>
 
     <menu id="dutyCycle" caption="Duty cycle" rows="5" cols="4">
@@ -618,7 +618,7 @@
       <item value="90%"/>
       <item value="95%"/>
       <item value="100%"/>
-      <item custom="1" editcaption="Custom duty cycle"/>
+      <item custom="1" editcaption="Duty cycle"/>
     </menu>
   </page>
 
@@ -753,7 +753,7 @@
       <item value="120 s"/>
       <item value="180 s"/>
       <space dy="1"/>
-      <item custom="1" editcaption="Custom delay before video stimulation"/>
+      <item custom="1" editcaption="Delay before video stimulation"/>
     </menu>
 
     <menu id="dur" caption="Duration of video stimulation" rows="6" cols="4">
@@ -782,7 +782,7 @@
       <item value="120 s"/>
       <item value="180 s"/>
       <space dy="1"/>
-      <item custom="1"  editcaption="Custom duration of video stimulation"/>
+      <item custom="1"  editcaption="Duration of video stimulation"/>
     </menu>
 
     <menu id="prog" caption="Program number" rows="6" cols="5">
@@ -845,7 +845,7 @@
       <item value="33"/>
       <item value="34"/>
       <space dy="1" />
-      <item custom="1"  editcaption="Custom parameter value"/>
+      <item custom="1"  editcaption="Parameter value"/>
     </menu>
 
     <menu id="parB" caption="Parameter B" rows="6" cols="4">
@@ -875,7 +875,7 @@
       <item value="33"/>
       <item value="34"/>
       <space dy="1" />
-      <item custom="1"  editcaption="Custom parameter value"/>
+      <item custom="1"  editcaption="Parameter value"/>
     </menu>
 
     <menu id="parC" caption="Parameter C" rows="6" cols="4">
@@ -905,7 +905,7 @@
       <item value="33"/>
       <item value="34"/>
       <space dy="1" />
-      <item custom="1"  editcaption="Custom parameter value"/>
+      <item custom="1"  editcaption="Parameter value"/>
     </menu>
   </page>
 
@@ -952,7 +952,7 @@
       <item value="2 min"/>
       <item value="5 min"/>
       <item value="10 min"/>
-      <item custom="1" editcaption="Custom trial period"/>
+      <item custom="1" editcaption="Trial period"/>
     </menu>
 
   </page>
@@ -1003,7 +1003,7 @@
       <item value="15 Hz"/>
       <item value="20 Hz"/>
       <item value="30 Hz"/>
-      <item custom="1" editcaption="Custom reference freq."/>
+      <item custom="1" editcaption="Reference freq."/>
     </menu>
 
     <menu id="refDigi" caption="Digital lines" rows="5" cols="3">

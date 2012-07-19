@@ -12,7 +12,7 @@
 guiButton::guiButton(QWidget *parnt, QString id, guiRoot *mastr):
   Button(parnt) {
   master = mastr;
-  parent = dynamic_cast<guiPage *>(parnt);
+  parent = dynamic_cast<guiPage *>(parnt); // this could be zero
   myId = id;
   setID(path());
 
@@ -90,14 +90,17 @@ void guiButton::mouseReleaseEvent(class QMouseEvent *e) {
   Button::mouseReleaseEvent(e);
 }
 
+static QWidget *grandParent(QWidget *p) {
+  QWidget *q = p;
+  while (q = p->parentWidget(), q)
+    p = q;
+  return p;
+}
+
 void guiButton::openEditor() {
   bool neweditor = !editor;
-  if (neweditor) {
-    QWidget *parent = this;
-    while (parent->parentWidget())
-      parent = parent->parentWidget();
-    editor = new TextEntry(parent);
-  }
+  if (neweditor)
+    editor = new TextEntry(grandParent(this));
   editor->setText(format=="%1"?text():value);
   if (neweditor) {
     editor->setMessage(editCaption);
