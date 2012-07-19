@@ -1,6 +1,7 @@
 // guimenu.cpp
 
 #include "guimenu.h"
+#include "guimenuitem.h"
 
 guiMenu::guiMenu(class QWidget *parent,
 		 class ParamTree *ptree,
@@ -21,8 +22,13 @@ Button::VisualType guiMenu::visualTypeForParentButton() const {
   return Button::VTVarOpen;
 }
 
-guiButton *guiMenu::addItem(PageBuildGeom &g, QDomElement elt) {
-  guiButton *b = guiPage::addItem(g, elt);
-  b->makeRadio();
-  return b;
+void guiMenu::connectToParent(QDomElement doc) {
+  guiPage::connectToParent(doc);
+  guiButton *b = parentPage()->buttonp(id());
+  if (b)
+    b->ensureValueInLabel();
+}
+
+guiItem *guiMenu::createItem(QString id) {
+  return new guiMenuItem(this, id, master);
 }

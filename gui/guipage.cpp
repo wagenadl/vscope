@@ -150,6 +150,10 @@ static QString itemID(QDomElement doc) {
 }
   
 
+guiItem *guiPage::createItem(QString) {
+  throw Exception("guiPage", "Cannot create items");
+}
+
 guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   guiButtonGroup *bg = groupp(":items");
   if (!bg) 
@@ -159,7 +163,7 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   if (id.isEmpty()) 
     throw Exception("guiPage", "Empty item ID in page " + path());
   
-  guiButton *b = new guiItem(this, id, master);
+  guiButton *b = createItem(id);
   buttons[id] = b;
   buttons[id]->setup(doc);
   groupedButton[id] = ":items";
@@ -229,20 +233,6 @@ void guiPage::addMenu(PageBuildGeom &g, QDomElement doc) {
   guiPage *p = new guiMenu(this, subtree, id, master, g.pbox());
   subPages[id] = p;
   p->setup(doc);
-
-  for (QMap<QString,guiButton *>::iterator i=p->buttons.begin();
-       i!=p->buttons.end(); ++i) {
-    guiButton *b = i.value();
-    if (isType<guiItem>(b)) {
-      connect(b,SIGNAL(selected(QString,QString)),
-	      this,SLOT(childItemSelected(QString,QString)));
-      if (b->isCustom())
-	connect(b,SIGNAL(customize(QString,int,QString)),
-		this,SLOT(childItemCustomized(QString,int,QString)));
-    }
-  }
-  if (buttons.contains(id)) 
-    buttons[id]->ensureValueInLabel();
 }
 
 void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
@@ -717,3 +707,6 @@ Button::VisualType guiPage::visualTypeForParentButton() const {
   return Button::VTPageOpen;
 }
 
+guiPage *guiPage::parentPage() {
+  return dynamic_cast<guiPage *>(parent());
+}

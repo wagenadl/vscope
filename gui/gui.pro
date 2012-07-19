@@ -17,6 +17,8 @@ HEADERS += guibuttongroup.h guiitem.h guitriangle.h
 SOURCES += guibuttongroup.cpp guiitem.cpp guitriangle.cpp
 HEADERS += guimenu.h guichecklist.h guitabbedpage.h
 SOURCES += guimenu.cpp guichecklist.cpp guitabbedpage.cpp
+HEADERS += guimenuitem.h guichecklistitem.h
+SOURCES += guimenuitem.cpp guichecklistitem.cpp
 
 LIBS += -L../base -lvscope-base -L../gfx -lvscope-gfx -L../xml -lvscope-xml
 LIBS += -L../video -lvscope-video

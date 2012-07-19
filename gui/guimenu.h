@@ -17,7 +17,8 @@ public:
   virtual ~guiMenu();
 protected:
   virtual Button::VisualType visualTypeForParentButton() const;
-  virtual class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
+  virtual void connectToParent(QDomElement doc);
+  virtual guiItem *createItem(QString id); // simply constructs a guiMenuItem
 };
 
 #endif

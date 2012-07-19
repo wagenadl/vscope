@@ -120,6 +120,7 @@ public:
    *:D Returns a list of all buttons in a given group.
    *:N Returns an empty list if the group does not exist.
    */
+  guiPage *parentPage();
 public slots:
   virtual void open();
   /*:F open
@@ -225,9 +226,9 @@ protected:
   virtual QString getCurrentElement() const;
   virtual void connectToMaster(QDomElement doc);
   virtual void connectToParent(QDomElement doc);
-  /* Descendents should probably *not* call this in their implementation. */
   virtual Button::VisualType visualTypeForParentButton() const;
   virtual void sizeToFit();
+  virtual class guiItem *createItem(QString id);
 };
 
 #endif

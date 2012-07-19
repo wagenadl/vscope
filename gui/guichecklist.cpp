@@ -1,6 +1,7 @@
 // guichecklist.cpp
 
 #include "guichecklist.h"
+#include "guichecklistitem.h"
 
 guiChecklist::guiChecklist(class QWidget *parent,
 		 class ParamTree *ptree,
@@ -21,8 +22,6 @@ Button::VisualType guiChecklist::visualTypeForParentButton() const {
   return Button::VTVarOpen;
 }
 
-guiButton *guiChecklist::addItem(PageBuildGeom &g, QDomElement elt) {
-  guiButton *b = guiPage::addItem(g, elt);
-  b->makeToggle();
-  return b;
+guiItem *guiChecklist::createItem(QString id) {
+  return new guiChecklistItem(this, id, master);
 }
