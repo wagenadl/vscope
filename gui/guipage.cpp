@@ -39,11 +39,13 @@ guiPage::guiPage(class QWidget *parent,
 
   setDefaultColors(doc);
 
-  buildGeom.setup(doc);
-  addChildren(buildGeom, doc);
-
   hide();
 }
+
+void guiPage::setup(QDomElement doc) {
+  buildGeom.setup(doc);
+  addChildren(buildGeom, doc);
+}  
 
 guiPage::~guiPage() {
   foreach (guiButton *b, buttons)
@@ -204,10 +206,11 @@ guiPage *guiPage::addPage(PageBuildGeom &g, QDomElement doc,
 			ptrees really here. See open(QString). */
   else
     subtree = &(ptree->child(id));
-  guiPage *p = new guiPage(this, subtree,doc,master, pathToGlobal(id),
+  guiPage *p = new guiPage(this, subtree, doc, master, pathToGlobal(id),
 			   QRect(g.page.dxl,g.page.dyt,
 				 width()-g.page.dxl-g.page.dxr,
 				 height()-g.page.dyt-g.page.dyb));
+  p->setup(doc);
 
   connect(p,SIGNAL(opening(QString,QWidget*)),
 	  master,SIGNAL(pageOpening(QString,QWidget*)));

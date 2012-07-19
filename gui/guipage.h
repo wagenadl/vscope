@@ -29,7 +29,7 @@ public:
 	  QString mypath,
 	  class QRect const &geom);
   /*:F constructor
-   *:D Constructs this page and all of its children.
+   *:D Constructs this page. Call setup() to construct the children.
    *:A parent: the parent window of this page (the application's top level,
                or a parent page).
     :  ptree:  the portion of the applications parameter tree that pertains
@@ -40,6 +40,7 @@ public:
     :  mypath: the full path to this page ("" for root").
     :  geom:   position and size of this page relative to parent.
    */
+  void setup(QDomElement doc);
   virtual ~guiPage();
   /*:F destructor
    *:D Destructs this page and all of its children.
@@ -53,7 +54,8 @@ public:
   virtual guiButton *buttonp(QString id);
   virtual guiButton &button(QString id);
   /*:F buttonp, button
-   *:D Get pointer or reference to button that is an immediate child of our page.
+   *:D Get pointer or reference to button that is an immediate child of our
+       page.
    */
 public:
   /* Only guiButtonGroup should use these. */

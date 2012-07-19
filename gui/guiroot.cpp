@@ -14,11 +14,13 @@ guiRoot::guiRoot(QWidget *parent,
   geom_ = new guiGeom(doc.firstChildElement("geometry"));
   ptree = ptree_;
   root = 0; // let guiPages know that Master doesn't have a root yet
+  QDomElement elt = doc.firstChildElement("page");
   root = new guiPage(parent, ptree,
-		     doc.firstChildElement("page"),
+		     elt,
 		     this,
 		     "",
 		     QRect(geom_->x0,geom_->y0,geom_->w,geom_->h));
+  root->setup(elt);
   root->show();
 }
 
