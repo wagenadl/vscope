@@ -10,6 +10,7 @@
 #include <gui/guiroot.h>
 #include <xml/enumerator.h>
 #include <gui/guibutton.h>
+#include <gui/guiitem.h>
 #include <QRect>
 #include <QMessageBox>
 #include <QLabel>
@@ -19,6 +20,7 @@
 #include <QPainter>
 #include <QPen>
 #include <gui/guibuttongroup.h>
+#include <base/istype.h>
 
 guiPage::guiPage(class QWidget *parent,
 		 class ParamTree *ptree_,
@@ -100,13 +102,17 @@ guiPage::~guiPage() {
 
 void guiPage::addSpace(PageBuildGeom &g, QDomElement doc) {
   bool ok;
-  double dy = doc.hasAttribute("dy") ? doc.attribute("dy").toDouble(&ok) : 0.2;
+  double dy = doc.hasAttribute("dy")
+    ? doc.attribute("dy").toDouble(&ok)
+    : 0.2;
   g.nextrow += dy;
 }
 
 void guiPage::addBreak(PageBuildGeom &g, QDomElement doc) {
   bool ok;
-  double dx = doc.hasAttribute("dx") ? doc.attribute("dx").toDouble(&ok) : 0;
+  double dx = doc.hasAttribute("dx")
+    ? doc.attribute("dx").toDouble(&ok)
+    : 0;
   g.nextrow = 0;
   g.nextcol += 1+dx;
 }
@@ -142,8 +148,9 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
 	    qPrintable(doc.attribute("custom")));
   }
   
-  guiButton *b = new guiButton(this,doc,pathToGlobal(id),master);
+  guiButton *b = new guiItem(this, id ,master);
   buttons[id] = b;
+  buttons[id]->setup(doc);
   groupedButton[id] = ":items";
   
   if (g.rows>0 && g.nextrow>=g.rows) {
@@ -165,9 +172,12 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
 }
 
 guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
-  QString id=xmlAttribute(doc,"id",
-			  "guiPage (addButton)","Cannot read button ID");
-  guiButton *b = new guiButton(this,doc,pathToGlobal(id),master);
+  QString id=xmlAttribute(doc, "id",
+			  "guiPage (addButton)", "Cannot read button ID");
+  guiButton *b = new guiButton(this, id, master);
+  b->setup(doc);
+  buttons[id] = b;
+
   if (b->customNo()) {
     b->makeRadio();
     b->setVisualType(Button::VTVarValue);
@@ -176,7 +186,6 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
     b->setVisualType(Button::VTAction);
   }
   
-  buttons[id] = b;
   bool defaultconnections = true;
 
   if (doc.hasAttribute("type")) {
@@ -256,8 +265,8 @@ guiPage *guiPage::addPage(PageBuildGeom &g, QDomElement doc,
 			   QRect(g.page.dxl,g.page.dyt,
 				 width()-g.page.dxl-g.page.dxr,
 				 height()-g.page.dyt-g.page.dyb));
-  p->setup(doc);
   subPages[id] = p;
+  p->setup(doc);
   return p;
 }
 
@@ -384,7 +393,7 @@ guiPage *guiPage::addMenuPage(PageBuildGeom &g, QDomElement doc) {
   for (QMap<QString,guiButton *>::iterator i=p->buttons.begin();
        i!=p->buttons.end(); ++i) {
     guiButton *b = i.value();
-    if (b->getTag()=="item") {
+    if (isType<guiItem>(b)) {
       connect(b,SIGNAL(selected(QString,QString)),
 	      this,SLOT(childItemSelected(QString,QString)));
       if (b->isCustom())
@@ -404,7 +413,7 @@ guiPage *guiPage::addCheckListPage(PageBuildGeom &g, QDomElement doc) {
   for (QMap<QString,guiButton *>::iterator i=p->buttons.begin();
        i!=p->buttons.end(); ++i) {
     guiButton *b = i.value();
-    if (b->getTag()=="item") {
+     if (isType<guiItem>(b)) {
       connect(b,SIGNAL(selected(QString,QString)),
 	      this,SLOT(childItemSelected(QString,QString)));
       connect(b,SIGNAL(deselected(QString,QString)),
@@ -455,10 +464,8 @@ void guiPage::open(QString p) {
 void guiPage::openLeaf(Param *pp) {
   if (pp->getType()=="set") {
     QBitArray ba = pp->toBitArray();
-    for (QMap<QString, class guiButton *>::iterator i=buttons.begin();
-	 i!=buttons.end(); ++i) {
-      guiButton *b = i.value();
-      if (b->getTag()=="item") {
+    foreach (guiButton *b, buttons) {
+      if (isType<guiItem>(b)) {
 	Enumerator const *e=pp->getEnum();
 	try {
 	  int idx=e->lookup(b->getValue());
@@ -495,9 +502,10 @@ void guiPage::openLeaf(Param *pp) {
 	  valuefound=true;
 	//fprintf(stderr,"guiPage(%s):openleaf: parpath=%s.\n",
 	//        qPrintable(myPath),qPrintable(master->pathInstantiate(myPath)));
-	b->setEnabled(master->canSetParam(master->pathInstantiate(myPath),b->getValue()));
+	b->setEnabled(master->canSetParam(master->pathInstantiate(myPath),
+					  b->getValue()));
       } catch (Exception) {
-	if (b->getTag()=="item")
+	if (isType<guiItem>(b))
 	  b->setEnabled(false);
       }
     }

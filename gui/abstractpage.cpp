@@ -159,7 +159,7 @@ QString AbstractPage::pathInstantiate(QString path) const {
     return path;
   else
     throw Exception("AbstractPage",
-		    "'"+path+"' does not name a page or button",
+		    "'"+path+"' does not name a page or button in '" + myPath + "'",
 		    "pathInstantiate");
 }
 

@@ -14,20 +14,16 @@ class guiButton: public Button {
    */
   Q_OBJECT;
 public:  
-  guiButton(class QWidget *parent, QDomElement doc, QString mypath, class guiRoot *master=0);
+  guiButton(QWidget *parent, QString id, class guiRoot *master=0);
   /*:F constructor
    *:A parent: the parent widget. This may be an guiPage, but it
                doesn't need to be.
-       doc: must be a <button> or <item> element.
-       mypath: full path to this button.
+       id: name of this button relative to parent
    *:N Caller should position us afterwards.
    */
-  ~guiButton();
+  virtual void setup(QDomElement doc);
+  virtual ~guiButton();
   /*:F destructor
-   */
-  QString getTag() const { return myTag; }
-  /*:F getTag
-   *:D Returns either "button" or "item".
    */
   void setValue(QString v);
   /*:F setValue
@@ -65,6 +61,18 @@ public:
    *:D For use by guiPage: ensure that the label contains "%1" so that
        menu values can be represented.
   */
+public:
+  QString id() const { return myId; }
+  /*:F id
+   *:D Returns the leaf ID of this button.
+   *:N Note that the ID according to gfx/Button's getID() is the path,
+       not the leaf ID.
+   */
+  QString path() const;
+  /*:F path
+   *:D Returns the full path of this button.
+   *:N This is identical to getID().
+   */
 protected:
   virtual void mouseDoubleClickEvent(class QMouseEvent *);
   /*:F mouseDoubleClickEvent
@@ -97,7 +105,7 @@ public slots:
    *:D This slot closes any open editor.
    */
 signals:
-  void customize(QString mytag, int cno, QString newtext);
+  void customize(QString mypath, int cno, QString newtext);
   /*:S customize
    *:D Emitted when a custom button is customized by the user.
    *:N Not emitted from setValue().
@@ -110,8 +118,7 @@ signals:
 private:
   void openEditor(); // opens the TextEntry widget to edit this item.
 private:
-  QString myPath;
-  QString myTag;
+  QString myId;
   QString format;
   QString value;
   QString editCaption;
@@ -119,6 +126,7 @@ private:
   class guiRoot *master;
   int custom;
   bool hidewhendisabled;
+  class guiPage *parent;
 };
 
 #endif

@@ -24,7 +24,8 @@ HEADERS += base26.h \
         ccdtiming.h \
         roicoords.h transform.h campair.h \
         ptrguard.h keyaccess.h idkeyaccess.h object.h cache.h keyagg.h \
-        tests.h
+        tests.h \
+        istype.h
 	   
 SOURCES += base26.cpp \
            dbg.cpp \

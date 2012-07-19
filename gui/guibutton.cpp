@@ -9,42 +9,47 @@
 #include <base/dbg.h>
 #include <xml/aliases.h>
 
-guiButton::guiButton(class QWidget *parent,
-		     QDomElement doc, QString mypath, guiRoot *master):
-  Button(parent), master(master) {
+guiButton::guiButton(QWidget *parnt, QString id, guiRoot *mastr):
+  Button(parnt) {
+  master = mastr;
+  parent = dynamic_cast<guiPage *>(parnt);
+  myId = id;
+  setID(path());
+
   editor = 0;
-  //fprintf(stderr,"guiButton(%s)\n",qPrintable(mypath));
+  custom = 0;
+  hidewhendisabled = false;
+}
+
+void guiButton::setup(QDomElement doc) {
   if (doc.hasAttribute("custom"))
     custom=doc.attribute("custom").toInt(0);
   else if (doc.hasAttribute("editcaption"))
     custom = -1; // customizable, but not a numbered custom value
-  else
-    custom = 0;
+
   if (custom)
     editCaption = doc.attribute("editcaption");
-  myPath = mypath;
-  myTag = doc.tagName();
-  setID(mypath);
+
   format = doc.hasAttribute("label") 
     ? doc.attribute("label")
     : "%1";
   if (doc.hasAttribute("bg"))
     setBackground(QColor(doc.attribute("bg")));
-  if (doc.hasAttribute("value"))
-    setValue(doc.attribute("value"));
-  else
-    setValue(doc.attribute("id"));
   if (custom>0) {
     QFont f = font();
     f.setItalic(true);
     setFont(f);
   }
+
+  if (doc.hasAttribute("value"))
+    setValue(doc.attribute("value"));
+  else
+    setValue(doc.attribute("id"));
+
   if (doc.hasAttribute("hidewhendisabled")) {
     Param p("bool");
     p.set(doc.attribute("hidewhendisabled"));
     hidewhendisabled = p.toBool();
-  } else {
-    hidewhendisabled = false;
   }
 }
 
@@ -105,12 +110,12 @@ void guiButton::openEditor() {
 }
 
 void guiButton::editDone(QString newtext) {
-  emit customize(myPath,custom,newtext);
+  emit customize(path(), custom, newtext);
 }
 
 void guiButton::validate(QString newtext) {
   if (master && editor) {
-    QString parampath = master->pathInstantiate(myPath);
+    QString parampath = master->pathInstantiate(path());
     if (custom>0)
       parampath = parampath.left(parampath.lastIndexOf('/'));
     bool ok =  master->canSetParam(parampath,newtext);
@@ -149,4 +154,14 @@ void guiButton::ensureValueInLabel() {
       format += ":";
     format += "<br>%1";
   }
+}
+
+QString guiButton::path() const {
+  QString p = parent
+    ? parent->path() + "/"
+    : "";
+  if (p=="/")
+    p = "";
+  p += id();
+  return p;
 }
