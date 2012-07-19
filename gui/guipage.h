@@ -64,7 +64,7 @@ public:
        signals to the corresponding guiRoot's signals.
    */
 protected:
-  class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
+  void addItem(PageBuildGeom &g, QDomElement elt);
   /*:F addItem
    *:D Adds a new item button to this page.
    *:N Items are automatically placed in a button group with radio-style
@@ -214,18 +214,19 @@ private slots:
   void addTriangle(QString id);
   void removeTriangle(QString id);
 private:
-  QRect subpageGeom(PageBuildGeom const &g);
   void setDefaultColors(QDomElement);
-  void addChildren(PageBuildGeom, QDomElement);
+  void addChildren(PageBuildGeom &, QDomElement);
   void buildAutoItems();
   PageBuildGeom buildGeom;
   AutoItemInfo autoInfo;
   class guiTriangle *triangle;
+  QRect origGeom;
 protected:
   virtual QString getCurrentElement() const;
   virtual void connectToMaster(QDomElement doc);
   virtual void connectToParent(QDomElement doc);
   virtual Button::VisualType visualTypeForParentButton() const;
+  virtual void sizeToFit();
 };
 
 #endif

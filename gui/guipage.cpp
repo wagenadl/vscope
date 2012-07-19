@@ -51,6 +51,24 @@ void guiPage::setup(QDomElement doc) {
   addChildren(buildGeom, doc);
   connectToMaster(doc);
   connectToParent(doc);
+  origGeom = geometry();
+  sizeToFit();
+}
+
+void guiPage::sizeToFit() {
+  QRect b0 = QRect(0, 0, origGeom.width(), origGeom.height());
+  Dbg() << "page: b0="<<b0 << " path="<<path();
+  QRect bb = buildGeom.boundingBox();
+  Dbg() << "page: bb="<<bb;
+  bb.setWidth(bb.width()+bb.left());
+  bb.setHeight(bb.height()+bb.top());
+  bb &= b0;
+  Dbg() << "bb->"<<bb;
+  int dx = width() - (bb.right()+1);
+  int dy = height() - (bb.bottom()+1);
+  Dbg() << "dx="<<dx<< " dy="<<dy;
+  resize(bb.right()+1, bb.bottom()+1);
+  move(origGeom.left() + dx/3, origGeom.top() + dy/3);
 }
 
 void guiPage::connectToMaster(QDomElement) {
@@ -86,6 +104,7 @@ void guiPage::connectToParent(QDomElement doc) {
     b->setVisualType(visualTypeForParentButton());
 
     if (!doc.hasAttribute("bg")) {
+      // Take background color from parent button
       QPalette butpal = b->palette();
       QPalette pagepal = this->palette();
       QColor bg = butpal.color(QPalette::Normal,QPalette::Button);
@@ -107,20 +126,11 @@ guiPage::~guiPage() {
 }
 
 void guiPage::addSpace(PageBuildGeom &g, QDomElement doc) {
-  bool ok;
-  double dy = doc.hasAttribute("dy")
-    ? doc.attribute("dy").toDouble(&ok)
-    : 0.2;
-  g.nextrow += dy;
+  g.vspace(doc);
 }
 
 void guiPage::addBreak(PageBuildGeom &g, QDomElement doc) {
-  bool ok;
-  double dx = doc.hasAttribute("dx")
-    ? doc.attribute("dx").toDouble(&ok)
-    : 0;
-  g.nextrow = 0;
-  g.nextcol += 1+dx;
+  g.nextColumn(doc);
 }
 
 void guiPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
@@ -131,15 +141,11 @@ void guiPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
     groupedButton[s] = bg->groupId();
 }
 
-guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
-  guiButtonGroup *bg;
-  if (groups.contains(":items")) {
-    bg = groups[":items"];
-  } else {
-    bg = new guiButtonGroup(this);
-    /* I will probably want an ItemGroup */
-    groups[":items"] = bg;
-  }
+void guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
+  guiButtonGroup *bg = groupp(":items");
+  if (!bg) 
+    groups[":items"] = bg = new guiButtonGroup(this);
+
   QString id;
   if (doc.hasAttribute("id"))
     id=doc.attribute("id");
@@ -158,23 +164,15 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   buttons[id] = b;
   buttons[id]->setup(doc);
   groupedButton[id] = ":items";
-  
-  if (g.rows>0 && g.nextrow>=g.rows) {
-    g.nextrow=0; g.nextcol++;
-  }
 
-  b->setGeometry(int(g.button.x0+g.button.dx*g.nextcol),
-		 int(g.button.y0+g.button.dy*g.nextrow),
-		 g.button.w,
-		 g.button.h);
+  b->setGeometry(g.bbox());
+  
   if (isType<guiChecklist>(this))
     b->makeToggle();
   else
     b->makeRadio();
-  b->makeItem();
-  b->setVisualType(Button::VTVarValue);
-  g.nextrow++;
-  return b;
+  
+  g.advance();
 }
 
 guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
@@ -234,31 +232,11 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
 	    master,SIGNAL(buttonDoubleClicked(QString,QString)));
   }
   
-  if (g.rows>0 && g.nextrow>=g.rows) {
-    g.nextrow=0; g.nextcol++;
-  }
+  g.go(doc);
+  b->setGeometry(g.bbox());
+  g.advance();
 
-  double col=g.nextcol;
-  double row=g.nextrow;
-  bool ok;
-  if (doc.hasAttribute("x"))
-    col=doc.attribute("x").toDouble(&ok);
-  if (doc.hasAttribute("y"))
-    row=doc.attribute("y").toDouble(&ok);
-  g.nextrow=row+1;
-  g.nextcol=col;
-  b->setGeometry(int(g.button.x0+g.button.dx*col),
-		 int(g.button.y0+g.button.dy*row),
-		 g.button.w,
-		 g.button.h);
   return b;
-}
-
-QRect guiPage::subpageGeom(PageBuildGeom const &g) {
-  return QRect(g.page.dxl,
-	       g.page.dyt,
-	       width() - g.page.dxl - g.page.dxr,
-	       height() - g.page.dyt - g.page.dyb);
 }
 
 void guiPage::addPage(PageBuildGeom &g, QDomElement doc,
@@ -270,7 +248,7 @@ void guiPage::addPage(PageBuildGeom &g, QDomElement doc,
           qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
-  guiPage *p = new guiPage(this, subtree, id, master, subpageGeom(g));
+  guiPage *p = new guiPage(this, subtree, id, master, g.pbox());
   subPages[id] = p;
   p->setup(doc);
 }
@@ -296,7 +274,7 @@ void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
           qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
-  guiPage *p = new guiTabbedPage(this, subtree, id, master, subpageGeom(g));
+  guiPage *p = new guiTabbedPage(this, subtree, id, master, g.pbox());
   subPages[id] = p;
   p->setup(doc);
 }
@@ -309,7 +287,7 @@ void guiPage::addMenu(PageBuildGeom &g, QDomElement doc) {
           qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
-  guiPage *p = new guiMenu(this, subtree, id, master, subpageGeom(g));
+  guiPage *p = new guiMenu(this, subtree, id, master, g.pbox());
   subPages[id] = p;
   p->setup(doc);
 
@@ -336,7 +314,7 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
           qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
-  guiPage *p = new guiChecklist(this, subtree, id, master, subpageGeom(g));
+  guiPage *p = new guiChecklist(this, subtree, id, master, g.pbox());
   subPages[id] = p;
   p->setup(doc);
 
@@ -739,7 +717,7 @@ void guiPage::setDefaultColors(QDomElement doc) {
   }
 }
 
-void guiPage::addChildren(PageBuildGeom g, QDomElement doc) {
+void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
   /* Build children */
   for (QDomElement e=doc.firstChildElement(); !e.isNull();
        e=e.nextSiblingElement()) {

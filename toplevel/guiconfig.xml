@@ -41,7 +41,7 @@
 
   <!-- ************************ "SHOW WHAT" CHOICES ************************ -->
   <menu id="panelLeft"  rows="3" >
-    <break dx="-.5"/>
+    <break dx=" .5"/>
     <item value="VSDCc" label="Coumarin VSD"/>
     <item value="VSDOx" label="Oxonol VSD"/>
     <break dx=".2"/>
@@ -54,7 +54,7 @@
     <item value="CohGraph" label="Coherence Graph"/>
   </menu>
   <menu id="panelRight"  rows="3">
-    <break dx="0.2"/>
+    <break dx="0.5"/>
     <item value="VSDCc" label="Coumarin VSD"/>
     <item value="VSDOx" label="Oxonol VSD"/>
     <break dx=".2"/>
