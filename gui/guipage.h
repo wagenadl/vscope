@@ -51,11 +51,8 @@ public:
    */
   virtual guiButton const *buttonp(QString id) const;
   virtual guiButton *buttonp(QString id);
-  virtual guiButton &button(QString id);
-  /*:F buttonp, button
-   *:D Get pointer or reference to button that is an immediate child of our
-       page.
-   */
+  virtual guiPage const *subpagep(QString id) const;
+  virtual guiPage *subpagep(QString id);
 public:
   /* Only guiButtonGroup should use these. */
   class guiButton *addButton(PageBuildGeom &g, QDomElement elt);
@@ -215,16 +212,13 @@ private slots:
   void addTriangle(QString id);
   void removeTriangle(QString id);
 private:
-  QPolygon triangle;
-  QString triID;
-  QColor triColor;
-private:
   QRect subpageGeom(PageBuildGeom const &g);
   void setDefaultColors(QDomElement);
   void addChildren(PageBuildGeom, QDomElement);
   void buildAutoItems();
   PageBuildGeom buildGeom;
   AutoItemInfo autoInfo;
+  class guiTriangle *triangle;
 protected:
   virtual QString getCurrentElement() const;
   virtual void connectToMaster(QDomElement doc);

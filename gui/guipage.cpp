@@ -23,6 +23,7 @@
 #include <gui/guimenu.h>
 #include <gui/guichecklist.h>
 #include <gui/guitabbedpage.h>
+#include <gui/guitriangle.h>
 
 #include <base/istype.h>
 
@@ -34,12 +35,13 @@ guiPage::guiPage(class QWidget *parent,
   AbstractPage(parent, ptree_, id, master_, geom),
   buildGeom(this), autoInfo(this) {
 
+  triangle = new guiTriangle(this);
+
   setLineWidth(0);
   neverOpened=true;
   autoInfo.hasAutoItems = false;
 
   currentElement = "";
-  triID = "";
   hide();
 }
 
@@ -273,86 +275,23 @@ void guiPage::addPage(PageBuildGeom &g, QDomElement doc,
 }
 
 void guiPage::addTriangle(QString id) {
-  QStringList path = id.split("/"); id = path.last();
-  triID = id;
-  //  dbg("guiPage::addTriangle. id=%s",qPrintable(id));
-  guiButton *b = buttons.contains(id) ? buttons[id] : 0;
-  int idx = id.indexOf("*");
-  if (idx>0)
-    id=id.left(idx);
-  guiPage *p = subPages.contains(id) ? dynamic_cast<guiPage*>(subPages[id]) : 0;
-  //  dbg("guiPage::addTriangle. b=%p p=%p",b,p);
-  if (b && p) {
-    QRect br = b->geometry();
-    QRect pr = p->geometry();
-    int bx;
-    int px;
-    int bx0;
-    if (br.left()+br.right() < pr.left() + pr.right()) {
-      // button is to the left
-      bx0 = br.right();
-      bx = bx0 - 12;
-      px = pr.left();
-    } else {
-      // button is to the right
-      bx0 = br.left();
-      bx = bx0 + 12;
-      px = pr.right();
-    }
-    //    bx = (10*bx + br.left() + br.right()) / 12;
-    triangle = QPolygon(4);
-    triangle.setPoint(0,bx,br.top());
-    triangle.setPoint(1,bx,br.bottom());
-    triangle.setPoint(2,px,pr.bottom());
-    triangle.setPoint(3,px,pr.top());
-    if (!triangle.containsPoint(QPoint(bx0,br.top()),Qt::OddEvenFill))
-      triangle.setPoint(0,bx0,br.top());
-    if (!triangle.containsPoint(QPoint(bx0,br.bottom()),Qt::OddEvenFill))
-      triangle.setPoint(1,bx0,br.bottom());
-    QColor mid = b->palette().color(QPalette::Mid);
-    QColor but = b->palette().color(QPalette::Button);
-    if (b->getVisualType()==Button::VTArrayCtrl) 
-      triColor = QColor(mid); //mid.red()/2+but.red()/2,
-    //mid.green()/2+but.green()/2,
-    //mid.blue()/2+but.blue()/2);
-    else
-      triColor = but;
-  } else {
-    triangle = QPolygon(0);
-    triID = "";
-  }
-  update();
+  triangle->activate(id.split("/").last());
 }
 
 void guiPage::removeTriangle(QString id) {
-  QStringList path = id.split("/"); id = path.last();
-  //dbg("guiPage::removeTriangle. id=%s was=%s", qPrintable(id), qPrintable(triID));
-  if (triID == id)
-    triID = "";
-  update();
+  triangle->deactivate(id.split("/").last());
 }
 
 void guiPage::paintEvent(class QPaintEvent *e) {
-  //  dbg("guiPage::paintevent. triID=%s",qPrintable(triID));
-  if (triID=="")
-    return;
-  QPainter p(this);
-  p.setBrush(triColor);
-  p.setPen(QPen(Qt::NoPen));
-  // for (int k=0; k<4; k++) {
-  //   int x,y;
-  //   triangle.point(k,&x,&y);
-  //   dbg("guiPage: polygon[%i] = (%i,%i)",k,x,y);
-  // }
-  p.drawPolygon(triangle);
   QFrame::paintEvent(e);
+  triangle->render();
 }
 
 void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addTabbedPage)","Cannot read subpage ID");
   ParamTree *subtree = ptree->childp(id);
-  fprintf(stderr,"guiPage(%s)::addPage(%s) subtree=%p\n",
+  fprintf(stderr,"guiPage(%s)::addTabbedPage(%s) subtree=%p\n",
           qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
@@ -599,7 +538,7 @@ void guiPage::representTabEnabled(QString id) {
     b->setPalette(pa);
   }
   //  Dbg() << "representTabEnabled: " << id << " " << triID;
-  if (id==triID)
+  if (id==triangle->currentId())
     addTriangle(id);
 }
 
@@ -885,23 +824,20 @@ guiButton *guiPage::buttonp(QString id) {
     return 0;
 }
 
-guiButton &guiPage::button(QString id) {
-  guiButton *b = buttonp(id);
-  if (b)
-    return *b;
-  else
-    throw Exception("guiPage",
-		    "No button named '" + id + "' in page '" + myPath + "'");
+guiPage const *guiPage::subpagep(QString id) const {
+  return dynamic_cast<guiPage const *>(AbstractPage::subpagep(id));
+}
+
+guiPage *guiPage::subpagep(QString id) {
+  return dynamic_cast<guiPage *>(AbstractPage::subpagep(id));
 }
 
 guiPage *guiPage::findpPage(QStringList path) {
-  AbstractPage *p = AbstractPage::findpPage(path);
-  return dynamic_cast<guiPage *>(p);
+  return dynamic_cast<guiPage *>(AbstractPage::findpPage(path));
 }
 
 guiPage &guiPage::findPage(QStringList path) {
-  AbstractPage &p = AbstractPage::findPage(path);
-  return dynamic_cast<guiPage &>(p);
+  return dynamic_cast<guiPage &>(AbstractPage::findPage(path));
 }
 
 Button::VisualType guiPage::visualTypeForParentButton() const {

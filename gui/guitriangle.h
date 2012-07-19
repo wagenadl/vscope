@@ -5,20 +5,30 @@
 #define GUITRIANGLE_H
 
 #include <QString>
+#include <QObject>
+#include <QPolygon>
+#include <QColor>
 
-class guiTriangle {
+class guiTriangle: public QObject {
+  Q_OBJECT;
 public:
   guiTriangle(class guiPage *parent);
   void activate(QString id);
-  void deactivate();
+  void deactivate(QString id);
   bool isActive() const;
-  void render(class QPainter *);
+  QString currentId() const { return id; }
+  void render();
 private:
   class guiPage *parent;
   class guiButton *src;
   class guiPage *dst;
   QString id;
-  QPolygon tri;
+  QPolygon area;
+  QPolygon darkLine;
+  QPolygon lightLine;
+  QColor areaColor;
+  QColor darkColor;
+  QColor lightColor;
 };
 
 #endif

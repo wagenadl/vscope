@@ -265,16 +265,13 @@ void Button::representState() {
     setFrameShadow(QFrame::Sunken);
     setLineWidth(isSelected ? 0 : 1);
     setMidLineWidth(isSelected ? 4 : 3);
-    // // p.setColor(QPalette::Mid,
-    // //            isEnabled_
-    // //            ? (isSelected ? QColor("#ff2200") : QColor("#884444"))
-    // //            : QColor("#bbbbbb"));
-    // // setPalette(p);
-    // setFrameShape(QFrame::Panel);
-    // setFrameShadow(QFrame::Raised);
-    // setLineWidth(isSelected ? 0 : 1);
     break; // Note: Color is handled by xmlPage
   }
+
+  //  if (isEnabled_)
+  //    show();
+  //  else
+  //    hide();
 }
 
 void Button::setID(QString id) {

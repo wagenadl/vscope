@@ -99,9 +99,13 @@ public:
    */
   virtual guiButton const *buttonp(QString id) const=0;
   virtual guiButton *buttonp(QString id)=0;
-  virtual guiButton &button(QString id)=0;
-  /*:F buttonp, button
-   *:D Get pointer or reference to button that is an immediate child of our page.
+  /*:F buttonp
+   *:D Get pointer to button that is an immediate child of our page.
+   */
+  virtual AbstractPage const *subpagep(QString id) const;
+  virtual AbstractPage *subpagep(QString id);
+  /*:F subpagep
+   *:D Get pointer to page that is an immediate child of our page.
    */
   guiRoot const *masterp() const { return master; }
   QString id() const { return myId; }

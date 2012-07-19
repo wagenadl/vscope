@@ -13,8 +13,8 @@ SOURCES += guibutton.cpp guipage.cpp guiroot.cpp guigeom.cpp \
 	videogui.cpp
 HEADERS += abstractpage.h pagebuildgeom.h autoiteminfo.h
 SOURCES += abstractpage.cpp pagebuildgeom.cpp autoiteminfo.cpp
-HEADERS += guibuttongroup.h guiitem.h
-SOURCES += guibuttongroup.cpp guiitem.cpp
+HEADERS += guibuttongroup.h guiitem.h guitriangle.h
+SOURCES += guibuttongroup.cpp guiitem.cpp guitriangle.cpp
 HEADERS += guimenu.h guichecklist.h guitabbedpage.h
 SOURCES += guimenu.cpp guichecklist.cpp guitabbedpage.cpp
 

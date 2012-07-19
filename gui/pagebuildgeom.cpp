@@ -10,18 +10,18 @@ PageBuildGeom::PageBuildGeom(guiPage const *parent):
 void PageBuildGeom::setup(QDomElement doc) {
   QRect geom = parent->geometry();
 
-    bool ok;
+  bool ok; // dummy var, all default to zero
   page.dxl = int(master->buttondx*doc.attribute("subdxl")
-		   .toDouble(&ok)); // default to 0.
+		   .toDouble(&ok) + 1);
   page.dxr = int(master->buttondx*doc.attribute("subdxr")
-		   .toDouble(&ok)); // default to 0.
+		   .toDouble(&ok) + 1);
   page.dyt = int(master->buttondy*doc.attribute("subdyt")
-		   .toDouble(&ok)); // default to 0.
+		   .toDouble(&ok) + 1);
   page.dyb = int(master->buttondy*doc.attribute("subdyb")
-		   .toDouble(&ok)); // default to 0.
+		   .toDouble(&ok) + 1);
 
-  rows = doc.attribute("rows").toInt(&ok); // default to 0.
-  cols = doc.attribute("cols").toInt(&ok); // default to 0.
+  rows = doc.attribute("rows").toInt(&ok);
+  cols = doc.attribute("cols").toInt(&ok);
   caph = master->topy;
   button.dx = master->buttondx;
   button.w = master->buttonw;
@@ -32,7 +32,7 @@ void PageBuildGeom::setup(QDomElement doc) {
   if (rows>0) {
     if (geom.height()-caph<button.dy*rows) {
       button.dy = double(geom.height()
-			   -caph-master->bottomy+master->inty)
+			   - caph - master->bottomy + master->inty)
 	/ rows;
       button.h = int(button.dy) - master->inty;
     } else {

@@ -138,7 +138,7 @@
 
   <!-- ****************** EPHYS. STIMULATION CONFIG PAGE ******************* -->
   <page id="stimEphys" subdxl="1.05">
-    <button id="enable" label="Enabled" type="bool" bg="#ffaaff"/>
+    <button id="enable" label="Enabled" type="bool" bg="#dd88dd"/>
     <group id="channel" cols="2">
       <button id="channel*AO0" value="AO0"/>
       <button id="channel*AO1" value="AO1"/>
@@ -150,8 +150,8 @@
       <button id="channel*DO2" value="DO2"/>
       <button id="channel*DO3" value="DO3"/>
     </group>
-    <tabbedpage id="channel" subdxl="2.1">
-      <button id="enable" label=" Enabled" type="bool" bg="#ffaaff" y="-1"/>
+    <tabbedpage id="channel" subdxl="2.1" bg="#dd88dd" >
+      <button id="enable" label=" Enabled" type="bool" y="-1"/>
       <group id="a">
         <button id="delay" label="Delay" bg="#bb88bb"/>
         <button id="nTrains" label="# of trains" bg="#aaaaff"/>

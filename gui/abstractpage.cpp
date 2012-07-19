@@ -41,12 +41,27 @@ AbstractPage::~AbstractPage() {
     delete i.value();
 }
 
+AbstractPage const *AbstractPage::subpagep(QString id) const {
+  if (subPages.contains(id))
+    return subPages[id];
+  else
+    return 0;
+}
+
+AbstractPage *AbstractPage::subpagep(QString id) {
+  if (subPages.contains(id))
+    return subPages[id];
+  else
+    return 0;
+}
+
 AbstractPage *AbstractPage::findpPage(QStringList path) {
   if (path.isEmpty())
     return this;
   QString head = path.takeFirst();
-  if (subPages.contains(head))
-    return subPages[head]->findpPage(path);
+  AbstractPage *child = subpagep(head);
+  if (child)
+    return child->findpPage(path);
   else
     return 0;
 }
