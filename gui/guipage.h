@@ -80,25 +80,25 @@ protected:
   /*:F addButtonGroup
    *:D Adds a new button group and any contained buttons to this page.
    */
-  class guiPage *addPage(PageBuildGeom &g, QDomElement elt,
+  void addPage(PageBuildGeom &g, QDomElement elt,
 			 Button::VisualType vt=Button::VTPageOpen);
   /*:F addPage
    *:D Adds a new sub-page to this page.
    *:N This connects the selected/deselected signals from any button with the
        same name as this page to its open/close slots.
    */
-  class guiPage *addTabbedPage(PageBuildGeom &g, QDomElement elt);
+  void addTabbedPage(PageBuildGeom &g, QDomElement elt);
   /*:F addTabbedPage
    *:D As addPage, but with added functionality for tabbed pages.
    */
-  class guiPage *addMenuPage(PageBuildGeom &g, QDomElement elt);
-  /*:F addMenuPage
+  void addMenu(PageBuildGeom &g, QDomElement elt);
+  /*:F addMenu
    *:D As addPage, but with added functionality for menus.
    *:N This connects the selected signal from menu items in that
        page to our childItemXXX slots.
    */
-  class guiPage *addCheckListPage(PageBuildGeom &g, QDomElement elt);
-  /*:F addChecklistPage
+  void addChecklist(PageBuildGeom &g, QDomElement elt);
+  /*:F addChecklist
    *:D As addPage, but with added functionality for checklists.
    *:N This connects the selected/deselected signals from items in that
        page to our childItemXXX slots.
@@ -219,6 +219,7 @@ private:
   QString triID;
   QColor triColor;
 private:
+  QRect subpageGeom(PageBuildGeom const &g);
   void setDefaultColors(QDomElement);
   void addChildren(PageBuildGeom, QDomElement);
   void buildAutoItems();
@@ -228,13 +229,7 @@ protected:
   virtual QString getCurrentElement() const;
   virtual void connectToMaster(QDomElement doc);
   virtual void connectToParent(QDomElement doc);
-  virtual Button::VisualType visualTypeForParent() const;
-  virtual QString pageType() const;
-public: // don't use!
-  QString myTag; // do I really need this variable any more?
-  /*:V myTag
-   *:D xml tag for this page, i.e., "page", "tabbedpage", "menu", or "checklist".
-   */
+  virtual Button::VisualType visualTypeForParentButton() const;
 };
 
 #endif

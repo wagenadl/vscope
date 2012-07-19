@@ -20,6 +20,10 @@
 #include <QPainter>
 #include <QPen>
 #include <gui/guibuttongroup.h>
+#include <gui/guimenu.h>
+#include <gui/guichecklist.h>
+#include <gui/guitabbedpage.h>
+
 #include <base/istype.h>
 
 guiPage::guiPage(class QWidget *parent,
@@ -40,7 +44,6 @@ guiPage::guiPage(class QWidget *parent,
 }
 
 void guiPage::setup(QDomElement doc) {
-  myTag = doc.tagName();
   setDefaultColors(doc);
   buildGeom.setup(doc);
   connectToMaster(doc);
@@ -77,7 +80,7 @@ void guiPage::connectToParent(QDomElement doc) {
 	       master, SIGNAL(buttonClicked(QString,QString)));
 
     b->makeRadio(); // new 10/8/09
-    b->setVisualType(visualTypeForParent());
+    b->setVisualType(visualTypeForParentButton());
 
     if (!doc.hasAttribute("bg")) {
       QPalette butpal = b->palette();
@@ -161,7 +164,7 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
 		 int(g.button.y0+g.button.dy*g.nextrow),
 		 g.button.w,
 		 g.button.h);
-  if (myTag=="checklist")
+  if (isType<guiChecklist>(this))
     b->makeToggle();
   else
     b->makeRadio();
@@ -248,26 +251,25 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   return b;
 }
 
+QRect guiPage::subpageGeom(PageBuildGeom const &g) {
+  return QRect(g.page.dxl,
+	       g.page.dyt,
+	       width() - g.page.dxl - g.page.dxr,
+	       height() - g.page.dyt - g.page.dyb);
+}
 
-guiPage *guiPage::addPage(PageBuildGeom &g, QDomElement doc,
+void guiPage::addPage(PageBuildGeom &g, QDomElement doc,
 			  Button::VisualType) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addPage)","Cannot read subpage ID");
-  //fprintf(stderr,"guiPage(%s)::addPage(%s)\n",
-  //        qPrintable(myPath),qPrintable(id));
-  ParamTree *subtree;
-  if (myTag=="tabbedpage")
-    subtree = ptree; /* I cannot instantiate tabbed pages' children's
-			ptrees really here. See open(QString). */
-  else
-    subtree = &(ptree->child(id));
-  guiPage *p = new guiPage(this, subtree, id, master,
-			   QRect(g.page.dxl,g.page.dyt,
-				 width()-g.page.dxl-g.page.dxr,
-				 height()-g.page.dyt-g.page.dyb));
+  ParamTree *subtree = ptree->childp(id);
+  fprintf(stderr,"guiPage(%s)::addPage(%s) subtree=%p\n",
+          qPrintable(myPath),qPrintable(id), subtree);
+  // note that this will be NULL if we are a tabbed page
+
+  guiPage *p = new guiPage(this, subtree, id, master, subpageGeom(g));
   subPages[id] = p;
   p->setup(doc);
-  return p;
 }
 
 void guiPage::addTriangle(QString id) {
@@ -346,9 +348,18 @@ void guiPage::paintEvent(class QPaintEvent *e) {
   QFrame::paintEvent(e);
 }
 
-guiPage *guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
-  guiPage *p = addPage(g,doc);
-  QString id=doc.attribute("id");
+void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
+  QString id=xmlAttribute(doc,"id",
+			  "guiPage (addTabbedPage)","Cannot read subpage ID");
+  ParamTree *subtree = ptree->childp(id);
+  fprintf(stderr,"guiPage(%s)::addPage(%s) subtree=%p\n",
+          qPrintable(myPath),qPrintable(id), subtree);
+  // note that this will be NULL if we are a tabbed page
+
+  guiPage *p = new guiTabbedPage(this, subtree, id, master, subpageGeom(g));
+  subPages[id] = p;
+  p->setup(doc);
+
   guiButton *penable = p->buttons.contains("enable")
     ? p->buttons["enable"] : 0;
   //  dbg("addTabbedPage: penable=%p",penable);
@@ -385,11 +396,20 @@ guiPage *guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
     connect(p->buttons["enable"],SIGNAL(deselected(QString,QString)),
 	    this,SLOT(childTabEnabled(QString)));
   }
-  return p;
 }
 
-guiPage *guiPage::addMenuPage(PageBuildGeom &g, QDomElement doc) {
-  guiPage *p = addPage(g,doc,Button::VTVarOpen);  
+void guiPage::addMenu(PageBuildGeom &g, QDomElement doc) {
+  QString id=xmlAttribute(doc,"id",
+			  "guiPage (addMenu)","Cannot read subpage ID");
+  ParamTree *subtree = ptree->childp(id);
+  fprintf(stderr,"guiPage(%s)::addMenu(%s) subtree=%p\n",
+          qPrintable(myPath),qPrintable(id), subtree);
+  // note that this will be NULL if we are a tabbed page
+
+  guiPage *p = new guiMenu(this, subtree, id, master, subpageGeom(g));
+  subPages[id] = p;
+  p->setup(doc);
+
   for (QMap<QString,guiButton *>::iterator i=p->buttons.begin();
        i!=p->buttons.end(); ++i) {
     guiButton *b = i.value();
@@ -401,15 +421,22 @@ guiPage *guiPage::addMenuPage(PageBuildGeom &g, QDomElement doc) {
 		this,SLOT(childItemCustomized(QString,int,QString)));
     }
   }
-  QString id=xmlAttribute(doc,"id");
   if (buttons.contains(id)) 
     buttons[id]->ensureValueInLabel();
-
-  return p;
 }
 
-guiPage *guiPage::addCheckListPage(PageBuildGeom &g, QDomElement doc) {
-  guiPage *p = addPage(g,doc,Button::VTVarOpen);
+void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
+  QString id=xmlAttribute(doc,"id",
+			  "guiPage (addChecklist)","Cannot read subpage ID");
+  ParamTree *subtree = ptree->childp(id);
+  fprintf(stderr,"guiPage(%s)::addChecklist(%s) subtree=%p\n",
+          qPrintable(myPath),qPrintable(id), subtree);
+  // note that this will be NULL if we are a tabbed page
+
+  guiPage *p = new guiChecklist(this, subtree, id, master, subpageGeom(g));
+  subPages[id] = p;
+  p->setup(doc);
+
   for (QMap<QString,guiButton *>::iterator i=p->buttons.begin();
        i!=p->buttons.end(); ++i) {
     guiButton *b = i.value();
@@ -420,7 +447,6 @@ guiPage *guiPage::addCheckListPage(PageBuildGeom &g, QDomElement doc) {
 	      this,SLOT(childItemDeselected(QString,QString)));
     }
   }
-  return p;
 }
 
 void guiPage::open() {
@@ -698,7 +724,7 @@ void guiPage::childItemSelected(QString path, QString) {
       } else {
 	fprintf(stderr,"INVALID CUSTOM VALUE\n");
       }
-    } else if (subPages[child]->pageType()=="checklist") {
+    } else if (isType<guiChecklist>(subPages[child])) {
       master->setParam(parpath, "+" + value);
     } else {
       master->setParam(parpath,value);
@@ -724,7 +750,7 @@ void guiPage::childItemDeselected(QString path, QString) {
 
   guiButton *b=findpButton(local.split('/'));
   if (b) {
-    if (subPages[child]->pageType()=="checklist") {
+    if (isType<guiChecklist>(subPages[child])) {
       master->setParam(parpath,"-"+value);
       //ptree->find(pathToLocal(parpath)).report();
     }
@@ -826,9 +852,9 @@ void guiPage::addChildren(PageBuildGeom g, QDomElement doc) {
     else if (tag=="page")
       addPage(g,e);
     else if (tag=="menu")
-      addMenuPage(g,e);
+      addMenu(g,e);
     else if (tag=="checklist")
-      addCheckListPage(g,e);
+      addChecklist(g,e);
     else if (tag=="space")
       addSpace(g,e);
     else if (tag=="break") 
@@ -878,10 +904,7 @@ guiPage &guiPage::findPage(QStringList path) {
   return dynamic_cast<guiPage &>(p);
 }
 
-Button::VisualType guiPage::visualTypeForParent() const {
+Button::VisualType guiPage::visualTypeForParentButton() const {
   return Button::VTPageOpen;
 }
 
-QString guiPage::pageType() const {
-  return myTag; // really, this should be done by class instead.
-}

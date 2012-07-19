@@ -150,8 +150,6 @@ protected:
   */
   virtual void connectToMaster(QDomElement)=0;
   virtual void connectToParent(QDomElement)=0;
-public:
-  virtual QString pageType() const=0;
 };  
   
 #endif
