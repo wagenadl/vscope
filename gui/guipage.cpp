@@ -41,7 +41,6 @@ guiPage::guiPage(class QWidget *parent,
   neverOpened=true;
   autoInfo.hasAutoItems = false;
 
-  currentElement = "";
   hide();
 }
 
@@ -280,18 +279,6 @@ void guiPage::open() {
 
   show();
   emit opened(pathInstantiate(myPath),(QWidget*)(this));
-}
-
-void guiPage::open(QString p) {
-  int idx = p.lastIndexOf('/');
-  QString elt = p.mid(idx+1);
-  idx = elt.indexOf('*');
-  QString ar = (idx>=0) ? elt.left(idx) : "";
-  elt = elt.mid(idx+1);
-  currentElement = elt;
-
-  reTree(0);
-  open();
 }
 
 void guiPage::openLeaf(Param *pp) {
@@ -655,10 +642,6 @@ void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
   }
 }
 
-QString guiPage::getCurrentElement() const {
-  return currentElement;
-}
-
 guiButton const *guiPage::buttonp(QString id) const {
   if (buttons.contains(id))
     return buttons[id];
@@ -709,4 +692,8 @@ Button::VisualType guiPage::visualTypeForParentButton() const {
 
 guiPage *guiPage::parentPage() {
   return dynamic_cast<guiPage *>(parent());
+}
+
+QString guiPage::getCurrentElement() const {
+  return "";
 }

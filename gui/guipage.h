@@ -127,11 +127,6 @@ public slots:
    *:D Opens this page, first updating all button texts based on the
        underlying ParamTree.
   */
-  virtual void open(QString elt);
-  /*:F open
-   *:D This version opens a specific sub-page of a page that represents
-       an array.
-  */
   virtual void close();
   /*:F close
    *:D Closes this page.
@@ -202,11 +197,6 @@ private:
   /*:V groupedButton
    *:D Map of buttonID to groupID for grouped buttons.
    */
-  QString currentElement;
-  /*:V currentElement
-   *:D For pages that represent arrays (tabbed pages), this is the ID of the
-       currently open tab.
-  */
   bool neverOpened;
   /*:V neverOpened
    *:D True if this page has never yet been opened.

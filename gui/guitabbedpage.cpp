@@ -12,6 +12,7 @@ guiTabbedPage::guiTabbedPage(class QWidget *parent,
 		 class guiRoot *master,
 		 class QRect const &geom):
   guiPage(parent, ptree, id, master, geom) {
+  currentElement = "";
 }
 
 void guiTabbedPage::connectToParent(QDomElement doc) {
@@ -61,4 +62,21 @@ void guiTabbedPage::connectToParent(QDomElement doc) {
 }
 
 guiTabbedPage::~guiTabbedPage() {
+}
+
+
+void guiTabbedPage::open(QString p) {
+  int idx = p.lastIndexOf('/');
+  QString elt = p.mid(idx+1);
+  idx = elt.indexOf('*');
+  QString ar = (idx>=0) ? elt.left(idx) : "";
+  elt = elt.mid(idx+1);
+  currentElement = elt;
+
+  reTree(0);
+  guiPage::open();
+}
+
+QString guiTabbedPage::getCurrentElement() const {
+  return currentElement;
 }
