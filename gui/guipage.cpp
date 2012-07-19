@@ -48,9 +48,9 @@ guiPage::guiPage(class QWidget *parent,
 void guiPage::setup(QDomElement doc) {
   setDefaultColors(doc);
   buildGeom.setup(doc);
+  addChildren(buildGeom, doc);
   connectToMaster(doc);
   connectToParent(doc);
-  addChildren(buildGeom, doc);
 }
 
 void guiPage::connectToMaster(QDomElement) {
@@ -66,6 +66,7 @@ void guiPage::connectToParent(QDomElement doc) {
   guiPage *par = dynamic_cast<guiPage *>(parent());
   if (!par)
     return;
+  
   guiButton *b = par->buttonp(id());
   if (b) {
     connect(b, SIGNAL(selected(QString,QString)),this, SLOT(open()));
@@ -81,7 +82,7 @@ void guiPage::connectToParent(QDomElement doc) {
     disconnect(b, SIGNAL(activated(QString,QString)),
 	       master, SIGNAL(buttonClicked(QString,QString)));
 
-    b->makeRadio(); // new 10/8/09
+    b->makeRadio();
     b->setVisualType(visualTypeForParentButton());
 
     if (!doc.hasAttribute("bg")) {
@@ -298,42 +299,6 @@ void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
   guiPage *p = new guiTabbedPage(this, subtree, id, master, subpageGeom(g));
   subPages[id] = p;
   p->setup(doc);
-
-  guiButton *penable = p->buttons.contains("enable")
-    ? p->buttons["enable"] : 0;
-  
-  if (groups.contains(id)) {
-    for (QMap<QString,QString>::iterator i=groupedButton.begin();
-	 i!=groupedButton.end(); ++i) {
-      if (i.value()==id) {
-	guiButton *b = buttons[i.key()];
-	connect(b,SIGNAL(selected(QString,QString)),p,SLOT(open(QString)));
-	disconnect(b,SIGNAL(selected(QString,QString)),
-		   master,SIGNAL(buttonSelected(QString,QString)));
-	disconnect(b,SIGNAL(deselected(QString,QString)),
-		   master,SIGNAL(buttonDeselected(QString,QString)));
-	disconnect(b,SIGNAL(activated(QString,QString)),
-		   master,SIGNAL(buttonClicked(QString,QString)));
-	connect(b, SIGNAL(selected(QString,QString)),
-		this,SLOT(addTriangle(QString)));
-	connect(b, SIGNAL(deselected(QString,QString)),
-		this, SLOT(removeTriangle(QString)));
-	b->setVisualType(Button::VTArrayCtrl);
-	if (penable)
-	  connect(b, SIGNAL(doubleClicked(QString,QString)),
-		  penable,SLOT(toggleSelected()));
-	//Dbg() << "Connecting doubleclicked" << id;
-	connect(b, SIGNAL(doubleClicked(QString,QString)),
-		master, SIGNAL(buttonDoubleClicked(QString,QString)));
-      }
-    }
-  }
-  if (penable) {
-    connect(p->buttons["enable"], SIGNAL(selected(QString,QString)),
-	    this,SLOT(childTabEnabled(QString)));
-    connect(p->buttons["enable"], SIGNAL(deselected(QString,QString)),
-	    this,SLOT(childTabEnabled(QString)));
-  }
 }
 
 void guiPage::addMenu(PageBuildGeom &g, QDomElement doc) {
@@ -829,6 +794,20 @@ guiPage const *guiPage::subpagep(QString id) const {
 
 guiPage *guiPage::subpagep(QString id) {
   return dynamic_cast<guiPage *>(AbstractPage::subpagep(id));
+}
+
+guiButtonGroup const *guiPage::groupp(QString id) const {
+  if (groups.contains(id))
+    return groups[id];
+  else
+    return 0;
+}
+
+guiButtonGroup *guiPage::groupp(QString id) {
+  if (groups.contains(id))
+    return groups[id];
+  else
+    return 0;
 }
 
 guiPage *guiPage::findpPage(QStringList path) {

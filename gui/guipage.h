@@ -53,6 +53,8 @@ public:
   virtual guiButton *buttonp(QString id);
   virtual guiPage const *subpagep(QString id) const;
   virtual guiPage *subpagep(QString id);
+  virtual class guiButtonGroup const *groupp(QString id) const;
+  virtual class guiButtonGroup *groupp(QString id);
 public:
   /* Only guiButtonGroup should use these. */
   class guiButton *addButton(PageBuildGeom &g, QDomElement elt);

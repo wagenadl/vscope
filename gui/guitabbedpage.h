@@ -13,7 +13,7 @@ public:
 	  QString id,
 	  class guiRoot *master,
 	  class QRect const &geom);
-  void setup(QDomElement doc);
+  virtual void connectToParent(QDomElement doc);
   virtual ~guiTabbedPage();
 };
 
