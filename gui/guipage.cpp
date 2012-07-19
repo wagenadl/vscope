@@ -22,11 +22,10 @@
 
 guiPage::guiPage(class QWidget *parent,
 		 class ParamTree *ptree_,
-		 QDomElement doc,
+		 QString id,
 		 class guiRoot *master_,
-		 QString mypath,
 		 class QRect const &geom):
-  AbstractPage(parent, ptree_, doc, master_, mypath, geom),
+  AbstractPage(parent, ptree_, id, master_, geom),
   buildGeom(this), autoInfo(this) {
 
   setLineWidth(0);
@@ -34,18 +33,65 @@ guiPage::guiPage(class QWidget *parent,
   autoInfo.hasAutoItems = false;
 
   currentElement = "";
-
   triID = "";
-
-  setDefaultColors(doc);
-
   hide();
 }
 
 void guiPage::setup(QDomElement doc) {
+  myTag = doc.tagName();
+  setDefaultColors(doc);
   buildGeom.setup(doc);
+  connectToMaster(doc);
+  connectToParent(doc);
   addChildren(buildGeom, doc);
-}  
+}
+
+void guiPage::connectToMaster(QDomElement) {
+  connect(this, SIGNAL(opening(QString,QWidget*)),
+	  master, SIGNAL(pageOpening(QString,QWidget*)));
+  connect(this, SIGNAL(opened(QString,QWidget*)),
+	  master, SIGNAL(pageOpened(QString,QWidget*)));
+  connect(this, SIGNAL(closed(QString,QWidget*)),
+	  master, SIGNAL(pageClosed(QString,QWidget*)));
+}
+
+void guiPage::connectToParent(QDomElement doc) {
+  guiPage *par = dynamic_cast<guiPage *>(parent());
+  if (!par)
+    return;
+  guiButton *b = par->buttonp(id());
+  if (b) {
+    connect(b, SIGNAL(selected(QString,QString)),this, SLOT(open()));
+    connect(b, SIGNAL(deselected(QString,QString)),this, SLOT(close()));
+    connect(b, SIGNAL(selected(QString,QString)),
+	    par, SLOT(addTriangle(QString)));
+    connect(b,SIGNAL(deselected(QString,QString)),
+	    par, SLOT(removeTriangle(QString)));
+    disconnect(b, SIGNAL(selected(QString,QString)),
+	       master, SIGNAL(buttonSelected(QString,QString)));
+    disconnect(b, SIGNAL(deselected(QString,QString)),
+	       master, SIGNAL(buttonDeselected(QString,QString)));
+    disconnect(b, SIGNAL(activated(QString,QString)),
+	       master, SIGNAL(buttonClicked(QString,QString)));
+
+    b->makeRadio(); // new 10/8/09
+    b->setVisualType(visualTypeForParent());
+
+    if (!doc.hasAttribute("bg")) {
+      QPalette butpal = b->palette();
+      QPalette pagepal = this->palette();
+      QColor bg = butpal.color(QPalette::Normal,QPalette::Button);
+      pagepal.setColor(QPalette::Window,bg);
+      setPalette(pagepal);
+      setAutoFillBackground(true);
+      setFrameStyle(QFrame::Panel | QFrame::Raised);
+    }
+
+    QString t = b->text();
+    if (t.indexOf(":")<0 && t.indexOf("...")<0)
+      b->setText(t + "&nbsp;...");
+  }
+}    
 
 guiPage::~guiPage() {
   foreach (guiButton *b, buttons)
@@ -195,7 +241,7 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
 
 
 guiPage *guiPage::addPage(PageBuildGeom &g, QDomElement doc,
-			  Button::VisualType vt) {
+			  Button::VisualType) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addPage)","Cannot read subpage ID");
   //fprintf(stderr,"guiPage(%s)::addPage(%s)\n",
@@ -206,50 +252,12 @@ guiPage *guiPage::addPage(PageBuildGeom &g, QDomElement doc,
 			ptrees really here. See open(QString). */
   else
     subtree = &(ptree->child(id));
-  guiPage *p = new guiPage(this, subtree, doc, master, pathToGlobal(id),
+  guiPage *p = new guiPage(this, subtree, id, master,
 			   QRect(g.page.dxl,g.page.dyt,
 				 width()-g.page.dxl-g.page.dxr,
 				 height()-g.page.dyt-g.page.dyb));
   p->setup(doc);
-
-  connect(p,SIGNAL(opening(QString,QWidget*)),
-	  master,SIGNAL(pageOpening(QString,QWidget*)));
-  connect(p,SIGNAL(opened(QString,QWidget*)),
-	  master,SIGNAL(pageOpened(QString,QWidget*)));
-  connect(p,SIGNAL(closed(QString,QWidget*)),
-	  master,SIGNAL(pageClosed(QString,QWidget*)));
-
   subPages[id] = p;
-
-  if (buttons.contains(id)) {
-    guiButton *b = buttons[id];
-    connect(b,SIGNAL(selected(QString,QString)),p,SLOT(open()));
-    connect(b,SIGNAL(deselected(QString,QString)),p,SLOT(close()));
-    connect(b,SIGNAL(selected(QString,QString)),
-	    this,SLOT(addTriangle(QString)));
-    connect(b,SIGNAL(deselected(QString,QString)),
-	    this,SLOT(removeTriangle(QString)));
-    disconnect(b,SIGNAL(selected(QString,QString)),
-	       master,SIGNAL(buttonSelected(QString,QString)));
-    disconnect(b,SIGNAL(deselected(QString,QString)),
-	       master,SIGNAL(buttonDeselected(QString,QString)));
-    disconnect(b,SIGNAL(activated(QString,QString)),
-	       master,SIGNAL(buttonClicked(QString,QString)));
-    b->makeRadio(); // new 10/8/09
-    b->setVisualType(vt);
-    if (!doc.hasAttribute("bg")) {
-      QPalette butpal = b->palette();
-      QPalette pagepal = p->palette();
-      QColor bg = butpal.color(QPalette::Normal,QPalette::Button);
-      pagepal.setColor(QPalette::Window,bg);
-      p->setPalette(pagepal);
-      p->setAutoFillBackground(true);
-      p->setFrameStyle(QFrame::Panel | QFrame::Raised);
-    }
-    QString t = b->text();
-    if (t.indexOf(":")<0 && t.indexOf("...")<0)
-      b->setText(t + "&nbsp;...");
-  }
   return p;
 }
 
@@ -682,7 +690,7 @@ void guiPage::childItemSelected(QString path, QString) {
       } else {
 	fprintf(stderr,"INVALID CUSTOM VALUE\n");
       }
-    } else if (subPages[child]->myTag=="checklist") {
+    } else if (subPages[child]->pageType()=="checklist") {
       master->setParam(parpath, "+" + value);
     } else {
       master->setParam(parpath,value);
@@ -708,7 +716,7 @@ void guiPage::childItemDeselected(QString path, QString) {
 
   guiButton *b=findpButton(local.split('/'));
   if (b) {
-    if (subPages[child]->myTag=="checklist") {
+    if (subPages[child]->pageType()=="checklist") {
       master->setParam(parpath,"-"+value);
       //ptree->find(pathToLocal(parpath)).report();
     }
@@ -860,4 +868,12 @@ guiPage *guiPage::findpPage(QStringList path) {
 guiPage &guiPage::findPage(QStringList path) {
   AbstractPage &p = AbstractPage::findPage(path);
   return dynamic_cast<guiPage &>(p);
+}
+
+Button::VisualType guiPage::visualTypeForParent() const {
+  return Button::VTPageOpen;
+}
+
+QString guiPage::pageType() const {
+  return myTag; // really, this should be done by class instead.
 }

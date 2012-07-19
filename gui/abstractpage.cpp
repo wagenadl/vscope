@@ -15,22 +15,24 @@
 
 AbstractPage::AbstractPage(class QWidget *parent,
 			   class ParamTree *ptree_,
-			   QDomElement doc,
+			   QString id,
 			   class guiRoot *master_,
-			   QString mypath,
 			   class QRect const &geom): QFrame(parent) {
   setGeometry(geom);
 
   master = master_;
   ptree = origptree = ptree_;
-  myPath = mypath;
-  myTag = doc.tagName();
-}
-
-void AbstractPage::addChildren(QDomElement) {
-}
-
-void AbstractPage::removeChildren() {
+  myId = id;
+  AbstractPage *par = dynamic_cast<AbstractPage *>(parent);
+  if (par) {
+    myPath = par->myPath;
+    if (myPath.isEmpty())
+      myPath = id;
+    else
+      myPath += "/" + id;
+  } else {
+    myPath = id;
+  }
 }
 
 AbstractPage::~AbstractPage() {

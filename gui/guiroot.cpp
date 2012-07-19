@@ -16,9 +16,8 @@ guiRoot::guiRoot(QWidget *parent,
   root = 0; // let guiPages know that Master doesn't have a root yet
   QDomElement elt = doc.firstChildElement("page");
   root = new guiPage(parent, ptree,
-		     elt,
-		     this,
 		     "",
+		     this,
 		     QRect(geom_->x0,geom_->y0,geom_->w,geom_->h));
   root->setup(elt);
   root->show();

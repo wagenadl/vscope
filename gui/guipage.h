@@ -24,9 +24,8 @@ class guiPage: public AbstractPage {
 public:
   guiPage(class QWidget *parent,
 	  class ParamTree *ptree,
-	  QDomElement doc,
+	  QString id,
 	  class guiRoot *master,
-	  QString mypath,
 	  class QRect const &geom);
   /*:F constructor
    *:D Constructs this page. Call setup() to construct the children.
@@ -227,6 +226,15 @@ private:
   AutoItemInfo autoInfo;
 protected:
   virtual QString getCurrentElement() const;
+  virtual void connectToMaster(QDomElement doc);
+  virtual void connectToParent(QDomElement doc);
+  virtual Button::VisualType visualTypeForParent() const;
+  virtual QString pageType() const;
+public: // don't use!
+  QString myTag; // do I really need this variable any more?
+  /*:V myTag
+   *:D xml tag for this page, i.e., "page", "tabbedpage", "menu", or "checklist".
+   */
 };
 
 #endif

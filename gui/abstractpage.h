@@ -40,12 +40,9 @@ signals:
 public:
   AbstractPage(class QWidget *parent,
 	       class ParamTree *ptree,
-	       QDomElement doc,
+	       QString id,
 	       class guiRoot *master,
-	       QString mypath,
 	       class QRect const &geom);
-  virtual void addChildren(QDomElement doc);
-  virtual void removeChildren();
   virtual ~AbstractPage();
 
   AbstractPage *findpPage(QStringList path);
@@ -107,6 +104,8 @@ public:
    *:D Get pointer or reference to button that is an immediate child of our page.
    */
   guiRoot const *masterp() const { return master; }
+  QString id() const { return myId; }
+  QString path() const { return myPath; }
 public slots:
   virtual void open()=0;
   virtual void close()=0;
@@ -135,10 +134,9 @@ protected:
   /*:V myPath
    *:D Full path to this page.
    */
-public: // don't use!
-  QString myTag; // do I really need this variable any more?
-  /*:V myTag
-   *:D xml tag for this page, i.e., "page", "tabbedpage", "menu", or "checklist".
+  QString myId;
+  /*:V myId
+   *:D My leaf ID
    */
 public:
   virtual QString getCurrentElement() const=0;
@@ -150,6 +148,10 @@ protected:
    *:A neworigtree: the ParamTree for this level, with arrays dereferenced at
        all higher levels, but not at this level.
   */
+  virtual void connectToMaster(QDomElement)=0;
+  virtual void connectToParent(QDomElement)=0;
+public:
+  virtual QString pageType() const=0;
 };  
   
 #endif
