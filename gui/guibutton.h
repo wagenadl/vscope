@@ -73,6 +73,7 @@ public:
    *:D Returns the full path of this button.
    *:N This is identical to getID().
    */
+  bool alwaysHidden() const;
 protected:
   virtual void mouseDoubleClickEvent(class QMouseEvent *);
   /*:F mouseDoubleClickEvent
@@ -117,7 +118,7 @@ signals:
    */
 private:
   void openEditor(); // opens the TextEntry widget to edit this item.
-private:
+protected:
   QString myId;
   QString format;
   QString value;
@@ -127,6 +128,11 @@ private:
   int custom;
   bool hidewhendisabled;
   class guiPage *parent;
+  bool alwayshidden;
+protected:
+  virtual void connectUp(QDomElement doc);
+  virtual void stylize(QDomElement doc);
+  /* Descendents should *not* call this in their implementation. */
 };
 
 #endif

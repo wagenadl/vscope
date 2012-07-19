@@ -15,3 +15,8 @@ void guiItem::setup(QDomElement doc) {
 guiItem::~guiItem() {
 }
 
+void guiItem::connectUp(QDomElement) {
+}
+
+void guiItem::stylize(QDomElement) {
+}

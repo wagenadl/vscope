@@ -57,16 +57,13 @@ void guiPage::setup(QDomElement doc) {
 
 void guiPage::sizeToFit() {
   QRect b0 = QRect(0, 0, origGeom.width(), origGeom.height());
-  Dbg() << "page: b0="<<b0 << " path="<<path();
   QRect bb = buildGeom.boundingBox();
-  Dbg() << "page: bb="<<bb;
+  Dbg() << "guiPage["<<path()<<"]: sizetofit b0="<<b0<<"; bb="<<bb;
   bb.setWidth(bb.width()+bb.left());
   bb.setHeight(bb.height()+bb.top());
   bb &= b0;
-  Dbg() << "bb->"<<bb;
   int dx = width() - (bb.right()+1);
   int dy = height() - (bb.bottom()+1);
-  Dbg() << "dx="<<dx<< " dy="<<dy;
   resize(bb.right()+1, bb.bottom()+1);
   move(origGeom.left() + dx/3, origGeom.top() + dy/3);
 }
@@ -118,7 +115,7 @@ void guiPage::connectToParent(QDomElement doc) {
     if (t.indexOf(":")<0 && t.indexOf("...")<0)
       b->setText(t + "&nbsp;...");
   }
-}    
+}
 
 guiPage::~guiPage() {
   foreach (guiButton *b, buttons)
@@ -179,60 +176,10 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   guiButton *b = new guiButton(this, id, master);
   b->setup(doc);
   buttons[id] = b;
-
-  if (b->customNo()) {
-    b->makeRadio();
-    b->setVisualType(Button::VTVarValue);
-  } else {
-    b->makeAction();
-    b->setVisualType(Button::VTAction);
-  }
-  
-  bool defaultconnections = true;
-
-  if (doc.hasAttribute("type")) {
-    QString t = doc.attribute("type");
-    if (t=="bool") {
-      connect(b,SIGNAL(selected(QString,QString)),
-	      this,SLOT(booleanButtonToggled(QString)));
-      connect(b,SIGNAL(deselected(QString,QString)),
-	      this,SLOT(booleanButtonToggled(QString)));
-      defaultconnections = false;
-      QString txt = b->text();
-      if (b->getSelected())
-	txt.replace("Disabled","Enabled");
-      else
-	txt.replace("Enabled","Disabled");
-      b->setText(txt);
-      b->makeItem();
-      b->setVisualType(Button::VTBooleanVar);
-    } else {
-      fprintf(stderr,"guiPage(%s): warning: unknown type '%s' for button %s\n",
-	      qPrintable(myPath),qPrintable(t),qPrintable(id));
-    }
-  }
-
-  if (b->customNo()<0) {
-    connect(b,SIGNAL(customize(QString,int,QString)),
-	    this,SLOT(childItemCustomized(QString,int,QString)));
-    defaultconnections=false;
-  }
-
-  if (defaultconnections) {
-    connect(b,SIGNAL(selected(QString,QString)),
-	    master,SIGNAL(buttonSelected(QString,QString)));
-    connect(b,SIGNAL(deselected(QString,QString)),
-	    master,SIGNAL(buttonDeselected(QString,QString)));
-    connect(b,SIGNAL(activated(QString,QString)),
-	    master,SIGNAL(buttonClicked(QString,QString)));
-    //    Dbg() << "Connecting doubleclicked" << id;
-    connect(b,SIGNAL(doubleClicked(QString,QString)),
-	    master,SIGNAL(buttonDoubleClicked(QString,QString)));
-  }
-  
   g.go(doc);
   b->setGeometry(g.bbox());
-  g.advance();
+  if (!b->alwaysHidden())
+    g.advance();
 
   return b;
 }
@@ -242,8 +189,6 @@ void guiPage::addPage(PageBuildGeom &g, QDomElement doc,
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addPage)","Cannot read subpage ID");
   ParamTree *subtree = ptree->childp(id);
-  fprintf(stderr,"guiPage(%s)::addPage(%s) subtree=%p\n",
-          qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
   guiPage *p = new guiPage(this, subtree, id, master, g.pbox());
@@ -268,8 +213,6 @@ void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addTabbedPage)","Cannot read subpage ID");
   ParamTree *subtree = ptree->childp(id);
-  fprintf(stderr,"guiPage(%s)::addTabbedPage(%s) subtree=%p\n",
-          qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
   guiPage *p = new guiTabbedPage(this, subtree, id, master, g.pbox());
@@ -281,8 +224,6 @@ void guiPage::addMenu(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addMenu)","Cannot read subpage ID");
   ParamTree *subtree = ptree->childp(id);
-  fprintf(stderr,"guiPage(%s)::addMenu(%s) subtree=%p\n",
-          qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
   guiPage *p = new guiMenu(this, subtree, id, master, g.pbox());
@@ -308,8 +249,6 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addChecklist)","Cannot read subpage ID");
   ParamTree *subtree = ptree->childp(id);
-  fprintf(stderr,"guiPage(%s)::addChecklist(%s) subtree=%p\n",
-          qPrintable(myPath),qPrintable(id), subtree);
   // note that this will be NULL if we are a tabbed page
 
   guiPage *p = new guiChecklist(this, subtree, id, master, g.pbox());
@@ -331,7 +270,6 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
 void guiPage::open() {
   emit opening(pathInstantiate(myPath),(QWidget*)(this));
   Param *pp = ptree->leafp();
-  //fprintf(stderr,"guiPage(%s):open pp=%p\n",qPrintable(myPath),pp);
   if (pp) 
     openLeaf(pp);
   else
@@ -405,8 +343,7 @@ void guiPage::openLeaf(Param *pp) {
 	b->setSelected(match);
 	if (match)
 	  valuefound=true;
-	//fprintf(stderr,"guiPage(%s):openleaf: parpath=%s.\n",
-	//        qPrintable(myPath),qPrintable(master->pathInstantiate(myPath)));
+
 	b->setEnabled(master->canSetParam(master->pathInstantiate(myPath),
 					  b->getValue()));
       } catch (Exception) {
@@ -497,13 +434,8 @@ void guiPage::close() {
 void guiPage::childTabEnabled(QString path) {
   QString child = pathToLocal(path);
   child = child.left(child.indexOf('/'));
-  //fprintf(stderr,"guiPage(%s)::childTabEnabled(%s) child=%s\n",
-  //        qPrintable(myPath),
-  //        qPrintable(path),
-  //        qPrintable(child));
   if (subPages.contains(child)) {
     QString but = child + "*" + subPages[child]->getCurrentElement();
-    //fprintf(stderr,"  childTabEnabled but='%s'\n",qPrintable(but));
     representTabEnabled(but);
   }
 }
@@ -516,9 +448,6 @@ void reportqbit(QBitArray const &ba) {
 }
 
 void guiPage::booleanButtonToggled(QString path) {
-  // dbg("guiPage(%s)::booleanButtonToggled(%s)\n",
-  //         qPrintable(myPath),
-  //         qPrintable(path));
   QString parpath = master->pathInstantiate(path);
   QString local = pathToLocal(path);
   guiButton *b = buttons[local];
@@ -610,15 +539,10 @@ void guiPage::childItemSelected(QString path, QString) {
       buttons[child]->setValue(value);
     }
   }
-  //ptree->find(pathToLocal(parpath)).report();
   updateEnabled();
 }
 
 void guiPage::childItemDeselected(QString path, QString) {
-  //fprintf(stderr,"guiPage(%s)::childItemDeselected(%s,%s)\n",
-  //        qPrintable(myPath),
-  //        qPrintable(path),
-  //        qPrintable(text));
   QString parpath = master->pathInstantiate(path);
   QStringList plist = parpath.split('/');
   QString value = plist.takeLast(); // That's the value, not the realpath
@@ -637,11 +561,6 @@ void guiPage::childItemDeselected(QString path, QString) {
 }
 
 void guiPage::childItemCustomized(QString path, int cno, QString text) {
-  fprintf(stderr,"guiPage(%s)::childItemCustomized(%s,%i,%s)\n",
-          qPrintable(myPath),
-          qPrintable(path),
-          cno,
-          qPrintable(text));
   QString parampath = master->pathInstantiate(path);
   if (cno>0)
     parampath = parampath.left(parampath.lastIndexOf('/'));

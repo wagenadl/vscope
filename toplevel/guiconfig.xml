@@ -151,7 +151,7 @@
       <button id="channel*DO3" value="DO3"/>
     </group>
     <tabbedpage id="channel" subdxl="2.1" bg="#dd88dd" >
-      <button id="enable" label=" Enabled" type="bool" y="-1"/>
+      <button id="enable" type="bool" alwayshidden="true"/>
       <group id="a">
         <button id="delay" label="Delay" bg="#bb88bb"/>
         <button id="nTrains" label="# of trains" bg="#aaaaff"/>
@@ -911,8 +911,8 @@
 
   <!-- %%%%%%%%%%%%%%%%%%%%% ACQUISITION PAGE %%%%%%%%%%%%%%%%%% -->
   <page id="acquisition" subdxr="4.1">
-    <button id="exptname" label="Expt. Name" x="3.1" y="0" editcaption="Experiment Name" bg="#88aaff"/>
-    <button id="trialno" label="Trial No." editcaption="Trial Number" bg="#77bbff"/>
+    <button id="exptname" label="Expt. Name: %1" x="3.1" y="0" editcaption="Experiment Name" bg="#88aaff"/>
+    <button id="trialno" label="Trial No.: %1" editcaption="Trial Number" bg="#77bbff"/>
     <button id="load"  label="Load Old Data..." y="3" bg="#88ffff"/>
     <break/>
     <button id="singleframe" label="Single Frame" bg="#ddbbff"/>

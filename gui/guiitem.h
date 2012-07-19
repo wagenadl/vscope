@@ -11,6 +11,9 @@ public:
   guiItem(QWidget *parent, QString id, class guiRoot *master=0);
   virtual void setup(QDomElement doc);
   virtual ~guiItem();
+protected:
+  virtual void connectUp(QDomElement);
+  virtual void stylize(QDomElement);
 };
 
 #endif

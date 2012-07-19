@@ -225,6 +225,7 @@ protected:
   virtual QString getCurrentElement() const;
   virtual void connectToMaster(QDomElement doc);
   virtual void connectToParent(QDomElement doc);
+  /* Descendents should probably *not* call this in their implementation. */
   virtual Button::VisualType visualTypeForParentButton() const;
   virtual void sizeToFit();
 };
