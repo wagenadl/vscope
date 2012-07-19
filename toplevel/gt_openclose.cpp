@@ -3,8 +3,8 @@
 #include "gt_slots.h"
 #include <QApplication>
 #include <toplevel/vscopegui.h>
-#include <gui/xmlbutton.h>
-#include <gui/xmlpage.h>
+#include <gui/guibutton.h>
+#include <gui/guipage.h>
 #include <toplevel/globals.h>
 #include <acq/liveephys.h>
 #include <acq/focus.h>
@@ -25,24 +25,24 @@ extern void checkvid(QWidget *);
 void hideTop() {
   Globals::leftplace->hide();
   Globals::rightplace->hide();
-  xmlPage &root = Globals::gui->rootPage();
-  QList<xmlButton*> left=root.getGroup("showLeft");
-  for (QList<xmlButton*>::iterator i=left.begin(); i!=left.end(); ++i)
+  guiPage &root = Globals::gui->rootPage();
+  QList<guiButton*> left=root.getGroup("showLeft");
+  for (QList<guiButton*>::iterator i=left.begin(); i!=left.end(); ++i)
     (*i)->setEnabled(false);
-  QList<xmlButton*> right=root.getGroup("showRight");
-  for (QList<xmlButton*>::iterator i=right.begin(); i!=right.end(); ++i)
+  QList<guiButton*> right=root.getGroup("showRight");
+  for (QList<guiButton*>::iterator i=right.begin(); i!=right.end(); ++i)
     (*i)->setEnabled(false);
 }
 
 void showTop() {
   Globals::leftplace->show();
   Globals::rightplace->show();
-  xmlPage &root = Globals::gui->rootPage();
-  QList<xmlButton*> left=root.getGroup("showLeft");
-  for (QList<xmlButton*>::iterator i=left.begin(); i!=left.end(); ++i)
+  guiPage &root = Globals::gui->rootPage();
+  QList<guiButton*> left=root.getGroup("showLeft");
+  for (QList<guiButton*>::iterator i=left.begin(); i!=left.end(); ++i)
     (*i)->setEnabled(true);
-  QList<xmlButton*> right=root.getGroup("showRight");
-  for (QList<xmlButton*>::iterator i=right.begin(); i!=right.end(); ++i)
+  QList<guiButton*> right=root.getGroup("showRight");
+  for (QList<guiButton*>::iterator i=right.begin(); i!=right.end(); ++i)
     (*i)->setEnabled(true);
 }
 

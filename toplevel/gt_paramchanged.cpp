@@ -11,7 +11,7 @@
 #include <xml/paramtree.h>
 #include <base/roidata.h>
 #include <gui/timebutton.h>
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <gui/overridecursor.h>
 #include <toplevel/exptlog.h>
 #include <toplevel/vscopegui.h>
@@ -24,7 +24,7 @@
 #include <xml/enumerator.h>
 #include <acq/datatrove.h>
 #include <toplevel/scripts.h>
-#include <gui/xmlpage.h>
+#include <gui/guipage.h>
 #include <toplevel/savedsettings.h>
 #include <base/roidata3set.h>
 
@@ -140,7 +140,7 @@ void gt_slots::paramchanged(QString p, QString val) {
       int lastmax = Acquire::maxTrial();
       Dbg() << "trial for " << val << " is " << lastmax;
       Globals::ptree->find("acquisition/trialno").setInt(lastmax);
-      xmlPage *pg = Globals::gui->findpPage("acquisition");
+      guiPage *pg = Globals::gui->findpPage("acquisition");
       if (pg && pg->isVisible())
 	pg->open();
     } else if (p=="acquisition/contEphys") {
@@ -148,7 +148,7 @@ void gt_slots::paramchanged(QString p, QString val) {
     } else if (p=="acquisition/dummy") {
       bool dummy = Globals::ptree->find(p).toBool();
       Globals::trove->setDummy(dummy);
-      xmlButton *b = Globals::gui->findpButton(p);
+      guiButton *b = Globals::gui->findpButton(p);
       b->setForeground(dummy ? QColor("#ff0000") : QColor("#000000"));
       b->setText(dummy ? "DUMMY" : "Dummy");
     } else if (p=="acquisition/autoRun") {
@@ -187,7 +187,7 @@ void gt_slots::paramchanged(QString p, QString val) {
 	if (pp==arr) {
 	  lbl += chn;
 	} else {
-	  xmlButton *b = Globals::gui->findpButton(gp);
+	  guiButton *b = Globals::gui->findpButton(gp);
 	  if (b) {
 	    QString t = b->text();
 	    int idx = t.indexOf(':');

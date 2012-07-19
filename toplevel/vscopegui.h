@@ -4,11 +4,11 @@
 
 #define VSCOPEGUI_H
 
-#include <gui/xmlgui.h>
+#include <gui/guiroot.h>
 
-class vscopeGui: public xmlGui {
+class vscopeGui: public guiRoot {
   /*:C vscopeGui
-   *:D vscope-specific version of xmlGui.
+   *:D vscope-specific version of guiRoot.
        This class is quite specific to vscope; it knows, for instance,
        which parameters are dependent on each other and what are the
        acceptable combinations.

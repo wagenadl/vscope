@@ -8,14 +8,14 @@
 
 #include <gui/guigeom.h>
 
-class xmlPage;
+class guiPage;
 
 class PageBuildGeom {
   /*:C PageBuildGeom
    *:D Information about geometry used while building a page.
    */
 public:
-  PageBuildGeom(xmlPage const *parent);
+  PageBuildGeom(guiPage const *parent);
   void setup(QDomElement doc);
 public:
   double nextcol, nextrow; // location of next button
@@ -31,7 +31,7 @@ public:
   int caph; // height of caption widget, or 0 if none.
   guiGeom const *master;
 private:
-  xmlPage const *parent;
+  guiPage const *parent;
 };
 
 

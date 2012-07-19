@@ -8,8 +8,8 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 #include <gfx/ccdimage.h>
-#include <gui/xmlgui.h>
-#include <gui/xmlbutton.h>
+#include <gui/guiroot.h>
+#include <gui/guibutton.h>
 
 #define SELFPOLL 1
 // If SELFPOLL is set, we use a timer to force updates rather than pvp's
@@ -295,7 +295,7 @@ void Focus::deactivate() {
   frmA = frmB = 0;
 }
 
-void Focus::contactButtons(xmlGui *gui) {
+void Focus::contactButtons(guiRoot *gui) {
   butFocus[0] = &(gui->findButton("maintenance/focus/focusA"));
   butFocus[1] = &(gui->findButton("maintenance/focus/focusB"));
   butIntensity[0] = &(gui->findButton("maintenance/focus/intensityA"));

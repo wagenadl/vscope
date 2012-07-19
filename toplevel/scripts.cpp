@@ -12,7 +12,7 @@
 
 #include <xml/paramtree.h>
 #include <toplevel/vscopegui.h>
-#include <gui/xmlpage.h>
+#include <gui/guipage.h>
 #include <gfx/filedlgkey.h>
 #include <acq/trial.h>
 #include <toplevel/acquire.h>

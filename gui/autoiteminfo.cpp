@@ -2,7 +2,7 @@
 
 #include "autoiteminfo.h"
 
-AutoItemInfo::AutoItemInfo(xmlPage const *parent): initialGeom(parent) {
+AutoItemInfo::AutoItemInfo(guiPage const *parent): initialGeom(parent) {
   hasAutoItems = false;
 }
 

@@ -1,28 +1,28 @@
-// xmlbutton.h
+// guibutton.h
 
-#ifndef XMLBUTTON_H
+#ifndef GUIBUTTON_H
 
-#define XMLBUTTON_H
+#define GUIBUTTON_H
 
 #include <gfx/button.h>
 #include <QDomElement>
 #include <QString>
 
-class xmlButton: public Button {
-  /*:C xmlButton
-   *:D One button (or a menu item) in an xmlPage
+class guiButton: public Button {
+  /*:C guiButton
+   *:D One button (or a menu item) in an guiPage
    */
   Q_OBJECT;
 public:  
-  xmlButton(class QWidget *parent, QDomElement doc, QString mypath, class xmlGui *master=0);
+  guiButton(class QWidget *parent, QDomElement doc, QString mypath, class guiRoot *master=0);
   /*:F constructor
-   *:A parent: the parent widget. This may be an xmlPage, but it
+   *:A parent: the parent widget. This may be an guiPage, but it
                doesn't need to be.
        doc: must be a <button> or <item> element.
        mypath: full path to this button.
    *:N Caller should position us afterwards.
    */
-  ~xmlButton();
+  ~guiButton();
   /*:F destructor
    */
   QString getTag() const { return myTag; }
@@ -62,7 +62,7 @@ public:
    */
   void ensureValueInLabel();
   /*:F ensureValueInLabel
-   *:D For use by xmlPage: ensure that the label contains "%1" so that
+   *:D For use by guiPage: ensure that the label contains "%1" so that
        menu values can be represented.
   */
 protected:
@@ -116,7 +116,7 @@ private:
   QString value;
   QString editCaption;
   class TextEntry *editor;
-  class xmlGui *master;
+  class guiRoot *master;
   int custom;
   bool hidewhendisabled;
 };

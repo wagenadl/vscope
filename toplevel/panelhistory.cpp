@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "vscopegui.h"
 #include <xml/paramtree.h>
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <base/dbg.h>
 #include <QDir>
 #include <toplevel/mgauto.h>
@@ -46,12 +46,12 @@ Param &PanelHistory::prioPar(QString where, int n) {
   return Globals::ptree->find(name);
 }
 
-xmlButton &PanelHistory::barButton(QString where, int n) {
+guiButton &PanelHistory::barButton(QString where, int n) {
   QString name = QString("panel%1%2").arg(where).arg(n);
   return Globals::gui->findButton(name);
 }
 
-xmlButton &PanelHistory::menuButton(QString where, QString what) {
+guiButton &PanelHistory::menuButton(QString where, QString what) {
   QString name = QString("panel%1/%2").arg(where).arg(what);
   return Globals::gui->findButton(name);
 }
@@ -190,7 +190,7 @@ void PanelHistory::setItemAt(QString where, int n, QString what) {
     what = itemAt(where, n);
   else
     whatPar(where,n).set(what);
-  xmlButton &but = barButton(where,n);
+  guiButton &but = barButton(where,n);
   but.setFormat(niceLabel(where,what));
   but.setValue(what);
 }

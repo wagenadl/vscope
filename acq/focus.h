@@ -29,7 +29,7 @@ public:
 public:
   Focus(QWidget *parent);
   virtual ~Focus();
-  void contactButtons(class xmlGui *gui);
+  void contactButtons(class guiRoot *gui);
   void activate();
   void deactivate();
 protected:
@@ -69,12 +69,12 @@ private:
   uint16_t const *frmB; // we do not own these
   int npix, X, Y; // eventually, these should be separate for A and B
   bool isfirstA, isfirstB;
-  class xmlButton *butFocus[2];
-  class xmlButton *butIntensity[2];
-  class xmlButton *butRotate;
-  class xmlButton *butShiftX;
-  class xmlButton *butShiftY;
-  class xmlButton *butScale;
+  class guiButton *butFocus[2];
+  class guiButton *butIntensity[2];
+  class guiButton *butRotate;
+  class guiButton *butShiftX;
+  class guiButton *butShiftY;
+  class guiButton *butScale;
   bool flipXA, flipXB;
   bool flipYA, flipYB;
   double exp_msA, exp_msB;

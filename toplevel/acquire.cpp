@@ -17,7 +17,7 @@
 #include <gfx/blackout.h>
 #include <gfx/filedlgkey.h>
 #include <gui/timebutton.h>
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <gui/guiexc.h>
 #include <toplevel/exptlog.h>
 #include <base/roiset.h>
@@ -178,7 +178,7 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
   foreach (QString id, camname)
     imgs.push_back(Globals::ccdw->get(id));
 
-  QVector<xmlButton *> btn;
+  QVector<guiButton *> btn;
   foreach (QString id, camname)
     btn.push_back(&Globals::gui->findButton("acquisition/camvals" + id));
 

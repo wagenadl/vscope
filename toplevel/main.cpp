@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pvp/campool.h>
-#include <gui/xmlpage.h>
+#include <gui/guipage.h>
 #include <gui/timebutton.h>
 #include <gfx/roiimage.h>
 #include <gfx/roiimages.h>

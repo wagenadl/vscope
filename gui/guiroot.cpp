@@ -1,20 +1,20 @@
 // xmlgui.cpp
 
-#include <gui/xmlgui.h>
+#include <gui/guiroot.h>
 #include <gui/guigeom.h>
-#include <gui/xmlpage.h>
-#include <gui/xmlbutton.h>
+#include <gui/guipage.h>
+#include <gui/guibutton.h>
 #include <QWidget>
 #include <xml/paramtree.h>
 #include <QRect>
 #include <base/exception.h>
 
-xmlGui::xmlGui(QWidget *parent,
+guiRoot::guiRoot(QWidget *parent,
 	       ParamTree *ptree_, QDomElement doc) {
   geom_ = new guiGeom(doc.firstChildElement("geometry"));
   ptree = ptree_;
-  root = 0; // let xmlPages know that Master doesn't have a root yet
-  root = new xmlPage(parent, ptree,
+  root = 0; // let guiPages know that Master doesn't have a root yet
+  root = new guiPage(parent, ptree,
 		     doc.firstChildElement("page"),
 		     this,
 		     "",
@@ -22,35 +22,35 @@ xmlGui::xmlGui(QWidget *parent,
   root->show();
 }
 
-xmlGui::~xmlGui() {
+guiRoot::~guiRoot() {
   delete geom_;
   delete root;
 }
 
-void xmlGui::open() {
+void guiRoot::open() {
   root->open();
 }
 
-void xmlGui::close() {
+void guiRoot::close() {
   root->close();
 }
 
-QString xmlGui::pathToLocal(QString path) const {
+QString guiRoot::pathToLocal(QString path) const {
   return root->pathToLocal(path);
 }
 
-QString xmlGui::pathToGlobal(QString path) const {
+QString guiRoot::pathToGlobal(QString path) const {
   return root->pathToGlobal(path);
 } 
-QString xmlGui::pathInstantiate(QString path) const {
+QString guiRoot::pathInstantiate(QString path) const {
   return root->pathInstantiate(path);
 }
 
-QString xmlGui::pathDeinstantiate(QString path) const {
+QString guiRoot::pathDeinstantiate(QString path) const {
   return root->pathDeinstantiate(path);
 }
 
-void xmlGui::setCustom(QString path, int cno, QString newval) {
+void guiRoot::setCustom(QString path, int cno, QString newval) {
   Param &par = ptree->find(QString("custom/%1-%2").arg(path).arg(cno));
   QString olds = par.toString();
   par.set(newval);
@@ -59,9 +59,9 @@ void xmlGui::setCustom(QString path, int cno, QString newval) {
     emit customValueChanged(path,cno, news);
 }
 
-void xmlGui::setParam(QString path, QString newval) {
+void guiRoot::setParam(QString path, QString newval) {
   if (!canSetParam(path,newval))
-    throw Exception("xmlGui",QString("Cannot set parameter %1 to %s").arg(path).arg(newval));
+    throw Exception("guiRoot",QString("Cannot set parameter %1 to %s").arg(path).arg(newval));
   Param &par = ptree->find(path);
   QString olds = par.toString();
   par.set(newval);
@@ -70,7 +70,7 @@ void xmlGui::setParam(QString path, QString newval) {
     emit paramChanged(path,news);
 }
 
-bool xmlGui::canSetParam(QString path, QString newval) {
+bool guiRoot::canSetParam(QString path, QString newval) {
   Param &p = ptree->find(path);
   Param q(p); // make a copy
   try {
@@ -81,20 +81,20 @@ bool xmlGui::canSetParam(QString path, QString newval) {
   return true;
 }
 
-xmlButton *xmlGui::findpButton(QString path) {
+guiButton *guiRoot::findpButton(QString path) {
   return root->findpButton(path.split(QChar('/')));
 }
 
-xmlButton &xmlGui::findButton(QString path) {
+guiButton &guiRoot::findButton(QString path) {
   return root->findButton(path.split(QChar('/')));
 }
 
-xmlPage *xmlGui::findpPage(QString path) {
-  return dynamic_cast<xmlPage*>(root->findpPage(path.split(QChar('/'))));
+guiPage *guiRoot::findpPage(QString path) {
+  return root->findpPage(path.split(QChar('/')));
 }
 
-xmlPage &xmlGui::findPage(QString path) {
-  return dynamic_cast<xmlPage&>(root->findPage(path.split(QChar('/'))));
+guiPage &guiRoot::findPage(QString path) {
+  return root->findPage(path.split(QChar('/')));
 }
 
 

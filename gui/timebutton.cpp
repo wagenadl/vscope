@@ -1,10 +1,10 @@
 // timebutton.cpp
 
 #include "timebutton.h"
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <base/dbg.h>
 
-TimeButton::TimeButton(QObject *parent, xmlButton *button):
+TimeButton::TimeButton(QObject *parent, guiButton *button):
   QObject(parent), button(button) {
   style = None;
 }

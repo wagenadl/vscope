@@ -10,7 +10,7 @@
 class gt_slots: public QObject {
   Q_OBJECT;
 public:
-  gt_slots(class xmlGui *master);
+  gt_slots(class guiRoot *master);
   virtual ~gt_slots();
 public slots:
   void clicked(QString p);

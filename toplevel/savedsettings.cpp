@@ -5,7 +5,7 @@
 #include <toplevel/globals.h>
 #include <base/exception.h>
 #include <toplevel/vscopegui.h>
-#include <gui/xmlpage.h>
+#include <gui/guipage.h>
 #include <xml/paramtree.h>
 #include <base/xml.h>
 #include <xml/connections.h>

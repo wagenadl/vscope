@@ -48,12 +48,12 @@ private:
   void makeButtons(QString where);
   void relabel(QString where);
 private:  
-  class xmlButton &barButton(QString where, int n);
+  class guiButton &barButton(QString where, int n);
   /*:F barButton
    *:D barButton("Left",2) returns a reference to the button "panelLeft2".
    *:N This is a button in the top row.
    */
-  class xmlButton &menuButton(QString where, QString what);
+  class guiButton &menuButton(QString where, QString what);
   /*:F menuButton
    *:D menuButton("Left","VSDTraces") returns a reference to the button
        "panelLeft/VSDTraces".

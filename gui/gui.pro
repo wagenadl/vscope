@@ -5,10 +5,10 @@ TEMPLATE = lib
 TARGET = vscope-gui
 include(../config.pro)
 
-HEADERS += xmlbutton.h xmlpage.h xmlgui.h guigeom.h \
+HEADERS += guibutton.h guipage.h guiroot.h guigeom.h \
 	timebutton.h guiexc.h overridecursor.h \
         videogui.h
-SOURCES += xmlbutton.cpp xmlpage.cpp xmlgui.cpp guigeom.cpp \
+SOURCES += guibutton.cpp guipage.cpp guiroot.cpp guigeom.cpp \
 	timebutton.cpp guiexc.cpp overridecursor.cpp \
 	videogui.cpp
 HEADERS += abstractpage.h pagebuildgeom.h autoiteminfo.h

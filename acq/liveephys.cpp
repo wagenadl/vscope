@@ -15,8 +15,8 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 #include "vco.h"
-#include <gui/xmlpage.h>
-#include <gui/xmlbutton.h>
+#include <gui/guipage.h>
+#include <gui/guibutton.h>
 #include <acq/contacq.h>
 
 static bool channelAvailable(QString cid, QString ctyp) {
@@ -461,13 +461,13 @@ void LiveEPhys::feedVCO(int offset, int length) {
 }
 
 
-void LiveEPhys::hideConfig(xmlPage &cfgpage) {
+void LiveEPhys::hideConfig(guiPage &cfgpage) {
   cfgpage.findButton(QStringList("aiChannels")).setEnabled(false);
 
   // note that, in order to hide properly, we should also close the
   // subpages if they happen to be open. Not today.
 }
 
-void LiveEPhys::unhideConfig(xmlPage &cfgpage) {
+void LiveEPhys::unhideConfig(guiPage &cfgpage) {
   cfgpage.findButton(QStringList("aiChannels")).setEnabled(true);
 }

@@ -41,7 +41,7 @@ public:
   AbstractPage(class QWidget *parent,
 	       class ParamTree *ptree,
 	       QDomElement doc,
-	       class xmlGui *master,
+	       class guiRoot *master,
 	       QString mypath,
 	       class QRect const &geom);
   virtual void addChildren(QDomElement doc);
@@ -60,14 +60,14 @@ public:
    *:D Like findpPage, but returns a reference, and throws an exception
        if the path does not indicate a page.
   */
- class xmlButton *findpButton(QStringList path);
+ class guiButton *findpButton(QStringList path);
   /*:F findpButton
    *:D Returns a pointer to a button given a path, or null if that button
        does not (currently) exist.
    *:N A path with arrays must be represented in the abstract, as in:
        "page.array.button", not "page.array:element.button".
   */
- class xmlButton &findButton(QStringList path);
+ class guiButton &findButton(QStringList path);
   /*:F findButton
    *:D Like findpButton, but returns a reference, and throws an exception
        if the path does not indicate a button.
@@ -100,20 +100,23 @@ public:
   /*:F pathDeinstantiate
    *:D Given a global path, removes any ":elt" array indexing.
    */
-  virtual xmlButton const *buttonp(QString id) const=0;
-  virtual xmlButton *buttonp(QString id)=0;
-  virtual xmlButton &button(QString id)=0;
+  virtual guiButton const *buttonp(QString id) const=0;
+  virtual guiButton *buttonp(QString id)=0;
+  virtual guiButton &button(QString id)=0;
   /*:F buttonp, button
    *:D Get pointer or reference to button that is an immediate child of our page.
    */
-  xmlGui const *masterp() const { return master; }
+  guiRoot const *masterp() const { return master; }
+public slots:
+  virtual void open()=0;
+  virtual void close()=0;
 protected:
-  class xmlGui *master;
+  class guiRoot *master;
   /*:V master
-   *:D xmlGui that created us or our root. Used for its ParamTree and its
+   *:D guiRoot that created us or our root. Used for its ParamTree and its
        geometry info.
   */
-  QMap<QString, class xmlPage *> subPages;
+  QMap<QString, AbstractPage *> subPages;
   /*:V subPages
    *:D All our subpages by ID. (ID is leaf, not full path).
    */
@@ -132,12 +135,21 @@ protected:
   /*:V myPath
    *:D Full path to this page.
    */
+public: // don't use!
   QString myTag; // do I really need this variable any more?
   /*:V myTag
    *:D xml tag for this page, i.e., "page", "tabbedpage", "menu", or "checklist".
    */
-protected:
+public:
   virtual QString getCurrentElement() const=0;
+protected:
+  void reTree(class ParamTree *neworigtree=0);
+  /*:F reTree
+   *:D When a page tree with tabbed pages changes tabs, this makes the ParamTree
+       of all pages below the changed tab point to the right data.
+   *:A neworigtree: the ParamTree for this level, with arrays dereferenced at
+       all higher levels, but not at this level.
+  */
 };  
   
 #endif

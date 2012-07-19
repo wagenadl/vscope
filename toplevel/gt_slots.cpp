@@ -2,12 +2,12 @@
 
 #include "gt_slots.h"
 #include <QApplication>
-#include <gui/xmlgui.h>
+#include <gui/guiroot.h>
 #include <base/dbg.h>
 #include <gui/guiexc.h>
 #include <toplevel/globals.h>
 
-gt_slots::gt_slots(xmlGui *master) {
+gt_slots::gt_slots(guiRoot *master) {
   QObject::connect(master,SIGNAL(buttonClicked(QString,QString)),
 		   this,SLOT(clicked(QString)));
   QObject::connect(master,SIGNAL(buttonDoubleClicked(QString,QString)),

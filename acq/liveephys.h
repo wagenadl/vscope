@@ -25,8 +25,8 @@ public:
   void newDIChannels();
   void autoRange();
   void setVCOChannel(QString cid);
-  void hideConfig(class xmlPage &cfgpage);
-  void unhideConfig(class xmlPage &cfgpage);
+  void hideConfig(class guiPage &cfgpage);
+  void unhideConfig(class guiPage &cfgpage);
 protected:
   void resizeEvent(class QResizeEvent *);
 protected slots:

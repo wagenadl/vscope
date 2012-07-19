@@ -5,7 +5,7 @@
 #include <gfx/buttongrouper.h>
 #include <stdio.h>
 
-guiButtonGroup::guiButtonGroup(xmlPage *parent):
+guiButtonGroup::guiButtonGroup(guiPage *parent):
   QObject(parent), parent(parent) {
 }
 
@@ -24,7 +24,7 @@ void guiButtonGroup::build(PageBuildGeom &g, QDomElement doc) {
        e=e.nextSiblingElement()) {
     QString tag = e.tagName();
     if (tag=="button") {
-      xmlButton *b = parent->addButton(g, e);
+      guiButton *b = parent->addButton(g, e);
       if (cols>1)
 	b->resize(b->width()/cols-((col==cols-1)
 				   ? 2
@@ -54,7 +54,7 @@ void guiButtonGroup::build(PageBuildGeom &g, QDomElement doc) {
 void guiButtonGroup::selectDefaultButton() {
   if (dfltButton.isEmpty())
     return;
-  xmlButton *b = parent->buttonp(dfltButton);
+  guiButton *b = parent->buttonp(dfltButton);
   if (b)
     b->setSelected(true);
 }

@@ -5,9 +5,9 @@
 #include <xml/paramtree.h>
 #include <xml/attribute.h>
 #include <gui/guigeom.h>
-#include <gui/xmlgui.h>
+#include <gui/guiroot.h>
 #include <xml/enumerator.h>
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <QRect>
 
 #include <base/exception.h>
@@ -16,7 +16,7 @@
 AbstractPage::AbstractPage(class QWidget *parent,
 			   class ParamTree *ptree_,
 			   QDomElement doc,
-			   class xmlGui *master_,
+			   class guiRoot *master_,
 			   QString mypath,
 			   class QRect const &geom): QFrame(parent) {
   setGeometry(geom);
@@ -34,7 +34,7 @@ void AbstractPage::removeChildren() {
 }
 
 AbstractPage::~AbstractPage() {
-  for (QMap<QString, xmlPage *>::iterator i=subPages.begin();
+  for (QMap<QString, AbstractPage *>::iterator i=subPages.begin();
        i!=subPages.end(); ++i)
     delete i.value();
 }
@@ -57,7 +57,7 @@ AbstractPage &AbstractPage::findPage(QStringList path) {
     throw Exception("AbstractPage", "Cannot find page '" + path.join("/") + "'");
 }
 
-xmlButton *AbstractPage::findpButton(QStringList path) {
+guiButton *AbstractPage::findpButton(QStringList path) {
   if (path.isEmpty())
     return 0;
   QString tail = path.takeLast();
@@ -68,8 +68,8 @@ xmlButton *AbstractPage::findpButton(QStringList path) {
     return 0;
 }
 
-xmlButton &AbstractPage::findButton(QStringList path) {
-  xmlButton *b = findpButton(path);
+guiButton &AbstractPage::findButton(QStringList path) {
+  guiButton *b = findpButton(path);
   if (b)
     return *b;
   else
@@ -161,3 +161,18 @@ QString AbstractPage::pathInstantiate(QString path) const {
 		    "pathInstantiate");
 }
 
+
+void AbstractPage::reTree(ParamTree *neworigtree) {
+  if (neworigtree)
+    origptree = neworigtree;
+
+  ptree = origptree->childp(getCurrentElement());
+  if (!ptree)
+    ptree = origptree;
+
+  foreach (QString id, subPages.keys())
+    subPages[id]->reTree(ptree->childp(id));
+
+  if (isVisible() && neworigtree!=0)
+    open();
+}

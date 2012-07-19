@@ -14,14 +14,14 @@
 #include <toplevel/exptlog.h>
 #include <base/exception.h>
 #include <gui/timebutton.h>
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <toplevel/vscopegui.h>
 #include <toplevel/scripts.h>
 #include <toplevel/mainwindow.h>
 #include <base/dbg.h>
 
 static void dimple(QString p) {
-  xmlButton *b = Globals::gui->findpButton(p);
+  guiButton *b = Globals::gui->findpButton(p);
   if (b) {
   }
 }

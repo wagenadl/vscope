@@ -1,19 +1,19 @@
-// xmlgui.h
+// guiroot.h
 
-#ifndef XMLGUI_H
+#ifndef GUIROOT_H
 
-#define XMLGUI_H
+#define GUIROOT_H
 
 #include <xml/param.h>
 #include <xml/paramtree.h>
 #include <QDomElement>
 #include <QObject>
-#include <gui/xmlbutton.h>
-#include <gui/xmlpage.h>
+#include <gui/guibutton.h>
+#include <gui/guipage.h>
 #include <gui/guigeom.h>
 
-class xmlGui: public QObject {
-  /*:C xmlGui
+class guiRoot: public QObject {
+  /*:C guiRoot
    *:D Represents the entire user interface of vsdscope except for
        the actual graphs and images.
        It reads an xml document which should define all the various buttons,
@@ -21,7 +21,7 @@ class xmlGui: public QObject {
   */
   Q_OBJECT;
 public:
-  xmlGui(class QWidget *parent, class ParamTree *ptree, QDomElement doc);
+  guiRoot(class QWidget *parent, class ParamTree *ptree, QDomElement doc);
   /*:F constructor
    *:D Constructs the user interface
    *:A parent: main widget of application.
@@ -31,35 +31,35 @@ public:
    *:N The element must contain a <page> with id 'root' which defines the
        top level of the page tree, the page which is opened on program start.
    */
-  virtual ~xmlGui();
+  virtual ~guiRoot();
   /*:F destructor
    */
-  xmlPage &rootPage() { return *root; }
+  guiPage &rootPage() { return *root; }
   /*:F rootPage
    *:D Returns a reference to our root page.
    */
    ParamTree &paramTree() { return *ptree; }
    guiGeom const &geom() const { return *geom_; }
-   xmlButton *findpButton(QString path);
+   guiButton *findpButton(QString path);
   /*:F findpButton
    *:D Returns a pointer to a button given a path, or null if that button
        does not (currently) exist.
    *:N A path with arrays must be represented in the abstract, as in:
        "page.array.button", not "page.array:element.button".
   */
-   xmlPage *findpPage(QString path);
+   guiPage *findpPage(QString path);
   /*:F findpPage
    *:D Returns a pointer to a page given a path, or null if that button
        does not (currently) exist.
    *:N A path with arrays must be represented in the abstract, as in:
        "page.array", not "page.array:element".
   */
-   xmlButton &findButton(QString path);
+   guiButton &findButton(QString path);
   /*:F findButton
    *:D Like findpButton, but returns a reference, and throws an exception
        if the path does not indicate a button.
   */
-   xmlPage &findPage(QString path);
+   guiPage &findPage(QString path);
   /*:F findpPage
    *:D Like findpPage, but returns a reference, and throws an exception
        if the path does not indicate a page.
@@ -184,7 +184,7 @@ protected:
    *:N (They are needed for setParam.)
   */
 private:
-  class xmlPage *root;
+  class guiPage *root;
   class ParamTree *ptree;
   class guiGeom *geom_;
 };

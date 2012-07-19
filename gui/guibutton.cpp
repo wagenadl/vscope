@@ -1,19 +1,19 @@
-// xmlbutton.cpp
+// guibutton.cpp
 
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <xml/attribute.h>
 #include <stdio.h>
 #include <gfx/textentry.h>
-#include <gui/xmlgui.h>
+#include <gui/guiroot.h>
 #include <QEvent>
 #include <base/dbg.h>
 #include <xml/aliases.h>
 
-xmlButton::xmlButton(class QWidget *parent,
-		     QDomElement doc, QString mypath, xmlGui *master):
+guiButton::guiButton(class QWidget *parent,
+		     QDomElement doc, QString mypath, guiRoot *master):
   Button(parent), master(master) {
   editor = 0;
-  //fprintf(stderr,"xmlButton(%s)\n",qPrintable(mypath));
+  //fprintf(stderr,"guiButton(%s)\n",qPrintable(mypath));
   if (doc.hasAttribute("custom"))
     custom=doc.attribute("custom").toInt(0);
   else if (doc.hasAttribute("editcaption"))
@@ -48,12 +48,12 @@ xmlButton::xmlButton(class QWidget *parent,
   }
 }
 
-xmlButton::~xmlButton() {
+guiButton::~guiButton() {
   if (editor)
     delete editor;
 }
 
-void xmlButton::setFormat(QString f) {
+void guiButton::setFormat(QString f) {
   format=f;
   if (format.indexOf("%1")>=0)
     setText(format.arg(value));
@@ -61,7 +61,7 @@ void xmlButton::setFormat(QString f) {
     setText(format);
 }
 
-void xmlButton::setValue(QString v) {
+void guiButton::setValue(QString v) {
   value=v;
   if (format.indexOf("%1")>=0) {
     if (Aliases::has(v))
@@ -72,20 +72,20 @@ void xmlButton::setValue(QString v) {
   }
 }
 
-void xmlButton::mouseDoubleClickEvent(class QMouseEvent *e) {
+void guiButton::mouseDoubleClickEvent(class QMouseEvent *e) {
   if (custom>0)
     openEditor();
   else
     Button::mouseDoubleClickEvent(e);
 }
 
-void xmlButton::mouseReleaseEvent(class QMouseEvent *e) {
+void guiButton::mouseReleaseEvent(class QMouseEvent *e) {
   if (custom<0)
     openEditor();
   Button::mouseReleaseEvent(e);
 }
 
-void xmlButton::openEditor() {
+void guiButton::openEditor() {
   bool neweditor = !editor;
   if (neweditor) {
     QWidget *parent = this;
@@ -104,11 +104,11 @@ void xmlButton::openEditor() {
   editor->show();
 }
 
-void xmlButton::editDone(QString newtext) {
+void guiButton::editDone(QString newtext) {
   emit customize(myPath,custom,newtext);
 }
 
-void xmlButton::validate(QString newtext) {
+void guiButton::validate(QString newtext) {
   if (master && editor) {
     QString parampath = master->pathInstantiate(myPath);
     if (custom>0)
@@ -118,19 +118,19 @@ void xmlButton::validate(QString newtext) {
   }
 }
 
-void xmlButton::editCanceled() {
+void guiButton::editCanceled() {
   if (editor)
     editor->hide();
 }
 
-void xmlButton::closeEditor() {
+void guiButton::closeEditor() {
   if (editor)
     editor->hide();
 }
   
-void xmlButton::changeEvent(QEvent *e) {
+void guiButton::changeEvent(QEvent *e) {
   Button::changeEvent(e);
-  //  dbg("xmlButton:changeEvent");
+  //  dbg("guiButton:changeEvent");
   if (hidewhendisabled) {
     //dbg("  hidewhendisabled");
     if (e->type() == QEvent::EnabledChange) {
@@ -143,7 +143,7 @@ void xmlButton::changeEvent(QEvent *e) {
   }
 }
     
-void xmlButton::ensureValueInLabel() {
+void guiButton::ensureValueInLabel() {
   if (!format.contains("%1")) {
     if (!format.endsWith(":"))
       format += ":";

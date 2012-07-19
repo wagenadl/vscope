@@ -7,20 +7,20 @@
 #include <QObject>
 #include <QDomElement>
 #include <gui/pagebuildgeom.h>
-#include <gui/xmlpage.h>
-#include <gui/xmlbutton.h>
+#include <gui/guipage.h>
+#include <gui/guibutton.h>
 
 class guiButtonGroup: public QObject {
   Q_OBJECT;  
 public:
-  guiButtonGroup(xmlPage *parent);
+  guiButtonGroup(guiPage *parent);
   void build(PageBuildGeom &g, QDomElement doc);
   virtual ~guiButtonGroup();
   QString groupId() const { return id; }
   QStringList const &childIDs() const { return childids; }
   void selectDefaultButton();
 private:
-  xmlPage *parent;
+  guiPage *parent;
   QString dfltButton;
   QString id;
   QStringList childids;

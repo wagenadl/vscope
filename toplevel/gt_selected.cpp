@@ -6,7 +6,7 @@
 #include <gfx/roiimages.h>
 #include <QStringList>
 #include <toplevel/vscopegui.h>
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <base/dbg.h>
 #include <base/exception.h>
 #include <acq/focus.h>

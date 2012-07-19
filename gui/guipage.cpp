@@ -1,15 +1,15 @@
-// xmlpage.cpp
+// guipage.cpp
 
-#include <gui/xmlpage.h>
+#include <gui/guipage.h>
 
 #include <QWidget>
 #include <QButtonGroup>
 #include <xml/paramtree.h>
 #include <xml/attribute.h>
 #include <gui/guigeom.h>
-#include <gui/xmlgui.h>
+#include <gui/guiroot.h>
 #include <xml/enumerator.h>
-#include <gui/xmlbutton.h>
+#include <gui/guibutton.h>
 #include <QRect>
 #include <QMessageBox>
 #include <QLabel>
@@ -20,10 +20,10 @@
 #include <QPen>
 #include <gui/guibuttongroup.h>
 
-xmlPage::xmlPage(class QWidget *parent,
+guiPage::guiPage(class QWidget *parent,
 		 class ParamTree *ptree_,
 		 QDomElement doc,
-		 class xmlGui *master_,
+		 class guiRoot *master_,
 		 QString mypath,
 		 class QRect const &geom):
   AbstractPage(parent, ptree_, doc, master_, mypath, geom),
@@ -45,26 +45,25 @@ xmlPage::xmlPage(class QWidget *parent,
   hide();
 }
 
-xmlPage::~xmlPage() {
-  for (QMap<QString, xmlButton *>::iterator i=buttons.begin();
-       i!=buttons.end(); ++i)
-    delete i.value();
+guiPage::~guiPage() {
+  foreach (guiButton *b, buttons)
+    delete b;
 }
 
-void xmlPage::addSpace(PageBuildGeom &g, QDomElement doc) {
+void guiPage::addSpace(PageBuildGeom &g, QDomElement doc) {
   bool ok;
   double dy = doc.hasAttribute("dy") ? doc.attribute("dy").toDouble(&ok) : 0.2;
   g.nextrow += dy;
 }
 
-void xmlPage::addBreak(PageBuildGeom &g, QDomElement doc) {
+void guiPage::addBreak(PageBuildGeom &g, QDomElement doc) {
   bool ok;
   double dx = doc.hasAttribute("dx") ? doc.attribute("dx").toDouble(&ok) : 0;
   g.nextrow = 0;
   g.nextcol += 1+dx;
 }
 
-void xmlPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
+void guiPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
   guiButtonGroup *bg = new guiButtonGroup(this);
   bg->build(g, doc);
   groups[bg->groupId()] = bg;
@@ -72,7 +71,7 @@ void xmlPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
     groupedButton[s] = bg->groupId();
 }
 
-xmlButton *xmlPage::addItem(PageBuildGeom &g, QDomElement doc) {
+guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   guiButtonGroup *bg;
   if (groups.contains(":items")) {
     bg = groups[":items"];
@@ -90,12 +89,12 @@ xmlButton *xmlPage::addItem(PageBuildGeom &g, QDomElement doc) {
     id=doc.attribute("value");
   if (id.isEmpty()) {
     id="--";
-    fprintf(stderr,"Warning: xmlPage: empty button ID in %s. custom=%s.\n",
+    fprintf(stderr,"Warning: guiPage: empty button ID in %s. custom=%s.\n",
 	    qPrintable(myPath),
 	    qPrintable(doc.attribute("custom")));
   }
   
-  xmlButton *b = new xmlButton(this,doc,pathToGlobal(id),master);
+  guiButton *b = new guiButton(this,doc,pathToGlobal(id),master);
   buttons[id] = b;
   groupedButton[id] = ":items";
   
@@ -117,10 +116,10 @@ xmlButton *xmlPage::addItem(PageBuildGeom &g, QDomElement doc) {
   return b;
 }
 
-xmlButton *xmlPage::addButton(PageBuildGeom &g, QDomElement doc) {
+guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
-			  "xmlPage (addButton)","Cannot read button ID");
-  xmlButton *b = new xmlButton(this,doc,pathToGlobal(id),master);
+			  "guiPage (addButton)","Cannot read button ID");
+  guiButton *b = new guiButton(this,doc,pathToGlobal(id),master);
   if (b->customNo()) {
     b->makeRadio();
     b->setVisualType(Button::VTVarValue);
@@ -149,7 +148,7 @@ xmlButton *xmlPage::addButton(PageBuildGeom &g, QDomElement doc) {
       b->makeItem();
       b->setVisualType(Button::VTBooleanVar);
     } else {
-      fprintf(stderr,"xmlPage(%s): warning: unknown type '%s' for button %s\n",
+      fprintf(stderr,"guiPage(%s): warning: unknown type '%s' for button %s\n",
 	      qPrintable(myPath),qPrintable(t),qPrintable(id));
     }
   }
@@ -193,11 +192,11 @@ xmlButton *xmlPage::addButton(PageBuildGeom &g, QDomElement doc) {
 }
 
 
-xmlPage *xmlPage::addPage(PageBuildGeom &g, QDomElement doc,
+guiPage *guiPage::addPage(PageBuildGeom &g, QDomElement doc,
 			  Button::VisualType vt) {
   QString id=xmlAttribute(doc,"id",
-			  "xmlPage (addPage)","Cannot read subpage ID");
-  //fprintf(stderr,"xmlPage(%s)::addPage(%s)\n",
+			  "guiPage (addPage)","Cannot read subpage ID");
+  //fprintf(stderr,"guiPage(%s)::addPage(%s)\n",
   //        qPrintable(myPath),qPrintable(id));
   ParamTree *subtree;
   if (myTag=="tabbedpage")
@@ -205,7 +204,7 @@ xmlPage *xmlPage::addPage(PageBuildGeom &g, QDomElement doc,
 			ptrees really here. See open(QString). */
   else
     subtree = &(ptree->child(id));
-  xmlPage *p = new xmlPage(this, subtree,doc,master, pathToGlobal(id),
+  guiPage *p = new guiPage(this, subtree,doc,master, pathToGlobal(id),
 			   QRect(g.page.dxl,g.page.dyt,
 				 width()-g.page.dxl-g.page.dxr,
 				 height()-g.page.dyt-g.page.dyb));
@@ -220,7 +219,7 @@ xmlPage *xmlPage::addPage(PageBuildGeom &g, QDomElement doc,
   subPages[id] = p;
 
   if (buttons.contains(id)) {
-    xmlButton *b = buttons[id];
+    guiButton *b = buttons[id];
     connect(b,SIGNAL(selected(QString,QString)),p,SLOT(open()));
     connect(b,SIGNAL(deselected(QString,QString)),p,SLOT(close()));
     connect(b,SIGNAL(selected(QString,QString)),
@@ -251,16 +250,16 @@ xmlPage *xmlPage::addPage(PageBuildGeom &g, QDomElement doc,
   return p;
 }
 
-void xmlPage::addTriangle(QString id) {
+void guiPage::addTriangle(QString id) {
   QStringList path = id.split("/"); id = path.last();
   triID = id;
-  //  dbg("xmlPage::addTriangle. id=%s",qPrintable(id));
-  xmlButton *b = buttons.contains(id) ? buttons[id] : 0;
+  //  dbg("guiPage::addTriangle. id=%s",qPrintable(id));
+  guiButton *b = buttons.contains(id) ? buttons[id] : 0;
   int idx = id.indexOf("*");
   if (idx>0)
     id=id.left(idx);
-  xmlPage *p = subPages.contains(id) ? subPages[id] : 0;
-  //  dbg("xmlPage::addTriangle. b=%p p=%p",b,p);
+  guiPage *p = subPages.contains(id) ? dynamic_cast<guiPage*>(subPages[id]) : 0;
+  //  dbg("guiPage::addTriangle. b=%p p=%p",b,p);
   if (b && p) {
     QRect br = b->geometry();
     QRect pr = p->geometry();
@@ -303,16 +302,16 @@ void xmlPage::addTriangle(QString id) {
   update();
 }
 
-void xmlPage::removeTriangle(QString id) {
+void guiPage::removeTriangle(QString id) {
   QStringList path = id.split("/"); id = path.last();
-  //dbg("xmlPage::removeTriangle. id=%s was=%s", qPrintable(id), qPrintable(triID));
+  //dbg("guiPage::removeTriangle. id=%s was=%s", qPrintable(id), qPrintable(triID));
   if (triID == id)
     triID = "";
   update();
 }
 
-void xmlPage::paintEvent(class QPaintEvent *e) {
-  //  dbg("xmlPage::paintevent. triID=%s",qPrintable(triID));
+void guiPage::paintEvent(class QPaintEvent *e) {
+  //  dbg("guiPage::paintevent. triID=%s",qPrintable(triID));
   if (triID=="")
     return;
   QPainter p(this);
@@ -321,16 +320,16 @@ void xmlPage::paintEvent(class QPaintEvent *e) {
   // for (int k=0; k<4; k++) {
   //   int x,y;
   //   triangle.point(k,&x,&y);
-  //   dbg("xmlPage: polygon[%i] = (%i,%i)",k,x,y);
+  //   dbg("guiPage: polygon[%i] = (%i,%i)",k,x,y);
   // }
   p.drawPolygon(triangle);
   QFrame::paintEvent(e);
 }
 
-xmlPage *xmlPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
-  xmlPage *p = addPage(g,doc);
+guiPage *guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
+  guiPage *p = addPage(g,doc);
   QString id=doc.attribute("id");
-  xmlButton *penable = p->buttons.contains("enable")
+  guiButton *penable = p->buttons.contains("enable")
     ? p->buttons["enable"] : 0;
   //  dbg("addTabbedPage: penable=%p",penable);
   
@@ -338,7 +337,7 @@ xmlPage *xmlPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
     for (QMap<QString,QString>::iterator i=groupedButton.begin();
 	 i!=groupedButton.end(); ++i) {
       if (i.value()==id) {
-	xmlButton *b = buttons[i.key()];
+	guiButton *b = buttons[i.key()];
 	connect(b,SIGNAL(selected(QString,QString)),p,SLOT(open(QString)));
 	disconnect(b,SIGNAL(selected(QString,QString)),
 		   master,SIGNAL(buttonSelected(QString,QString)));
@@ -369,11 +368,11 @@ xmlPage *xmlPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
   return p;
 }
 
-xmlPage *xmlPage::addMenuPage(PageBuildGeom &g, QDomElement doc) {
-  xmlPage *p = addPage(g,doc,Button::VTVarOpen);  
-  for (QMap<QString,xmlButton *>::iterator i=p->buttons.begin();
+guiPage *guiPage::addMenuPage(PageBuildGeom &g, QDomElement doc) {
+  guiPage *p = addPage(g,doc,Button::VTVarOpen);  
+  for (QMap<QString,guiButton *>::iterator i=p->buttons.begin();
        i!=p->buttons.end(); ++i) {
-    xmlButton *b = i.value();
+    guiButton *b = i.value();
     if (b->getTag()=="item") {
       connect(b,SIGNAL(selected(QString,QString)),
 	      this,SLOT(childItemSelected(QString,QString)));
@@ -389,11 +388,11 @@ xmlPage *xmlPage::addMenuPage(PageBuildGeom &g, QDomElement doc) {
   return p;
 }
 
-xmlPage *xmlPage::addCheckListPage(PageBuildGeom &g, QDomElement doc) {
-  xmlPage *p = addPage(g,doc,Button::VTVarOpen);
-  for (QMap<QString,xmlButton *>::iterator i=p->buttons.begin();
+guiPage *guiPage::addCheckListPage(PageBuildGeom &g, QDomElement doc) {
+  guiPage *p = addPage(g,doc,Button::VTVarOpen);
+  for (QMap<QString,guiButton *>::iterator i=p->buttons.begin();
        i!=p->buttons.end(); ++i) {
-    xmlButton *b = i.value();
+    guiButton *b = i.value();
     if (b->getTag()=="item") {
       connect(b,SIGNAL(selected(QString,QString)),
 	      this,SLOT(childItemSelected(QString,QString)));
@@ -404,10 +403,10 @@ xmlPage *xmlPage::addCheckListPage(PageBuildGeom &g, QDomElement doc) {
   return p;
 }
 
-void xmlPage::open() {
+void guiPage::open() {
   emit opening(pathInstantiate(myPath),(QWidget*)(this));
   Param *pp = ptree->leafp();
-  //fprintf(stderr,"xmlPage(%s):open pp=%p\n",qPrintable(myPath),pp);
+  //fprintf(stderr,"guiPage(%s):open pp=%p\n",qPrintable(myPath),pp);
   if (pp) 
     openLeaf(pp);
   else
@@ -418,12 +417,11 @@ void xmlPage::open() {
       bg->selectDefaultButton();
     buildAutoItems();
   }
-  for (QMap<QString,xmlPage *>::iterator i=subPages.begin();
-       i!=subPages.end(); ++i) {
-    if (buttons.contains(i.key())) {
-      xmlButton *b = buttons[i.key()];
+  foreach (QString id, subPages.keys()) {
+    if (buttons.contains(id)) {
+      guiButton *b = buttons[id];
       if (b->getSelected())
-	i.value()->open();
+	subPages[id]->open();
     }
   }
 
@@ -431,7 +429,7 @@ void xmlPage::open() {
   emit opened(pathInstantiate(myPath),(QWidget*)(this));
 }
 
-void xmlPage::open(QString p) {
+void guiPage::open(QString p) {
   int idx = p.lastIndexOf('/');
   QString elt = p.mid(idx+1);
   idx = elt.indexOf('*');
@@ -443,28 +441,12 @@ void xmlPage::open(QString p) {
   open();
 }
 
-void xmlPage::reTree(ParamTree *neworigtree) {
-  if (neworigtree)
-    origptree = neworigtree;
-
-  ptree = origptree->childp(currentElement);
-  if (!ptree)
-    ptree = origptree;
-
-  for (QMap<QString, xmlPage *>::iterator i=subPages.begin();
-       i!=subPages.end(); ++i) 
-    i.value()->reTree(ptree->childp(i.key()));
-
-  if (isVisible() && neworigtree!=0)
-    open();
-}
-
-void xmlPage::openLeaf(Param *pp) {
+void guiPage::openLeaf(Param *pp) {
   if (pp->getType()=="set") {
     QBitArray ba = pp->toBitArray();
-    for (QMap<QString, class xmlButton *>::iterator i=buttons.begin();
+    for (QMap<QString, class guiButton *>::iterator i=buttons.begin();
 	 i!=buttons.end(); ++i) {
-      xmlButton *b = i.value();
+      guiButton *b = i.value();
       if (b->getTag()=="item") {
 	Enumerator const *e=pp->getEnum();
 	try {
@@ -478,9 +460,9 @@ void xmlPage::openLeaf(Param *pp) {
   } else {
     Param copy(*pp);
     bool valuefound = false;
-    for (QMap<QString, class xmlButton *>::iterator i=buttons.begin();
+    for (QMap<QString, class guiButton *>::iterator i=buttons.begin();
 	 i!=buttons.end(); ++i) {
-      xmlButton *b = i.value();
+      guiButton *b = i.value();
 
       if (b->isCustom()) {
 	Param const *custpar = master->paramTree().
@@ -490,7 +472,7 @@ void xmlPage::openLeaf(Param *pp) {
 	if (custpar) {
 	  b->setValue(custpar->toString());
 	} else {
-	  fprintf(stderr,"xmlPage(%s): Warning: no value for custom %i\n",
+	  fprintf(stderr,"guiPage(%s): Warning: no value for custom %i\n",
 		  qPrintable(myPath), b->customNo());
 	}
       }
@@ -500,7 +482,7 @@ void xmlPage::openLeaf(Param *pp) {
 	b->setSelected(match);
 	if (match)
 	  valuefound=true;
-	//fprintf(stderr,"xmlPage(%s):openleaf: parpath=%s.\n",
+	//fprintf(stderr,"guiPage(%s):openleaf: parpath=%s.\n",
 	//        qPrintable(myPath),qPrintable(master->pathInstantiate(myPath)));
 	b->setEnabled(master->canSetParam(master->pathInstantiate(myPath),b->getValue()));
       } catch (Exception) {
@@ -510,9 +492,9 @@ void xmlPage::openLeaf(Param *pp) {
     }
     if (!valuefound) {
       // try to locate a custom button
-      for (QMap<QString, class xmlButton *>::iterator i=buttons.begin();
+      for (QMap<QString, class guiButton *>::iterator i=buttons.begin();
 	   i!=buttons.end(); ++i) {
-	xmlButton *b = i.value();
+	guiButton *b = i.value();
 	if (b->isCustom()) {
 	  b->setValue(pp->toString());
 	  b->setSelected(true);
@@ -523,16 +505,16 @@ void xmlPage::openLeaf(Param *pp) {
   }
 }
 
-void xmlPage::openNode() {
+void guiPage::openNode() {
   bool enable = true;
   Param *p = ptree->findp("enable");
   if (p)
     enable = p->toBool();
   setEnabled(enable,"enable");
 
-  for (QMap<QString, class xmlButton *>::iterator i=buttons.begin();
+  for (QMap<QString, class guiButton *>::iterator i=buttons.begin();
        i!=buttons.end(); ++i) {
-    xmlButton *b = i.value();
+    guiButton *b = i.value();
     Param *p = ptree->findp(i.key());
     if (p) {
       // This is a button that directly represents a value.
@@ -559,8 +541,8 @@ void xmlPage::openNode() {
 
 }
 
-void xmlPage::representTabEnabled(QString id) {
-  xmlButton *b = buttons[id];
+void guiPage::representTabEnabled(QString id) {
+  guiButton *b = buttons[id];
   int idx = id.indexOf('*');
   QString ar = id.left(idx);
   QString elt = id.mid(idx+1);
@@ -576,28 +558,27 @@ void xmlPage::representTabEnabled(QString id) {
     addTriangle(id);
 }
 
-void xmlPage::close() {
+void guiPage::close() {
   hide();
-  for (QMap<QString,xmlPage *>::iterator i=subPages.begin();
-       i!=subPages.end(); ++i) {
-    if (buttons.contains(i.key())) {
-      xmlButton *b = buttons[i.key()];
+  foreach (QString id, subPages.keys()) {
+    if (buttons.contains(id)) {
+      guiButton *b = buttons[id];
       if (b->getSelected())
-	i.value()->close();
+	subPages[id]->close();
     }
   }
   emit closed(pathInstantiate(myPath),(QWidget*)this);
 }
 
-void xmlPage::childTabEnabled(QString path) {
+void guiPage::childTabEnabled(QString path) {
   QString child = pathToLocal(path);
   child = child.left(child.indexOf('/'));
-  //fprintf(stderr,"xmlPage(%s)::childTabEnabled(%s) child=%s\n",
+  //fprintf(stderr,"guiPage(%s)::childTabEnabled(%s) child=%s\n",
   //        qPrintable(myPath),
   //        qPrintable(path),
   //        qPrintable(child));
   if (subPages.contains(child)) {
-    QString but = child + "*" + subPages[child]->currentElement;
+    QString but = child + "*" + subPages[child]->getCurrentElement();
     //fprintf(stderr,"  childTabEnabled but='%s'\n",qPrintable(but));
     representTabEnabled(but);
   }
@@ -610,13 +591,13 @@ void reportqbit(QBitArray const &ba) {
   fprintf(stderr,"].\n");
 }
 
-void xmlPage::booleanButtonToggled(QString path) {
-  // dbg("xmlPage(%s)::booleanButtonToggled(%s)\n",
+void guiPage::booleanButtonToggled(QString path) {
+  // dbg("guiPage(%s)::booleanButtonToggled(%s)\n",
   //         qPrintable(myPath),
   //         qPrintable(path));
   QString parpath = master->pathInstantiate(path);
   QString local = pathToLocal(path);
-  xmlButton *b = buttons[local];
+  guiButton *b = buttons[local];
   bool on = b->getSelected();
   master->setParam(parpath,on ? "yes" : "no");
   if (local=="enable")
@@ -631,10 +612,10 @@ void xmlPage::booleanButtonToggled(QString path) {
   b->setText(txt);
 }
 
-void xmlPage::updateEnabled() {
-  xmlButton *enabutp = findpButton(QString("enable").split('/'));
+void guiPage::updateEnabled() {
+  guiButton *enabutp = findpButton(QString("enable").split('/'));
   bool pageEna = enabutp ? enabutp->getSelected() : true;
-  for (QMap<QString, xmlButton *>::iterator i=buttons.begin();
+  for (QMap<QString, guiButton *>::iterator i=buttons.begin();
        i!=buttons.end(); ++i) {
     Param *p = ptree->findp(i.key());
     if (p) {
@@ -651,9 +632,9 @@ void xmlPage::updateEnabled() {
   }
 }  
 
-void xmlPage::setEnabled(bool enable, QString enabler) {
-  // dbg("xmlPage::setenabled(%i,%s)",enable,qPrintable(enabler));
-  for (QMap<QString, xmlButton *>::iterator i=buttons.begin();
+void guiPage::setEnabled(bool enable, QString enabler) {
+  // dbg("guiPage::setenabled(%i,%s)",enable,qPrintable(enabler));
+  for (QMap<QString, guiButton *>::iterator i=buttons.begin();
        i!=buttons.end(); ++i) {
     // Dbg() << "  key: " << i.key();
     if (i.key()!=enabler) {
@@ -669,16 +650,17 @@ void xmlPage::setEnabled(bool enable, QString enabler) {
       }
     }
   }
-  for (QMap<QString, xmlPage *>::iterator i=subPages.begin();
-       i!=subPages.end(); ++i)
-    if (i.value()->isVisible())
-      i.value()->setEnabled(enable,"");
-
+  foreach (AbstractPage *p0, subPages) {
+    guiPage *p = dynamic_cast<guiPage *>(p0);
+    if (p->isVisible())
+      p->setEnabled(enable,"");
+  }
+  
   if (enable && isVisible() && ptree->leafp()!=0)
     openLeaf(ptree->leafp());
 }
 
-void xmlPage::childItemSelected(QString path, QString) {
+void guiPage::childItemSelected(QString path, QString) {
   QString parpath = master->pathInstantiate(path);
   QStringList plist = parpath.split('/');
   QString v = plist.takeLast(); // That's the value, not the realpath
@@ -687,7 +669,7 @@ void xmlPage::childItemSelected(QString path, QString) {
   QString local=pathToLocal(path);
   QString child = local.left(local.indexOf('/'));
 
-  xmlButton *b=findpButton(local.split('/'));
+  guiButton *b=findpButton(local.split('/'));
   QString value = b?b->getValue() : "0";
   if (b) {
     if (b->isCustom()) {
@@ -708,8 +690,8 @@ void xmlPage::childItemSelected(QString path, QString) {
   updateEnabled();
 }
 
-void xmlPage::childItemDeselected(QString path, QString) {
-  //fprintf(stderr,"xmlPage(%s)::childItemDeselected(%s,%s)\n",
+void guiPage::childItemDeselected(QString path, QString) {
+  //fprintf(stderr,"guiPage(%s)::childItemDeselected(%s,%s)\n",
   //        qPrintable(myPath),
   //        qPrintable(path),
   //        qPrintable(text));
@@ -721,7 +703,7 @@ void xmlPage::childItemDeselected(QString path, QString) {
   QString local=pathToLocal(path);
   QString child = local.left(local.indexOf('/'));
 
-  xmlButton *b=findpButton(local.split('/'));
+  guiButton *b=findpButton(local.split('/'));
   if (b) {
     if (subPages[child]->myTag=="checklist") {
       master->setParam(parpath,"-"+value);
@@ -730,8 +712,8 @@ void xmlPage::childItemDeselected(QString path, QString) {
   }
 }
 
-void xmlPage::childItemCustomized(QString path, int cno, QString text) {
-  fprintf(stderr,"xmlPage(%s)::childItemCustomized(%s,%i,%s)\n",
+void guiPage::childItemCustomized(QString path, int cno, QString text) {
+  fprintf(stderr,"guiPage(%s)::childItemCustomized(%s,%i,%s)\n",
           qPrintable(myPath),
           qPrintable(path),
           cno,
@@ -743,9 +725,9 @@ void xmlPage::childItemCustomized(QString path, int cno, QString text) {
     master->setParam(parampath,text);
     if (cno>0)
       master->setCustom(pathDeinstantiate(parampath),cno,text);
-    xmlButton *b = findpButton(pathToLocal(path).split('/'));
+    guiButton *b = findpButton(pathToLocal(path).split('/'));
     if (!b)
-      throw Exception("xmlPage","Cannot find custom button",
+      throw Exception("guiPage","Cannot find custom button",
 		      "(childItemCustomized)");
     QString v = master->paramTree().find(parampath).toString();
     b->setValue(v); 
@@ -763,8 +745,8 @@ void xmlPage::childItemCustomized(QString path, int cno, QString text) {
   }
 }
 
-QList<xmlButton *> xmlPage::getGroup(QString id) const {
-  QList<xmlButton *> list;
+QList<guiButton *> guiPage::getGroup(QString id) const {
+  QList<guiButton *> list;
   if (!groups.contains(id))
     return list;
   for (QMap<QString,QString>::const_iterator i=groupedButton.begin();
@@ -775,23 +757,23 @@ QList<xmlButton *> xmlPage::getGroup(QString id) const {
 }
 
 
-void xmlPage::addAuto(PageBuildGeom &g, QDomElement doc) {
+void guiPage::addAuto(PageBuildGeom &g, QDomElement doc) {
   autoInfo.setup(g, doc);
 }
 
-void xmlPage::buildAutoItems() {
+void guiPage::buildAutoItems() {
   if (!autoInfo.hasAutoItems)
     return;
-  Dbg() << "xmlPage::buildAutoItems " << myPath;
+  Dbg() << "guiPage::buildAutoItems " << myPath;
   // PageBuildGeom g = autoInfo.initialGeom;
   if (!ptree->leafp())
-    throw Exception("xmlPage", "Cannot have <auto> outside of a menu");
+    throw Exception("guiPage", "Cannot have <auto> outside of a menu");
   Enumerator const *e = ptree->leafp()->getEnum();
   Dbg() << "  bai: enum="<<e;
   Dbg() << "  bai: items = " << e->getAllTags().join(" ");
 }
 
-void xmlPage::setDefaultColors(QDomElement doc) {
+void guiPage::setDefaultColors(QDomElement doc) {
   /* Set color and default button color */
   QString bg = doc.attribute("bg");
   if (!bg.isEmpty()) {
@@ -809,7 +791,7 @@ void xmlPage::setDefaultColors(QDomElement doc) {
   }    
 }
 
-void xmlPage::addChildren(PageBuildGeom g, QDomElement doc) {
+void guiPage::addChildren(PageBuildGeom g, QDomElement doc) {
   /* Build children */
   for (QDomElement e=doc.firstChildElement(); !e.isNull();
        e=e.nextSiblingElement()) {
@@ -835,44 +817,44 @@ void xmlPage::addChildren(PageBuildGeom g, QDomElement doc) {
     else if (tag=="auto")
       addAuto(g, e);
     else
-      fprintf(stderr,"Warning: xmlPage: Unexpected tag <%s>.\n",
+      fprintf(stderr,"Warning: guiPage: Unexpected tag <%s>.\n",
 	      qPrintable(tag));
   }
 }
 
-QString xmlPage::getCurrentElement() const {
+QString guiPage::getCurrentElement() const {
   return currentElement;
 }
 
-xmlButton const *xmlPage::buttonp(QString id) const {
+guiButton const *guiPage::buttonp(QString id) const {
   if (buttons.contains(id))
     return buttons[id];
   else
     return 0;
 }
 
-xmlButton *xmlPage::buttonp(QString id) {
+guiButton *guiPage::buttonp(QString id) {
   if (buttons.contains(id))
     return buttons[id];
   else
     return 0;
 }
 
-xmlButton &xmlPage::button(QString id) {
-  xmlButton *b = buttonp(id);
+guiButton &guiPage::button(QString id) {
+  guiButton *b = buttonp(id);
   if (b)
     return *b;
   else
-    throw Exception("xmlPage",
+    throw Exception("guiPage",
 		    "No button named '" + id + "' in page '" + myPath + "'");
 }
 
-xmlPage *xmlPage::findpPage(QStringList path) {
+guiPage *guiPage::findpPage(QStringList path) {
   AbstractPage *p = AbstractPage::findpPage(path);
-  return dynamic_cast<xmlPage *>(p);
+  return dynamic_cast<guiPage *>(p);
 }
 
-xmlPage &xmlPage::findPage(QStringList path) {
+guiPage &guiPage::findPage(QStringList path) {
   AbstractPage &p = AbstractPage::findPage(path);
-  return dynamic_cast<xmlPage &>(p);
+  return dynamic_cast<guiPage &>(p);
 }

@@ -14,7 +14,7 @@ class TimeButton: public QObject {
 public:
   enum Style { None, Wall, Up, Down };
 public:
-  TimeButton(QObject *parent, class xmlButton *button);
+  TimeButton(QObject *parent, class guiButton *button);
   virtual ~TimeButton();
 public slots:
   void reset();
@@ -33,7 +33,7 @@ private:
   QTime time;
   QBasicTimer timer;
   QString caption;
-  class xmlButton *button;
+  class guiButton *button;
 };
 
 #endif

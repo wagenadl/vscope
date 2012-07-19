@@ -8,7 +8,7 @@
 
 class AutoItemInfo {
 public:
-  AutoItemInfo(xmlPage const *parent);
+  AutoItemInfo(guiPage const *parent);
   void setup(PageBuildGeom const &g, QDomElement e);
 public:
   bool hasAutoItems;

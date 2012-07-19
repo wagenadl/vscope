@@ -1,8 +1,8 @@
-// xmlpage.h
+// guipage.h
 
-#ifndef XMLPAGE_H
+#ifndef GUIPAGE_H
 
-#define XMLPAGE_H
+#define GUIPAGE_H
 
 #include <QFrame>
 #include <QString>
@@ -14,17 +14,18 @@
 #include <gui/abstractpage.h>
 #include <gui/autoiteminfo.h>
 #include <gui/pagebuildgeom.h>
+#include <gui/guibutton.h>
 
-class xmlPage: public AbstractPage {
+class guiPage: public AbstractPage {
   Q_OBJECT;
-  /*:C xmlPage
+  /*:C guiPage
    *:D Represents a single page of buttons.
    */
 public:
-  xmlPage(class QWidget *parent,
+  guiPage(class QWidget *parent,
 	  class ParamTree *ptree,
 	  QDomElement doc,
-	  class xmlGui *master,
+	  class guiRoot *master,
 	  QString mypath,
 	  class QRect const &geom);
   /*:F constructor
@@ -35,40 +36,40 @@ public:
                to this page.
     :  doc:    a <page>, <checklist>, or <menu> element that defines this
                page and its children.
-    :  master: the xmlGui to which all selections should be reported.
+    :  master: the guiRoot to which all selections should be reported.
     :  mypath: the full path to this page ("" for root").
     :  geom:   position and size of this page relative to parent.
    */
-  virtual ~xmlPage();
+  virtual ~guiPage();
   /*:F destructor
    *:D Destructs this page and all of its children.
    */
-  xmlPage *findpPage(QStringList path);
-  xmlPage &findPage(QStringList path);
+  guiPage *findpPage(QStringList path);
+  guiPage &findPage(QStringList path);
   /*:F findpPage, findPage
-   *:D As in AbstractPage, but returns pointer to xmlPage
+   *:D As in AbstractPage, but returns pointer to guiPage
    */
-  virtual xmlButton const *buttonp(QString id) const;
-  virtual xmlButton *buttonp(QString id);
-  virtual xmlButton &button(QString id);
+  virtual guiButton const *buttonp(QString id) const;
+  virtual guiButton *buttonp(QString id);
+  virtual guiButton &button(QString id);
   /*:F buttonp, button
    *:D Get pointer or reference to button that is an immediate child of our page.
    */
 public:
   /* Only guiButtonGroup should use these. */
-  class xmlButton *addButton(PageBuildGeom &g, QDomElement elt);
+  class guiButton *addButton(PageBuildGeom &g, QDomElement elt);
   /*:F addButton
    *:D Adds a new button to this page.
    *:N This function also connects the button's selected/deselected/activated
-       signals to the corresponding xmlGui's signals.
+       signals to the corresponding guiRoot's signals.
    */
 protected:
-  class xmlButton *addItem(PageBuildGeom &g, QDomElement elt);
+  class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
   /*:F addItem
    *:D Adds a new item button to this page.
    *:N Items are automatically placed in a button group with radio-style
        selection for menus and toggle-style selection for checklists.
-   *:N No connections are made to xmlGui signals.
+   *:N No connections are made to guiRoot signals.
    *:N The tail ID of the new button is: the id attribute of the <item>
        element if it has one, or else "#num" if the <item> has a custom="num"
        attribute, or else the value attribute of the <item>.
@@ -78,24 +79,24 @@ protected:
   /*:F addButtonGroup
    *:D Adds a new button group and any contained buttons to this page.
    */
-  class xmlPage *addPage(PageBuildGeom &g, QDomElement elt,
+  class guiPage *addPage(PageBuildGeom &g, QDomElement elt,
 			 Button::VisualType vt=Button::VTPageOpen);
   /*:F addPage
    *:D Adds a new sub-page to this page.
    *:N This connects the selected/deselected signals from any button with the
        same name as this page to its open/close slots.
    */
-  class xmlPage *addTabbedPage(PageBuildGeom &g, QDomElement elt);
+  class guiPage *addTabbedPage(PageBuildGeom &g, QDomElement elt);
   /*:F addTabbedPage
    *:D As addPage, but with added functionality for tabbed pages.
    */
-  class xmlPage *addMenuPage(PageBuildGeom &g, QDomElement elt);
+  class guiPage *addMenuPage(PageBuildGeom &g, QDomElement elt);
   /*:F addMenuPage
    *:D As addPage, but with added functionality for menus.
    *:N This connects the selected signal from menu items in that
        page to our childItemXXX slots.
    */
-  class xmlPage *addCheckListPage(PageBuildGeom &g, QDomElement elt);
+  class guiPage *addCheckListPage(PageBuildGeom &g, QDomElement elt);
   /*:F addChecklistPage
    *:D As addPage, but with added functionality for checklists.
    *:N This connects the selected/deselected signals from items in that
@@ -114,7 +115,7 @@ protected:
    *:D Automatically adds a number of <item> buttons according to an enum.
    */
 public:
-  QList<class xmlButton *> getGroup(QString id) const;
+  QList<class guiButton *> getGroup(QString id) const;
   /*:F getGroup
    *:D Returns a list of all buttons in a given group.
    *:N Returns an empty list if the group does not exist.
@@ -176,13 +177,6 @@ private:
        and tabbed pages.
    *:N This is where values are copied from the ParamTree to the page's buttons.
   */
-  void reTree(class ParamTree *neworigtree=0);
-  /*:F reTree
-   *:D When a page tree with tabbed pages changes tabs, this makes the ParamTree
-       of all pages below the changed tab point to the right data.
-   *:A neworigtree: the ParamTree for this level, with arrays dereferenced at
-       all higher levels, but not at this level.
-  */
   void setEnabled(bool on, QString enabler);
   /*:F setEnabled
    *:D Enables or shades all buttons in this page and subpages.
@@ -195,7 +189,7 @@ private:
    *:N This also resets disabled values to their defaults.
   */
 private:
-  QMap<QString, class xmlButton *> buttons;
+  QMap<QString, class guiButton *> buttons;
   /*:V buttons
    *:D All our buttons by ID. (ID is leaf, not full path).
    */

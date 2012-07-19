@@ -1,9 +1,9 @@
 // pagebuildgeom.cpp
 
 #include "pagebuildgeom.h"
-#include "xmlgui.h"
+#include "guiroot.h"
 
-PageBuildGeom::PageBuildGeom(xmlPage const *parent):
+PageBuildGeom::PageBuildGeom(guiPage const *parent):
   master(&parent->masterp()->geom()), parent(parent) {
 }
 
