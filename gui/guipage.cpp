@@ -141,38 +141,36 @@ void guiPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
     groupedButton[s] = bg->groupId();
 }
 
-void guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
+static QString itemID(QDomElement doc) {
+  if (doc.hasAttribute("id"))
+    return doc.attribute("id");
+  else if (doc.hasAttribute("custom"))
+    return "custom-"+doc.attribute("custom");
+  else if (doc.hasAttribute("value"))
+    return doc.attribute("value");
+  else
+    return "";
+}
+  
+
+guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   guiButtonGroup *bg = groupp(":items");
   if (!bg) 
     groups[":items"] = bg = new guiButtonGroup(this);
 
-  QString id;
-  if (doc.hasAttribute("id"))
-    id=doc.attribute("id");
-  else if (doc.hasAttribute("custom"))
-    id="custom-"+doc.attribute("custom");
-  else
-    id=doc.attribute("value");
-  if (id.isEmpty()) {
-    id="--";
-    fprintf(stderr,"Warning: guiPage: empty button ID in %s. custom=%s.\n",
-	    qPrintable(myPath),
-	    qPrintable(doc.attribute("custom")));
-  }
+  QString id = itemID(doc);
+  if (id.isEmpty()) 
+    throw Exception("guiPage", "Empty item ID in page " + path());
   
-  guiButton *b = new guiItem(this, id ,master);
+  guiButton *b = new guiItem(this, id, master);
   buttons[id] = b;
   buttons[id]->setup(doc);
   groupedButton[id] = ":items";
 
   b->setGeometry(g.bbox());
-  
-  if (isType<guiChecklist>(this))
-    b->makeToggle();
-  else
-    b->makeRadio();
-  
   g.advance();
+
+  return b;
 }
 
 guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {

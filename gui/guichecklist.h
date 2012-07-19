@@ -17,6 +17,7 @@ public:
   virtual ~guiChecklist();
 protected:
   virtual Button::VisualType visualTypeForParentButton() const;
+  virtual class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
 };
 
 #endif

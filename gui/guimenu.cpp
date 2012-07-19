@@ -21,3 +21,8 @@ Button::VisualType guiMenu::visualTypeForParentButton() const {
   return Button::VTVarOpen;
 }
 
+guiButton *guiMenu::addItem(PageBuildGeom &g, QDomElement elt) {
+  guiButton *b = guiPage::addItem(g, elt);
+  b->makeRadio();
+  return b;
+}

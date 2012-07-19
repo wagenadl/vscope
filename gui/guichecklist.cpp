@@ -20,3 +20,9 @@ guiChecklist::~guiChecklist() {
 Button::VisualType guiChecklist::visualTypeForParentButton() const {
   return Button::VTVarOpen;
 }
+
+guiButton *guiChecklist::addItem(PageBuildGeom &g, QDomElement elt) {
+  guiButton *b = guiPage::addItem(g, elt);
+  b->makeToggle();
+  return b;
+}

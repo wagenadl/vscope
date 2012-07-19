@@ -64,7 +64,7 @@ public:
        signals to the corresponding guiRoot's signals.
    */
 protected:
-  void addItem(PageBuildGeom &g, QDomElement elt);
+  virtual class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
   /*:F addItem
    *:D Adds a new item button to this page.
    *:N Items are automatically placed in a button group with radio-style
