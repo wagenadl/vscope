@@ -15,6 +15,8 @@ guiTabbedPage::guiTabbedPage(class QWidget *parent,
 }
 
 void guiTabbedPage::connectToParent(QDomElement doc) {
+  guiPage::connectToParent(doc);
+  
   guiPage *par = dynamic_cast<guiPage *>(parent());
   if (!par)
     return;
