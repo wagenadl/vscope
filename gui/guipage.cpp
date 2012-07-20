@@ -58,7 +58,7 @@ void guiPage::setup(QDomElement doc) {
 void guiPage::sizeToFit() {
   QRect b0 = QRect(0, 0, origGeom.width(), origGeom.height());
   QRect bb = buildGeom.boundingBox();
-  Dbg() << "guiPage["<<path()<<"]: sizetofit b0="<<b0<<"; bb="<<bb;
+  //  Dbg() << "guiPage["<<path()<<"]: sizetofit b0="<<b0<<"; bb="<<bb;
   bb.setWidth(bb.width()+bb.left());
   bb.setHeight(bb.height()+bb.top());
   bb &= b0;
@@ -255,18 +255,22 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
 }
 
 void guiPage::open() {
-  emit opening(pathInstantiate(myPath),(QWidget*)(this));
-  Param *pp = ptree->leafp();
-  if (pp) 
-    openLeaf(pp);
-  else
-    openNode();
+  emit opening(pathInstantiate(myPath), (QWidget*)(this));
+  prepForOpening();
+
   if (neverOpened) {
     neverOpened = false;
     foreach (guiButtonGroup *bg, groups) 
       bg->selectDefaultButton();
     buildAutoItems();
   }
+
+  openChildren();
+  show();
+  emit opened(pathInstantiate(myPath), (QWidget*)(this));
+}
+
+void guiPage::openChildren() {
   foreach (QString id, subPages.keys()) {
     if (buttons.contains(id)) {
       guiButton *b = buttons[id];
@@ -274,92 +278,27 @@ void guiPage::open() {
 	subPages[id]->open();
     }
   }
-
-  show();
-  emit opened(pathInstantiate(myPath),(QWidget*)(this));
 }
 
-void guiPage::openLeaf(Param *pp) {
-  if (pp->getType()=="set") {
-    QBitArray ba = pp->toBitArray();
-    foreach (guiButton *b, buttons) {
-      if (isType<guiItem>(b)) {
-	Enumerator const *e=pp->getEnum();
-	try {
-	  int idx=e->lookup(b->getValue());
-	  b->setSelected(ba.testBit(idx));
-	} catch (Exception) {
-	  fprintf(stderr,"Ignored.\n");
-	}	  
-      }
-    }
-  } else {
-    Param copy(*pp);
-    bool valuefound = false;
-    for (QMap<QString, class guiButton *>::iterator i=buttons.begin();
-	 i!=buttons.end(); ++i) {
-      guiButton *b = i.value();
-
-      if (b->isCustom()) {
-	Param const *custpar = master->paramTree().
-	  findp(QString("custom/%1-%3")
-		.arg(pathDeinstantiate(myPath))
-		.arg(b->customNo()));
-	if (custpar) {
-	  b->setValue(custpar->toString());
-	} else {
-	  fprintf(stderr,"guiPage(%s): Warning: no value for custom %i\n",
-		  qPrintable(myPath), b->customNo());
-	}
-      }
-      try {
-	copy.set(b->getValue());
-	bool match = copy==*pp;
-	b->setSelected(match);
-	if (match)
-	  valuefound=true;
-
-	b->setEnabled(master->canSetParam(master->pathInstantiate(myPath),
-					  b->getValue()));
-      } catch (Exception) {
-	if (isType<guiItem>(b))
-	  b->setEnabled(false);
-      }
-    }
-    if (!valuefound) {
-      // try to locate a custom button
-      for (QMap<QString, class guiButton *>::iterator i=buttons.begin();
-	   i!=buttons.end(); ++i) {
-	guiButton *b = i.value();
-	if (b->isCustom()) {
-	  b->setValue(pp->toString());
-	  b->setSelected(true);
-	  break;
-	}
-      }
-    }
-  }
-}
-
-void guiPage::openNode() {
+void guiPage::prepForOpening() {
   bool enable = true;
   Param *p = ptree->findp("enable");
   if (p)
     enable = p->toBool();
-  setEnabled(enable,"enable");
+  setEnabled(enable, "enable");
 
-  for (QMap<QString, class guiButton *>::iterator i=buttons.begin();
-       i!=buttons.end(); ++i) {
-    guiButton *b = i.value();
-    Param *p = ptree->findp(i.key());
+  foreach (QString id, buttons.keys()) {
+    guiButton *b = buttons[id];
+    Param *p = ptree->findp(id);
     if (p) {
       // This is a button that directly represents a value.
       bool ena = p->isEnabled();
       if (!ena) {
 	b->setEnabled(false);
 	p->restore();
-	if (subPages.contains(i.key())) {
-	  subPages[i.key()]->hide();
+	guiPage *subpage = subpagep(id);
+	if (subpage) {
+	  subpage->hide();
 	  b->setSelected(false);
 	}
       }
@@ -369,12 +308,11 @@ void guiPage::openNode() {
       } else {
 	b->setValue(p->toString());
       }
-    } else if (i.key().indexOf('*')>0) {
+    } else if (id.indexOf('*')>0) {
       // This is a button that represents a tab.
-      representTabEnabled(i.key());
+      representTabEnabled(id);
     }
   }
-
 }
 
 void guiPage::representTabEnabled(QString id) {
@@ -427,11 +365,12 @@ void guiPage::booleanButtonToggled(QString path) {
   QString local = pathToLocal(path);
   guiButton *b = buttons[local];
   bool on = b->getSelected();
-  master->setParam(parpath,on ? "yes" : "no");
-  if (local=="enable")
-    setEnabled(on,local);
-  else
+  master->setParam(parpath, on ? "yes" : "no");
+  if (local=="enable") {
+    setEnabled(on, local);
+  } else {
     updateEnabled();
+  }
   QString txt = b->text();
   if (on) 
     txt.replace("Disabled","Enabled");
@@ -462,30 +401,34 @@ void guiPage::updateEnabled() {
 
 void guiPage::setEnabled(bool enable, QString enabler) {
   // dbg("guiPage::setenabled(%i,%s)",enable,qPrintable(enabler));
-  for (QMap<QString, guiButton *>::iterator i=buttons.begin();
-       i!=buttons.end(); ++i) {
-    // Dbg() << "  key: " << i.key();
-    if (i.key()!=enabler) {
-      if (enable || i.key().startsWith("@")) {
-	Param *p = ptree->findp(i.key());
+  foreach (QString id, buttons.keys()) {
+    if (id!=enabler) {
+      if (enable || id.startsWith("@")) {
+	Param *p = ptree->findp(id);
 	bool ena = p ? p->isEnabled() : true;
-	// Dbg() << "  value: " << i.value() << " ena=" << ena;
-	i.value()->setEnabled(ena);
-	//if (!ena)
-	  //p->restore();
+	buttons[id]->setEnabled(ena);
       } else {
-	i.value()->setEnabled(false);
+	buttons[id]->setEnabled(false);
       }
     }
   }
+
   foreach (AbstractPage *p0, subPages) {
     guiPage *p = dynamic_cast<guiPage *>(p0);
     if (p->isVisible())
-      p->setEnabled(enable,"");
+      p->setEnabled(enable, "");
   }
   
   if (enable && isVisible() && ptree->leafp()!=0)
-    openLeaf(ptree->leafp());
+    prepForOpening();
+  /* Really this "leafp!=0" business is very ugly.
+     And it will lead to bugs.
+     But for now it prevents infinite recursion.
+     It really isn't right that prepForOpening and setEnabled call
+     each other. In the old version, that wasn't a problem, because
+     openNode called setEnabled and setEnabled called openLeaf but
+     not on the same page.
+   */
 }
 
 void guiPage::childItemSelected(QString path, QString) {

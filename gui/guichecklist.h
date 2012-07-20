@@ -19,6 +19,7 @@ public:
 protected:
   virtual Button::VisualType visualTypeForParentButton() const;
   virtual guiItem *createItem(QString id);
+  virtual void prepForOpening();
 };
 
 #endif

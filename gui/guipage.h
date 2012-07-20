@@ -122,12 +122,12 @@ public:
    */
   guiPage *parentPage();
 public slots:
-  virtual void open();
+  void open();
   /*:F open
    *:D Opens this page, first updating all button texts based on the
        underlying ParamTree.
   */
-  virtual void close();
+  void close();
   /*:F close
    *:D Closes this page.
    */
@@ -154,25 +154,14 @@ public slots:
   void booleanButtonToggled(QString path);
 protected:
   virtual void paintEvent(class QPaintEvent *event);
+  virtual void prepForOpening();
+  virtual void openChildren();
 private:
   void representTabEnabled(QString id);
   /*:F representTabEnabled
    *:D Visually indicates which tabs have their 'enabled' button on.
    *:A id: local ID of button (e.g. 'channel*DO3')
    */
-  void openLeaf(class Param *pp);
-  /*:F openLeaf
-   *:D Portion of open() that deals with leaf pages, i.e., menus and checklists.
-   *:A pp: parameter this leaf page acts on.
-   *:N This is where the button that represents the current value is selected,
-       and where buttons that represent illegal values are greyed out.
-   */
-  void openNode();
-  /*:F openNode
-   *:D Portion of open() that deals with non-leaf pages, i.e., regular pages
-       and tabbed pages.
-   *:N This is where values are copied from the ParamTree to the page's buttons.
-  */
   void setEnabled(bool on, QString enabler);
   /*:F setEnabled
    *:D Enables or shades all buttons in this page and subpages.
@@ -184,7 +173,7 @@ private:
        status.
    *:N This also resets disabled values to their defaults.
   */
-private:
+protected:
   QMap<QString, class guiButton *> buttons;
   /*:V buttons
    *:D All our buttons by ID. (ID is leaf, not full path).

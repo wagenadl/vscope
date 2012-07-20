@@ -59,7 +59,7 @@ void Enumerator::add(QString s, int n) {
   tag2val[s] = n;
   val2tag[n] = s;
   orderedTags.append(s);
-  Dbg() << "Added " << s << ": " << n << " to enum " << myname;
+  //  Dbg() << "Added " << s << ": " << n << " to enum " << myname;
 }
 
 int Enumerator::lookup(QString s, int dflt) const {

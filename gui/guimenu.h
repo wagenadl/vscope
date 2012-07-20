@@ -20,6 +20,7 @@ protected:
   virtual Button::VisualType visualTypeForParentButton() const;
   virtual void connectToParent(QDomElement doc);
   virtual guiItem *createItem(QString id); // simply constructs a guiMenuItem
+  virtual void prepForOpening();
 };
 
 #endif
