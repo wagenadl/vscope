@@ -157,7 +157,7 @@ void gt_slots::paramchanged(QString p, QString val) {
       else
         Globals::exptlog->addNote("Auto run: Disabled");
       Globals::acquire->setAutoRun();
-    } else if (p=="stimVideo/@lightOn") {
+    } else if (p=="stimVideo/lightOn") {
       VideoLight::set(Globals::ptree->find(p).toBool());
     } else if (p=="scripts/run") {
       Globals::scripts->setRunning(Globals::ptree->find(p).toBool());
