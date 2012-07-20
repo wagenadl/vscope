@@ -138,7 +138,7 @@
 
   <!-- ****************** EPHYS. STIMULATION CONFIG PAGE ******************* -->
   <page id="stimEphys" subdxl="1.05">
-    <button id="enable" label="Enabled" type="bool" bg="#dd88dd"/>
+    <button id="enable" type="bool" bg="#dd88dd"/>
     <group id="channel" cols="2">
       <button id="channel*AO0" value="AO0"/>
       <button id="channel*AO1" value="AO1"/>
@@ -150,7 +150,7 @@
       <button id="channel*DO2" value="DO2"/>
       <button id="channel*DO3" value="DO3"/>
     </group>
-    <tabbedpage id="channel" subdxl="2.1" bg="#dd88dd" >
+    <tabbedpage id="channel" subdxl="2.1" bg="#dd88dd" cols="4.5">
       <button id="enable" type="bool" alwayshidden="true"/>
       <group id="a">
         <button id="delay" label="Delay" bg="#bb88bb"/>
@@ -404,7 +404,7 @@
 
   <!-- ******************** CCD ACQUISITION CONFIG PAGE ******************* -->
   <page id="acqCCD" subdxl="2.1">
-    <button id="enable" label="Enabled" type="bool" bg="#ccccff"/>
+    <button id="enable" type="bool" bg="#ccccff"/>
     <group id="a">
       <button id="binning" label="Binning" bg="#aaaaff"/>
       <button id="region" label="Region" bg="#8888ff"/>
@@ -624,9 +624,10 @@
 
   <!-- ******************** CCD ACQUISITION CONFIG PAGE ******************* -->
   <page id="stimVideo" subdxl="3.1">
-    <button id="enable" label="Disabled" type="bool" bg="#ffff33"/>
+    <button id="enable" type="bool" bg="#ffff33"/>
     <button id="avoidCCD" label="Avoid CCD" type="bool" bg="#cccc99"/>
-    <button id="@lightOn" label="[Light On]" type="bool" y="4" bg="#ffff00"/>
+    <button id="lightOn" label="[Light On]" type="bool" y="4" bg="#ffff00"
+	    neverdisable="true"/>
     <!-- buttons with names starting with "@" are never disabled -->
     <group id="a">
       <button id="delay" label="Onset delay" y="2" bg="#dddd66"/>

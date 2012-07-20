@@ -278,11 +278,12 @@ void Button::setID(QString id) {
   myID = id;
 }
 
-void Button::setText(QString txt) {
+void Button::setText(QString txt, bool noemit) {
   QString t = txt;
   t.replace(QRegExp("_([^ _]+)_?"), "<sub>\\1</sub>");
   QLabel::setText(t);
-  emit textChanged(myID, txt);
+  if (!noemit)
+    emit textChanged(myID, txt);
 }
 
 void Button::setVisualType(VisualType vt) {

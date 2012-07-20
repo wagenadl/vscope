@@ -51,13 +51,12 @@ public:
              this button emits.
   */
   virtual ~Button();
-  void setText(QString txt);
-  /*:F setText
-   *:D Sets the text on the button, as per QAbstractButton, but additionally
-       emits the textChanged signal.
-  */
   VisualType getVisualType() const { return vtype; }
   QString getID() const { return myID; }
+  bool getSelected() const { return isSelected; }
+  /*:F getSelected
+   *:D Returns true if the button is currently selected.
+   */
 signals:
   void activated(QString myID, QString text);
   /*:F activated
@@ -96,6 +95,11 @@ protected:
   void mouseReleaseEvent(class QMouseEvent *);
   void mouseDoubleClickEvent(class QMouseEvent *);
 public slots:
+  virtual void setText(QString txt, bool noemit=false);
+  /*:F setText
+   *:D Sets the text on the button, as per QAbstractButton, but additionally
+       emits the textChanged signal unless the flag is given.
+  */
   void makeAction();
   /*:F makeAction
    *:D Make this button into an action button which does not automatically
@@ -138,7 +142,7 @@ public slots:
   //      user can directly change the button's text. Rather, it means that
   //      clicking it will do something.
   // */
-  void setSelected(bool sel);
+  virtual void setSelected(bool sel);
   /*:F setSelected
    *:D Makes this button selected or not. "Selected" buttons are rendered
        in bold face and often represent the current value of a multiple-choice
@@ -146,15 +150,12 @@ public slots:
    *:N Do not connect this PushButton's toggled() signal to this!
    *:N It is not possible to deselect a radio button.
   */
-  bool getSelected() const { return isSelected; }
-  /*:F getSelected
-   *:D Returns true if the button is currently selected.
-   */
   void toggleSelected();
   /*:F setSelected
    *:D Makes this button selected if it was previously not selected or
        vice versa. Not recommended for Radio buttons.
    *:N Do not connect this PushButton's toggled() signal to this!
+   *:N This calls setSelected.
   */
   void setID(QString newid);
   /*:F setID

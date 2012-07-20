@@ -155,6 +155,9 @@ public slots:
 protected:
   virtual void paintEvent(class QPaintEvent *event);
   virtual void prepForOpening();
+  /*:F prepForOpening
+   *:D Make us ready for being shown to the user.
+   */
   virtual void openChildren();
 private:
   void representTabEnabled(QString id);
@@ -162,13 +165,12 @@ private:
    *:D Visually indicates which tabs have their 'enabled' button on.
    *:A id: local ID of button (e.g. 'channel*DO3')
    */
-  void setEnabled(bool on, QString enabler);
-  /*:F setEnabled
+  void setPageEnabled(bool on);
+  /*:F setPageEnabled
    *:D Enables or shades all buttons in this page and subpages.
-   *:A enabler: if non-empty, any button with this ID is spared.
    */
-  void updateEnabled();
-  /*:F updateEnabled
+  void updateEnableIfs();
+  /*:F updateEnableIfs
    *:D Enables or shades buttons in this page depending on their "enable_if"
        status.
    *:N This also resets disabled values to their defaults.
@@ -189,6 +191,10 @@ protected:
   bool neverOpened;
   /*:V neverOpened
    *:D True if this page has never yet been opened.
+   */
+  bool pageEnabled;
+  /*:V pageEnabled
+   *:D True if this page is enabled (by its Enable button or its parent)
    */
 private slots:
   void addTriangle(QString id);

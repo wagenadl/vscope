@@ -38,7 +38,8 @@ guiPage::guiPage(class QWidget *parent,
   triangle = new guiTriangle(this);
 
   setLineWidth(0);
-  neverOpened=true;
+  neverOpened = true;
+  pageEnabled = true; // reasonable default?
   autoInfo.hasAutoItems = false;
 
   hide();
@@ -256,17 +257,25 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
 
 void guiPage::open() {
   emit opening(pathInstantiate(myPath), (QWidget*)(this));
+  Dbg() << "guiPage:"<<myPath<<": open " << neverOpened;
+  if (neverOpened) {
+    Param *p = ptree->findp("enable");
+    setPageEnabled(p ? p->toBool() : true);
+  }    
+  
   prepForOpening();
 
   if (neverOpened) {
-    neverOpened = false;
     foreach (guiButtonGroup *bg, groups) 
       bg->selectDefaultButton();
     buildAutoItems();
   }
 
   openChildren();
+
+  neverOpened = false;
   show();
+
   emit opened(pathInstantiate(myPath), (QWidget*)(this));
 }
 
@@ -281,12 +290,6 @@ void guiPage::openChildren() {
 }
 
 void guiPage::prepForOpening() {
-  bool enable = true;
-  Param *p = ptree->findp("enable");
-  if (p)
-    enable = p->toBool();
-  setEnabled(enable, "enable");
-
   foreach (QString id, buttons.keys()) {
     guiButton *b = buttons[id];
     Param *p = ptree->findp(id);
@@ -326,10 +329,9 @@ void guiPage::representTabEnabled(QString id) {
     pa.setColor(QPalette::Mid,
 		p->toBool() ? QColor("#ff2200") : QColor("#884444"));
     b->setPalette(pa);
+    if (triangle->currentId()==id)
+      triangle->recolor();
   }
-  //  Dbg() << "representTabEnabled: " << id << " " << triID;
-  if (id==triangle->currentId())
-    addTriangle(id);
 }
 
 void guiPage::close() {
@@ -362,73 +364,47 @@ void reportqbit(QBitArray const &ba) {
 
 void guiPage::booleanButtonToggled(QString path) {
   QString parpath = master->pathInstantiate(path);
-  QString local = pathToLocal(path);
-  guiButton *b = buttons[local];
+  QString subpath = pathToLocal(path);
+  guiButton *b = buttonp(subpath);
+  if (!b)
+    throw Exception("guiPage", "booleanButtonToggled should not be triggered from nonlocal buttons " + this->path() + " -> " + path);
+  
   bool on = b->getSelected();
   master->setParam(parpath, on ? "yes" : "no");
-  if (local=="enable") {
-    setEnabled(on, local);
-  } else {
-    updateEnabled();
-  }
-  QString txt = b->text();
-  if (on) 
-    txt.replace("Disabled","Enabled");
-  else
-    txt.replace("Enabled","Disabled");
-  b->setText(txt);
+  if (subpath=="enable") 
+    setPageEnabled(on);
+  else 
+    updateEnableIfs();
+
 }
 
-void guiPage::updateEnabled() {
-  guiButton *enabutp = findpButton(QString("enable").split('/'));
-  bool pageEna = enabutp ? enabutp->getSelected() : true;
-  for (QMap<QString, guiButton *>::iterator i=buttons.begin();
-       i!=buttons.end(); ++i) {
-    Param *p = ptree->findp(i.key());
+void guiPage::updateEnableIfs() {
+  foreach (QString id, buttons.keys()) {
+    Param *p = ptree->findp(id);
     if (p) {
       bool ena = p->isEnabled();
-      i.value()->setEnabled(ena &&
-			    (pageEna
-			     || i.key().startsWith("@")
-			     || i.key()=="enable"));
-      if (!ena) {
-	//	p->restore();
-	i.value()->setValue(p->toString());
-      }
+      buttons[id]->setEnabled(ena && pageEnabled);
+      if (!ena) 
+	buttons[id]->setValue(p->toString());
     }
   }
 }  
 
-void guiPage::setEnabled(bool enable, QString enabler) {
-  // dbg("guiPage::setenabled(%i,%s)",enable,qPrintable(enabler));
-  foreach (QString id, buttons.keys()) {
-    if (id!=enabler) {
-      if (enable || id.startsWith("@")) {
-	Param *p = ptree->findp(id);
-	bool ena = p ? p->isEnabled() : true;
-	buttons[id]->setEnabled(ena);
-      } else {
-	buttons[id]->setEnabled(false);
-      }
-    }
-  }
+void guiPage::setPageEnabled(bool enable) {
+  pageEnabled = enable;
+  foreach (guiButton *b, buttons)
+    b->setEnabled(enable);
+
+  updateEnableIfs();
 
   foreach (AbstractPage *p0, subPages) {
     guiPage *p = dynamic_cast<guiPage *>(p0);
     if (p->isVisible())
-      p->setEnabled(enable, "");
+      p->setPageEnabled(enable);
   }
   
-  if (enable && isVisible() && ptree->leafp()!=0)
+  if (enable && isVisible())
     prepForOpening();
-  /* Really this "leafp!=0" business is very ugly.
-     And it will lead to bugs.
-     But for now it prevents infinite recursion.
-     It really isn't right that prepForOpening and setEnabled call
-     each other. In the old version, that wasn't a problem, because
-     openNode called setEnabled and setEnabled called openLeaf but
-     not on the same page.
-   */
 }
 
 void guiPage::childItemSelected(QString path, QString) {
@@ -457,7 +433,7 @@ void guiPage::childItemSelected(QString path, QString) {
       buttons[child]->setValue(value);
     }
   }
-  updateEnabled();
+  updateEnableIfs();
 }
 
 void guiPage::childItemDeselected(QString path, QString) {

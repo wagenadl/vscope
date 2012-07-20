@@ -15,44 +15,38 @@ PageBuildGeom::PageBuildGeom(guiPage const *parent):
 void PageBuildGeom::setup(QDomElement doc) {
   QRect geom = parent->geometry();
 
-  page.dxl = int(master->buttondx*doc.attribute("subdxl")
-		   .toDouble() + 1);
-  page.dxr = int(master->buttondx*doc.attribute("subdxr")
-		   .toDouble() + 1);
-  page.dyt = int(master->buttondy*doc.attribute("subdyt")
-		   .toDouble() + 1);
-  page.dyb = int(master->buttondy*doc.attribute("subdyb")
-		   .toDouble() + 1);
-
   rows = doc.attribute("rows").toInt();
-  cols = doc.attribute("cols").toInt();
+  cols = doc.attribute("cols").toDouble();
   caph = master->topy;
+
   button.dx = master->buttondx;
   button.w = master->buttonw;
   button.dy = master->buttondy;
   button.h = master->buttonh;
   button.y0 = caph;
   button.x0 = master->leftx;
+
   if (rows>0) {
     if (geom.height()-caph<button.dy*rows) {
-      button.dy = double(geom.height()
-			   - caph - master->bottomy + master->inty)
-	/ rows;
+      double avheight = geom.height() - caph - master->bottomy + master->inty;
+      button.dy = avheight / rows;
       button.h = int(button.dy) - master->inty;
-    } else {
-      //resize(width(),int(button.dy*(rows+1)-button.h));
     }
   }
   if (cols>0) {
     if (geom.width()<button.dx*cols) {
-      button.dx = double(geom.width()-master->leftx
-			   -master->rightx+master->intx)
-	/ cols;
+      double avwidth = geom.width() - master->leftx - master->rightx
+	+ master->intx;
+      button.dx = avwidth / cols;
       button.w = int(button.dx) - master->intx;
-    } else {
-      //resize(int(button.dx*(cols+1)-button.w),height());
     }
   }
+
+  page.dxl = int(button.dx*doc.attribute("subdxl").toDouble() + 1);
+  page.dxr = int(button.dx*doc.attribute("subdxr").toDouble() + 1);
+  page.dyt = int(button.dy*doc.attribute("subdyt").toDouble() + 1);
+  page.dyb = int(button.dy*doc.attribute("subdyb").toDouble() + 1);
+
   nextcol = 0;
   nextrow = 0;
 }

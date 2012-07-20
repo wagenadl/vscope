@@ -25,4 +25,22 @@ extern QString xmlAttribute(QDomElement e, QString tag, QString dflt="");
  *:R Value of attribute or the empty string.
 */
 
+extern bool attributeTrue(QDomElement e, QString tag);
+/*:F booleanAttribute
+ *:D Returns true iff the attribute ATTR on xml element ELT represents
+     true (i.e., if it is "yes", "on", "true", or "1").
+ *:N Returns false in all other cases, including if TAG does not name an
+     attribute or if the attribute has a nonsensical value.
+*/
+
+extern bool attributeFalse(QDomElement e, QString tag);
+/*:F booleanAttribute
+   *:D Returns true iff the attribute ATTR on xml element ELT represents
+       false (i.e., if it is "no", "off", "false", or "0").
+ *:N Returns false in all other cases, including if TAG does not name an
+     attribute or if the attribute has a nonsensical value.
+*/
+
+
+
 #endif

@@ -17,3 +17,14 @@ QString xmlAttribute(QDomElement e, QString tag, QString dflt) {
   else
     return dflt;
 }
+
+bool attributeTrue(QDomElement e, QString tag) {
+  QString v = xmlAttribute(e, tag).toLower();
+  return v=="yes" || v=="on" || v=="true" || v=="1";
+}
+
+bool attributeFalse(QDomElement e, QString tag) {
+  QString v = xmlAttribute(e, tag).toLower();
+  return v=="no" || v=="off" || v=="false" || v=="0";
+}
+

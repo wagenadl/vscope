@@ -21,44 +21,44 @@ guiButton::guiButton(QWidget *parnt, QString id, guiRoot *mastr):
   custom = 0;
   hidewhendisabled = false;
   alwayshidden = false;
+  neverdisable = id=="enable";
 }
 
 void guiButton::setup(QDomElement doc) {
-  if (doc.hasAttribute("custom"))
-    custom=doc.attribute("custom").toInt(0);
-  else if (doc.hasAttribute("editcaption"))
-    custom = -1; // customizable, but not a numbered custom value
-
+  custom = doc.hasAttribute("custom")
+    ? doc.attribute("custom").toInt(0)
+    : doc.hasAttribute("editcaption")
+      ? -1 // customizable, but not a numbered custom value
+      : 0;
+  
   if (custom)
     editCaption = doc.attribute("editcaption");
 
   format = doc.hasAttribute("label") 
     ? doc.attribute("label")
-    : "%1";
+    : id()=="enable"
+      ? "Enabled"
+      : "%1";
+
   if (doc.hasAttribute("bg"))
     setBackground(QColor(doc.attribute("bg")));
+
   if (custom>0) {
     QFont f = font();
     f.setItalic(true);
     setFont(f);
   }
 
-  if (doc.hasAttribute("value"))
-    setValue(doc.attribute("value"));
-  else
-    setValue(doc.attribute("id"));
+  setValue(doc.hasAttribute("value")
+	   ? doc.attribute("value")
+	   : doc.attribute("id"));
 
-  if (doc.hasAttribute("hidewhendisabled")) {
-    Param p("bool");
-    p.set(doc.attribute("hidewhendisabled"));
-    hidewhendisabled = p.toBool();
-  }
-
-  if (doc.hasAttribute("alwayshidden")) {
-    Param p("bool");
-    p.set(doc.attribute("alwayshidden"));
-    alwayshidden = p.toBool();
-  } 
+  if (attributeTrue(doc, "hidewhendisabled"))
+    hidewhendisabled = true;
+  if (attributeTrue(doc, "alwayshidden"))
+    alwayshidden = true;
+  if (attributeTrue(doc, "neverdisable"))
+    neverdisable = true;
 
   connectUp(doc);
   stylize(doc);
@@ -67,6 +67,11 @@ void guiButton::setup(QDomElement doc) {
 guiButton::~guiButton() {
   if (editor)
     delete editor;
+}
+
+void guiButton::setEnabled(bool f) {
+  Dbg() << "guiButton:"<<path()<<": setEnabled " << f << "|" << neverdisable;
+  Button::setEnabled(f || neverdisable);
 }
 
 void guiButton::setFormat(QString f) {
@@ -211,12 +216,6 @@ void guiButton::stylize(QDomElement doc) {
   }
 
   if (doc.attribute("type") == "bool") {
-    QString txt = text();
-    if (getSelected())
-      txt.replace("Disabled", "Enabled");
-    else
-      txt.replace("Enabled", "Disabled");
-    setText(txt);
     makeItem();
     setVisualType(Button::VTBooleanVar);
   } else if (doc.hasAttribute("type")) {
@@ -226,7 +225,21 @@ void guiButton::stylize(QDomElement doc) {
   if (alwayshidden)
     hide();
 }
+
+void guiButton::setSelected(bool s) {
+  Button::setSelected(s);
+  QString txt = text();
+  if (s) {
+    txt.replace(QRegExp("\\bDisabled\\b"), "Enabled");
+    txt.replace(QRegExp("\\bOff\\b"), "On");
+  } else {
+    txt.replace(QRegExp("\\bEnabled\\b"), "Disabled");
+    txt.replace(QRegExp("\\bOn\\b"), "Off");
+  }
+  Button::setText(txt, true); // this is a trivial text change, so prevent signal
+}
   
+
 bool guiButton::alwaysHidden() const {
   return alwayshidden;
 }

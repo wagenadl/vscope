@@ -134,7 +134,7 @@
   <category id="stimVideo">
     <param id="enable" type="bool" default="false"/>
     <param id="avoidCCD" type="bool" default="false"/>
-    <param id="@lightOn" type="bool" default="false" save="false"/>
+    <param id="lightOn" type="bool" default="false" save="false"/>
     <param id="delay" type="time" default="100 ms" min="10 ms" max="1 h"/>
     <param id="dur" type="time" default="10 s" min="100 ms" max="1 h"/>
     <param id="prog" type="string" default="1"/>

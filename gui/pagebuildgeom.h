@@ -35,9 +35,11 @@ private:
     double dx, dy; // grid spacing
   } button;
   struct SubPagePlacement {
-    int dxl, dxr, dyt, dyb; // pixel count of how much smaller subpages compared to parent.
+    int dxl, dxr, dyt, dyb; // pixel count of how much smaller subpages are
+                            // compared to parent.
   } page; 
-  int rows, cols; // number of rows,cols of buttons, or 0 if not specified.
+  int rows; // number of rows of buttons, or 0 if not specified.
+  double cols;  // number of columns of buttons, or 0 if not specified.
   int caph; // height of caption widget, or 0 if none.
   guiGeom const *master;
   bool ingroup;

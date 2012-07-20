@@ -18,6 +18,10 @@ public:
   bool isActive() const;
   QString currentId() const { return id; }
   void render();
+  void recolor();
+private:
+  class guiButton *buttonp();
+  class guiPage *subpagep();
 private:
   class guiPage *parent;
   class guiButton *src;

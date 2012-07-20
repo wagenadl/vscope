@@ -105,6 +105,8 @@ public slots:
   /*:F closeEditor
    *:D This slot closes any open editor.
    */
+  virtual void setEnabled(bool);
+  virtual void setSelected(bool);
 signals:
   void customize(QString mypath, int cno, QString newtext);
   /*:S customize
@@ -126,9 +128,10 @@ protected:
   class TextEntry *editor;
   class guiRoot *master;
   int custom;
-  bool hidewhendisabled;
   class guiPage *parent;
+  bool hidewhendisabled;
   bool alwayshidden;
+  bool neverdisable;
 protected:
   virtual void connectUp(QDomElement doc);
   virtual void stylize(QDomElement doc);
