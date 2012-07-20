@@ -12,7 +12,6 @@
 #include <QDomElement>
 #include <gfx/button.h>
 #include <gui/abstractpage.h>
-#include <gui/autoiteminfo.h>
 #include <gui/pagebuildgeom.h>
 #include <gui/guibutton.h>
 
@@ -110,7 +109,7 @@ protected:
   /*:F addSpace
    *:D Inserts a vertical space between buttons, as per the <space> element.
    */
-  void addAuto(PageBuildGeom &g, QDomElement elt);
+  virtual void addAuto(PageBuildGeom &g, QDomElement elt);
   /*:F addAuto
    *:D Automatically adds a number of <item> buttons according to an enum.
    */
@@ -202,9 +201,7 @@ private slots:
 private:
   void setDefaultColors(QDomElement);
   void addChildren(PageBuildGeom &, QDomElement);
-  void buildAutoItems();
   PageBuildGeom buildGeom;
-  AutoItemInfo autoInfo;
   class guiTriangle *triangle;
   QRect origGeom;
 protected:

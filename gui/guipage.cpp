@@ -33,14 +33,13 @@ guiPage::guiPage(class QWidget *parent,
 		 class guiRoot *master_,
 		 class QRect const &geom):
   AbstractPage(parent, ptree_, id, master_, geom),
-  buildGeom(this), autoInfo(this) {
+  buildGeom(this) {
 
   triangle = new guiTriangle(this);
 
   setLineWidth(0);
   neverOpened = true;
   pageEnabled = true; // reasonable default?
-  autoInfo.hasAutoItems = false;
 
   hide();
 }
@@ -495,19 +494,7 @@ QList<guiButton *> guiPage::getGroup(QString id) const {
 
 
 void guiPage::addAuto(PageBuildGeom &g, QDomElement doc) {
-  autoInfo.setup(g, doc);
-}
-
-void guiPage::buildAutoItems() {
-  if (!autoInfo.hasAutoItems)
-    return;
-  Dbg() << "guiPage::buildAutoItems " << myPath;
-  // PageBuildGeom g = autoInfo.initialGeom;
-  if (!ptree->leafp())
-    throw Exception("guiPage", "Cannot have <auto> outside of a menu");
-  Enumerator const *e = ptree->leafp()->getEnum();
-  Dbg() << "  bai: enum="<<e;
-  Dbg() << "  bai: items = " << e->getAllTags().join(" ");
+  throw Exception("guiPage", "Don't know how to addAuto");
 }
 
 void guiPage::setDefaultColors(QDomElement doc) {

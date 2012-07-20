@@ -14,12 +14,13 @@ public:
 	  QString id,
 	  class guiRoot *master,
 	  class QRect const &geom);
-  virtual void setup(QDomElement doc);
   virtual ~guiChecklist();
 protected:
   virtual Button::VisualType visualTypeForParentButton() const;
   virtual guiItem *createItem(QString id);
   virtual void prepForOpening();
+private:
+  class AutoItemInfo *autoItemInfo;
 };
 
 #endif
