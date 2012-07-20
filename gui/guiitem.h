@@ -7,6 +7,7 @@
 #include <gui/guibutton.h>
 
 class guiItem: public guiButton {
+  Q_OBJECT;
 public:
   guiItem(QWidget *parent, QString id, class guiRoot *master=0);
   virtual ~guiItem();

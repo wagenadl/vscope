@@ -7,6 +7,7 @@
 #include <guipage.h>
 
 class guiMenu: public guiPage {
+  Q_OBJECT;
 public:
   guiMenu(class QWidget *parent,
 	  class ParamTree *ptree,

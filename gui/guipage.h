@@ -213,9 +213,14 @@ private:
   class guiTriangle *triangle;
   QRect origGeom;
 protected:
-  virtual QString getCurrentElement() const;
   virtual void connectToMaster(QDomElement doc);
   virtual void connectToParent(QDomElement doc);
+  virtual void stylize(QDomElement doc);
+  /*:F connectToMast, connectToParent, stylize
+   *:N Implementers of the following should typically call base class's
+       version first.
+  */
+  virtual QString getCurrentElement() const;
   virtual Button::VisualType visualTypeForParentButton() const;
   virtual void sizeToFit();
   virtual class guiItem *createItem(QString id);

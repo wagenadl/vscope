@@ -132,7 +132,9 @@ protected:
 protected:
   virtual void connectUp(QDomElement doc);
   virtual void stylize(QDomElement doc);
-  /* Descendents should *not* call this in their implementation. */
+  /*:F connectUp, stylize
+   *:N Descendents should *not* call these in their implementation.
+   */
 };
 
 #endif

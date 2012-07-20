@@ -7,6 +7,7 @@
 #include <gui/guiitem.h>
 
 class guiChecklistItem: public guiItem {
+  Q_OBJECT;
 public:
   guiChecklistItem(QWidget *parent, QString id, class guiRoot *master=0);
   virtual ~guiChecklistItem();

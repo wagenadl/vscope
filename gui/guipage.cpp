@@ -50,6 +50,7 @@ void guiPage::setup(QDomElement doc) {
   addChildren(buildGeom, doc);
   connectToMaster(doc);
   connectToParent(doc);
+  stylize(doc);
   origGeom = geometry();
   sizeToFit();
 }
@@ -76,49 +77,57 @@ void guiPage::connectToMaster(QDomElement) {
 	  master, SIGNAL(pageClosed(QString,QWidget*)));
 }
 
-void guiPage::connectToParent(QDomElement doc) {
-  guiPage *par = dynamic_cast<guiPage *>(parent());
+void guiPage::connectToParent(QDomElement) {
+  guiPage *par = parentPage();
   if (!par)
     return;
-  
   guiButton *b = par->buttonp(id());
-  if (b) {
-    connect(b, SIGNAL(selected(QString,QString)),this, SLOT(open()));
-    connect(b, SIGNAL(deselected(QString,QString)),this, SLOT(close()));
-    connect(b, SIGNAL(selected(QString,QString)),
-	    par, SLOT(addTriangle(QString)));
-    connect(b,SIGNAL(deselected(QString,QString)),
-	    par, SLOT(removeTriangle(QString)));
-    disconnect(b, SIGNAL(selected(QString,QString)),
-	       master, SIGNAL(buttonSelected(QString,QString)));
-    disconnect(b, SIGNAL(deselected(QString,QString)),
-	       master, SIGNAL(buttonDeselected(QString,QString)));
-    disconnect(b, SIGNAL(activated(QString,QString)),
-	       master, SIGNAL(buttonClicked(QString,QString)));
+  if (!b)
+    return;
 
-    b->makeRadio();
-    b->setVisualType(visualTypeForParentButton());
+  connect(b, SIGNAL(selected(QString,QString)),this, SLOT(open()));
+  connect(b, SIGNAL(deselected(QString,QString)),this, SLOT(close()));
+  connect(b, SIGNAL(selected(QString,QString)),
+	  par, SLOT(addTriangle(QString)));
+  connect(b,SIGNAL(deselected(QString,QString)),
+	  par, SLOT(removeTriangle(QString)));
+  disconnect(b, SIGNAL(selected(QString,QString)),
+	     master, SIGNAL(buttonSelected(QString,QString)));
+  disconnect(b, SIGNAL(deselected(QString,QString)),
+	     master, SIGNAL(buttonDeselected(QString,QString)));
+  disconnect(b, SIGNAL(activated(QString,QString)),
+	     master, SIGNAL(buttonClicked(QString,QString)));
+}
 
-    if (!doc.hasAttribute("bg")) {
-      // Take background color from parent button
-      QPalette butpal = b->palette();
-      QPalette pagepal = this->palette();
-      QColor bg = butpal.color(QPalette::Normal,QPalette::Button);
-      pagepal.setColor(QPalette::Window,bg);
-      setPalette(pagepal);
-      setAutoFillBackground(true);
-      setFrameStyle(QFrame::Panel | QFrame::Raised);
-    }
+void guiPage::stylize(QDomElement doc) {
+  guiPage *par = parentPage();
+  if (!par)
+    return;
+  guiButton *b = par->buttonp(id());
+  if (!b)
+    return;
 
-    QString t = b->text();
-    if (t.indexOf(":")<0 && t.indexOf("...")<0)
-      b->setText(t + "&nbsp;...");
+  b->makeRadio();
+  b->setVisualType(visualTypeForParentButton());
+  
+  if (!doc.hasAttribute("bg")) {
+    // Take background color from parent button
+    QPalette butpal = b->palette();
+    QPalette pagepal = this->palette();
+    QColor bg = butpal.color(QPalette::Normal,QPalette::Button);
+    pagepal.setColor(QPalette::Window,bg);
+    setPalette(pagepal);
+    setAutoFillBackground(true);
+    setFrameStyle(QFrame::Panel | QFrame::Raised);
   }
+  
+  QString t = b->text();
+  if (t.indexOf(":")<0 && t.indexOf("...")<0)
+    b->setText(t + "&nbsp;...");
 }
 
 guiPage::~guiPage() {
-  foreach (guiButton *b, buttons)
-    delete b;
+  // buttons and other descendents will be deleted by qt
 }
 
 void guiPage::addSpace(PageBuildGeom &g, QDomElement doc) {
@@ -243,17 +252,6 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
   guiPage *p = new guiChecklist(this, subtree, id, master, g.pbox());
   subPages[id] = p;
   p->setup(doc);
-
-  for (QMap<QString,guiButton *>::iterator i=p->buttons.begin();
-       i!=p->buttons.end(); ++i) {
-    guiButton *b = i.value();
-     if (isType<guiItem>(b)) {
-      connect(b,SIGNAL(selected(QString,QString)),
-	      this,SLOT(childItemSelected(QString,QString)));
-      connect(b,SIGNAL(deselected(QString,QString)),
-	      this,SLOT(childItemDeselected(QString,QString)));
-    }
-  }
 }
 
 void guiPage::open() {

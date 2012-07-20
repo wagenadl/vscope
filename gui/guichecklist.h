@@ -7,6 +7,7 @@
 #include <gui/guipage.h>
 
 class guiChecklist: public guiPage {
+  Q_OBJECT;
 public:
   guiChecklist(class QWidget *parent,
 	  class ParamTree *ptree,
