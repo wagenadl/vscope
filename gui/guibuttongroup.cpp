@@ -46,3 +46,15 @@ void guiButtonGroup::selectDefaultButton() {
   if (b)
     b->setSelected(true);
 }
+
+void guiButtonGroup::add(QString id) {
+  if (!childids.contains(id))
+    childids.append(id);
+}
+
+bool guiButtonGroup::remove(QString id) {
+  bool r = childids.removeOne(id);
+  if (id==dfltButton)
+    dfltButton = childids.empty() ? "" : childids[0];
+  return r;
+}

@@ -8,6 +8,7 @@
 #include <base/istype.h>
 #include <stdio.h>
 #include <xml/enumerator.h>
+#include "autoitems.h"
 
 guiMenu::guiMenu(class QWidget *parent,
 		 class ParamTree *ptree,
@@ -15,10 +16,7 @@ guiMenu::guiMenu(class QWidget *parent,
 		 class guiRoot *master,
 		 class QRect const &geom):
   guiPage(parent, ptree, id, master, geom) {
-}
-
-void guiMenu::setup(QDomElement doc) {
-  guiPage::setup(doc);
+  autoItems = 0;
 }
 
 guiMenu::~guiMenu() {
@@ -40,10 +38,13 @@ guiItem *guiMenu::createItem(QString id) {
 }
 
 void guiMenu::prepForOpening() {
-  Param *pp = ptree->leafp();
+  Param *pp = ptree ? ptree->leafp() : 0;
   if (!pp)
     throw Exception("guiMenu", "openSelf failed because paramtree has no leaf");
   
+  if (autoItems)
+    autoItems->rebuild();
+
   Param copy(*pp);
   bool valuefound = false;
   foreach (guiButton *b, buttons) {    
@@ -84,4 +85,15 @@ void guiMenu::prepForOpening() {
     }
   }
 }
-  
+
+void guiMenu::addAuto(PageBuildGeom &g, QDomElement doc) {
+  if (autoItems)
+    throw Exception("guiMenu", "Can have only one <auto> item: " + path());
+
+  autoItems = new AutoItems(this);
+  autoItems->setup(g, doc);
+}
+
+bool guiMenu::mayResize() {
+  return autoItems==0 || !autoItems->isDynamic();
+}

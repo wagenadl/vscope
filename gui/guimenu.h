@@ -14,13 +14,16 @@ public:
 	  QString id,
 	  class guiRoot *master,
 	  class QRect const &geom);
-  virtual void setup(QDomElement doc);
   virtual ~guiMenu();
 protected:
   virtual Button::VisualType visualTypeForParentButton() const;
   virtual void connectToParent(QDomElement doc);
   virtual guiItem *createItem(QString id); // simply constructs a guiMenuItem
   virtual void prepForOpening();
+  virtual void addAuto(PageBuildGeom &g, QDomElement doc);
+  virtual bool mayResize();
+protected:
+  class AutoItems *autoItems;
 };
 
 #endif

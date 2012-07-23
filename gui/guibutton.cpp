@@ -70,7 +70,8 @@ guiButton::~guiButton() {
 }
 
 void guiButton::setEnabled(bool f) {
-  Dbg() << "guiButton:"<<path()<<": setEnabled " << f << "|" << neverdisable;
+  Dbg() << "guiButton " << path() << ": setEnabled: " << f;
+  
   Button::setEnabled(f || neverdisable);
 }
 
@@ -154,11 +155,8 @@ void guiButton::closeEditor() {
   
 void guiButton::changeEvent(QEvent *e) {
   Button::changeEvent(e);
-  //  dbg("guiButton:changeEvent");
   if (hidewhendisabled) {
-    //dbg("  hidewhendisabled");
     if (e->type() == QEvent::EnabledChange) {
-      //dbg("    enabled: %c", isEnabled() ? 'y':'n');
       if (isEnabled())
 	show();
       else

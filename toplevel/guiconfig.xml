@@ -167,11 +167,11 @@
       </group>
   
       <menu id="pulseType" caption="Pulse type" rows="4" cols="1">
-	<auto/>
-        <item value="TTL"/>
+	<auto enum="PULSETYPE"/>
+        <!--item value="TTL"/>
         <item value="Square"/>
         <item value="Biphasic"/>
-        <item value="Ramp"/>
+        <item value="Ramp"/-->
       </menu>    
     
       <menu id="nTrains" caption="Number of trains" rows="5" cols="3">
@@ -982,9 +982,7 @@
     <button id="zoomOut" label="Zoom Out" bg="#22ddcc"/>
 
     <menu id="refType" caption="Reference type" rows="3" cols="1">
-      <item value="Analog" label="Analog"/>
-      <item value="Digital" label="Digital"/>
-      <item value="Frequency" label="Frequency"/>
+      <auto enum="REFTYPE"/>
     </menu>
 
     <menu id="refFreq" caption="Reference frequency" rows="5" cols="3">
@@ -1042,18 +1040,11 @@
     </menu>
 
     <menu id="showROIs" caption="Show ROIs" rows="5" cols="1">
-      <item value="Hidden"/>
-      <item value="Centers"/>
-      <item value="Outlines"/>
-      <item value="IDs"/>
-      <item value="Full" label="Outlines and IDs"/>
+      <auto enum="SHOWROIS"/>
     </menu>
 
     <menu id="debleach" caption="Debleach mode" rows="3" cols="1">
-      <item value="None"/>
-      <item value="Linear"/>
-      <item value="Quadratic"/>
-      <!--item value="Exponential" label="Exp. (NYI)"/-->
+      <auto enum="DEBLEACH"/>
     </menu>
   </page>
 

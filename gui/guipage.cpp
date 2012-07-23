@@ -34,7 +34,6 @@ guiPage::guiPage(class QWidget *parent,
 		 class QRect const &geom):
   AbstractPage(parent, ptree_, id, master_, geom),
   buildGeom(this) {
-
   triangle = new guiTriangle(this);
 
   setLineWidth(0);
@@ -55,7 +54,13 @@ void guiPage::setup(QDomElement doc) {
   sizeToFit();
 }
 
+bool guiPage::mayResize() {
+  return true;
+}
+
 void guiPage::sizeToFit() {
+  if (!mayResize())
+    return;
   QRect b0 = QRect(0, 0, origGeom.width(), origGeom.height());
   QRect bb = buildGeom.boundingBox();
   //  Dbg() << "guiPage["<<path()<<"]: sizetofit b0="<<b0<<"; bb="<<bb;
@@ -142,8 +147,6 @@ void guiPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
   guiButtonGroup *bg = new guiButtonGroup(this);
   bg->build(g, doc);
   groups[bg->groupId()] = bg;
-  foreach (QString s, bg->childIDs())
-    groupedButton[s] = bg->groupId();
 }
 
 static QString itemID(QDomElement doc) {
@@ -174,7 +177,7 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   guiButton *b = createItem(id);
   buttons[id] = b;
   buttons[id]->setup(doc);
-  groupedButton[id] = ":items";
+  bg->add(id);
 
   b->setGeometry(g.bbox());
   g.advance();
@@ -224,7 +227,8 @@ void guiPage::paintEvent(class QPaintEvent *e) {
 void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addTabbedPage)","Cannot read subpage ID");
-  ParamTree *subtree = ptree->childp(id);
+  ParamTree *subtree = ptree ? ptree->childp(id) : 0;
+  Dbg() << "addTabbedPage: " << path() << " : " << id;
   // note that this will be NULL if we are a tabbed page
 
   guiPage *p = new guiTabbedPage(this, subtree, id, master, g.pbox());
@@ -235,7 +239,7 @@ void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
 void guiPage::addMenu(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addMenu)","Cannot read subpage ID");
-  ParamTree *subtree = ptree->childp(id);
+  ParamTree *subtree = ptree ? ptree->childp(id) : 0;
   // note that this will be NULL if we are a tabbed page
 
   guiPage *p = new guiMenu(this, subtree, id, master, g.pbox());
@@ -246,7 +250,7 @@ void guiPage::addMenu(PageBuildGeom &g, QDomElement doc) {
 void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addChecklist)","Cannot read subpage ID");
-  ParamTree *subtree = ptree->childp(id);
+  ParamTree *subtree = ptree ? ptree->childp(id) : 0;
   // note that this will be NULL if we are a tabbed page
 
   guiPage *p = new guiChecklist(this, subtree, id, master, g.pbox());
@@ -256,18 +260,14 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
 
 void guiPage::open() {
   emit opening(pathInstantiate(myPath), (QWidget*)(this));
-  Dbg() << "guiPage:"<<myPath<<": open " << neverOpened;
-  if (neverOpened) {
-    Param *p = ptree->findp("enable");
-    setPageEnabled(p ? p->toBool() : true);
-  }    
-  
-  prepForOpening();
+  Dbg() << "guiPage:"<<myPath<<": open first=" << neverOpened;
+
+  Param *p = ptree->findp("enable");
+  setPageEnabled(p ? p->toBool() : true);
 
   if (neverOpened) {
     foreach (guiButtonGroup *bg, groups) 
       bg->selectDefaultButton();
-    buildAutoItems();
   }
 
   openChildren();
@@ -291,7 +291,7 @@ void guiPage::openChildren() {
 void guiPage::prepForOpening() {
   foreach (QString id, buttons.keys()) {
     guiButton *b = buttons[id];
-    Param *p = ptree->findp(id);
+    Param *p = ptree ? ptree->findp(id) : 0;
     if (p) {
       // This is a button that directly represents a value.
       bool ena = p->isEnabled();
@@ -322,7 +322,7 @@ void guiPage::representTabEnabled(QString id) {
   int idx = id.indexOf('*');
   QString ar = id.left(idx);
   QString elt = id.mid(idx+1);
-  Param *p = origptree->findp(ar+"/"+elt+"/enable");
+  Param *p = origptree ? origptree->findp(ar+"/"+elt+"/enable") : 0;
   if (p) {
     QPalette pa = b->palette();
     pa.setColor(QPalette::Mid,
@@ -379,7 +379,7 @@ void guiPage::booleanButtonToggled(QString path) {
 
 void guiPage::updateEnableIfs() {
   foreach (QString id, buttons.keys()) {
-    Param *p = ptree->findp(id);
+    Param *p = ptree ? ptree->findp(id) : 0;
     if (p) {
       bool ena = p->isEnabled();
       buttons[id]->setEnabled(ena && pageEnabled);
@@ -390,6 +390,7 @@ void guiPage::updateEnableIfs() {
 }  
 
 void guiPage::setPageEnabled(bool enable) {
+  Dbg() << "guiPage " << path() << ": setPageEnabled: " << enable;
   pageEnabled = enable;
   foreach (guiButton *b, buttons)
     b->setEnabled(enable);
@@ -402,8 +403,7 @@ void guiPage::setPageEnabled(bool enable) {
       p->setPageEnabled(enable);
   }
   
-  if (enable && isVisible())
-    prepForOpening();
+  prepForOpening();
 }
 
 void guiPage::childItemSelected(QString path, QString) {
@@ -448,7 +448,6 @@ void guiPage::childItemDeselected(QString path, QString) {
   if (b) {
     if (isType<guiChecklist>(subPages[child])) {
       master->setParam(parpath,"-"+value);
-      //ptree->find(pathToLocal(parpath)).report();
     }
   }
 }
@@ -481,20 +480,24 @@ void guiPage::childItemCustomized(QString path, int cno, QString text) {
   }
 }
 
-QList<guiButton *> guiPage::getGroup(QString id) const {
+QList<guiButton *> guiPage::getGroup(QString gid) {
   QList<guiButton *> list;
-  if (!groups.contains(id))
-    return list;
-  for (QMap<QString,QString>::const_iterator i=groupedButton.begin();
-       i!=groupedButton.end(); ++i)
-    if (i.value()==id)
-      list.push_back(buttons[i.key()]);
+  guiButtonGroup *g = groupp(gid);
+  if (g) {
+    foreach (QString id, g->childIDs())
+      if (buttonp(id))
+	list.push_back(buttonp(id));
+      else
+	throw Exception("guiPage", "Inconsistent guiPage group list");
+  } else {
+    Dbg() << "Request for unknown group: " << gid;
+  }
   return list;
 }
 
 
-void guiPage::addAuto(PageBuildGeom &g, QDomElement doc) {
-  throw Exception("guiPage", "Don't know how to addAuto");
+void guiPage::addAuto(PageBuildGeom &, QDomElement) {
+  throw Exception("guiPage", "Don't know how to addAuto. " + path());
 }
 
 void guiPage::setDefaultColors(QDomElement doc) {
@@ -600,4 +603,12 @@ guiPage *guiPage::parentPage() {
 
 QString guiPage::getCurrentElement() const {
   return "";
+}
+
+bool guiPage::deleteButton(QString id) {
+  bool r = buttons.remove(id)>0;
+  if (r)
+    foreach (QString gid, groups.keys())
+      groupp(gid)->remove(id);
+  return r;
 }

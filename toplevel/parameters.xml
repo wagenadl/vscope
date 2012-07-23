@@ -8,13 +8,6 @@
 
 <!-- ************************** ENUMERATIONS ***************************** -->
 <enums>
-  <enum id="PULSETYPE">
-    <item tag="TTL"/>
-    <item tag="Square"/>
-    <item tag="Biphasic"/>
-    <item tag="Ramp"/>
-  </enum>
-
   <enum id="STIMCHS">
     <item tag="AO0" value="0"/>
     <item tag="AO1" value="1"/>
@@ -25,28 +18,6 @@
     <item tag="DO2" value="6"/>
     <item tag="DO3" value="7"/>
     <item tag="SIGNATURE" value="8"/>
-  </enum>
-
-  <enum id="SHOWROIS">
-    <item tag="Hidden"/>
-    <item tag="Centers"/>
-    <item tag="Outlines"/>
-    <item tag="IDs"/>
-    <item tag="Full"/>
-  </enum>
-
-  <enum id="REFTYPE">
-    <item tag="Analog"/>
-    <item tag="Digital"/>
-    <item tag="Frequency"/>
-  </enum>
-    
-
-  <enum id="DEBLEACH">
-    <item tag="None"/>
-    <item tag="Linear"/>
-    <item tag="Quadratic"/>
-    <item tag="Exponential"/>
   </enum>
 
   <enum id="SHOWWHAT">

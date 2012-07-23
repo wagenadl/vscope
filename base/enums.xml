@@ -27,7 +27,7 @@
       <item tag="None"/>
       <item tag="Linear"/>
       <item tag="Quadratic"/>
-      <item tag="Exponential"/>
+      <!--item tag="Exponential"/-->
     </enum>
   </enums>
 </vscope>

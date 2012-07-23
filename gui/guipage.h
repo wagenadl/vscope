@@ -55,14 +55,12 @@ public:
   virtual class guiButtonGroup const *groupp(QString id) const;
   virtual class guiButtonGroup *groupp(QString id);
 public:
-  /* Only guiButtonGroup should use these. */
   class guiButton *addButton(PageBuildGeom &g, QDomElement elt);
   /*:F addButton
    *:D Adds a new button to this page.
    *:N This function also connects the button's selected/deselected/activated
        signals to the corresponding guiRoot's signals.
    */
-protected:
   virtual class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
   /*:F addItem
    *:D Adds a new item button to this page.
@@ -113,8 +111,15 @@ protected:
   /*:F addAuto
    *:D Automatically adds a number of <item> buttons according to an enum.
    */
+  virtual bool deleteButton(QString id);
+  /*:F deleteButton
+   *:D Deletes a button and forgets about it.
+   *:R True if the button was found.
+   *:N A nonexistent button does not trigger an exception, just a "false"
+       return code.
+   */
 public:
-  QList<class guiButton *> getGroup(QString id) const;
+  QList<class guiButton *> getGroup(QString id);
   /*:F getGroup
    *:D Returns a list of all buttons in a given group.
    *:N Returns an empty list if the group does not exist.
@@ -183,10 +188,6 @@ protected:
   /*:V groups
    *:D All our button groups by ID. (ID is leaf, not full path).
    */
-  QMap<QString, QString> groupedButton;
-  /*:V groupedButton
-   *:D Map of buttonID to groupID for grouped buttons.
-   */
   bool neverOpened;
   /*:V neverOpened
    *:D True if this page has never yet been opened.
@@ -216,6 +217,7 @@ protected:
   virtual Button::VisualType visualTypeForParentButton() const;
   virtual void sizeToFit();
   virtual class guiItem *createItem(QString id);
+  virtual bool mayResize();
 };
 
 #endif

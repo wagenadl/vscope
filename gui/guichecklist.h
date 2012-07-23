@@ -4,9 +4,9 @@
 
 #define GUICHECKLIST_H
 
-#include <gui/guipage.h>
+#include <gui/guimenu.h>
 
-class guiChecklist: public guiPage {
+class guiChecklist: public guiMenu {
   Q_OBJECT;
 public:
   guiChecklist(class QWidget *parent,
@@ -16,11 +16,8 @@ public:
 	  class QRect const &geom);
   virtual ~guiChecklist();
 protected:
-  virtual Button::VisualType visualTypeForParentButton() const;
   virtual guiItem *createItem(QString id);
   virtual void prepForOpening();
-private:
-  class AutoItemInfo *autoItemInfo;
 };
 
 #endif

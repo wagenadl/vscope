@@ -7,21 +7,17 @@
 #include <base/istype.h>
 #include <xml/enumerator.h>
 #include <stdio.h>
+#include "autoitems.h"
 
 guiChecklist::guiChecklist(class QWidget *parent,
 		 class ParamTree *ptree,
 		 QString id,
 		 class guiRoot *master,
 		 class QRect const &geom):
-  guiPage(parent, ptree, id, master, geom) {
-  autoButtons = 0;
+  guiMenu(parent, ptree, id, master, geom) {
 }
 
 guiChecklist::~guiChecklist() {
-}
-
-Button::VisualType guiChecklist::visualTypeForParentButton() const {
-  return Button::VTVarOpen;
 }
 
 guiItem *guiChecklist::createItem(QString id) {
@@ -34,8 +30,8 @@ void guiChecklist::prepForOpening() {
     throw Exception("guiCheckList",
 		    "openSelf failed because I am not a leaf of type set");
 
-  if (autoButtons)
-    autoButtons->rebuild();
+  if (autoItems)
+    autoItems->rebuild();
   
   QBitArray ba = pp->toBitArray();
   foreach (guiButton *b, buttons) {
@@ -49,15 +45,4 @@ void guiChecklist::prepForOpening() {
       }	  
     }
   }
-}
-
-void guiChecklist::addAuto(PageBuildGeom &g, QDomElement doc) {
-  if (autoButtons)
-    throw Exception("guiChecklist", "Can have only one <auto> item");
-  Param *pp = ptree->leafp();
-  if (!pp || pp->getType()!="set") 
-    throw Exception("guiCheckList",
-		    "openSelf failed because I am not a leaf of type set");
-  autoButtons = new AutoButtons(this);
-  autoButtons->setup(g, doc, pp->getEnum());
 }
