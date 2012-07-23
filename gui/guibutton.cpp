@@ -70,8 +70,6 @@ guiButton::~guiButton() {
 }
 
 void guiButton::setEnabled(bool f) {
-  Dbg() << "guiButton " << path() << ": setEnabled: " << f;
-  
   Button::setEnabled(f || neverdisable);
 }
 

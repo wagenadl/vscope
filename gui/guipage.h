@@ -15,6 +15,8 @@
 #include <gui/pagebuildgeom.h>
 #include <gui/guibutton.h>
 
+#define ARRAYSEP ":"
+
 class guiPage: public AbstractPage {
   Q_OBJECT;
   /*:C guiPage

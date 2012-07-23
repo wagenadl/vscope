@@ -310,7 +310,7 @@ void guiPage::prepForOpening() {
       } else {
 	b->setValue(p->toString());
       }
-    } else if (id.indexOf('*')>0) {
+    } else if (id.indexOf(ARRAYSEP)) {
       // This is a button that represents a tab.
       representTabEnabled(id);
     }
@@ -319,7 +319,7 @@ void guiPage::prepForOpening() {
 
 void guiPage::representTabEnabled(QString id) {
   guiButton *b = buttons[id];
-  int idx = id.indexOf('*');
+  int idx = id.indexOf(ARRAYSEP);
   QString ar = id.left(idx);
   QString elt = id.mid(idx+1);
   Param *p = origptree ? origptree->findp(ar+"/"+elt+"/enable") : 0;
@@ -348,8 +348,10 @@ void guiPage::close() {
 void guiPage::childTabEnabled(QString path) {
   QString child = pathToLocal(path);
   child = child.left(child.indexOf('/'));
-  if (subPages.contains(child)) {
-    QString but = child + "*" + subPages[child]->getCurrentElement();
+  guiPage *p = subpagep(child);
+  Dbg() << "guiPage " << this->path() << ": childTabEnabled " << path << " child: " << child;
+  if (p) {
+    QString but = child + ARRAYSEP + p->getCurrentElement();
     representTabEnabled(but);
   }
 }
@@ -390,7 +392,6 @@ void guiPage::updateEnableIfs() {
 }  
 
 void guiPage::setPageEnabled(bool enable) {
-  Dbg() << "guiPage " << path() << ": setPageEnabled: " << enable;
   pageEnabled = enable;
   foreach (guiButton *b, buttons)
     b->setEnabled(enable);

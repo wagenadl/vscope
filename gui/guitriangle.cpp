@@ -12,7 +12,7 @@ guiTriangle::guiTriangle(guiPage *parent): parent(parent) {
 }
 
 guiPage *guiTriangle::subpagep() {
-  int idx = id.indexOf("*");
+  int idx = id.indexOf(ARRAYSEP);
   QString pid = idx>0 ? id.left(idx) : id;
   return parent->subpagep(pid);
 }

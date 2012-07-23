@@ -140,15 +140,15 @@
   <page id="stimEphys" subdxl="1.05">
     <button id="enable" type="bool" bg="#dd88dd"/>
     <group id="channel" cols="2">
-      <button id="channel*AO0" value="AO0"/>
-      <button id="channel*AO1" value="AO1"/>
+      <button id="channel:AO0" value="AO0"/>
+      <button id="channel:AO1" value="AO1"/>
       <!--button id="channel*AO2" value="AO2"/-->
       <!--button id="channel*AO3" value="AO3"/-->
       <break/>
-      <button id="channel*DO0" value="DO0"/>
-      <button id="channel*DO1" value="DO1"/>
-      <button id="channel*DO2" value="DO2"/>
-      <button id="channel*DO3" value="DO3"/>
+      <button id="channel:DO0" value="DO0"/>
+      <button id="channel:DO1" value="DO1"/>
+      <button id="channel:DO2" value="DO2"/>
+      <button id="channel:DO3" value="DO3"/>
     </group>
     <tabbedpage id="channel" subdxl="2.1" bg="#dd88dd" cols="4.5">
       <button id="enable" type="bool" alwayshidden="true"/>

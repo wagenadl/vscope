@@ -68,7 +68,7 @@ guiTabbedPage::~guiTabbedPage() {
 void guiTabbedPage::open(QString p) {
   int idx = p.lastIndexOf('/');
   QString elt = p.mid(idx+1);
-  idx = elt.indexOf('*');
+  idx = elt.indexOf(ARRAYSEP);
   QString ar = (idx>=0) ? elt.left(idx) : "";
   elt = elt.mid(idx+1);
   currentElement = elt;
