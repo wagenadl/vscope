@@ -50,14 +50,18 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
   QDomDocument xml;
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
+  Dbg() << "AutoItems::rebuild " << enumerator->getName();
   foreach (QString id, ids) {
-    // let's build an item
-    xml.setContent(hd1 + "\n" + hd2 + "\n"
-		   + "<item value=\""
-		   + id
-		   + "\"/>\n");
-    QDomElement e = xml.documentElement();
-    items[id] = p->addItem(g, e);
+    Dbg() << " add " << id << "=" << enumerator->lookup(id);
+    if (enumerator->lookup(id)>=0) {
+      // let's build an item
+      xml.setContent(hd1 + "\n" + hd2 + "\n"
+		     + "<item value=\""
+		     + id
+		     + "\"/>\n");
+      QDomElement e = xml.documentElement();
+      items[id] = p->addItem(g, e);
+    }
   }
   
   if (g_out)

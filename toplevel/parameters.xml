@@ -111,8 +111,8 @@
     <param id="parA" type="double" default="0"/>
     <param id="parB" type="double" default="0"/>
     <param id="parC" type="double" default="0"/>
-    <param id="marginPreCCD" type="time" default="5.5 ms" min="0 ms" max="100 ms"/>
-    <param id="marginPostCCD" type="time" default="0.5 ms" min="0 ms" max="100 ms"/>
+    <param id="marginPreCCD" type="time" default="5.5 ms" min="0 ms" max="500 ms"/>
+    <param id="marginPostCCD" type="time" default="0.5 ms" min="0 ms" max="500 ms"/>
     <param id="xscale" type="voltage" default="1.35 V"/>
     <param id="yscale" type="voltage" default="1.5 V"/>
     <param id="xhome" type="voltage" default="0 V"/>
@@ -193,6 +193,8 @@
       <param id="frameRate-1" type="freq" default="60 Hz"/>
       <param id="preIllum-1" type="time" default="1 s"/>
       <param id="postIllum-1" type="time" default="1 s"/>
+      <param id="marginPreCCD-1" type="time" default="5 ms"/>
+      <param id="marginPostCCD-1" type="time" default="0.5 ms"/>
       <param id="parA-1" type="double" default="0"/>
       <param id="parB-1" type="double" default="0"/>
       <param id="parC-1" type="double" default="0"/>

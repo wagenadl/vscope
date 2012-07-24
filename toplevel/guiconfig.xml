@@ -75,9 +75,10 @@
       <button id="acqFreq" label="Sample rate" bg="#88ddff"/>
     </group>
     <!-- ********************* MENUS FOR EPHYS. RECORDING ******************** -->
-    <checklist id="aiChannels" caption="Input channels" rows="4" cols="4">
+    <checklist id="aiChannels" caption="Input channels" rows="4" cols="5">
       <!-- "values" match "tags" in AICHAN enum -->
-      <item value="ME1_10Vm"/>
+      <auto enum="AICHAN"/>
+      <!--item value="ME1_10Vm"/>
       <item value="ME2_Vm"  />
       <item value="ME1_I"   />
       <item value="ME2_I"   />
@@ -95,42 +96,24 @@
       <item value="Stim0Mon"/>
       <item value="Stim1Mon"/>
       <item value="Stim2Mon"/>
-      <item value="Stim3Mon"/>
+      <item value="Stim3Mon"/-->
     </checklist>
 
-    <menu id="acqTime" caption="Trial duration" rows="6" cols="3">
-      <item value="1.1 s"/>
-      <item value="1.6 s"/>
-      <item value="2.2 s"/>
-      <item value="3.3 s"/>
-      <item value="5.5 s"/>
-      <item value="7.0 s"/>
-      <break/>
-      <item value="11 s"/>
-      <item value="16 s"/>
-      <item value="21 s"/>
-      <item value="31 s"/>
-      <item value="46 s"/>
-      <break/>
-      <item value="61 s"/>
-      <item value="91 s"/>
-      <item value="121 s"/>
-      <item value="181 s"/>
+    <menu id="acqTime" caption="Trial duration" rows="5" cols="4">
+      <items>
+	1.1 s, 1.6 s, 2.2 s, 3.3 s, 5.5 s, 7.0 s,
+	11 s, 16 s, 21 s, 31 s, 46 s,  	  
+	61 s, 91 s, 121 s, 181 s
+      </items>
       <space dy="1"/>
       <item custom="1"  editcaption="Trial duration"/>
     </menu>
   
     <menu id="acqFreq" caption="Sample rate" rows="5" cols="2">
-      <item value="1 kHz"/> <!-- "label" is automatic for most types based on "value" -->
-      <item value="2 kHz"/>
-      <item value="3 kHz"/>
-      <item value="5 kHz"/>
-      <item value="7 kHz"/>
-      <break/>
-      <item value="10 kHz"/>
-      <item value="15 kHz"/>
-      <item value="20 kHz"/>
-      <item value="30 kHz"/>
+      <items>
+	1 kHz, 2 kHz, 3 kHz, 5 kHz, 7 kHz,
+	10 kHz, 15 kHz, 20 kHz, 30 kHz
+      </items>
       <item custom="1"  editcaption="Sample rate"/> <!-- "custom" creates a user editable button. The value will be overwritten in the local.xml settings file. -->
     </menu>
 
@@ -167,228 +150,87 @@
       </menu>    
     
       <menu id="nTrains" caption="Number of trains" rows="5" cols="3">
-        <item value="1"/>
-        <item value="2"/>
-        <item value="3"/>
-        <item value="4"/>
-        <item value="5"/>
-        <break/>
-        <item value="6"/>
-        <item value="7"/>
-        <item value="8"/>
-        <item value="9"/>
-        <item value="10"/>
-        <break/>
-        <item value="12"/>
-        <item value="15"/>
-        <item value="20"/>
-        <item value="30"/>
+	<items>
+	  1, 2, 3, 4, 5,
+	  6, 7, 8, 9, 10,
+	  12, 15, 20, 30
+	</items>
         <item custom="1"  editcaption="Number of trains"/>
       </menu>
     
       <menu id="nPulses" caption="Pulses per train" rows="5" cols="3">
-        <item value="1"/>
-        <item value="2"/>
-        <item value="3"/>
-        <item value="4"/>
-        <item value="5"/>
-        <break/>
-        <item value="6"/>
-        <item value="7"/>
-        <item value="8"/>
-        <item value="9"/>
-        <item value="10"/>
-        <break/>
-        <item value="12"/>
-        <item value="15"/>
-        <item value="20"/>
-        <item value="30"/>
+	<items>
+	  1, 2, 3, 4, 5,
+	  6, 7, 8, 9, 10,
+	  12, 15, 20, 30
+	</items>
         <item custom="1" editcaption="Number of pulses per train"/>
       </menu>
     
-      <menu id="delay" caption="Train period" rows="6" cols="4">
+      <menu id="delay" caption="Delay" rows="6" cols="4">
         <item value="0 ms"/>
-        <item custom="1" editcaption="Train period" y="5"/>
+        <item custom="1" editcaption="Delay" y="5"/>
         <break/>
-        <item value="10 ms"/>
-        <item value="15 ms"/>
-        <item value="20 ms"/>
-        <item value="30 ms"/>
-        <item value="50 ms"/>
-        <item value="70 ms"/>
-        <break/>
-        <item value="100 ms"/>
-        <item value="150 ms"/>
-        <item value="200 ms"/>
-        <item value="300 ms"/>
-        <item value="500 ms"/>
-        <item value="700 ms"/>
-        <break/>
-        <item value="1 s"/>
-        <item value="1.5 s"/>
-        <item value="2 s"/>
-        <item value="3 s"/>
-        <item value="5 s"/>
-        <item value="7 s"/>
+	<items>
+	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
+	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+	  1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	</items>
       </menu>
 
       <menu id="trainPeriod" caption="Train period" rows="6" cols="3">
-        <item value="100 ms"/>
-        <item value="150 ms"/>
-        <item value="200 ms"/>
-        <item value="300 ms"/>
-        <item value="500 ms"/>
-        <item value="700 ms"/>
-        <break/>
-        <item value="1 s"/>
-        <item value="1.5 s"/>
-        <item value="2 s"/>
-        <item value="3 s"/>
-        <item value="5 s"/>
-        <item value="7 s"/>
-        <break/>
-        <item value="10 s"/>
-        <item value="15 s"/>
-        <item value="20 s"/>
-        <item value="30 s"/>
-        <item value="50 s"/>
+	<items>
+	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+	  1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	  10 s, 15 s, 20 s, 30 s, 50 s
+	</items>
         <item custom="1" editcaption="Train period"/>
       </menu>
     
       <menu id="pulsePeriod" label="Pulse period" rows="6" cols="3">
-        <item value="10 ms"/>
-        <item value="15 ms"/>
-        <item value="20 ms"/>
-        <item value="30 ms"/>
-        <item value="50 ms"/>
-        <item value="70 ms"/>
-        <break/>
-        <item value="100 ms"/>
-        <item value="150 ms"/>
-        <item value="200 ms"/>
-        <item value="300 ms"/>
-        <item value="500 ms"/>
-        <item value="700 ms"/>
-        <break/>
-        <item value="1 s"/>
-        <item value="1.5 s"/>
-        <item value="2 s"/>
-        <item value="3 s"/>
-        <item value="5 s"/>
+	<items>
+	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+	  1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	  10 s, 15 s, 20 s, 30 s, 50 s
+	</items>
         <item custom="1" editcaption="Pulse period"/>
       </menu>
     
       <menu id="pulseDur" caption="Pulse duration" rows="6" cols="4">
-        <item value="0.1 ms"/>
-        <item value="0.15 ms"/>
-        <item value="0.2 ms"/>
-        <item value="0.3 ms"/>
-        <item value="0.5 ms"/>
-        <item value="0.7 ms"/>
-        <break/>
-        <item value="1 ms"/>
-        <item value="1.5 ms"/>
-        <item value="2 ms"/>
-        <item value="3 ms"/>
-        <item value="5 ms"/>
-        <item value="7 ms"/>
-        <break/>
-        <item value="10 ms"/>
-        <item value="15 ms"/>
-        <item value="20 ms"/>
-        <item value="30 ms"/>
-        <item value="50 ms"/>
-        <item value="70 ms"/>
-        <break/>
-        <item value="100 ms"/>
-        <item value="150 ms"/>
-        <item value="200 ms"/>
-        <item value="300 ms"/>
-        <item value="500 ms"/>
+	<items>
+	  0.1 ms, 0.15 ms, 0.2 ms, 0.3 ms, 0.5 ms, 0.7 ms
+	  1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
+	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
+	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms
+	</items>
         <item custom="1" editcaption="Pulse duration"/>
       </menu>
     
       <menu id="pulseDur2" caption="Duration of second phase" rows="6" cols="4">
-        <item value="0.1 ms"/>
-        <item value="0.15 ms"/>
-        <item value="0.2 ms"/>
-        <item value="0.3 ms"/>
-        <item value="0.5 ms"/>
-        <item value="0.7 ms"/>
-        <break/>
-        <item value="1 ms"/>
-        <item value="1.5 ms"/>
-        <item value="2 ms"/>
-        <item value="3 ms"/>
-        <item value="5 ms"/>
-        <item value="7 ms"/>
-        <break/>
-        <item value="10 ms"/>
-        <item value="15 ms"/>
-        <item value="20 ms"/>
-        <item value="30 ms"/>
-        <item value="50 ms"/>
-        <item value="70 ms"/>
-        <break/>
-        <item value="100 ms"/>
-        <item value="150 ms"/>
-        <item value="200 ms"/>
-        <item value="300 ms"/>
-        <item value="500 ms"/>
+	<items>
+	  0.1 ms, 0.15 ms, 0.2 ms, 0.3 ms, 0.5 ms, 0.7 ms,
+	  1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
+	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
+	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms
+	</items>
         <item custom="1" editcaption="Duration of 2nd phase"/>
       </menu>
     
       <menu id="pulseAmp" caption="Pulse amplitude (initial for ramp)" rows="6" cols="4">
-            <!-- I could make stimuli appear in natural units, but I think that's too much trouble? -->
-        <item value="0.01 V"/>
-        <item value="0.015 V"/>
-        <item value="0.02 V"/>
-        <item value="0.03 V"/>
-        <item value="0.05 V"/>
-        <item value="0.07 V"/>
-        <break/>
-        <item value="0.1 V"/>
-        <item value="0.15 V"/>
-        <item value="0.2 V"/>
-        <item value="0.3 V"/>
-        <item value="0.5 V"/>
-        <item value="0.7 V"/>
-        <break/>
-        <item value="1 V"/>
-        <item value="1.5 V"/>
-        <item value="2 V"/>
-        <item value="3 V"/>
-        <item value="5 V"/>
-        <item value="7 V"/>
-        <break/>
-        <item value="10 V"/>
+	<items>
+	  10 mV, 15 mV, 20 mV, 30 mV, 50 mV, 70 mV
+	  100 mV, 150 mV, 200 mV, 300 mV, 500 mV, 700 mV
+	  1 V, 1.5 V, 2 V, 3 V, 5 V, 7 V, 10 V
+	</items>
         <item custom="1" editcaption="Pulse amplitude (initial for ramp)"/>
       </menu>
     
       <menu id="pulseAmp2" caption="Final pulse amplitude (2nd phase or end of ramp)" rows="6" cols="4">
-            <!-- I could make stimuli appear in natural units, but I think that's too much trouble? -->
-        <item value="0.01 V"/>
-        <item value="0.015 V"/>
-        <item value="0.02 V"/>
-        <item value="0.03 V"/>
-        <item value="0.05 V"/>
-        <item value="0.07 V"/>
-        <break/>
-        <item value="0.1 V"/>
-        <item value="0.15 V"/>
-        <item value="0.2 V"/>
-        <item value="0.3 V"/>
-        <item value="0.5 V"/>
-        <item value="0.7 V"/>
-        <break/>
-        <item value="1 V"/>
-        <item value="1.5 V"/>
-        <item value="2 V"/>
-        <item value="3 V"/>
-        <item value="5 V"/>
-        <item value="7 V"/>
-        <break/>
-        <item value="10 V"/>
+	<items>
+	  10 mV, 15 mV, 20 mV, 30 mV, 50 mV, 70 mV
+	  100 mV, 150 mV, 200 mV, 300 mV, 500 mV, 700 mV
+	  1 V, 1.5 V, 2 V, 3 V, 5 V, 7 V, 10 V
+	</items>
         <item custom="1" editcaption="Final pulse amplitude (2nd phase or end of ramp)"/>
       </menu>
     </tabbedpage>
@@ -435,181 +277,72 @@
     </menu>
   
     <menu id="rate" caption="CCD frame rate (fps)" rows="5" cols="4">
-      <item value="1 Hz"/> <!-- "label" is automatic for most types based on "value" -->
-      <item value="2 Hz"/>
-      <item value="3 Hz"/>
-      <item value="5 Hz"/>
-      <item value="7 Hz"/>
-      <break/>
-      <item value="10 Hz"/>
-      <item value="15 Hz"/>
-      <item value="20 Hz"/>
-      <item value="30 Hz"/>
-      <item value="50 Hz"/>
-      <break/>
-      <item value="70 Hz"/>
-      <item value="100 Hz"/>
-      <item value="150 Hz"/>
-      <item value="200 Hz"/>
-      <item value="300 Hz"/>
-      <break/>
-      <item value="500 Hz"/>
-      <item value="700 Hz"/>
-      <item value="1000 Hz"/>
+      <items>
+	1 Hz, 2 Hz, 3 Hz, 5 Hz, 7 Hz,
+	10 Hz, 15 Hz, 20 Hz, 30 Hz, 50 Hz,
+	70 Hz, 100 Hz, 150 Hz, 200 Hz, 300 Hz,
+	500 Hz, 700 Hz, 1 kHz
+      </items>
       <space dy="1"/>
       <item custom="1" editcaption="CCD frame rate"/>
     </menu>
   
-    <menu id="delay" caption="Delay before image acquisition" rows="6" cols="4">
-      <item value="100 ms"/>
-      <item value="150 ms"/>
-      <item value="200 ms"/>
-      <item value="300 ms"/>
-      <item value="500 ms"/>
-      <item value="700 ms"/>
-      <break/>
-      <item value="1.0 s"/>
-      <item value="1.5 s"/>
-      <item value="2.0 s"/>
-      <item value="3.0 s"/>
-      <item value="5.0 s"/>
-      <item value="7.0 s"/>
-      <break/>
-      <item value="10 s"/>
-      <item value="15 s"/>
-      <item value="20 s"/>
-      <item value="30 s"/>
-      <item value="45 s"/>
-      <break/>
-      <item value="60 s"/>
-      <item value="90 s"/>
-      <item value="120 s"/>
-      <item value="180 s"/>
+    <menu id="delay" caption="Delay before image acquisition" rows="5" cols="5">
+      <items>
+	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	10 s, 15 s, 20 s, 30 s, 45 s,
+	60 s, 90 s, 120 s, 180 s
+      </items>
       <space dy="1"/>
       <item custom="1" editcaption="Delay before image acquisition"/>
     </menu>
 
-    <menu id="dur" caption="Duration of image acquisition" rows="6" cols="4">
-      <item value="100 ms"/>
-      <item value="150 ms"/>
-      <item value="200 ms"/>
-      <item value="300 ms"/>
-      <item value="500 ms"/>
-      <item value="700 ms"/>
-      <break/>
-      <item value="1.0 s"/>
-      <item value="1.5 s"/>
-      <item value="2.0 s"/>
-      <item value="3.0 s"/>
-      <item value="5.0 s"/>
-      <item value="7.0 s"/>
-      <break/>
-      <item value="10 s"/>
-      <item value="15 s"/>
-      <item value="20 s"/>
-      <item value="30 s"/>
-      <item value="45 s"/>
-      <break/>
-      <item value="60 s"/>
-      <item value="90 s"/>
-      <item value="120 s"/>
-      <item value="180 s"/>
+    <menu id="dur" caption="Duration of image acquisition" rows="5" cols="5">
+      <items>
+	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	10 s, 15 s, 20 s, 30 s, 45 s,
+	60 s, 90 s, 120 s, 180 s
+      </items>
       <space dy="1"/>
       <item custom="1" editcaption="Duration of image acquisition"/>
     </menu>
   
     <menu id="preIllum" caption="Pre-illumination time" rows="6" cols="3">
-      <item value="1 ms"/>
-      <item value="1.5 ms"/>
-      <item value="2 ms"/>
-      <item value="3 ms"/>
-      <item value="5 ms"/>
-      <item value="7 ms"/>
-      <break/>
-      <item value="10 ms"/>
-      <item value="15 ms"/>
-      <item value="20 ms"/>
-      <item value="30 ms"/>
-      <item value="50 ms"/>
-      <item value="70 ms"/>
-      <break/>
-      <item value="100 ms"/>
-      <item value="150 ms"/>
-      <item value="200 ms"/>
-      <item value="300 ms"/>
-      <item value="500 ms"/>
+      <items>
+	1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
+	10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
+	100 ms, 150 ms, 200 ms, 300 ms, 500 ms
+      </items>
       <item custom="1"  editcaption="Pre-illumination time"/>
     </menu>
   
     <menu id="postIllum" caption="Post-illumination time" rows="6" cols="3">
-      <item value="0.1 ms"/>
-      <item value="0.15 ms"/>
-      <item value="0.2 ms"/>
-      <item value="0.3 ms"/>
-      <item value="0.5 ms"/>
-      <item value="0.7 ms"/>
-      <break/>
-      <item value="1 ms"/>
-      <item value="1.5 ms"/>
-      <item value="2 ms"/>
-      <item value="3 ms"/>
-      <item value="5 ms"/>
-      <item value="7 ms"/>
-      <break/>
-      <item value="10 ms"/>
-      <item value="15 ms"/>
-      <item value="20 ms"/>
-      <item value="30 ms"/>
-      <item value="50 ms"/>
+	<items>
+	  0.1 ms, 0.15 ms, 0.2 ms, 0.3 ms, 0.5 ms, 0.7 ms
+	  1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
+	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
+	</items>
       <item custom="1"  editcaption="Post-illumination time"/>
     </menu>
 
     <menu id="preHeat" caption="Pre-heating time" rows="6" cols="3">
-      <item value="100 ms"/>
-      <item value="150 ms"/>
-      <item value="200 ms"/>
-      <item value="300 ms"/>
-      <item value="500 ms"/>
-      <item value="700 ms"/>
-      <break/>
-      <item value="1 s"/>
-      <item value="1.5 s"/>
-      <item value="2 s"/>
-      <item value="3 s"/>
-      <item value="5 s"/>
-      <item value="7 s"/>
-      <break/>
-      <item value="10 s"/>
-      <item value="15 s"/>
-      <item value="20 s"/>
-      <item value="30 s"/>
-      <item value="0  s"/>
+      <items>
+	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	10 s, 15 s, 20 s, 30 s, 0 s
+      </items>
       <item custom="1"  editcaption="Pre-heating time"/>
     </menu>
 
     <menu id="dutyCycle" caption="Duty cycle" rows="5" cols="4">
-      <item value="10%"/>
-      <item value="15%"/>
-      <item value="20%"/>
-      <item value="25%"/>
-      <item value="30%"/>
-      <break/>
-      <item value="35%"/>
-      <item value="40%"/>
-      <item value="45%"/>
-      <item value="50%"/>
-      <item value="55%"/>
-      <break/>
-      <item value="60%"/>
-      <item value="65%"/>
-      <item value="70%"/>
-      <item value="75%"/>
-      <item value="80%"/>
-      <break/>
-      <item value="85%"/>
-      <item value="90%"/>
-      <item value="95%"/>
-      <item value="100%"/>
+      <items>
+	10%, 15%, 20%, 25%, 30%,
+	35%, 40%, 45%, 50%, 55%
+	60%, 65%, 70%, 75%, 80%
+	85%, 90%, 95%, 100%
+      </items>
       <item custom="1" editcaption="Duty cycle"/>
     </menu>
   </page>
@@ -636,15 +369,9 @@
     </group>
 
     <menu id="frameRate" caption="Video frame rate if not avoiding CCD" rows="4" cols="4">
-      <item value="5 Hz"/>
-      <item value="10 Hz"/>
-      <item value="15 Hz"/>
-      <item value="20 Hz"/>
-      <item value="25 Hz"/>
-      <item value="30 Hz"/>
-      <item value="40 Hz"/>
-      <item value="50 Hz"/>
-      <break/>
+      <items>
+	5 Hz, 10 Hz, 15 Hz, 20 Hz, 25 Hz, 30 Hz, 40 Hz, 50 Hz,
+      </items>
       <break/>
       <space dy="3"/>
       <item custom="1" editcaption="Video frame rate if not avoiding CCD"/>
@@ -655,34 +382,18 @@
       <space dy="2"/>
       <item custom="1" editcaption="Pre-illumination time"/>
       <break/>
-      <item value="1 ms"/>
-      <item value="2 ms"/>
-      <item value="5 ms"/>
-      <break/>
-      <item value="10 ms"/>
-      <item value="20 ms"/>
-      <item value="50 ms"/>
-      <break/>
-      <item value="100 ms"/>
-      <item value="200 ms"/>
-      <item value="500 ms"/>
+      <items>
+	1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
+      </items>
     </menu>
 
     <menu id="postIllum" caption="Post-illumination time" rows="4" cols="4">
       <item value="0 ms"/>
       <space dy="2"/>
       <item custom="1" editcaption="Post-illumination time"/>
-      <item value="1 ms"/>
-      <item value="2 ms"/>
-      <item value="5 ms"/>
-      <break/>
-      <item value="10 ms"/>
-      <item value="20 ms"/>
-      <item value="50 ms"/>
-      <break/>
-      <item value="100 ms"/>
-      <item value="200 ms"/>
-      <item value="500 ms"/>
+      <items>
+	1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
+      </items>
     </menu>
 
     <menu id="marginPreCCD" caption="Pre-CCD avoidance time" rows="4" cols="4">
@@ -690,213 +401,70 @@
       <space dy="2"/>
       <item custom="1" editcaption="Pre-CCD avoidance time"/>
       <break/>
-      <item value="1 ms"/>
-      <item value="2 ms"/>
-      <item value="5 ms"/>
-      <break/>
-      <item value="10 ms"/>
-      <item value="20 ms"/>
-      <item value="50 ms"/>
-      <break/>
-      <item value="100 ms"/>
-      <item value="200 ms"/>
-      <item value="500 ms"/>
+      <items>
+	1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
+      </items>
     </menu>
 
     <menu id="marginPostCCD" caption="Post-CCD avoidance time" rows="4" cols="4">
       <item value="0 ms"/>
       <space dy="2"/>
       <item custom="1" editcaption="Post-CCD avoidance time"/>
-      <item value="1 ms"/>
-      <item value="2 ms"/>
-      <item value="5 ms"/>
-      <break/>
-      <item value="10 ms"/>
-      <item value="20 ms"/>
-      <item value="50 ms"/>
-      <break/>
-      <item value="100 ms"/>
-      <item value="200 ms"/>
-      <item value="500 ms"/>
+      <items>
+	1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
+      </items>
     </menu>
 
     <menu id="delay" caption="Delay before video stimulation" rows="6" cols="4">
-      <item value="100 ms"/>
-      <item value="150 ms"/>
-      <item value="200 ms"/>
-      <item value="300 ms"/>
-      <item value="500 ms"/>
-      <item value="700 ms"/>
-      <break/>
-      <item value="1.0 s"/>
-      <item value="1.5 s"/>
-      <item value="2.0 s"/>
-      <item value="3.0 s"/>
-      <item value="5.0 s"/>
-      <item value="7.0 s"/>
-      <break/>
-      <item value="10 s"/>
-      <item value="15 s"/>
-      <item value="20 s"/>
-      <item value="30 s"/>
-      <item value="45 s"/>
-      <break/>
-      <item value="60 s"/>
-      <item value="90 s"/>
-      <item value="120 s"/>
-      <item value="180 s"/>
+      <items>
+	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	10 s, 15 s, 20 s, 30 s, 45 s, 60 s, 90 s, 120 s, 180 s
+      </items>
       <space dy="1"/>
       <item custom="1" editcaption="Delay before video stimulation"/>
     </menu>
 
     <menu id="dur" caption="Duration of video stimulation" rows="6" cols="4">
-      <item value="100 ms"/>
-      <item value="150 ms"/>
-      <item value="200 ms"/>
-      <item value="300 ms"/>
-      <item value="500 ms"/>
-      <item value="700 ms"/>
-      <break/>
-      <item value="1.0 s"/>
-      <item value="1.5 s"/>
-      <item value="2.0 s"/>
-      <item value="3.0 s"/>
-      <item value="5.0 s"/>
-      <item value="7.0 s"/>
-      <break/>
-      <item value="10 s"/>
-      <item value="15 s"/>
-      <item value="20 s"/>
-      <item value="30 s"/>
-      <item value="45 s"/>
-      <break/>
-      <item value="60 s"/>
-      <item value="90 s"/>
-      <item value="120 s"/>
-      <item value="180 s"/>
+      <items>
+	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	10 s, 15 s, 20 s, 30 s, 45 s, 60 s, 90 s, 120 s, 180 s
+      </items>
       <space dy="1"/>
       <item custom="1"  editcaption="Duration of video stimulation"/>
     </menu>
 
     <menu id="prog" caption="Program number" rows="6" cols="5">
-      <item value="01"/>
-      <item value="02"/>
-      <item value="03"/>
-      <item value="04"/>
-      <item value="05"/>
-      <item value="06"/>
-      <item value="11"/>
-      <item value="12"/>
-      <item value="13"/>
-      <item value="14"/>
-      <item value="15"/>
-      <item value="16"/>
-      <item value="21"/>
-      <item value="22"/>
-      <item value="23"/>
-      <item value="24"/>
-      <item value="25"/>
-      <item value="26"/>
-      <item value="31"/>
-      <item value="32"/>
-      <item value="33"/>
-      <item value="34"/>
-      <item value="35"/>
-      <item value="36"/>
-      <item value="41"/>
-      <item value="42"/>
-      <item value="43"/>
-      <item value="44"/>
-      <item value="45"/>
-      <item value="46"/>
+      <items>
+	01, 02, 03, 04, 05, 06, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 25,
+	26, 31, 32, 33, 34, 35, 36, 41, 42, 43, 44, 45, 46,
+      </items>
     </menu>
 
     <menu id="parA" caption="Parameter A" rows="6" cols="4">
-      <item value="01"/>
-      <item value="02"/>
-      <item value="03"/>
-      <item value="04"/>
-      <item value="05"/>
-      <item value="06"/>
-      <break/>
-      <item value="11"/>
-      <item value="12"/>
-      <item value="13"/>
-      <item value="14"/>
-      <item value="15"/>
-      <item value="16"/>
-      <break/>
-      <item value="21"/>
-      <item value="22"/>
-      <item value="23"/>
-      <item value="24"/>
-      <item value="25"/>
-      <item value="26"/>
-      <break/>
-      <item value="31"/>
-      <item value="32"/>
-      <item value="33"/>
-      <item value="34"/>
+      <items>
+	01, 02, 03, 04, 05, 06, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24,
+	25, 26, 31, 32, 33, 34,
+      </items>
       <space dy="1" />
       <item custom="1"  editcaption="Parameter value"/>
     </menu>
 
     <menu id="parB" caption="Parameter B" rows="6" cols="4">
-      <item value="01"/>
-      <item value="02"/>
-      <item value="03"/>
-      <item value="04"/>
-      <item value="05"/>
-      <item value="06"/>
-      <break/>
-      <item value="11"/>
-      <item value="12"/>
-      <item value="13"/>
-      <item value="14"/>
-      <item value="15"/>
-      <item value="16"/>
-      <break/>
-      <item value="21"/>
-      <item value="22"/>
-      <item value="23"/>
-      <item value="24"/>
-      <item value="25"/>
-      <item value="26"/>
-      <break/>
-      <item value="31"/>
-      <item value="32"/>
-      <item value="33"/>
-      <item value="34"/>
+      <items>
+	01, 02, 03, 04, 05, 06, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24,
+	25, 26, 31, 32, 33, 34,
+      </items>
       <space dy="1" />
       <item custom="1"  editcaption="Parameter value"/>
     </menu>
 
     <menu id="parC" caption="Parameter C" rows="6" cols="4">
-      <item value="01"/>
-      <item value="02"/>
-      <item value="03"/>
-      <item value="04"/>
-      <item value="05"/>
-      <item value="06"/>
-      <break/>
-      <item value="11"/>
-      <item value="12"/>
-      <item value="13"/>
-      <item value="14"/>
-      <item value="15"/>
-      <item value="16"/>
-      <break/>
-      <item value="21"/>
-      <item value="22"/>
-      <item value="23"/>
-      <item value="24"/>
-      <item value="25"/>
-      <item value="26"/>
-      <break/>
-      <item value="31"/>
-      <item value="32"/>
-      <item value="33"/>
-      <item value="34"/>
+      <items>
+	01, 02, 03, 04, 05, 06, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24,
+	25, 26, 31, 32, 33, 34,
+      </items>
       <space dy="1" />
       <item custom="1"  editcaption="Parameter value"/>
     </menu>
@@ -1240,10 +808,10 @@
   <alias id="ME2_Vm" label="V_2"/>
   <alias id="ME1_I" label="I_m"/>
   <alias id="ME2_I" label="I_2"/>
-  <alias id="Stim0Mon" label="AO_0"/>
-  <alias id="Stim1Mon" label="AO_1"/>
-  <alias id="Stim2Mon" label="X_video"/>
-  <alias id="Stim3Mon" label="Y_video"/>
+  <alias id="Stim0Mon" label="AO_0 m"/>
+  <alias id="Stim1Mon" label="AO_1 m"/>
+  <alias id="Stim2Mon" label="X_vid m"/>
+  <alias id="Stim3Mon" label="Y_vid m"/>
   <alias id="60HzRef" label="line"/>
   <alias id="ExtVA1" label="V_A1"/>
   <alias id="ExtVA2" label="V_A2"/>

@@ -188,6 +188,22 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   return b;
 }
 
+void guiPage::addItems(PageBuildGeom &g, QDomElement doc) {
+  QDomDocument xml;
+  QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
+  QString hd2 = "<!DOCTYPE vscopeAuto>";
+  foreach (QString v, doc.text().split(QRegExp("[,\n]+\\s*"))) {
+    if (v=="")
+      continue;
+    xml.setContent(hd1 + "\n" + hd2 + "\n"
+		   + "<item value=\""
+		   + v.simplified()
+		   + "\"/>\n");
+    QDomElement e = xml.documentElement();
+    addItem(g, e);
+  }
+}
+
 guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc, "id",
 			  "guiPage (addButton)", "Cannot read button ID");
@@ -539,6 +555,8 @@ void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
       addButton(g,e);
     else if (tag=="item")
       addItem(g,e);
+    else if (tag=="items")
+      addItems(g,e);
     else if (tag=="tabbedpage")
       addTabbedPage(g,e);
     else if (tag=="page")

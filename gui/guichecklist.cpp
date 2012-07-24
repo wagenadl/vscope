@@ -8,6 +8,7 @@
 #include <xml/enumerator.h>
 #include <stdio.h>
 #include "autoitems.h"
+#include <base/dbg.h>
 
 guiChecklist::guiChecklist(class QWidget *parent,
 		 class ParamTree *ptree,
@@ -36,10 +37,13 @@ void guiChecklist::prepForOpening() {
   QBitArray ba = pp->toBitArray();
   foreach (guiButton *b, buttons) {
     if (isType<guiItem>(b)) {
-      Enumerator const *e=pp->getEnum();
+      Enumerator const *e = pp->getEnum();
       try {
-	int idx=e->lookup(b->getValue());
-	b->setSelected(ba.testBit(idx));
+	int idx = e->lookup(b->getValue());
+	if (idx>=0)
+	  b->setSelected(ba.testBit(idx));
+	else
+	  Dbg() << "guiCheckList: negative idx in " << b->id();
       } catch (Exception) {
 	fprintf(stderr, "Exception ignored.\n");
       }	  

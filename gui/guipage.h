@@ -74,6 +74,7 @@ public:
        attribute, or else the value attribute of the <item>.
    *:N By "tail ID" I mean the part of the path after the last "/".
    */
+  void addItems(PageBuildGeom &g, QDomElement elt);
   void addButtonGroup(PageBuildGeom &g, QDomElement elt);
   /*:F addButtonGroup
    *:D Adds a new button group and any contained buttons to this page.

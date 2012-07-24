@@ -5,6 +5,8 @@
 #include <gfx/buttongrouper.h>
 #include <stdio.h>
 #include "autobuttons.h"
+#include <base/exception.h>
+#include <gui/guiitem.h>
 
 guiButtonGroup::guiButtonGroup(guiPage *parent):
   QObject(parent), parent_(parent) {
@@ -60,14 +62,28 @@ void guiButtonGroup::selectDefaultButton() {
 }
 
 void guiButtonGroup::add(QString id) {
-  if (!childids.contains(id))
-    childids.append(id);
+  if (childids.contains(id))
+    throw Exception("guiButtonGroup", "Already have id " + id);
+  guiButton *b = parent_->buttonp(id);
+  if (!b)
+    throw Exception("guiButtonGroup", "Parent does not have button " + id, "add");
+  if (!dynamic_cast<guiItem*>(b)) {
+    /* How ugly! */
+    ButtonGrouper::add(b, this);
+    b->makeRadio();
+    b->setVisualType(b->getID().contains("panel") ?
+		     Button::VTPanelOpen : Button::VTGrouped);
+  }
+  childids.append(id);
 }
 
 bool guiButtonGroup::remove(QString id) {
   bool r = childids.removeOne(id);
   if (id==dfltButton)
     dfltButton = childids.empty() ? "" : childids[0];
+  guiButton *b = parent_->buttonp(id);
+  if (b)
+    ButtonGrouper::remove(b);
   return r;
 }
 
