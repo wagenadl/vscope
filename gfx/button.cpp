@@ -4,7 +4,6 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 #include <base/minmax.h>
-#include <gfx/buttongrouper.h>
 
 #include <QPainter>
 #include <QEvent>
@@ -35,13 +34,12 @@ static QColor deeper(QColor const &a, double amt=2) {
 
 Button::Button(QWidget *parent, int lx, int ty, QString myID):
   QLabel(parent), myID(myID) {
-  ButtonGrouper::add(this, parent);
   isToggle=isRadio=false;
   isItem=false;
   isAction=true;
   isSelected=false;
   isEnabled_=true;
-  vtype = VTLabel;
+  vtype = VT_Label;
   setGeometry(lx,ty,BUTTON_Width,BUTTON_Height);
   setFocusPolicy(Qt::NoFocus);
   QFont f = font();
@@ -63,7 +61,6 @@ Button::Button(QWidget *parent, int lx, int ty, QString myID):
 }
 
 Button::~Button() {
-  ButtonGrouper::remove(this);
 }
 
 void Button::changeEvent(QEvent *e) {
@@ -119,14 +116,6 @@ void Button::setForeground(QColor const &fg) {
 
 void Button::setSelected(bool sel) {
   bool oldState = isSelected;
-  Button *selectedSib = ButtonGrouper::selectedSibling(this);
-  if (sel) {
-    if (isRadio && selectedSib && selectedSib!=this) 
-      selectedSib->setSelected(false);
-    ButtonGrouper::select(this);
-  } else {
-    ButtonGrouper::deselect(this);
-  }
   
   isSelected = sel;
   representState();
@@ -148,7 +137,7 @@ void Button::toggleSelected() {
 
 void Button::mousePressEvent(class QMouseEvent *) {
   lastClick.start();
-  if (true) { // vtype==VTAction) {
+  if (true) { // vtype==VT_Action) {
     setFrameShadow(QFrame::Sunken);
   }
   if (isAction) 
@@ -158,7 +147,7 @@ void Button::mousePressEvent(class QMouseEvent *) {
 }
 
 void Button::mouseReleaseEvent(class QMouseEvent *) {
-  if (true) { // vtype==VTAction) {
+  if (true) { // vtype==VT_Action) {
     int dt = lastClick.elapsed();
     if (dt>=100)
       restoreActionFrame();
@@ -173,7 +162,7 @@ void Button::restoreActionFrame() {
 
 void Button::mouseDoubleClickEvent(class QMouseEvent *) {
   lastClick.start();
-  if (vtype==VTAction) {
+  if (vtype==VT_Action) {
     setFrameShadow(QFrame::Sunken);
   }
   Dbg() << "Button::mouseDoubleClickEvent";
@@ -196,22 +185,22 @@ void Button::representState() {
   //  QWidget *pw=0;
   setAutoFillBackground(true);
   switch (vtype) {
-  case VTLabel:
+  case VT_Label:
     setFrameShape(QFrame::Panel);
     setFrameShadow(QFrame::Raised);
     setLineWidth(1);
     break;
-  case VTPageOpen:
+  case VT_PageOpen:
     setFrameShape(QFrame::Panel);
     setLineWidth(isSelected ? 0 : 1);
     setFrameShadow(QFrame::Raised);
     break;
-  case VTVarOpen:
+  case VT_VarOpen:
     setFrameShape(QFrame::Panel);
     setLineWidth(isSelected ? 0 : 1);
     setFrameShadow(QFrame::Raised);
     break;
-  case VTVarValue:
+  case VT_VarValue:
     //pw = parentWidget();
     //if (pw)
     //  alt = pw->palette().color(QPalette::Window);
@@ -224,7 +213,7 @@ void Button::representState() {
     p.setColor(QPalette::Window,  isSelected ? alt : bg);
     setPalette(p);
     break;
-  case VTBooleanVar:
+  case VT_BooleanVar:
     setFrameShape(QFrame::Box);
     setFrameShadow(QFrame::Sunken);
     setLineWidth(1);
@@ -235,7 +224,7 @@ void Button::representState() {
 	       : QColor("#bbbbbb"));
     setPalette(p);
     break;
-  case VTPanelOpen:
+  case VT_PanelOpen:
     setFrameShape(QFrame::Panel);
     setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
     setLineWidth(isSelected ? 3 : 1);
@@ -245,12 +234,12 @@ void Button::representState() {
 	       : p.color(QPalette::ButtonText));
     setPalette(p);
     break;
-  case VTAction:
+  case VT_Action:
     setAutoFillBackground(false);
     setFrameShadow(QFrame::Raised);
     setLineWidth(0);
     break;
-  case VTGrouped:
+  case VT_Grouped:
     setFrameShape(QFrame::Panel);
     setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
     setLineWidth(isSelected ? 2 : 1);
@@ -260,7 +249,7 @@ void Button::representState() {
 	       p.color(QPalette::ButtonText));
     setPalette(p);
     break;
-  case VTArrayCtrl:
+  case VT_ArrayCtrl:
     setFrameShape(QFrame::Box);
     setFrameShadow(QFrame::Sunken);
     setLineWidth(isSelected ? 0 : 1);
@@ -286,13 +275,13 @@ void Button::setText(QString txt, bool noemit) {
     emit textChanged(myID, txt);
 }
 
-void Button::setVisualType(VisualType vt) {
+void Button::setVisualType(VISUALTYPE vt) {
   vtype = vt;
   representState();
 }
 
 void Button::paintEvent(class QPaintEvent *e) {
-  if (vtype==VTAction) {
+  if (vtype==VT_Action) {
     bool isSunken = frameShadow()==QFrame::Sunken;
     //    dbg("Button::paintEvent");
     QPainter p(this);

@@ -11,14 +11,20 @@
 <!-- *************************** TOP LEVEL ****************************** -->
 <page id="" subdxl="1.05" subdyt="1.2" subdxr="2.05" subdyb="0">
   <group id="showLeft">
-    <button id="panelLeft1" label="*%1" x="1" y="0" bg="#ddffdd"/>
-    <button id="panelLeft2" label="*%1" x="2" y="0" bg="#ddffdd"/>
-    <button id="panelLeft3" label="*%1" x="3" y="0" bg="#ddffdd"/>
+    <button id="panelLeft1" label="*%1" x="1" y="0" bg="#ddffdd"
+	    vt="PanelOpen"/>
+    <button id="panelLeft2" label="*%1" x="2" y="0" bg="#ddffdd"
+	    vt="PanelOpen"/>
+    <button id="panelLeft3" label="*%1" x="3" y="0" bg="#ddffdd"
+	    vt="PanelOpen"/>
   </group>
   <group id="showRight">
-    <button id="panelRight1" label="*%1" x="4.2" y="0" bg="#ffeedd"/>
-    <button id="panelRight2" label="*%1" x="5.2" y="0" bg="#ffeedd"/>
-    <button id="panelRight3" label="*%1" x="6.2" y="0" bg="#ffeedd"/>
+    <button id="panelRight1" label="*%1" x="4.2" y="0" bg="#ffeedd"
+	    vt="PanelOpen"/>
+    <button id="panelRight2" label="*%1" x="5.2" y="0" bg="#ffeedd"
+	    vt="PanelOpen"/>
+    <button id="panelRight3" label="*%1" x="6.2" y="0" bg="#ffeedd"
+	    vt="PanelOpen"/>
   </group>
   <group id="a">
     <button id="panelLeft" label="Left Panel" x="0" y="0.1" bg="#bbeebb"/>
@@ -122,9 +128,9 @@
   <!-- ****************** EPHYS. STIMULATION CONFIG PAGE ******************* -->
   <page id="stimEphys" subdxl="1.05" rows="5">
     <button id="enable" type="bool" bg="#dd88dd"/>
-    <group id="channel" cols="2" flip="true">
+    <tabctrl id="channel" cols="2" flip="true">
       <auto enum="STIMCHS" />
-    </group>
+    </tabctrl>
     <tabbedpage id="channel" subdxl="2.1" bg="#dd88dd" cols="4.5">
       <button id="enable" type="bool" alwayshidden="true"/>
       <group id="a">

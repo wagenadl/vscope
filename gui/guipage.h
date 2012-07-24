@@ -54,8 +54,11 @@ public:
   virtual guiButton *buttonp(QString id);
   virtual guiPage const *subpagep(QString id) const;
   virtual guiPage *subpagep(QString id);
-  virtual class guiButtonGroup const *groupp(QString id) const;
-  virtual class guiButtonGroup *groupp(QString id);
+  virtual class guiTabCtrl const *tabctrlp(QString id) const;
+  virtual class guiTabCtrl *tabctrlp(QString id);
+  virtual class guiRadioGroup const *radiogroupp(QString id) const;
+  virtual class guiRadioGroup *radiogroupp(QString id);
+  virtual QList<guiButton *> allButtons();
 public:
   class guiButton *addButton(PageBuildGeom &g, QDomElement elt);
   /*:F addButton
@@ -75,12 +78,16 @@ public:
    *:N By "tail ID" I mean the part of the path after the last "/".
    */
   void addItems(PageBuildGeom &g, QDomElement elt);
-  void addButtonGroup(PageBuildGeom &g, QDomElement elt);
-  /*:F addButtonGroup
-   *:D Adds a new button group and any contained buttons to this page.
+  void addRadioGroup(PageBuildGeom &g, QDomElement elt);
+  /*:F addRadioGroup
+   *:D Adds a new group and any contained buttons to this page.
+   */
+  void addTabCtrl(PageBuildGeom &g, QDomElement elt);
+  /*:F addTabCtrl
+   *:D Adds a new group and any contained buttons to this page.
    */
   void addPage(PageBuildGeom &g, QDomElement elt,
-			 Button::VisualType vt=Button::VTPageOpen);
+	       VISUALTYPE vt=VT_PageOpen);
   /*:F addPage
    *:D Adds a new sub-page to this page.
    *:N This connects the selected/deselected signals from any button with the
@@ -122,11 +129,6 @@ public:
        return code.
    */
 public:
-  QList<class guiButton *> getGroup(QString id);
-  /*:F getGroup
-   *:D Returns a list of all buttons in a given group.
-   *:N Returns an empty list if the group does not exist.
-   */
   guiPage *parentPage();
 public slots:
   void open();
@@ -187,9 +189,10 @@ protected:
   /*:V buttons
    *:D All our buttons by ID. (ID is leaf, not full path).
    */
-  QMap<QString, class guiButtonGroup *> groups;
-  /*:V groups
-   *:D All our button groups by ID. (ID is leaf, not full path).
+  QMap<QString, class guiRadioGroup *> groups;
+  QMap<QString, class guiTabCtrl *> tabctrls;
+  /*:V tabctrls
+   *:D All our tab control groups by ID. (ID is leaf, not full path).
    */
   bool neverOpened;
   /*:V neverOpened
@@ -199,6 +202,7 @@ protected:
   /*:V pageEnabled
    *:D True if this page is enabled (by its Enable button or its parent)
    */
+  class RadioGroup *itemgroup;
 private slots:
   void addTriangle(QString id);
   void removeTriangle(QString id);
@@ -208,6 +212,7 @@ private:
   PageBuildGeom buildGeom;
   class guiTriangle *triangle;
   QRect origGeom;
+  class RadioGroup *topgroup;
 protected:
   virtual void connectToMaster(QDomElement doc);
   virtual void connectToParent(QDomElement doc);
@@ -217,7 +222,7 @@ protected:
        version first.
   */
   virtual QString getCurrentElement() const;
-  virtual Button::VisualType visualTypeForParentButton() const;
+  virtual VISUALTYPE visualTypeForParentButton() const;
   virtual void sizeToFit();
   virtual class guiItem *createItem(QString id);
   virtual bool mayResize();

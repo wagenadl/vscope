@@ -16,7 +16,7 @@ public:
 	  class QRect const &geom);
   virtual ~guiMenu();
 protected:
-  virtual Button::VisualType visualTypeForParentButton() const;
+  virtual VISUALTYPE visualTypeForParentButton() const;
   virtual void connectToParent(QDomElement doc);
   virtual guiItem *createItem(QString id); // simply constructs a guiMenuItem
   virtual void prepForOpening();

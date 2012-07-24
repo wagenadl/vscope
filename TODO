@@ -1,4 +1,4 @@
 - Multiple independent cameras.
 - Automate the construction of STIMCHS enum from Connections.
 - How should UI deal with loading files created with different Connections?
-- Fix representation of array in gui buttons
+- Split guibuttongroup into radiogroup and arrayctrl

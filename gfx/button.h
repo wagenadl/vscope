@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QTime>
 #include <QTimer>
+#include <base/enums.h>
 
 extern int BUTTON_FontSize;
 extern char const *BUTTON_FontFamily;
@@ -31,18 +32,6 @@ class Button: public QLabel {
    */
   Q_OBJECT;
 public:
-  enum VisualType {
-    VTLabel,
-    VTPageOpen,
-    VTVarOpen,
-    VTVarValue,
-    VTBooleanVar,
-    VTPanelOpen,
-    VTAction,
-    VTGrouped,
-    VTArrayCtrl,
-  };
-public:
   Button(QWidget *parent, int lx=0, int ty=0, QString myID="");
   /*:F constructor
    *:D Creates a new button with default properties at a given location.
@@ -51,7 +40,7 @@ public:
              this button emits.
   */
   virtual ~Button();
-  VisualType getVisualType() const { return vtype; }
+  VISUALTYPE getVisualType() const { return vtype; }
   QString getID() const { return myID; }
   bool getSelected() const { return isSelected; }
   /*:F getSelected
@@ -162,7 +151,7 @@ public slots:
    *:D Sets a new ID for this button (to be used in subsequently emitted
        signals).
    */
-  void setVisualType(VisualType vt);
+  void setVisualType(VISUALTYPE vt);
   /*:F setVisualType
    *:N Visual types specify how this button is rendered in its various
        states. They have no bearing on functionality.
@@ -172,7 +161,7 @@ private:
   bool isAction,isToggle,isRadio, isItem;
   bool isEnabled_;
   bool isSelected;
-  VisualType vtype;
+  VISUALTYPE vtype;
   QTime lastClick;
   QTimer clickTimer;
 protected slots:

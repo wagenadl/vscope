@@ -10,19 +10,20 @@
 #include <QMap>
 #include <QSet>
 #include <xml/enumerator.h>
-#include <gui/guibuttongroup.h>
+#include <gui/guitabctrl.h>
 
 class AutoButtons: public QObject {
   Q_OBJECT;
 public:
-  AutoButtons(guiButtonGroup *parent);
+  AutoButtons(guiTabCtrl *parent);
   void setup(PageBuildGeom &geom,
 	     QDomElement doc);
   void rebuild(PageBuildGeom *g_out=0);
   QStringList selectIDs(QStringList inlist);
   bool isDynamic() const;
+  QList<QString> childIDs() const;
 private:
-  guiButtonGroup *parent_;
+  guiTabCtrl *parent_;
   QStringList ids;
   QMap<QString, guiButton *> buttons;
   QDomElement doc;

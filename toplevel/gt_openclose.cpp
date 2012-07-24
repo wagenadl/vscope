@@ -16,6 +16,7 @@
 #include <gui/overridecursor.h>
 #include <xml/paramtree.h>
 #include <acq/datatrove.h>
+#include <gui/guiradiogroup.h>
 
 extern void checkdaq(QWidget *);
 extern void checkcam(QWidget *);
@@ -26,24 +27,20 @@ void hideTop() {
   Globals::leftplace->hide();
   Globals::rightplace->hide();
   guiPage &root = Globals::gui->rootPage();
-  QList<guiButton*> left=root.getGroup("showLeft");
-  for (QList<guiButton*>::iterator i=left.begin(); i!=left.end(); ++i)
-    (*i)->setEnabled(false);
-  QList<guiButton*> right=root.getGroup("showRight");
-  for (QList<guiButton*>::iterator i=right.begin(); i!=right.end(); ++i)
-    (*i)->setEnabled(false);
+  foreach (QString id, root.radiogroupp("showLeft")->childIDs())
+    root.buttonp(id)->setEnabled(false);
+  foreach (QString id, root.radiogroupp("showRight")->childIDs())
+    root.buttonp(id)->setEnabled(false);
 }
 
 void showTop() {
   Globals::leftplace->show();
   Globals::rightplace->show();
   guiPage &root = Globals::gui->rootPage();
-  QList<guiButton*> left=root.getGroup("showLeft");
-  for (QList<guiButton*>::iterator i=left.begin(); i!=left.end(); ++i)
-    (*i)->setEnabled(true);
-  QList<guiButton*> right=root.getGroup("showRight");
-  for (QList<guiButton*>::iterator i=right.begin(); i!=right.end(); ++i)
-    (*i)->setEnabled(true);
+  foreach (QString id, root.radiogroupp("showLeft")->childIDs())
+    root.buttonp(id)->setEnabled(true);
+  foreach (QString id, root.radiogroupp("showRight")->childIDs())
+    root.buttonp(id)->setEnabled(true);
 }
 
 void gt_slots::pgopen(QString p, QWidget *w) {

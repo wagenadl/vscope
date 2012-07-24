@@ -6,7 +6,7 @@
 #include <base/dbg.h>
 #include <xml/attribute.h>
 
-AutoButtons::AutoButtons(guiButtonGroup *parent):
+AutoButtons::AutoButtons(guiTabCtrl *parent):
   QObject(parent), parent_(parent),
   initialGeom(parent->parent()) {
   isDyn = false;
@@ -34,17 +34,15 @@ QStringList AutoButtons::selectIDs(QStringList inlist) {
 
 void AutoButtons::rebuild(PageBuildGeom *g_out) {
   QStringList newids = selectIDs(enumerator->getAllTags());
-  Dbg() << "AutoButtons " << parent_->groupId() << ": rebuild " << newids.join(", ");
+  //  Dbg() << "AutoButtons " << parent_->groupId() << ": rebuild " << newids.join(", ");
   if (newids == ids)
     return;
 
   guiPage *p = parent_->parent();
   if (!p)
     throw Exception("AutoButtons", "Grandparent is not a page");
-  foreach (QString id, buttons.keys()) {
-    parent_->remove(parent_->groupId() + ARRAYSEP + id);
+  foreach (QString id, buttons.keys()) 
     p->deleteButton(id);
-  }
 
   buttons.clear();
 
@@ -55,7 +53,7 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
   foreach (QString id, ids) {
-    QString fullid = parent_->groupId() + ARRAYSEP + id;
+    QString fullid = parent_->id() + ARRAYSEP + id;
     // let's build an item
     xml.setContent(hd1 + "\n" + hd2 + "\n"
 		   + "<button id=\""
@@ -67,7 +65,7 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
     Dbg() << "Adding autobutton " << fullid;
     g.report();
     buttons[id] = p->addButton(g, e);
-    parent_->add(fullid);
+    parent_->add(buttons[id]);
   }
   
   if (g_out)
@@ -78,3 +76,6 @@ bool AutoButtons::isDynamic() const {
   return isDyn;
 }
     
+QList<QString> AutoButtons::childIDs() const {
+  return buttons.keys();
+}

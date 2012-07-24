@@ -22,8 +22,8 @@ guiMenu::guiMenu(class QWidget *parent,
 guiMenu::~guiMenu() {
 }
 
-Button::VisualType guiMenu::visualTypeForParentButton() const {
-  return Button::VTVarOpen;
+VISUALTYPE guiMenu::visualTypeForParentButton() const {
+  return VT_VarOpen;
 }
 
 void guiMenu::connectToParent(QDomElement doc) {

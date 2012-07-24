@@ -29,5 +29,16 @@
       <item tag="Quadratic"/>
       <!--item tag="Exponential"/-->
     </enum>
+    <enum id="VISUALTYPE" prefix="VT">
+      <item tag="Label"/>
+      <item tag="PageOpen"/>
+      <item tag="VarOpen"/>
+      <item tag="VarValue"/>
+      <item tag="BooleanVar"/>
+      <item tag="PanelOpen"/>
+      <item tag="Action"/>
+      <item tag="Grouped"/>
+      <item tag="ArrayCtrl"/>
+    </enum>      
   </enums>
 </vscope>

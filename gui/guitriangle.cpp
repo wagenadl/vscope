@@ -117,7 +117,7 @@ void guiTriangle::recolor() {
 
   QColor mid = b->palette().color(QPalette::Mid);
   QColor but = b->palette().color(QPalette::Button);
-  if (b->getVisualType()==Button::VTArrayCtrl) {
+  if (b->getVisualType()==VT_ArrayCtrl) {
     areaColor = mid;
     QPalette pal = p->palette();
     pal.setColor(QPalette::Window, mid);

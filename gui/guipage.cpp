@@ -16,10 +16,11 @@
 #include <QLabel>
 #include <base/exception.h>
 #include <base/dbg.h>
-#include <gfx/buttongrouper.h>
 #include <QPainter>
 #include <QPen>
-#include <gui/guibuttongroup.h>
+#include <gfx/radiogroup.h>
+#include <gui/guiradiogroup.h>
+#include <gui/guitabctrl.h>
 #include <gui/guimenu.h>
 #include <gui/guichecklist.h>
 #include <gui/guitabbedpage.h>
@@ -35,6 +36,8 @@ guiPage::guiPage(class QWidget *parent,
   AbstractPage(parent, ptree_, id, master_, geom),
   buildGeom(this) {
   triangle = new guiTriangle(this);
+  itemgroup = 0;
+  topgroup = new RadioGroup(this);
 
   setLineWidth(0);
   neverOpened = true;
@@ -55,7 +58,7 @@ void guiPage::setup(QDomElement doc) {
 }
 
 bool guiPage::mayResize() {
-  foreach (guiButtonGroup *g, groups)
+  foreach (guiTabCtrl *g, tabctrls)
     if (!g->mayResize())
       return false;
   return true;
@@ -146,10 +149,16 @@ void guiPage::addBreak(PageBuildGeom &g, QDomElement doc) {
   g.nextColumn(doc);
 }
 
-void guiPage::addButtonGroup(PageBuildGeom &g, QDomElement doc) {
-  guiButtonGroup *bg = new guiButtonGroup(this);
+void guiPage::addRadioGroup(PageBuildGeom &g, QDomElement doc) {
+  guiRadioGroup *bg = new guiRadioGroup(this);
   bg->build(g, doc);
-  groups[bg->groupId()] = bg;
+  groups[doc.attribute("id")] = bg;
+}
+
+void guiPage::addTabCtrl(PageBuildGeom &g, QDomElement doc) {
+  guiTabCtrl *bg = new guiTabCtrl(this);
+  bg->build(g, doc);
+  tabctrls[doc.attribute("id")] = bg;
 }
 
 static QString itemID(QDomElement doc) {
@@ -169,9 +178,8 @@ guiItem *guiPage::createItem(QString) {
 }
 
 guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
-  guiButtonGroup *bg = groupp(":items");
-  if (!bg) 
-    groups[":items"] = bg = new guiButtonGroup(this);
+  if (!itemgroup)
+    itemgroup = new RadioGroup(this);
 
   QString id = itemID(doc);
   if (id.isEmpty()) 
@@ -180,7 +188,7 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   guiButton *b = createItem(id);
   buttons[id] = b;
   buttons[id]->setup(doc);
-  bg->add(id);
+  itemgroup->add(b);
 
   b->setGeometry(g.bbox());
   g.advance();
@@ -208,6 +216,7 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc, "id",
 			  "guiPage (addButton)", "Cannot read button ID");
   guiButton *b = new guiButton(this, id, master);
+  topgroup->add(b);
   b->setup(doc);
   buttons[id] = b;
   g.go(doc);
@@ -219,7 +228,7 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
 }
 
 void guiPage::addPage(PageBuildGeom &g, QDomElement doc,
-			  Button::VisualType) {
+		      VISUALTYPE) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addPage)","Cannot read subpage ID");
   ParamTree *subtree = ptree->childp(id);
@@ -285,7 +294,7 @@ void guiPage::open() {
   setPageEnabled(p ? p->toBool() : true);
 
   if (neverOpened) {
-    foreach (guiButtonGroup *bg, groups) 
+    foreach (guiRadioGroup *bg, groups) 
       bg->selectDefaultButton();
   }
 
@@ -308,8 +317,8 @@ void guiPage::openChildren() {
 }
 
 void guiPage::prepForOpening() {
-  foreach (guiButtonGroup *g, groups)
-    g->rebuildAuto();
+  foreach (guiTabCtrl *g, tabctrls)
+    g->rebuild();
   
   foreach (QString id, buttons.keys()) {
     guiButton *b = buttons[id];
@@ -506,22 +515,6 @@ void guiPage::childItemCustomized(QString path, int cno, QString text) {
   }
 }
 
-QList<guiButton *> guiPage::getGroup(QString gid) {
-  QList<guiButton *> list;
-  guiButtonGroup *g = groupp(gid);
-  if (g) {
-    foreach (QString id, g->childIDs())
-      if (buttonp(id))
-	list.push_back(buttonp(id));
-      else
-	throw Exception("guiPage", "Inconsistent guiPage group list");
-  } else {
-    Dbg() << "Request for unknown group: " << gid;
-  }
-  return list;
-}
-
-
 void guiPage::addAuto(PageBuildGeom &, QDomElement) {
   throw Exception("guiPage", "Don't know how to addAuto. " + path());
 }
@@ -550,7 +543,9 @@ void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
        e=e.nextSiblingElement()) {
     QString tag = e.tagName();
     if (tag=="group")
-      addButtonGroup(g,e);
+      addRadioGroup(g,e);
+    else if (tag=="tabctrl")
+      addTabCtrl(g,e);
     else if (tag=="button")
       addButton(g,e);
     else if (tag=="item")
@@ -591,26 +586,40 @@ guiButton *guiPage::buttonp(QString id) {
     return 0;
 }
 
+guiTabCtrl const *guiPage::tabctrlp(QString id) const {
+  if (tabctrls.contains(id))
+    return tabctrls[id];
+  else
+    return 0;
+}
+
+guiTabCtrl *guiPage::tabctrlp(QString id) {
+  if (tabctrls.contains(id))
+    return tabctrls[id];
+  else
+    return 0;
+}
+
+guiRadioGroup const *guiPage::radiogroupp(QString id) const {
+  if (groups.contains(id))
+    return groups[id];
+  else
+    return 0;
+}
+
+guiRadioGroup *guiPage::radiogroupp(QString id) {
+  if (groups.contains(id))
+    return groups[id];
+  else
+    return 0;
+}
+
 guiPage const *guiPage::subpagep(QString id) const {
   return dynamic_cast<guiPage const *>(AbstractPage::subpagep(id));
 }
 
 guiPage *guiPage::subpagep(QString id) {
   return dynamic_cast<guiPage *>(AbstractPage::subpagep(id));
-}
-
-guiButtonGroup const *guiPage::groupp(QString id) const {
-  if (groups.contains(id))
-    return groups[id];
-  else
-    return 0;
-}
-
-guiButtonGroup *guiPage::groupp(QString id) {
-  if (groups.contains(id))
-    return groups[id];
-  else
-    return 0;
 }
 
 guiPage *guiPage::findpPage(QStringList path) {
@@ -621,8 +630,8 @@ guiPage &guiPage::findPage(QStringList path) {
   return dynamic_cast<guiPage &>(AbstractPage::findPage(path));
 }
 
-Button::VisualType guiPage::visualTypeForParentButton() const {
-  return Button::VTPageOpen;
+VISUALTYPE guiPage::visualTypeForParentButton() const {
+  return VT_PageOpen;
 }
 
 guiPage *guiPage::parentPage() {
@@ -634,9 +643,9 @@ QString guiPage::getCurrentElement() const {
 }
 
 bool guiPage::deleteButton(QString id) {
-  bool r = buttons.remove(id)>0;
-  if (r)
-    foreach (QString gid, groups.keys())
-      groupp(gid)->remove(id);
-  return r;
+  return buttons.remove(id)>0;
+}
+
+QList<guiButton *> guiPage::allButtons() {
+  return buttons.values();
 }

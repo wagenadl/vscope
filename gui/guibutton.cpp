@@ -209,15 +209,15 @@ void guiButton::connectUp(QDomElement doc) {
 void guiButton::stylize(QDomElement doc) {
   if (custom) {
     makeRadio();
-    setVisualType(VTVarValue);
+    setVisualType(VT_VarValue);
   } else {
     makeAction();
-    setVisualType(VTAction);
+    setVisualType(VT_Action);
   }
 
   if (doc.attribute("type") == "bool") {
     makeItem();
-    setVisualType(Button::VTBooleanVar);
+    setVisualType(VT_BooleanVar);
   } else if (doc.hasAttribute("type")) {
     throw Exception("guiButton", "Unknown type " + doc.attribute("type")
 		    + " for button " + path());
