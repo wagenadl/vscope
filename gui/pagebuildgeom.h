@@ -45,9 +45,13 @@ private:
   bool ingroup;
   int groupcols;
   double baserow;
+  double basecol;
   int groupcol;
   QRect boundingbox;
+  bool groupflip;
   guiPage const *parent;
+public:
+  void report();
 };
 
 

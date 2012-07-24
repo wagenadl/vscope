@@ -17,7 +17,6 @@
     <item tag="DO1" value="5"/>
     <item tag="DO2" value="6"/>
     <item tag="DO3" value="7"/>
-    <item tag="SIGNATURE" value="8"/>
   </enum>
 
   <enum id="SHOWWHAT">

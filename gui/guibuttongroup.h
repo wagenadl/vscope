@@ -29,11 +29,15 @@ public:
    *:R True if the button existed.
    *:N It is not an error if the button was never in the group.
    */
+  void rebuildAuto();
+  bool mayResize();
+  guiPage *parent() { return parent_; }
 private:
-  guiPage *parent;
+  guiPage *parent_;
   QString dfltButton;
   QString id;
   QStringList childids;
+  QList<class AutoButtons *> autoButtons;
 };
 
 #endif

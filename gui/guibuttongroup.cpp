@@ -4,9 +4,10 @@
 #include <xml/attribute.h>
 #include <gfx/buttongrouper.h>
 #include <stdio.h>
+#include "autobuttons.h"
 
 guiButtonGroup::guiButtonGroup(guiPage *parent):
-  QObject(parent), parent(parent) {
+  QObject(parent), parent_(parent) {
 }
 
 guiButtonGroup::~guiButtonGroup() {
@@ -20,7 +21,7 @@ void guiButtonGroup::build(PageBuildGeom &g, QDomElement doc) {
        e=e.nextSiblingElement()) {
     QString tag = e.tagName();
     if (tag=="button") {
-      guiButton *b = parent->addButton(g, e);
+      guiButton *b = parent_->addButton(g, e);
       ButtonGrouper::add(b, this);
       b->makeRadio();
       b->setVisualType(b->getID().contains("panel") ?
@@ -28,6 +29,10 @@ void guiButtonGroup::build(PageBuildGeom &g, QDomElement doc) {
       childids.append(e.attribute("id"));
     } else if (tag=="break") {
       g.nextColumn(doc);
+    } else if (tag=="auto") {
+      AutoButtons *a = new AutoButtons(this);
+      autoButtons.append(a);
+      a->setup(g, e);
     } else {
       fprintf(stderr,"Warning: xmlPage: Unexpected tag <%s> in group.\n",
 	      qPrintable(tag));
@@ -39,10 +44,17 @@ void guiButtonGroup::build(PageBuildGeom &g, QDomElement doc) {
     dfltButton = doc.attribute("default"); 
 }
 
+bool guiButtonGroup::mayResize() {
+  foreach (AutoButtons *a, autoButtons)
+    if (a->isDynamic())
+      return false;
+  return true;
+}
+
 void guiButtonGroup::selectDefaultButton() {
   if (dfltButton.isEmpty())
     return;
-  guiButton *b = parent->buttonp(dfltButton);
+  guiButton *b = parent_->buttonp(dfltButton);
   if (b)
     b->setSelected(true);
 }
@@ -57,4 +69,9 @@ bool guiButtonGroup::remove(QString id) {
   if (id==dfltButton)
     dfltButton = childids.empty() ? "" : childids[0];
   return r;
+}
+
+void guiButtonGroup::rebuildAuto() {
+  foreach (AutoButtons *a, autoButtons)
+    a->rebuild();
 }

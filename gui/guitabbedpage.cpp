@@ -31,7 +31,7 @@ void guiTabbedPage::connectToParent(QDomElement doc) {
     foreach (QString i, pgroup->childIDs()) {
       guiButton *b = par->buttonp(i);
       if (!b) 
-	throw Exception("guiTabbedPage", "Button not found in parent");
+	throw Exception("guiTabbedPage", "Button " + i + " not found in parent", path());
 
       connect(b, SIGNAL(selected(QString,QString)),this, SLOT(open(QString)));
       disconnect(b, SIGNAL(selected(QString,QString)),
@@ -69,7 +69,9 @@ void guiTabbedPage::open(QString p) {
   int idx = p.lastIndexOf('/');
   QString elt = p.mid(idx+1);
   idx = elt.indexOf(ARRAYSEP);
-  QString ar = (idx>=0) ? elt.left(idx) : "";
+  if (idx<0)
+    throw Exception("guiTabbedPage", "Path does not specify element: " + p);
+  QString ar = elt.left(idx);
   elt = elt.mid(idx+1);
   currentElement = elt;
 

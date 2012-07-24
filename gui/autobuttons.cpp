@@ -1,28 +1,29 @@
-// autoitems.cpp
+// autobuttons.cpp
 
-#include "autoitems.h"
+#include "autobuttons.h"
 #include "guichecklist.h"
 #include <base/exception.h>
 #include <base/dbg.h>
 #include <xml/attribute.h>
 
-AutoItems::AutoItems(guiPage *parent):
-  QObject(parent), initialGeom(parent) {
+AutoButtons::AutoButtons(guiButtonGroup *parent):
+  QObject(parent), parent_(parent),
+  initialGeom(parent->parent()) {
   isDyn = false;
 }
 
-void AutoItems::setup(PageBuildGeom &geom,
+void AutoButtons::setup(PageBuildGeom &geom,
 		      QDomElement doc_) {
   initialGeom = geom;
   doc = doc_;
   enumerator = Enumerator::find(doc.attribute("enum"));
   if (!enumerator)
-    throw Exception("AutoItems", "No enumerator");
+    throw Exception("AutoButtons", "No enumerator");
   isDyn = attributeTrue(doc, "dynamic");
   rebuild(&geom);
 }
 
-QStringList AutoItems::selectIDs(QStringList inlist) {
+QStringList AutoButtons::selectIDs(QStringList inlist) {
   QStringList outlist;
   foreach (QString id, inlist) {
     // filter based on our xml doc
@@ -31,18 +32,21 @@ QStringList AutoItems::selectIDs(QStringList inlist) {
   return outlist;
 }
 
-void AutoItems::rebuild(PageBuildGeom *g_out) {
+void AutoButtons::rebuild(PageBuildGeom *g_out) {
   QStringList newids = selectIDs(enumerator->getAllTags());
+  Dbg() << "AutoButtons " << parent_->groupId() << ": rebuild " << newids.join(", ");
   if (newids == ids)
     return;
-  
-  guiPage *p = dynamic_cast<guiPage *>(parent());
-  if (!p)
-    throw Exception("AutoItems", "Parent is not a page");
-  foreach (QString id, items.keys())
-    p->deleteButton(id);
 
-  items.clear();
+  guiPage *p = parent_->parent();
+  if (!p)
+    throw Exception("AutoButtons", "Grandparent is not a page");
+  foreach (QString id, buttons.keys()) {
+    parent_->remove(parent_->groupId() + ARRAYSEP + id);
+    p->deleteButton(id);
+  }
+
+  buttons.clear();
 
   ids = newids;
 
@@ -51,20 +55,26 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
   foreach (QString id, ids) {
+    QString fullid = parent_->groupId() + ARRAYSEP + id;
     // let's build an item
     xml.setContent(hd1 + "\n" + hd2 + "\n"
-		   + "<item value=\""
+		   + "<button id=\""
+		   + fullid
+		   + "\" value=\""
 		   + id
 		   + "\"/>\n");
     QDomElement e = xml.documentElement();
-    items[id] = p->addItem(g, e);
+    Dbg() << "Adding autobutton " << fullid;
+    g.report();
+    buttons[id] = p->addButton(g, e);
+    parent_->add(fullid);
   }
   
   if (g_out)
     *g_out = g;
 }
  
-bool AutoItems::isDynamic() const {
+bool AutoButtons::isDynamic() const {
   return isDyn;
 }
     

@@ -4,11 +4,13 @@
 #include "guiroot.h"
 #include <base/exception.h>
 #include <base/dbg.h>
+#include <xml/attribute.h>
 
 PageBuildGeom::PageBuildGeom(guiPage const *parent):
   master(&parent->masterp()->geom()), parent(parent) {
   ingroup = false;
   baserow = 0;
+  basecol = 0;
   groupcols = 1;
 }
 
@@ -52,9 +54,19 @@ void PageBuildGeom::setup(QDomElement doc) {
 }
 
 void PageBuildGeom::advance(double dy) {
-  nextrow += dy;
-  if (rows>0 && nextrow>=rows) {
-    nextColumn(QDomElement());
+  if (ingroup && groupflip) {
+    nextcol += 1./groupcols;
+    groupcol++;
+    if (groupcol>=groupcols) {
+      nextcol -= 1;
+      groupcol=0;
+      nextrow++;
+    }
+  } else {
+    nextrow += dy;
+    if (rows>0 && nextrow>=rows) {
+      nextColumn(QDomElement());
+    }
   }
 }
 
@@ -123,18 +135,31 @@ void PageBuildGeom::enterGroup(QDomElement doc) {
   groupcols = doc.hasAttribute("cols")
     ? doc.attribute("cols").toInt()
     : 1;
+  groupflip = attributeTrue(doc, "flip");
   baserow = nextrow;
+  basecol = nextcol;
   groupcol = 0;
 }
 
 void PageBuildGeom::leaveGroup() {
-  if (ingroup) 
-    nextColumn(QDomElement());
+  if (!ingroup)
+    return;
+
+  nextcol = basecol;
+  nextrow = 1;
   baserow = 0;
+  basecol = 0;
   groupcols = 1;
+  nextColumn(QDomElement());
   ingroup = false;
 }
 
 QRect const &PageBuildGeom::boundingBox() const {
   return boundingbox;
 }  
+
+void PageBuildGeom::report() {
+  Dbg() << "PBG R=" << rows << " C=" << cols
+	<< " BR=" << baserow << " GC=" << groupcols
+	<< " r=" << nextrow << " c=" << nextcol;
+}

@@ -55,6 +55,9 @@ void guiPage::setup(QDomElement doc) {
 }
 
 bool guiPage::mayResize() {
+  foreach (guiButtonGroup *g, groups)
+    if (!g->mayResize())
+      return false;
   return true;
 }
 
@@ -289,6 +292,9 @@ void guiPage::openChildren() {
 }
 
 void guiPage::prepForOpening() {
+  foreach (guiButtonGroup *g, groups)
+    g->rebuildAuto();
+  
   foreach (QString id, buttons.keys()) {
     guiButton *b = buttons[id];
     Param *p = ptree ? ptree->findp(id) : 0;
@@ -310,7 +316,7 @@ void guiPage::prepForOpening() {
       } else {
 	b->setValue(p->toString());
       }
-    } else if (id.indexOf(ARRAYSEP)) {
+    } else if (id.indexOf(ARRAYSEP)>=0) {
       // This is a button that represents a tab.
       representTabEnabled(id);
     }
@@ -320,6 +326,8 @@ void guiPage::prepForOpening() {
 void guiPage::representTabEnabled(QString id) {
   guiButton *b = buttons[id];
   int idx = id.indexOf(ARRAYSEP);
+  if (idx<0)
+    throw Exception("guiPage", "representTabEnabled: not a tab " + id);
   QString ar = id.left(idx);
   QString elt = id.mid(idx+1);
   Param *p = origptree ? origptree->findp(ar+"/"+elt+"/enable") : 0;
@@ -349,10 +357,11 @@ void guiPage::childTabEnabled(QString path) {
   QString child = pathToLocal(path);
   child = child.left(child.indexOf('/'));
   guiPage *p = subpagep(child);
-  Dbg() << "guiPage " << this->path() << ": childTabEnabled " << path << " child: " << child;
   if (p) {
     QString but = child + ARRAYSEP + p->getCurrentElement();
     representTabEnabled(but);
+  } else {
+    throw Exception("guiPage", "childTabEnabled can't find child " + path);
   }
 }
 
