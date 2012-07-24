@@ -141,14 +141,6 @@ guiPage::~guiPage() {
   // buttons and other descendents will be deleted by qt
 }
 
-void guiPage::addSpace(PageBuildGeom &g, QDomElement doc) {
-  g.vspace(doc);
-}
-
-void guiPage::addBreak(PageBuildGeom &g, QDomElement doc) {
-  g.nextColumn(doc);
-}
-
 void guiPage::addRadioGroup(PageBuildGeom &g, QDomElement doc) {
   guiRadioGroup *bg = new guiRadioGroup(this);
   bg->build(g, doc);
@@ -190,8 +182,10 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
   buttons[id]->setup(doc);
   itemgroup->add(b);
 
+  if (doc.hasAttribute("custom"))
+    g.last(doc.attribute("custom").toInt());
   b->setGeometry(g.bbox());
-  g.advance();
+  g.right();
 
   return b;
 }
@@ -222,7 +216,7 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   g.go(doc);
   b->setGeometry(g.bbox());
   if (!b->alwaysHidden())
-    g.advance();
+    g.down();
 
   return b;
 }
@@ -560,10 +554,6 @@ void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
       addMenu(g,e);
     else if (tag=="checklist")
       addChecklist(g,e);
-    else if (tag=="space")
-      addSpace(g,e);
-    else if (tag=="break") 
-      addBreak(g,e);
     else if (tag=="auto")
       addAuto(g, e);
     else

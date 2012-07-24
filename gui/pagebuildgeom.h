@@ -17,41 +17,40 @@ class PageBuildGeom {
    */
 public:
   PageBuildGeom(guiPage const *parent);
+  PageBuildGeom(PageBuildGeom const &src, QDomElement doc);
   void setup(QDomElement doc);
   QRect bbox(); // box for next button
   QRect pbox(); // box for subpage
   void go(QDomElement doc);
-  void advance(double dy=1);
-  void vspace(QDomElement doc);
-  void nextColumn(QDomElement doc);
-  void enterGroup(QDomElement doc);
-  void leaveGroup();
+  void right();
+  void down();
+  void left();
+  void up();
+  void last(int n=1);
   QRect const &boundingBox() const;
 private:
+  guiPage const *parent;
+  guiGeom const *master;
+
   double nextcol, nextrow; // location of next button
+
   struct ButtonPlacement {
     int x0, y0; // pixel position of button grid origin
     int w, h; // size of buttons
-    double dx, dy; // grid spacing
+    int dx, dy; // grid spacing
   } button;
+
   struct SubPagePlacement {
     int dxl, dxr, dyt, dyb; // pixel count of how much smaller subpages are
                             // compared to parent.
   } page; 
-  int rows; // number of rows of buttons, or 0 if not specified.
+
+  double rows; // number of rows of buttons, or 0 if not specified.
   double cols;  // number of columns of buttons, or 0 if not specified.
-  int caph; // height of caption widget, or 0 if none.
-  guiGeom const *master;
-  bool ingroup;
-  int groupcols;
-  double baserow;
-  double basecol;
-  int groupcol;
+
   QRect boundingbox;
-  bool groupflip;
-  guiPage const *parent;
-public:
-  void report();
+private:
+  void setup(QDomElement doc, QRect space);
 };
 
 

@@ -109,14 +109,6 @@ public:
    *:N This connects the selected/deselected signals from items in that
        page to our childItemXXX slots.
    */
-  void addBreak(PageBuildGeom &g, QDomElement elt);
-  /*:F addBreak
-   *:D Inserts a column break between buttons, as per the <break> element.
-   */
-  void addSpace(PageBuildGeom &g, QDomElement elt);
-  /*:F addSpace
-   *:D Inserts a vertical space between buttons, as per the <space> element.
-   */
   virtual void addAuto(PageBuildGeom &g, QDomElement elt);
   /*:F addAuto
    *:D Automatically adds a number of <item> buttons according to an enum.

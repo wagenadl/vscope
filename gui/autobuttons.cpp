@@ -63,8 +63,8 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
 		   + "\"/>\n");
     QDomElement e = xml.documentElement();
     Dbg() << "Adding autobutton " << fullid;
-    g.report();
     buttons[id] = p->addButton(g, e);
+    g.up(); g.right();
     parent_->add(buttons[id]);
   }
   

@@ -26,8 +26,6 @@ void guiRadioGroup::build(PageBuildGeom &g, QDomElement doc) {
       if (e.hasAttribute("vt")) // ... so we may have to restore it
 	b->setVisualType((VISUALTYPE)Enumerator::find("VISUALTYPE")
 			 ->lookup(e.attribute("vt")));
-    } else if (tag=="break") {
-      g.nextColumn(e);
     } else {
       throw Exception("guiRadioGroup", "Unexpected tag " + tag);
     }

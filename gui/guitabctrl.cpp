@@ -20,19 +20,18 @@ void guiTabCtrl::add(Button *b) {
   rg->add(b);
 }
 
-void guiTabCtrl::build(PageBuildGeom &g, QDomElement doc) {
+void guiTabCtrl::build(PageBuildGeom &g0, QDomElement doc) {
   id_ = doc.attribute("id");
-  g.enterGroup(doc);  // this will be changed
+  PageBuildGeom g(g0, doc);
 
   for (QDomElement e=doc.firstChildElement(); !e.isNull();
        e=e.nextSiblingElement()) {
     QString tag = e.tagName();
     if (tag=="button") {
       guiButton *b = parent_->addButton(g, e);
+      g.up(); g.right();
       rg->add(b);
       fixedids.insert(b->id());
-    } else if (tag=="break") {
-      g.nextColumn(e);
     } else if (tag=="auto") {
       AutoButtons *a = new AutoButtons(this);
       a->setup(g, e);
@@ -41,7 +40,6 @@ void guiTabCtrl::build(PageBuildGeom &g, QDomElement doc) {
       throw Exception("guiTabCtrl", "Unexpected tag " + tag);
     }
   }
-  g.leaveGroup();  
 }
 
 void guiTabCtrl::rebuild() {

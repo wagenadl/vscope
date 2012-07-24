@@ -81,54 +81,53 @@
       <button id="acqFreq" label="Sample rate" bg="#88ddff"/>
     </group>
     <!-- ********************* MENUS FOR EPHYS. RECORDING ******************** -->
-    <checklist id="aiChannels" caption="Input channels" rows="4" cols="5">
+    <checklist id="aiChannels" cols="5.2">
       <!-- "values" match "tags" in AICHAN enum -->
       <auto enum="AICHAN"/>
       <!--item value="ME1_10Vm"/>
       <item value="ME2_Vm"  />
       <item value="ME1_I"   />
       <item value="ME2_I"   />
-      <break/>
+      
       <item value="ExtVA1"  />
       <item value="ExtVA2"  />
       <item value="ExtVA3"  />
       <item value="ExtVA4"  />
-      <break/>
+      
       <item value="ExtVB1"  />
       <item value="ExtVB2"  />
       <item value="ExtVB3"  />
       <item value="ExtVB4"  />
-      <break/>
+      
       <item value="Stim0Mon"/>
       <item value="Stim1Mon"/>
       <item value="Stim2Mon"/>
       <item value="Stim3Mon"/-->
     </checklist>
 
-    <menu id="acqTime" caption="Trial duration" rows="5" cols="4">
+    <menu id="acqTime"   cols="5.8">
       <items>
 	1.1 s, 1.6 s, 2.2 s, 3.3 s, 5.5 s, 7.0 s,
 	11 s, 16 s, 21 s, 31 s, 46 s,  	  
 	61 s, 91 s, 121 s, 181 s
       </items>
-      <space dy="1"/>
       <item custom="1"  editcaption="Trial duration"/>
     </menu>
   
-    <menu id="acqFreq" caption="Sample rate" rows="5" cols="2">
+    <menu id="acqFreq"  cols="3.8">
       <items>
 	1 kHz, 2 kHz, 3 kHz, 5 kHz, 7 kHz,
 	10 kHz, 15 kHz, 20 kHz, 30 kHz
       </items>
-      <item custom="1"  editcaption="Sample rate"/> <!-- "custom" creates a user editable button. The value will be overwritten in the local.xml settings file. -->
+      <item custom="1"  editcaption="Sample rate"/>
     </menu>
 
   </page>
 
   <!-- ****************** EPHYS. STIMULATION CONFIG PAGE ******************* -->
-  <page id="stimEphys" subdxl="1.05" rows="5">
+  <page id="stimEphys" subdxl="1.05" >
     <button id="enable" type="bool" bg="#dd88dd"/>
-    <tabctrl id="channel" cols="2" flip="true">
+    <tabctrl id="channel" spanrows="4" cols="2">
       <auto enum="STIMCHS" />
     </tabctrl>
     <tabbedpage id="channel" subdxl="2.1" bg="#dd88dd" cols="4.5">
@@ -139,7 +138,7 @@
         <button id="trainPeriod" label="Train period" bg="#77aaff"/>
         <button id="nPulses"  label="Pulses/train" bg="#ffaaaa"/>
         <button id="pulsePeriod" label="Pulse period" bg="#ffaa77"/>
-        <break/>
+        
         <button id="pulseType" label="Pulse type" y="0" bg="#ff77ff"/>
         <button id="pulseAmp" label="Amplitude" bg="#aa77ff"/>
         <button id="pulseDur" label="Duration" bg="#8855ff"/>
@@ -147,7 +146,7 @@
         <button id="pulseDur2" label="2nd Dur." bg="#ff5588"/> <!-- This is duration for second phase for biphasic -->
       </group>
   
-      <menu id="pulseType" caption="Pulse type" rows="4" cols="1">
+      <menu id="pulseType" rows="4" cols="1">
 	<auto enum="PULSETYPE"/>
         <!--item value="TTL"/>
         <item value="Square"/>
@@ -155,7 +154,7 @@
         <item value="Ramp"/-->
       </menu>    
     
-      <menu id="nTrains" caption="Number of trains" rows="5" cols="3">
+      <menu id="nTrains"  cols="4.1">
 	<items>
 	  1, 2, 3, 4, 5,
 	  6, 7, 8, 9, 10,
@@ -164,7 +163,7 @@
         <item custom="1"  editcaption="Number of trains"/>
       </menu>
     
-      <menu id="nPulses" caption="Pulses per train" rows="5" cols="3">
+      <menu id="nPulses"  cols="4.1">
 	<items>
 	  1, 2, 3, 4, 5,
 	  6, 7, 8, 9, 10,
@@ -173,18 +172,17 @@
         <item custom="1" editcaption="Number of pulses per train"/>
       </menu>
     
-      <menu id="delay" caption="Delay" rows="6" cols="4">
-        <item value="0 ms"/>
-        <item custom="1" editcaption="Delay" y="5"/>
-        <break/>
+      <menu id="delay"  cols="4.1">
+        
 	<items>
-	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
+	  0 ms, 10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
 	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
-	  1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+	  1 s, 1.5 s, 2 s, 3 s, 5 s
 	</items>
+        <item custom="1" editcaption="Delay" y="5"/>
       </menu>
 
-      <menu id="trainPeriod" caption="Train period" rows="6" cols="3">
+      <menu id="trainPeriod"  cols="4.1">
 	<items>
 	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
 	  1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
@@ -193,7 +191,7 @@
         <item custom="1" editcaption="Train period"/>
       </menu>
     
-      <menu id="pulsePeriod" label="Pulse period" rows="6" cols="3">
+      <menu id="pulsePeriod" label="Pulse period"  cols="4.1">
 	<items>
 	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
 	  1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
@@ -202,40 +200,42 @@
         <item custom="1" editcaption="Pulse period"/>
       </menu>
     
-      <menu id="pulseDur" caption="Pulse duration" rows="6" cols="4">
+      <menu id="pulseDur"  cols="4.1">
 	<items>
-	  0.1 ms, 0.15 ms, 0.2 ms, 0.3 ms, 0.5 ms, 0.7 ms
-	  1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
-	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
-	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms
+	  0.1 ms, 0.2 ms, 0.5 ms
+	  1 ms, 2 ms, 5 ms
+	  10 ms, 20 ms, 30 ms, 50 ms, 70 ms
+	  100 ms, 150 ms, 200 ms, 500 ms
+	  1 s, 2 s, 5 s
 	</items>
         <item custom="1" editcaption="Pulse duration"/>
       </menu>
     
-      <menu id="pulseDur2" caption="Duration of second phase" rows="6" cols="4">
+      <menu id="pulseDur2"  cols="5.1">
 	<items>
-	  0.1 ms, 0.15 ms, 0.2 ms, 0.3 ms, 0.5 ms, 0.7 ms,
-	  1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
-	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
-	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms
+	  0.1 ms, 0.2 ms, 0.5 ms
+	  1 ms, 2 ms, 5 ms
+	  10 ms, 20 ms, 30 ms, 50 ms, 70 ms
+	  100 ms, 150 ms, 200 ms, 500 ms
+	  1 s, 2 s, 5 s
 	</items>
         <item custom="1" editcaption="Duration of 2nd phase"/>
       </menu>
     
-      <menu id="pulseAmp" caption="Pulse amplitude (initial for ramp)" rows="6" cols="4">
+      <menu id="pulseAmp"  cols="4.1">
 	<items>
 	  10 mV, 15 mV, 20 mV, 30 mV, 50 mV, 70 mV
 	  100 mV, 150 mV, 200 mV, 300 mV, 500 mV, 700 mV
-	  1 V, 1.5 V, 2 V, 3 V, 5 V, 7 V, 10 V
+	  1 V, 1.5 V, 2 V, 3 V, 5 V, 7 V
 	</items>
         <item custom="1" editcaption="Pulse amplitude (initial for ramp)"/>
       </menu>
     
-      <menu id="pulseAmp2" caption="Final pulse amplitude (2nd phase or end of ramp)" rows="6" cols="4">
+      <menu id="pulseAmp2"  cols="4.1">
 	<items>
 	  10 mV, 15 mV, 20 mV, 30 mV, 50 mV, 70 mV
 	  100 mV, 150 mV, 200 mV, 300 mV, 500 mV, 700 mV
-	  1 V, 1.5 V, 2 V, 3 V, 5 V, 7 V, 10 V
+	  1 V, 1.5 V, 2 V, 3 V, 5 V, 7 V
 	</items>
         <item custom="1" editcaption="Final pulse amplitude (2nd phase or end of ramp)"/>
       </menu>
@@ -250,7 +250,7 @@
       <button id="region" label="Region" bg="#8888ff"/>
       <button id="preIllum" label="Pre-illum"  bg="#ddbbff"/>
       <button id="postIllum" label="Post-illum" bg="#bb99ff"/>
-      <break/>
+      
       <button id="preHeat" label="Pre-Heat" y="0" bg="#bb77ee"/>
       <button id="delay" label="VSD delay" bg="#88aaff"/>
       <button id="dur" label="VSD dur." bg="#77bbff"/>
@@ -258,64 +258,60 @@
       <button id="dutyCycle" label="Duty cycle" bg="#4444ff"/>
      </group>
 
-    <menu id="binning" caption="CCD Binning" rows="4" cols="3">
+    <menu id="binning" rows="4" cols="4.8">
       <item value="1x1+0+0"/>
-      <break/>
+      
       <item value="1x2+0+0"/>
       <item value="1x3+0+0"/>
       <item value="1x4+0+0"/>
-      <break/>
+      
       <item value="2x2+0+0"/>
       <item value="3x3+0+0"/>
       <item value="4x4+0+0"/>
     </menu>
   
-    <menu id="region" caption="CCD Region" rows="5">
+    <menu id="region" >
       <item value="512x512+0+0"/>
-      <space dy="1"/>
       <item value="384x384+64+64"/>
       <item value="256x256+128+128"/>
-      <break/>
+      
       <item value="256x256+0+0"/>
       <item value="256x256+256+0"/>
       <item value="256x256+0+256"/>
       <item value="256x256+256+256"/>
     </menu>
   
-    <menu id="rate" caption="CCD frame rate (fps)" rows="5" cols="4">
+    <menu id="rate"  cols="5.2">
       <items>
 	1 Hz, 2 Hz, 3 Hz, 5 Hz, 7 Hz,
 	10 Hz, 15 Hz, 20 Hz, 30 Hz, 50 Hz,
 	70 Hz, 100 Hz, 150 Hz, 200 Hz, 300 Hz,
 	500 Hz, 700 Hz, 1 kHz
       </items>
-      <space dy="1"/>
       <item custom="1" editcaption="CCD frame rate"/>
     </menu>
   
-    <menu id="delay" caption="Delay before image acquisition" rows="5" cols="5">
+    <menu id="delay"  cols="5.2">
       <items>
 	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
 	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
 	10 s, 15 s, 20 s, 30 s, 45 s,
 	60 s, 90 s, 120 s, 180 s
       </items>
-      <space dy="1"/>
       <item custom="1" editcaption="Delay before image acquisition"/>
     </menu>
 
-    <menu id="dur" caption="Duration of image acquisition" rows="5" cols="5">
+    <menu id="dur"  cols="5.2">
       <items>
 	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
 	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
 	10 s, 15 s, 20 s, 30 s, 45 s,
 	60 s, 90 s, 120 s, 180 s
       </items>
-      <space dy="1"/>
       <item custom="1" editcaption="Duration of image acquisition"/>
     </menu>
   
-    <menu id="preIllum" caption="Pre-illumination time" rows="6" cols="3">
+    <menu id="preIllum"  cols="5.2">
       <items>
 	1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
 	10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
@@ -324,7 +320,7 @@
       <item custom="1"  editcaption="Pre-illumination time"/>
     </menu>
   
-    <menu id="postIllum" caption="Post-illumination time" rows="6" cols="3">
+    <menu id="postIllum"  cols="5.2">
 	<items>
 	  0.1 ms, 0.15 ms, 0.2 ms, 0.3 ms, 0.5 ms, 0.7 ms
 	  1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
@@ -333,16 +329,17 @@
       <item custom="1"  editcaption="Post-illumination time"/>
     </menu>
 
-    <menu id="preHeat" caption="Pre-heating time" rows="6" cols="3">
+    <menu id="preHeat"  cols="5.2">
       <items>
+	0 ms
 	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
 	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
-	10 s, 15 s, 20 s, 30 s, 0 s
+	10 s, 15 s, 20 s, 30 s
       </items>
       <item custom="1"  editcaption="Pre-heating time"/>
     </menu>
 
-    <menu id="dutyCycle" caption="Duty cycle" rows="5" cols="4">
+    <menu id="dutyCycle"  cols="5.2">
       <items>
 	10%, 15%, 20%, 25%, 30%,
 	35%, 40%, 45%, 50%, 55%
@@ -359,7 +356,6 @@
     <button id="avoidCCD" label="Avoid CCD" type="bool" bg="#cccc99"/>
     <button id="lightOn" label="[Light On]" type="bool" y="4" bg="#ffff00"
 	    neverdisable="true"/>
-    <!-- buttons with names starting with "@" are never disabled -->
     <group id="a">
       <button id="delay" label="Onset delay" y="2" bg="#dddd66"/>
       <button id="dur" label="Duration" bg="#bbbb44"/>
@@ -374,104 +370,86 @@
       <button id="marginPostCCD" label="Post-CCD" bg="#bb99ff"/>
     </group>
 
-    <menu id="frameRate" caption="Video frame rate if not avoiding CCD" rows="4" cols="4">
+    <menu id="frameRate" rows="4" cols="5.8">
       <items>
 	5 Hz, 10 Hz, 15 Hz, 20 Hz, 25 Hz, 30 Hz, 40 Hz, 50 Hz,
       </items>
-      <break/>
-      <space dy="3"/>
       <item custom="1" editcaption="Video frame rate if not avoiding CCD"/>
     </menu>
 
-    <menu id="preIllum" caption="Pre-illumination time" rows="4" cols="4">
-      <item value="0 ms"/>
-      <space dy="2"/>
+    <menu id="preIllum" rows="4" cols="5.8">
+      <items>
+	0 ms, 1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
+      </items>
       <item custom="1" editcaption="Pre-illumination time"/>
-      <break/>
-      <items>
-	1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
-      </items>
     </menu>
 
-    <menu id="postIllum" caption="Post-illumination time" rows="4" cols="4">
-      <item value="0 ms"/>
-      <space dy="2"/>
+    <menu id="postIllum" rows="4" cols="5.8">
+      <items>
+	0 ms, 1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
+      </items>
       <item custom="1" editcaption="Post-illumination time"/>
-      <items>
-	1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
-      </items>
     </menu>
 
-    <menu id="marginPreCCD" caption="Pre-CCD avoidance time" rows="4" cols="4">
-      <item value="0 ms"/>
-      <space dy="2"/>
+    <menu id="marginPreCCD" rows="4" cols="5.8">
+      <items>
+	0 ms, 1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
+      </items>
       <item custom="1" editcaption="Pre-CCD avoidance time"/>
-      <break/>
-      <items>
-	1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
-      </items>
     </menu>
 
-    <menu id="marginPostCCD" caption="Post-CCD avoidance time" rows="4" cols="4">
-      <item value="0 ms"/>
-      <space dy="2"/>
+    <menu id="marginPostCCD" rows="4" cols="5.8">
+      <items>
+	0 ms, 1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
+      </items>
       <item custom="1" editcaption="Post-CCD avoidance time"/>
-      <items>
-	1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
-      </items>
     </menu>
 
-    <menu id="delay" caption="Delay before video stimulation" rows="6" cols="4">
+    <menu id="delay"  cols="5.8">
       <items>
 	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
 	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
 	10 s, 15 s, 20 s, 30 s, 45 s, 60 s, 90 s, 120 s, 180 s
       </items>
-      <space dy="1"/>
       <item custom="1" editcaption="Delay before video stimulation"/>
     </menu>
 
-    <menu id="dur" caption="Duration of video stimulation" rows="6" cols="4">
+    <menu id="dur"  cols="5.8">
       <items>
 	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
 	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
 	10 s, 15 s, 20 s, 30 s, 45 s, 60 s, 90 s, 120 s, 180 s
       </items>
-      <space dy="1"/>
       <item custom="1"  editcaption="Duration of video stimulation"/>
     </menu>
 
-    <menu id="prog" caption="Program number" rows="6" cols="5">
+    <menu id="prog"  cols="4.8">
       <items>
-	01, 02, 03, 04, 05, 06, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24, 25,
-	26, 31, 32, 33, 34, 35, 36, 41, 42, 43, 44, 45, 46,
+	01, 02, 03, 04, 05, 11, 12, 13, 14, 15, 21, 22, 23, 24, 25,
       </items>
     </menu>
 
-    <menu id="parA" caption="Parameter A" rows="6" cols="4">
+    <menu id="parA"  cols="5.8">
       <items>
-	01, 02, 03, 04, 05, 06, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24,
-	25, 26, 31, 32, 33, 34,
+	01, 02, 03, 04, 05, 11, 12, 13, 14, 15,
+	21, 22, 23, 24, 25, 31, 32, 33, 34,
       </items>
-      <space dy="1" />
       <item custom="1"  editcaption="Parameter value"/>
     </menu>
 
-    <menu id="parB" caption="Parameter B" rows="6" cols="4">
+    <menu id="parB"  cols="4">
       <items>
-	01, 02, 03, 04, 05, 06, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24,
-	25, 26, 31, 32, 33, 34,
+	01, 02, 03, 04, 05, 11, 12, 13, 14, 15,
+	21, 22, 23, 24, 25, 31, 32, 33, 34,
       </items>
-      <space dy="1" />
       <item custom="1"  editcaption="Parameter value"/>
     </menu>
 
-    <menu id="parC" caption="Parameter C" rows="6" cols="4">
+    <menu id="parC"  cols="4">
       <items>
-	01, 02, 03, 04, 05, 06, 11, 12, 13, 14, 15, 16, 21, 22, 23, 24,
-	25, 26, 31, 32, 33, 34,
+	01, 02, 03, 04, 05, 11, 12, 13, 14, 15,
+	21, 22, 23, 24, 25, 31, 32, 33, 34,
       </items>
-      <space dy="1" />
       <item custom="1"  editcaption="Parameter value"/>
     </menu>
   </page>
@@ -481,7 +459,7 @@
     <button id="exptname" label="Expt. Name: %1" x="3.1" y="0" editcaption="Experiment Name" bg="#88aaff"/>
     <button id="trialno" label="Trial No.: %1" editcaption="Trial Number" bg="#77bbff"/>
     <button id="load"  label="Load Old Data..." y="3" bg="#88ffff"/>
-    <break/>
+    
     <button id="singleframe" label="Single Frame" bg="#ddbbff"/>
     <button id="singletrial" label="Single Trial" bg="#bb99ff"/>
     <button id="dummy" label="Dummy" type="bool" bg="#ffffff"/>
@@ -514,7 +492,7 @@
       <button id="reset" label="Reset"/>
     </page>
 
-    <menu id="trialPeriod" caption="Trial period" rows="5" cols="1">
+    <menu id="trialPeriod"  cols="1">
       <item value="1 min"/>
       <item value="2 min"/>
       <item value="5 min"/>
@@ -547,23 +525,23 @@
     <button id="zoomIn" label="Zoom In" x="4.1" y="1" bg="#55eecc"/>
     <button id="zoomOut" label="Zoom Out" bg="#22ddcc"/>
 
-    <menu id="refType" caption="Reference type" rows="3" cols="1">
+    <menu id="refType" rows="3" cols="1">
       <auto enum="REFTYPE"/>
     </menu>
 
-    <menu id="refFreq" caption="Reference frequency" rows="5" cols="3">
+    <menu id="refFreq"  cols="4.8">
       <item value="0.1 Hz"/>
       <item value="0.2 Hz"/>
       <item value="0.3 Hz"/>
       <item value="0.5 Hz"/>
       <item value="0.7 Hz"/>
-      <break/>
+      
       <item value="1 Hz"/>
       <item value="2 Hz"/>
       <item value="3 Hz"/>
       <item value="5 Hz"/>
       <item value="7 Hz"/>
-      <break/>
+      
       <item value="10 Hz"/>
       <item value="15 Hz"/>
       <item value="20 Hz"/>
@@ -571,7 +549,7 @@
       <item custom="1" editcaption="Reference freq."/>
     </menu>
 
-    <menu id="refDigi" caption="Digital lines" rows="5" cols="3">
+    <menu id="refDigi"  cols="3">
       <item value="DO0mon"/>
       <item value="DO1mon"/>
       <item value="DO2mon"/>
@@ -584,15 +562,15 @@
       <item value="FrameOx"/>
     </menu>
 
-    <menu id="refTrace" caption="Input channels" rows="4" cols="4">
+    <menu id="refTrace" rows="4" cols="4">
       <auto enum="AICHAN"/>
     </menu>
 
-    <menu id="showROIs" caption="Show ROIs" rows="5" cols="1">
+    <menu id="showROIs"  cols="1">
       <auto enum="SHOWROIS"/>
     </menu>
 
-    <menu id="debleach" caption="Debleach mode" rows="3" cols="1">
+    <menu id="debleach" rows="3" cols="1">
       <auto enum="DEBLEACH"/>
     </menu>
   </page>
@@ -601,7 +579,7 @@
     <group id="chk">
       <button id="focus" label="Focus" x="3.1" y="0" bg="#ffcc88"/>
       <button id="liveEphys" label="Oscilloscope" bg="#eeaaaa"/>
-      <break/>
+      
       <button id="checkDaq" label="DAQ Board Status" bg="#bbffff"/>
       <button id="checkCam" label="Camera Status" bg="#ccccff"/>
       <!--button id="checkMEA" label="MEA Status" bg="#bbffbb"/>
@@ -636,7 +614,7 @@
       </group>
       <button id="autoRange" label="Auto Range" x="2" y="4" bg="#dddd99"/>
     <!-- ********************* MENUS FOR LIVE EPHYS. ******************** -->
-      <checklist id="diChannels" caption="Digital inputs" rows="4" cols="4">
+      <checklist id="diChannels" rows="4" cols="4">
         <item value="DO0Mon"/>
         <item value="DO1Mon"/>
         <item value="DO2Mon"/>
@@ -644,55 +622,55 @@
 
         <item value="VideoFrame" />
         <item value="VideoLightMon"/>
-        <break/>
+        
         <item value="TrigCcMon"/>
         <item value="TrigOxMon"/>
         <item value="FrameCc"/>
         <item value="FrameOx"/>
       </checklist>
-      <checklist id="aiChannels" caption="Input channels" rows="4" cols="4">
+      <checklist id="aiChannels" rows="4" cols="4">
         <!-- "values" match "tags" in AICHAIN enum -->
         <item value="ME1_10Vm" />
         <item value="ME2_Vm"   />
         <item value="ME1_I"    />
         <item value="ME2_I"    />
-        <break/>
+        
         <item value="ExtVA1"   />
         <item value="ExtVA2"   />
         <item value="ExtVA3"   />
         <item value="ExtVA4"   />
-        <break/>
+        
         <item value="ExtVB1"   />
         <item value="ExtVB2"   />
         <item value="ExtVB3"   />
         <item value="ExtVB4"   />
-        <break/>
+        
         <item value="Stim0Mon" />
         <item value="Stim1Mon" />
         <item value="Stim2Mon" />
         <item value="Stim3Mon" />
         <!--item value="60HzRef"  label="60 Hz ref."/-->
       </checklist>
-      <menu id="vcoSource" caption="VCO Channel" rows="5" cols="1">
+      <menu id="vcoSource"  cols="1">
         <item value="off" />
         <item value="ME1_10Vm" />
         <item value="ME2_Vm"   />
       </menu>
-      <menu id="timeBase" caption="Time Base" rows="6" cols="3">
+      <menu id="timeBase" cols="4.8">
         <item value="10 ms"/>
         <item value="20 ms"/>
         <item value="50 ms"/>
         <item value="100 ms"/>
         <item value="200 ms"/>
         <item value="500 ms"/>
-        <break/>
+        
         <item value="1 s"/>
         <item value="2 s"/>
         <item value="5 s"/>
         <item value="10 s"/>
         <item value="30 s"/>
         <item value="1 min"/>
-        <break/>
+        
         <item value="2 min"/>
         <item value="5 min"/>
         <item value="10 min"/>
