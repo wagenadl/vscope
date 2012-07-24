@@ -57,9 +57,10 @@ public:
    *:D Returns whether or not this button hides itself when disabled.
    */
   void ensureValueInLabel();
-  /*:F ensureValueInLabel
+  void dropValueFromLabel();
+  /*:F ensureValueInLabel, dropValueFromLabel
    *:D For use by guiPage: ensure that the label contains "%1" so that
-       menu values can be represented.
+       menu values can be represented, or remove that %1.
   */
 public:
   QString id() const { return myId; }

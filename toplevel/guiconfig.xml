@@ -578,25 +578,8 @@
       <item value="FrameOx"/>
     </menu>
 
-    <menu id="refTrace" caption="Input channels" rows="5" cols="3">
-      <!-- ID values match defines for "AI_xxx" in channels.h -->
-      <item value="ME1_10Vm" />
-      <item value="ME2_Vm"   />
-      <item value="ME1_I"    />
-      <item value="ME2_I"    />
-      <item value="Stim0Mon" />
-      <break/>
-      <item value="ExtVA1"   />
-      <item value="ExtVA2"   />
-      <item value="ExtVA3"   />
-      <item value="ExtVA4"   />
-      <item value="Stim1Mon" />
-      <break/>
-      <item value="ExtVB1"   />
-      <item value="ExtVB2"   />
-      <item value="ExtVB3"   />
-      <item value="ExtVB4"   />
-      <item value="60HzRef"  />
+    <menu id="refTrace" caption="Input channels" rows="4" cols="4">
+      <auto enum="AICHAN"/>
     </menu>
 
     <menu id="showROIs" caption="Show ROIs" rows="5" cols="1">

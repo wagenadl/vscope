@@ -50,3 +50,12 @@ void guiChecklist::prepForOpening() {
     }
   }
 }
+
+void guiChecklist::connectToParent(QDomElement doc) {
+  guiMenu::connectToParent(doc);
+  guiButton *b = parentPage()->buttonp(id());
+  if (b)
+    b->dropValueFromLabel();
+}
+
+

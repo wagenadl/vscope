@@ -171,6 +171,10 @@ void guiButton::ensureValueInLabel() {
   }
 }
 
+void guiButton::dropValueFromLabel() {
+  format.replace(":<br>%1", "");
+}
+
 QString guiButton::path() const {
   QString p = parent
     ? parent->path() + "/"
