@@ -132,56 +132,44 @@ void EPhysOut::setupDData_addStim(ParamTree const *ptree) {
 
   KeyGuard guard(*ddata);
 
-  Enumerator *lines = Enumerator::find("DIGILINES");
-  int nmax0 = lines->getLargestValue();
-  int nmax = -1;
-  for (int n=0; n<=nmax0; n++) {
-    if (lines->has(n)) {
-      QString tag = lines->reverseLookup(n);
-      if (tag.startsWith("DO")) {
-	int k = tag.mid(2).toInt();
-	if (k>nmax)
-	  nmax=k;
-      }
-    }
-  }
-  QList<int> channels;
-  Dbg() << "ephysout: nmax = " << nmax;
-  for (int n=0; n<=nmax; n++) {
+  QStringList allStimLines = Connections::digiStimLines();
+
+  QStringList useStimLines;
+  foreach (QString id, allStimLines) {
     Param const &p =
-      ptree->find(QString("stimEphys/channel:DO%1/enable").arg(n));
-    uint32_t line = lines->lookup(QString("DO%1").arg(n));
-    ddata->addLine(line); /* We're clamping all DOx lines, even if they
-			     are not enabled. (We'll just write zeros.) */
+      ptree->find(QString("stimEphys/channel:%1/enable").arg(id));
+    ddata->addLine(Connections::findDig(id).line);
+    /* We're clamping all DOx lines, even if they
+       are not enabled. (We'll just write zeros.) */
     if (p.toBool())
-      channels.push_back(n);
+      useStimLines.append(id);
   }
   int nscans = ddata->getNumScans();
   double freqhz = ptree->find(PAR_OUTRATE).toDouble();
   uint32_t one = 1;
   uint32_t *dat = ddata->allData(guard.key());
 
-  foreach (int channel, channels) {
-    uint32_t line = lines->lookup(QString("DO%1").arg(channel));
+  foreach (QString id, useStimLines) {
+    uint32_t line = Connections::findDig(id).line;
     uint32_t cmask = one<<line;
     double delayms =
-      ptree->find(QString("stimEphys/channel:DO%1/delay")
-		  .arg(channel)).toDouble();
+      ptree->find(QString("stimEphys/channel:%1/delay")
+		  .arg(id)).toDouble();
     int ntrains =
-      ptree->find(QString("stimEphys/channel:DO%1/nTrains")
-		  .arg(channel)).toInt();
+      ptree->find(QString("stimEphys/channel:%1/nTrains")
+		  .arg(id)).toInt();
     double trainperiodms =
-      ptree->find(QString("stimEphys/channel:DO%1/trainPeriod")
-		  .arg(channel)).toDouble();
+      ptree->find(QString("stimEphys/channel:%1/trainPeriod")
+		  .arg(id)).toDouble();
     int npulses =
-      ptree->find(QString("stimEphys/channel:DO%1/nPulses")
-		  .arg(channel)).toInt();
+      ptree->find(QString("stimEphys/channel:%1/nPulses")
+		  .arg(id)).toInt();
     double pulseperiodms =
-      ptree->find(QString("stimEphys/channel:DO%1/pulsePeriod")
-		  .arg(channel)).toDouble();
+      ptree->find(QString("stimEphys/channel:%1/pulsePeriod")
+		  .arg(id)).toDouble();
     double pulsedurms =
-      ptree->find(QString("stimEphys/channel:DO%1/pulseDur")
-		  .arg(channel)).toDouble();
+      ptree->find(QString("stimEphys/channel:%1/pulseDur")
+		  .arg(id)).toDouble();
 
     int pulseperiodscans = roundi(pulseperiodms*freqhz/1000);
     int pulsedur1scans = roundi(pulsedurms*freqhz/1000);
@@ -208,26 +196,31 @@ void EPhysOut::setupAData_stim(ParamTree const *ptree) {
   if (!ddata)
     throw Exception("EPhysOut","No digital buffer defined","setupAData_stim");
 
-  QStringList avchs = Connections::analogOutputs();
-  QMap<AnalogOut::Channel, QString> useChannel;
+  QStringList allStimChs = Connections::analogStims();
+  QMap<int, QString> useChannel;
   QSet<QString> stimChannels;
-  bool hasvid = ptree->find("stimVideo/enable").toBool();
-  foreach (QString id, avchs) {
-    bool use, genstim;
-    if (id=="VidX" || id=="VidY") {
-      use = hasvid;
-      genstim = false;
-    } else {
-      Param const *p =
-	ptree->findp(QString("stimEphys/channel:%1/enable").arg(id));
-      genstim = use = p && p->toBool();
-    }
-    AnalogOut::Channel ach(Connections::findAO(id).line);
-    if (use)
-      useChannel[ach] = id;
-    if (genstim)
+  
+  foreach (QString id, allStimChs) {
+    Param const *p =
+      ptree->findp(QString("stimEphys/channel:%1/enable").arg(id));
+    if (p && p->toBool()) {
+      useChannel[Connections::findAO(id).line] = id;
       stimChannels.insert(id);
+    }
   }
+
+  if (ptree->find("stimVideo/enable").toBool()) {
+    QStringList vidChs = QString("VidX VidY").split(" ");
+    foreach (QString id, vidChs) {
+      Connections::AOChannel const *aoc = Connections::findpAO(id);
+      if (aoc)
+	useChannel[aoc->line] = id;
+      else
+	Dbg() << "ephysout surprise: stimvideo enabled but did not find line "
+	      << id;
+    }
+  }
+
   channelList = useChannel.values();
   
   if (channelList.isEmpty()) {

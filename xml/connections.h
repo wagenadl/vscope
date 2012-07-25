@@ -44,6 +44,7 @@ namespace Connections {
   public:
     QString id;     // id of this channel (as in enum AOCHAN)
     int line;       // line of this channel
+    bool stim;
   };
   
   class DigiChannel {
@@ -54,6 +55,7 @@ namespace Connections {
     int line;
     bool out;
     bool in;
+    bool stim;
   };
 
   class CamCon {
@@ -161,10 +163,18 @@ namespace Connections {
    *:D Returns a list of digital lines that are inputs according to
        our list of connections.
   */
+  QStringList digiStimLines();
+  /*:F digiStimLines
+   *:D Returns a list of digital lines that are outputs meant for user-defined
+       stimuli, according to our list of connections.
+  */
+  
   QStringList analogInputs();
   QStringList analogOutputs();
-  /*:F analogInputs, analogOutputs
+  QStringList analogStims();
+  /*:F analogInputs, analogOutputs, analogStims
    *:D Return lists of all analog inputs and outputs
+   *:N "Stims" are output channels that can be used for user-defined stimuli
    */
 };
   
