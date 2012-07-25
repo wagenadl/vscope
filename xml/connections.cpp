@@ -148,6 +148,7 @@ namespace Connections {
     
   void readAOChannels(QDomElement doc) {
     Enumerator *ao = Enumerator::find("AOCHAN");
+    Enumerator *stimchs = Enumerator::find("STIMCHS");
     for (QDomElement e=doc.firstChildElement("aochannel");
          !e.isNull(); e=e.nextSiblingElement("aochannel")) {
       QString id = xmlAttribute(e,"id");
@@ -156,6 +157,9 @@ namespace Connections {
 	aomap[id] = aoc;
 	aoc->line = e.attribute("line").toInt();
 	ao->add(id, aoc->line);
+	aoc->stim = attributeTrue(e, "isstim");
+	if (aoc->stim)
+	  stimchs->add(id);
       }
     }
   }
@@ -201,6 +205,7 @@ namespace Connections {
 
   void readDOChannels(QDomElement doc) {
     Enumerator *dio = Enumerator::find("DIGILINES");
+    Enumerator *stimchs = Enumerator::find("STIMCHS");
     for (QDomElement e=doc.firstChildElement("dochannel");
          !e.isNull(); e=e.nextSiblingElement("dochannel")) {
       QString id = xmlAttribute(e,"id");
@@ -211,6 +216,9 @@ namespace Connections {
 	dio->add(id,dig->line);
 	dig->in = false;
 	dig->out = true;
+	dig->stim = attributeTrue(e, "isstim");
+	if (dig->stim)
+	  stimchs->add(id);
       }
     }
   }
@@ -408,11 +416,27 @@ namespace Connections {
     return l;
   }
 
+  QStringList digiStimLines() {
+    QStringList l;
+    foreach (DigiChannel const *ch, digimap)
+      if (ch->out && ch->stim)
+	l.append(ch->id);
+    return l;
+  }
+  
   QStringList analogInputs() {
     return aimap.keys();
   }
 
   QStringList analogOutputs() {
     return aomap.keys();
+  }
+
+  QStringList analogStims() {
+    QStringList l;
+    foreach (AOChannel *ao, aomap)
+      if (ao->stim)
+	l.append(ao->id);
+    return l;
   }
 }

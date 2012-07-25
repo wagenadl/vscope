@@ -9,14 +9,15 @@
 <!-- ************************** ENUMERATIONS ***************************** -->
 <enums>
   <enum id="STIMCHS">
-    <item tag="AO0" value="0"/>
-    <item tag="AO1" value="1"/>
+    <!-- These are now filled by Connections -->
+    <!--item tag="AO0" value="0"/-->
+    <!--item tag="AO1" value="1"/-->
     <!--item tag="AO2" value="2"/-->
     <!--item tag="AO3" value="3"/-->
-    <item tag="DO0" value="4"/>
-    <item tag="DO1" value="5"/>
-    <item tag="DO2" value="6"/>
-    <item tag="DO3" value="7"/>
+    <!--item tag="DO0" value="4"/-->
+    <!--item tag="DO1" value="5"/-->
+    <!--item tag="DO2" value="6"/-->
+    <!--item tag="DO3" value="7"/-->
   </enum>
 
   <enum id="SHOWWHAT">

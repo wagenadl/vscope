@@ -77,8 +77,8 @@
   <aichannel id="ExtVB4" line="23"
      ground="RSE" range="5V" unit="V" scale="1"/>
 
-  <aochannel id="AO0" line="0"/>
-  <aochannel id="AO1" line="1"/>
+  <aochannel id="AO0" line="0" isstim="true"/>
+  <aochannel id="AO1" line="1" isstim="true"/>
   <aochannel id="VidX" line="2"/>
   <aochannel id="VidY" line="3"/>
   
@@ -112,10 +112,10 @@
   <dochannel id="VideoShtr"/>
   <dochannel id="TrigOx" line="30"/>
   <dochannel id="TrigCc" line="31"/>
-  <dochannel id="DO0" line="0"/>
-  <dochannel id="DO1" line="1"/>
-  <dochannel id="DO2" line="2"/>
-  <dochannel id="DO3" line="3"/>
+  <dochannel id="DO0" line="0" isstim="true"/>
+  <dochannel id="DO1" line="1" isstim="true"/>
+  <dochannel id="DO2" line="2" isstim="true"/>
+  <dochannel id="DO3" line="3" isstim="true"/>
   <dochannel id="VideoLight" line="16"/>
   <dochannel id="VideoCmd"/> <!--line="12"-->
   <dochannel id="VideoTrig"/> <!--line="14"-->
