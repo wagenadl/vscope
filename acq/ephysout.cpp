@@ -52,7 +52,8 @@ void EPhysOut::setBuffer(AnalogData *ad, DigitalData *dd) {
   ddata = dd;
 }
 
-bool EPhysOut::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
+bool EPhysOut::prepare(ParamTree const *ptree,
+		       AllCCDTimingDetail const &timing) {
   // This trial might involve ephys acquisition, ccd acquisition,
   // ephys stimulation, or all three.
   if (!ddata)
@@ -82,7 +83,7 @@ bool EPhysOut::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
 }
 
 bool EPhysOut::prepareSnap(ParamTree const *ptree,
-			   CCDTimingDetail const &timing) {
+			   AllCCDTimingDetail const &timing) {
   // All we will do is trigger the camera and open the shutter for the
   // right amount of time. No other stimuli.
   if (!ddata)

@@ -7,11 +7,11 @@
 #include <xml/paramtree.h>
 #include <xml/connections.h>
 #include <base/digitaldata.h>
-#include <acq/ccdtimingdetail.h>
+#include <acq/allccdtimingdetail.h>
 
 class EPhO_CCD {
 public:
-  EPhO_CCD(CCDTimingDetail const &timing);
+  EPhO_CCD(AllCCDTimingDetail const &timing);
   /*:F Constructor
    *:N The contents of the ptree must not be changed between construction
        time and last use of this class instance.

@@ -11,6 +11,8 @@ HEADERS += ephysacq.h   trial.h   contacq.h   vco.h
 SOURCES += ephysacq.cpp trial.cpp contacq.cpp vco.cpp 
 HEADERS += trialdata.h   datatrove.h   epho_ccd.h   ccdtimingdetail.h
 SOURCES += trialdata.cpp datatrove.cpp epho_ccd.cpp ccdtimingdetail.cpp
+HEADERS += allccdtimingdetail.h
+SOURCES += allccdtimingdetail.cpp
 
 LIBS += -L../base -L../gfx -L../xml -L../gui
 LIBS += -lvscope-base -lvscope-gfx -lvscope-xml -lvscope-gui

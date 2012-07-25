@@ -8,7 +8,7 @@
 #include <QVector>
 #include <QString>
 #include <base/xml.h>
-#include <acq/ccdtimingdetail.h>
+#include <acq/allccdtimingdetail.h>
 #include <base/transform.h>
 #include <base/keyagg.h>
 #include <base/ccddata.h>
@@ -65,7 +65,8 @@ public:
   QString filePath() const { return fpath; }
   QString exptName() const { return exptname; }
   QString trialID() const { return trialid; }
-  CCDTimingDetail const &timing() const { return timing_; }
+  AllCCDTimingDetail const &allTiming() const { return timing_; }
+  CCDTimingDetail const &timing(QString camid) const;
   Transform const &ccdPlacement(QString camid) const;
   /*:F ccdPlacement
     :N Throws exception if camid not found */
@@ -100,7 +101,7 @@ private:
                   // concurrently with this trial.
   // xml stuff
   class XML *xml;
-  CCDTimingDetail timing_;
+  AllCCDTimingDetail timing_;
 private:
   static Transform camPlace(QString camid, ParamTree const *ptree=0);
   /*:F camPlace

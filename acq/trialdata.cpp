@@ -88,6 +88,15 @@ void TrialData::useConnectedCameras(ParamTree const *ptree) {
     emit newCameras();
 }
 
+CCDTimingDetail const &TrialData::timing(QString camid) const {
+  CCDTimingDetail const *p = timing_[camid];
+  if (p)
+    return *p;
+  else
+    throw Exception("TrialData",
+		    "Timing requested for unknown camera " + camid);
+}
+
 bool TrialData::haveCCDData(QString camid) const {
   return ccddata.contains(camid);
 }

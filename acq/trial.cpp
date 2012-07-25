@@ -71,7 +71,7 @@ Trial::~Trial() {
 }
 
 void Trial::reconstructStim(ParamTree const *ptree) {
-  ephysout->prepare(ptree, dat->timing());
+  ephysout->prepare(ptree, dat->allTiming());
 }
 
 void Trial::prepare(ParamTree const *ptree) {

@@ -165,6 +165,7 @@ namespace Connections {
   }
 
   void readCameras(QDomElement doc) {
+    Enumerator *cam_enum = Enumerator::find("CAMERAS");
     for (QDomElement e=doc.firstChildElement("camera");
          !e.isNull(); e=e.nextSiblingElement("camera")) {
       QString id = xmlAttribute(e,"id");
@@ -184,6 +185,7 @@ namespace Connections {
       cam->isdonor = role=="donor";
       cam->isacceptor = role=="acceptor";
       cam->placement.read(e);
+      cam_enum->add(id);
     }
   }
 

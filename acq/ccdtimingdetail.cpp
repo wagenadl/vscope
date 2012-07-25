@@ -11,13 +11,16 @@ CCDTimingDetail::CCDTimingDetail() {
   nscans = 0;
 }
 
-void CCDTimingDetail::generalPrep(ParamTree const *ptree) {
+void CCDTimingDetail::generalPrep(ParamTree const *ptree,
+				  ParamTree const *camtree) {
   setRate(ptree->find(PAR_OUTRATE).toDouble());
   double outrate_hz = fs_hz();
 
-  bool enableCCD = is_snap ? true : ptree->find("acqCCD/enable").toBool();
-  double framerate_hz = ptree->find("acqCCD/rate").toDouble();
-  double sequence_ms = enableCCD ? ptree->find("acqCCD/dur").toDouble() : 0;
+  bool enableCCD = is_snap
+    ? true
+    : ptree->find("acqCCD/enable").toBool() && camtree->find("enable").toBool();
+  double framerate_hz = camtree->find("rate").toDouble();
+  double sequence_ms = enableCCD ? camtree->find("dur").toDouble() : 0;
   // Note: sequence_ms is not used for snapshots
   double preillum_ms = ptree->find("acqCCD/preIllum").toDouble();
   double postillum_ms = is_snap ? 1
@@ -31,10 +34,10 @@ void CCDTimingDetail::generalPrep(ParamTree const *ptree) {
   double pre_ms = preillum_ms > preshtr_ms ? preillum_ms : preshtr_ms;
   double post_ms = postillum_ms > postshtr_ms ? postillum_ms : postshtr_ms;
 
-  double delay_ms = is_snap ? pre_ms : ptree->find("acqCCD/delay").toDouble();
+  double delay_ms = is_snap ? pre_ms : camtree->find("delay").toDouble();
   
   double dutyCycle_percent =
-    DutyCycle::clip(ptree->find("acqCCD/dutyCycle").toDouble());  
+    DutyCycle::clip(camtree->find("dutyCycle").toDouble());  
   trig_each = DutyCycle::triggerEach(dutyCycle_percent);
   double frame_ms = 1000 / framerate_hz;
   double trial_ms = is_snap
@@ -57,15 +60,17 @@ void CCDTimingDetail::generalPrep(ParamTree const *ptree) {
   preheat_frames = is_snap ? 0 : floori(preheat_ms/frame_ms+.0001);
 }
 
-void CCDTimingDetail::prepTrial(ParamTree const *ptree) {
+void CCDTimingDetail::prepTrial(ParamTree const *ptree,
+				ParamTree const *camtree) {
   reset();
   is_snap = false;
-  generalPrep(ptree);
+  generalPrep(ptree, camtree);
 }
  
-void CCDTimingDetail::prepSnap(ParamTree const *ptree) {
+void CCDTimingDetail::prepSnap(ParamTree const *ptree,
+				ParamTree const *camtree) {
   reset();
   is_snap = true;
-  generalPrep(ptree);
+  generalPrep(ptree, camtree);
 }
  

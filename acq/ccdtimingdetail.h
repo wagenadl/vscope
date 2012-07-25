@@ -10,8 +10,8 @@
 class CCDTimingDetail: public CCDTiming {
 public:
   CCDTimingDetail();
-  void prepTrial(ParamTree const *ptree);
-  void prepSnap(ParamTree const *ptree);
+  void prepTrial(ParamTree const *ptree, ParamTree const *camtree);
+  void prepSnap(ParamTree const *ptree, ParamTree const *camtree);
   int neededScans() const { return nscans; }
   /*:F neededScans
    *:D Calculates the minimum length a ddata structure should have to
