@@ -5,8 +5,7 @@
 #include "dutycyclelimit.h"
 #include <stdio.h>
 #include <base/minmax.h>
-
-#define PAR_OUTRATE "acqEphys/acqFreq"
+#include <xml/outrate.h>
 
 CCDTimingDetail::CCDTimingDetail() {
   nscans = 0;

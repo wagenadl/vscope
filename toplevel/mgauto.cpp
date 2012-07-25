@@ -17,9 +17,7 @@
 #include <acq/ephysout.h>
 #include <base/dbg.h>
 #include <xml/attribute.h>
-
-#define PAR_OUTRATE "acqEphys/acqFreq"
-// Alternative: "stimEphys/outrate"
+#include <xml/outrate.h>
 
 MGAuto::Channel::Channel(QDomElement c) {
   id = c.attribute("ch");

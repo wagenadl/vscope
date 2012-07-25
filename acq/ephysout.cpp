@@ -19,9 +19,7 @@
 #include <QTimer>
 #include <QSet>
 #include <acq/epho_ccd.h>
-
-#define PAR_OUTRATE "acqEphys/acqFreq"
-// Alternative: "stimEphys/outrate"
+#include <xml/outrate.h>
 
 EPhysOut::EPhysOut() {
   timer = 0;

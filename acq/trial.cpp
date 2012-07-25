@@ -1,3 +1,4 @@
+
 // trial.cpp
 
 #include "trial.h"
@@ -43,8 +44,8 @@ Trial::Trial(TrialData *d): dat(d) {
   prep=false;
   active=false;
 
-  connect(ephysacq,SIGNAL(ended()),this,SLOT(ephysacqComplete()));
-  connect(ephysout,SIGNAL(ended()),this,SLOT(ephysoutComplete()));
+  connect(ephysacq, SIGNAL(ended()), this, SLOT(ephysacqComplete()));
+  connect(ephysout, SIGNAL(ended()), this, SLOT(ephysoutComplete()));
 }
 
 Trial::~Trial() {

@@ -12,10 +12,7 @@
 #include <base/digitaldata.h>
 #include <base/analogdata.h>
 #include <base/ccdtiming.h>
-
-#define PAR_OUTRATE "acqEphys/acqFreq"
-// Alternative: "stimEphys/outrate"
-
+#include <xml/outrate.h>
 
 VideoCommPlugins::VideoCommPlugins() {
   makePlugins();

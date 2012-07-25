@@ -8,8 +8,7 @@
 #include <xml/enumerator.h>
 #include <xml/paramtree.h>
 #include <xml/connections.h>
-
-#define PAR_OUTRATE "acqEphys/acqFreq"
+#include <xml/outrate.h>
 
 EPhO_CCD::EPhO_CCD(CCDTimingDetail const &timing): timing(timing) {
 }

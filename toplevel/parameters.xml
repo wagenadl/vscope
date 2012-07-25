@@ -83,7 +83,6 @@
       <param id="pulseDur" type="time" default="10 ms" min="50 us" max="1 h"/>
       <param id="pulseDur2" type="time" default="10 ms" min="50 us" max="1 h" cond="pulseType" enable_if="Biphasic"/>
     </array>
-    <param id="outrate" type="freq" default="10 kHz" min="1 Hz" max="100 kHz"/>
   </category>
 
   <category id="acqCCD">
