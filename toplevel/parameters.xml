@@ -10,14 +10,6 @@
 <enums>
   <enum id="STIMCHS">
     <!-- These are now filled by Connections -->
-    <!--item tag="AO0" value="0"/-->
-    <!--item tag="AO1" value="1"/-->
-    <!--item tag="AO2" value="2"/-->
-    <!--item tag="AO3" value="3"/-->
-    <!--item tag="DO0" value="4"/-->
-    <!--item tag="DO1" value="5"/-->
-    <!--item tag="DO2" value="6"/-->
-    <!--item tag="DO3" value="7"/-->
   </enum>
 
   <enum id="CAMERAS">
@@ -27,7 +19,7 @@
   </enum>
 
   <enum id="SHOWWHAT">
-    <item tag="VSDCc" />
+    <item tag="VSDCc" /> <!-- This should be renamed CCD:Cc -->
     <item tag="VSDOx" />
     <item tag="EphysInt" />
     <item tag="EphysExt" />
@@ -95,6 +87,7 @@
   <category id="acqCCD">
     <param id="enable" type="bool" default="true"/>
     <array id="camera" enum="CAMERAS">
+      <param id="enable" type="bool" default="true"/>
       <param id="master" type="enum" enum="CAMERAS" default="self"/>
       <param id="binning" type="geometry" default="1x1+0+0" 
 	     cond="master" enable_if="self"/>
@@ -106,13 +99,19 @@
 	     cond="master" enable_if="self"/>
       <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="1000 Hz"
 	     cond="master" enable_if="self"/>
+      <param id="dutyCycle" type="percentage" default="100%"
+	     min="0%" max="100%"/>
+      <param id="preIllum" type="time" default="1.5 ms"
+	     min="0 ms" max="1 h"/>
+      <param id="postIllum" type="time" default="0.1 ms"
+	     min="0 ms" max="1 h"/>
+      <param id="preShutter" type="time" default="50 ms"
+	     min="0 ms" max="1 h"/>
+      <param id="postShutter" type="time" default="100 ms"
+	     min="0 ms" max="1 h"/>
+      <param id="preHeat" type="time" default="0 ms"
+	     min="0 ms" max="1 h"/>
     </array>
-    <param id="preIllum" type="time" default="1.5 ms" min="0 ms" max="1 h"/>
-    <param id="postIllum" type="time" default="0.1 ms" min="0 ms" max="1 h"/>
-    <param id="preShutter" type="time" default="50 ms" min="0 ms" max="1 h"/>
-    <param id="postShutter" type="time" default="100 ms" min="0 ms" max="1 h"/>
-    <param id="preHeat" type="time" default="0 ms" min="0 ms" max="1 h"/>
-    <param id="dutyCycle" type="percentage" default="100%" min="0%" max="100%"/>
   </category>
 
   <category id="stimVideo">
@@ -162,7 +161,7 @@
     <category id="liveEphys">
       <param id="timeBase" type="time" default="100 ms" min="10 ms" max="1 s"/>
       <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
-      <param id="diChannels" type="set" enum="DIGILINES" default="FrameOx FrameCc"/>
+      <param id="diChannels" type="set" enum="DIGILINES" default=""/>
       <param id="vcoSource" type="enum" enum="AICHAN" default="off"/>
     </category>
     <category id="checkDaq"/>
@@ -193,13 +192,15 @@
       </category>
     </category>
     <category id="acqCCD">
-      <param id="rate-1" type="freq" default="10 Hz"/>
-      <param id="delay-1" type="time" default="1.0 s"/>
-      <param id="dur-1" type="time" default="5 min"/>
-      <param id="preIllum-1" type="time" default="1.0 s"/>
-      <param id="postIllum-1" type="time" default="1.0 s"/>
-      <param id="preHeat-1" type="time" default="60 s"/>
-      <param id="dutyCycle-1" type="percentage" default="38 %"/>
+      <category id="camera">
+	<param id="rate-1" type="freq" default="10 Hz"/>
+	<param id="delay-1" type="time" default="1.0 s"/>
+	<param id="dur-1" type="time" default="5 min"/>
+	<param id="preIllum-1" type="time" default="1.0 s"/>
+	<param id="postIllum-1" type="time" default="1.0 s"/>
+	<param id="preHeat-1" type="time" default="60 s"/>
+	<param id="dutyCycle-1" type="percentage" default="38 %"/>
+      </category>
     </category>
     <category id="stimVideo">
       <param id="delay-1" type="time" default="1.0 s"/>

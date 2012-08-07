@@ -243,111 +243,115 @@
   </page>
 
   <!-- ******************** CCD ACQUISITION CONFIG PAGE ******************* -->
-  <page id="acqCCD" subdxl="2.1">
+  <page id="acqCCD" subdxl="1.05">
     <button id="enable" type="bool" bg="#ccccff"/>
-    <group id="a">
-      <button id="binning" label="Binning" bg="#aaaaff"/>
-      <button id="region" label="Region" bg="#8888ff"/>
-      <button id="preIllum" label="Pre-illum"  bg="#ddbbff"/>
-      <button id="postIllum" label="Post-illum" bg="#bb99ff"/>
-      
-      <button id="preHeat" label="Pre-Heat" y="0" bg="#bb77ee"/>
-      <button id="delay" label="VSD delay" bg="#88aaff"/>
-      <button id="dur" label="VSD dur." bg="#77bbff"/>
-      <button id="rate" label="Frame rate" bg="#4488ff"/>
-      <button id="dutyCycle" label="Duty cycle" bg="#4444ff"/>
-     </group>
-
-    <menu id="binning" rows="4" cols="4.8">
-      <item value="1x1+0+0"/>
-      
-      <item value="1x2+0+0"/>
-      <item value="1x3+0+0"/>
-      <item value="1x4+0+0"/>
-      
-      <item value="2x2+0+0"/>
-      <item value="3x3+0+0"/>
-      <item value="4x4+0+0"/>
-    </menu>
+    <tabctrl id="camera" spanrows="1" cols="2">
+      <auto enum="CAMERAS" />
+    </tabctrl>
+    <tabbedpage id="camera" subdxl="2.1" cols="4.5">
+      <button id="enable" type="bool" alwayshidden="true"/>
+      <group id="a">
+	<button id="binning" label="Binning" bg="#aaaaff"/>
+	<button id="region" label="Region" bg="#8888ff"/>
+	<button id="delay" label="VSD delay" bg="#88aaff"/>
+	<button id="dur" label="VSD dur." bg="#77bbff"/>
+	<button id="rate" label="Frame rate" bg="#4488ff"/>
+	<button id="dutyCycle" label="Duty cycle" bg="#4444ff"/>
+	<button id="preIllum" label="Pre-illum"  bg="#ddbbff" y="3"/>
+	<button id="postIllum" label="Post-illum" bg="#bb99ff"/>
+	<button id="preHeat" label="Pre-Heat" bg="#bb77ee" alwayshidden="true"/>
+      </group>
   
-    <menu id="region" >
-      <item value="512x512+0+0"/>
-      <item value="384x384+64+64"/>
-      <item value="256x256+128+128"/>
-      
-      <item value="256x256+0+0"/>
-      <item value="256x256+256+0"/>
-      <item value="256x256+0+256"/>
-      <item value="256x256+256+256"/>
-    </menu>
+      <menu id="binning" rows="4" cols="4.8">
+        <item value="1x1+0+0"/>
+        
+        <item value="1x2+0+0"/>
+        <item value="1x3+0+0"/>
+        <item value="1x4+0+0"/>
+        
+        <item value="2x2+0+0"/>
+        <item value="3x3+0+0"/>
+        <item value="4x4+0+0"/>
+      </menu>
+    
+      <menu id="region" >
+        <item value="512x512+0+0"/>
+        <item value="384x384+64+64"/>
+        <item value="256x256+128+128"/>
+        
+        <item value="256x256+0+0"/>
+        <item value="256x256+256+0"/>
+        <item value="256x256+0+256"/>
+        <item value="256x256+256+256"/>
+      </menu>
+    
+      <menu id="rate"  cols="5.2">
+        <items>
+  	1 Hz, 2 Hz, 3 Hz, 5 Hz, 7 Hz,
+  	10 Hz, 15 Hz, 20 Hz, 30 Hz, 50 Hz,
+  	70 Hz, 100 Hz, 150 Hz, 200 Hz, 300 Hz,
+  	500 Hz, 700 Hz, 1 kHz
+        </items>
+        <item custom="1" editcaption="CCD frame rate"/>
+      </menu>
+    
+      <menu id="delay"  cols="5.2">
+        <items>
+  	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+  	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+  	10 s, 15 s, 20 s, 30 s, 45 s,
+  	60 s, 90 s, 120 s, 180 s
+        </items>
+        <item custom="1" editcaption="Delay before image acquisition"/>
+      </menu>
   
-    <menu id="rate"  cols="5.2">
-      <items>
-	1 Hz, 2 Hz, 3 Hz, 5 Hz, 7 Hz,
-	10 Hz, 15 Hz, 20 Hz, 30 Hz, 50 Hz,
-	70 Hz, 100 Hz, 150 Hz, 200 Hz, 300 Hz,
-	500 Hz, 700 Hz, 1 kHz
-      </items>
-      <item custom="1" editcaption="CCD frame rate"/>
-    </menu>
+      <menu id="dur"  cols="5.2">
+        <items>
+  	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+  	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+  	10 s, 15 s, 20 s, 30 s, 45 s,
+  	60 s, 90 s, 120 s, 180 s
+        </items>
+        <item custom="1" editcaption="Duration of image acquisition"/>
+      </menu>
+    
+      <menu id="dutyCycle"  cols="5.2">
+        <items>
+  	10%, 15%, 20%, 25%, 30%,
+  	35%, 40%, 45%, 50%, 55%
+  	60%, 65%, 70%, 75%, 80%
+  	85%, 90%, 95%, 100%
+        </items>
+        <item custom="1" editcaption="Duty cycle"/>
+      </menu>
+      <menu id="preIllum"  cols="5.2">
+        <items>
+  	1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
+  	10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
+  	100 ms, 150 ms, 200 ms, 300 ms, 500 ms
+        </items>
+        <item custom="1"  editcaption="Pre-illumination time"/>
+      </menu>
+    
+      <menu id="postIllum"  cols="5.2">
+  	<items>
+  	  0.1 ms, 0.15 ms, 0.2 ms, 0.3 ms, 0.5 ms, 0.7 ms
+  	  1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
+  	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
+  	</items>
+        <item custom="1"  editcaption="Post-illumination time"/>
+      </menu>
   
-    <menu id="delay"  cols="5.2">
-      <items>
-	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
-	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
-	10 s, 15 s, 20 s, 30 s, 45 s,
-	60 s, 90 s, 120 s, 180 s
-      </items>
-      <item custom="1" editcaption="Delay before image acquisition"/>
-    </menu>
-
-    <menu id="dur"  cols="5.2">
-      <items>
-	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
-	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
-	10 s, 15 s, 20 s, 30 s, 45 s,
-	60 s, 90 s, 120 s, 180 s
-      </items>
-      <item custom="1" editcaption="Duration of image acquisition"/>
-    </menu>
-  
-    <menu id="preIllum"  cols="5.2">
-      <items>
-	1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
-	10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
-	100 ms, 150 ms, 200 ms, 300 ms, 500 ms
-      </items>
-      <item custom="1"  editcaption="Pre-illumination time"/>
-    </menu>
-  
-    <menu id="postIllum"  cols="5.2">
-	<items>
-	  0.1 ms, 0.15 ms, 0.2 ms, 0.3 ms, 0.5 ms, 0.7 ms
-	  1 ms, 1.5 ms, 2 ms, 3 ms, 5 ms, 7 ms
-	  10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
-	</items>
-      <item custom="1"  editcaption="Post-illumination time"/>
-    </menu>
-
-    <menu id="preHeat"  cols="5.2">
-      <items>
-	0 ms
-	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
-	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
-	10 s, 15 s, 20 s, 30 s
-      </items>
-      <item custom="1"  editcaption="Pre-heating time"/>
-    </menu>
-
-    <menu id="dutyCycle"  cols="5.2">
-      <items>
-	10%, 15%, 20%, 25%, 30%,
-	35%, 40%, 45%, 50%, 55%
-	60%, 65%, 70%, 75%, 80%
-	85%, 90%, 95%, 100%
-      </items>
-      <item custom="1" editcaption="Duty cycle"/>
-    </menu>
+      <menu id="preHeat"  cols="5.2">
+        <items>
+  	0 ms
+  	100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
+  	1 s, 1.5 s, 2 s, 3 s, 5 s, 7 s
+  	10 s, 15 s, 20 s, 30 s
+        </items>
+        <item custom="1"  editcaption="Pre-heating time"/>
+      </menu>
+    </tabbedpage>
   </page>
 
   <!-- ******************** CCD ACQUISITION CONFIG PAGE ******************* -->
@@ -558,8 +562,8 @@
       <item value="ExcShtrMon"/>
       <item value="TrigCcMon"/>
       <item value="TrigOxMon"/>
-      <item value="FrameCc"/>
-      <item value="FrameOx"/>
+      <item value="Frame:Cc"/>
+      <item value="Frame:Ox"/>
     </menu>
 
     <menu id="refTrace" rows="4" cols="4">
@@ -625,8 +629,8 @@
         
         <item value="TrigCcMon"/>
         <item value="TrigOxMon"/>
-        <item value="FrameCc"/>
-        <item value="FrameOx"/>
+        <item value="Frame:Cc"/>
+        <item value="Frame:Ox"/>
       </checklist>
       <checklist id="aiChannels" rows="4" cols="4">
         <!-- "values" match "tags" in AICHAIN enum -->
@@ -726,8 +730,8 @@
   <graph ch="ExcShtrMon" typ="di" tiny="yes" if_enabled="acqCCD"/>
   <graph ch="VideoFrame" typ="di" tiny="yes" if_enabled="stimVideo"/>
   <graph ch="VideoLightMon" typ="di" tiny="yes" if_enabled="stimVideo"/>
-  <graph ch="FrameCc" typ="di" tiny="yes" if_enabled="acqCCD"/>
-  <graph ch="FrameOx" typ="di" tiny="yes" if_enabled="acqCCD"/>
+  <graph ch="Frame:Cc" typ="di" tiny="yes" if_enabled="acqCCD"/>
+  <graph ch="Frame:Ox" typ="di" tiny="yes" if_enabled="acqCCD"/>
 </multigraph>
 <multigraph id="extra">
   <graph ch="ExtVA1" typ="ai"/>
@@ -751,8 +755,8 @@
   <graph ch="ExcShtrMon" typ="di" tiny="yes"/>
   <graph ch="TrigCcMon" typ="di" tiny="yes"/>
   <graph ch="TrigOxMon" typ="di" tiny="yes"/>
-  <graph ch="FrameCc" typ="di" tiny="yes"/>
-  <graph ch="FrameOx" typ="di" tiny="yes"/>
+  <graph ch="Frame:Cc" typ="di" tiny="yes"/>
+  <graph ch="Frame:Ox" typ="di" tiny="yes"/>
 </multigraph>
 <multigraph id="liveEPhysRight">   <!-- if_enabled needed here? -->
   <graph ch="ExtVA1" typ="ai"/>
@@ -790,8 +794,8 @@
   <alias id="ExtVB4" label="V_B4"/>
 
   <!-- Digital inputs -->
-  <alias id="FrameOx" label="Frm_Ox"/>
-  <alias id="FrameCc" label="Frm_Cc"/>
+  <alias id="Frame:Ox" label="Frm_Ox"/>
+  <alias id="Frame:Cc" label="Frm_Cc"/>
   <alias id="TrigOxMon" label="Trg_Ox"/>
   <alias id="TrigCcMon" label="Trg_Cc"/>
   <alias id="DO0Mon" label="DO_0" />
@@ -801,24 +805,19 @@
   <alias id="ExcShtrMon" label="Shtr_exc" />
   <alias id="VideoResp" label="Resp_vid" />
   <alias id="VideoFrame" label="Frm_vid" />
-  <alias id="VideoCmdMon" label="Cmd_vid" />
   <alias id="VideoLightMon" label="Light_vid" />
 
   <!-- Digital outputs -->
-  <alias id="ExcShtr" label="Shtr_exc"/>
-  <alias id="ExcLight" label="LED"/>
-  <alias id="VideoShtr" label="Shtr_video"/>
-  <alias id="TrigOx"  label="Trig_Ox"/>
-  <alias id="TrigCc"  label="Trig_Cc"/>
+  <alias id="Lamp:LED" label="LED"/>
+  <alias id="Trigger:Ox"  label="Trig_Ox"/>
+  <alias id="Trigger:Cc"  label="Trig_Cc"/>
   <alias id="AO0" label="AO_0"/>
   <alias id="AO1" label="AO_1"/>
   <alias id="DO0" label="DO_0"/>
   <alias id="DO1" label="DO_1"/>
   <alias id="DO2" label="DO_2"/>
   <alias id="DO3" label="DO_3"/>
-  <alias id="VideoLight" label="Light_vid"/>
-  <alias id="VideoCmd" label="Cmd_vid"/>
-  <alias id="VideoTrig" label="Trig_vid"/>
+  <alias id="Lamp:Video" label="Light_vid"/>
 
   <!-- For binning -->
   <alias id="1x1+0+0" label="1 x 1"/>

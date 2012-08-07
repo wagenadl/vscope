@@ -99,6 +99,14 @@ QStringList Enumerator::getAllTags() const {
   return orderedTags;
 }
 
+QStringList Enumerator::getNonnegativeTags() const {
+  QStringList tags;
+  foreach (QString t, orderedTags)
+    if (tag2val[t]>=0)
+      tags.append(t);
+  return tags;
+}
+
 QMap<QString,Enumerator *> Enumerator::enums;
 
 Enumerator *Enumerator::find(QString e) {

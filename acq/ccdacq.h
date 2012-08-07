@@ -9,7 +9,7 @@
 #include <QString>
 #include <pvp/ccdconfig.h>
 #include <xml/connections.h>
-#include <acq/ccdtimingdetail.h>
+#include <acq/allccdtimingdetail.h>
 #include <base/keyaccess.h>
 
 #ifdef vsdLINUX
@@ -22,7 +22,7 @@ class CCDAcq {
 public:
   CCDAcq();
   ~CCDAcq();
-  bool prepare(class ParamTree const *ptree, CCDTimingDetail const &timing);
+  bool prepare(class ParamTree const *ptree, AllCCDTimingDetail const &timing);
   /*:F prepare
    *:D Gets the cameras ready.
    *:R Returns true iff the cameras are present and available.

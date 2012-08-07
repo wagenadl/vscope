@@ -183,6 +183,9 @@ void AbstractPage::reTree(ParamTree *neworigtree) {
   if (neworigtree)
     origptree = neworigtree;
 
+  if (!origptree)
+    throw Exception("AbstractPage", "Cannot retree: no original tree", myPath);
+  
   ptree = origptree->childp(getCurrentElement());
   if (!ptree)
     ptree = origptree;

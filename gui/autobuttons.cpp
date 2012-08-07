@@ -33,7 +33,7 @@ QStringList AutoButtons::selectIDs(QStringList inlist) {
 }
 
 void AutoButtons::rebuild(PageBuildGeom *g_out) {
-  QStringList newids = selectIDs(enumerator->getAllTags());
+  QStringList newids = selectIDs(enumerator->getNonnegativeTags());
   //  Dbg() << "AutoButtons " << parent_->groupId() << ": rebuild " << newids.join(", ");
   if (newids == ids)
     return;

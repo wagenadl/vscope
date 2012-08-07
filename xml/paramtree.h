@@ -79,6 +79,21 @@ public:
    *:N This throws an exception if there is no parameter stored at this node.
    *:N This will not search subtrees, so 'name' cannot be a multi-level path.
    */
+  class ParamTree const *treep(QString name) const;
+  class ParamTree *treep(QString name);
+  /*:F treep
+   *:D Returns a pointer to any descendent of this tree.
+   *:A name: the name of the descendent. 
+   *:R Returns null if not found.
+   *:N This *will* search subtrees; 'name' can be a multi-level path.
+   */
+  class ParamTree const &tree(QString name) const;
+  class ParamTree &tree(QString name);
+  /*:F tree
+   *:D Returns a reference to any descendent of this tree.
+   *:A name: the name of the descendent. 
+   *:N This *will* search subtrees, so 'name' can be a multi-level path.
+   */
   Param const *findp(QString path) const;
   Param *findp(QString path);
   /*:F findp

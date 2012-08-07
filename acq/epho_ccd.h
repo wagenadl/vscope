@@ -23,7 +23,7 @@ public:
        or snapshot, we throw an exception, so call neededScans() first.
   */
 private:
-  CCDTimingDetail const &timing; /* We do not own this */
+  AllCCDTimingDetail const &timing; /* We do not own this */
 };
 
 #endif

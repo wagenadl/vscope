@@ -64,7 +64,10 @@ namespace Connections {
   public:
     QString id;     // id of this camera (as in enum CAMERAS)
     QString serno;  // serial number of this camera
-    QString partnerid;
+    QString partnerid; // or null if solo camera
+    QString lampid; // light source to be switched on for this camera or null 
+                    // for a light source that is not s/w controlled
+    QString shtrid; // shutter to be opened for this camera or null for none
     int xpix, ypix; // number of pixels in full frame
     double focusexp_ms;
     bool isdonor;

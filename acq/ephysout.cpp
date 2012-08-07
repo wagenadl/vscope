@@ -75,7 +75,7 @@ bool EPhysOut::prepare(ParamTree const *ptree,
   ddata->setSamplingFrequency(ptree->find(PAR_OUTRATE).toDouble());
   
   if (ptree->find("stimVideo/enable").toBool())
-    VideoProg::find().prepStim(ptree, timing, adata, ddata);
+    VideoProg::find().prepStim(ptree, timing.first(), adata, ddata);
   
   prep = true;
   

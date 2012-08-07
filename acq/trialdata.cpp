@@ -89,12 +89,7 @@ void TrialData::useConnectedCameras(ParamTree const *ptree) {
 }
 
 CCDTimingDetail const &TrialData::timing(QString camid) const {
-  CCDTimingDetail const *p = timing_[camid];
-  if (p)
-    return *p;
-  else
-    throw Exception("TrialData",
-		    "Timing requested for unknown camera " + camid);
+  return timing_[camid];
 }
 
 bool TrialData::haveCCDData(QString camid) const {
@@ -182,8 +177,8 @@ Transform TrialData::camPlace(QString camid, ParamTree const *ptree) {
   }
   Transform t0 = cam->placement;
   if (ptree) {
-    QRect reg(ptree->find("acqCCD/region").toRect());
-    QRect bin(ptree->find("acqCCD/binning").toRect());
+    QRect reg(ptree->find("acqCCD/camera:"+camid+"/region").toRect());
+    QRect bin(ptree->find("acqCCD/camera:"+camid+"/binning").toRect());
     /* This is actually hard to figure out for flipped cameras.
        Let's try some examples.
        A camera that y-flips, so that t0=1x-1+0+512.

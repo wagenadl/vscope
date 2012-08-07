@@ -82,18 +82,30 @@
   <aochannel id="VidX" line="2"/>
   <aochannel id="VidY" line="3"/>
   
-  <camera id="Cc" serno="A08F101002" role="donor" order="0"
-     xpix="512" ypix="512"
-     focusexpose="200 ms" partnerid="Ox">  <!-- back -->
+  <camera id="Cc" serno="A08F101002" role="donor"
+     xpix="512" ypix="512" lamp="LED" shutter=""
+     focusexpose="200 ms">
     <transform ax="1" ay="-1" bx="0" by="512"/>
   </camera>
-  <camera id="Ox" serno="A08B101016" role="acceptor" order="1"
-     xpix="512" ypix="512"
-     focusexpose="3 ms" partnerid="Cc">  <!-- top -->
+  <camera id="Ox" serno="A08B101016" role="acceptor"
+     xpix="512" ypix="512" lamp="LED" shutter=""
+     focusexpose="3 ms" partnerid="Cc">
     <transform ax="1" ay="1" bx="0" by="0"/>
   </camera>
-  <dichannel id="FrameOx" line="28"/>
-  <dichannel id="FrameCc" line="29"/>
+
+  <!-- The following digital channel names are used in the code.
+       "*" respresents a camera id, lamp id, or shutter id.
+       
+       - Lamp:*   - output to switch on lamp "*"
+       - Shutter:* - output to open shutter "*"
+       - Trigger:* - output to trigger camera "*"
+       - Frame:*   - input for frame time marker from camera "*"
+
+       In particular Lamp:Video is for video illumination.
+       -->
+  
+  <dichannel id="Frame:Ox" line="28"/>
+  <dichannel id="Frame:Cc" line="29"/>
   <dichannel id="TrigOxMon" line="26"/>
   <dichannel id="TrigCcMon" line="27"/>
   <dichannel id="DO0Mon" line="8"/>
@@ -101,24 +113,16 @@
   <dichannel id="DO2Mon" line="10"/>
   <dichannel id="DO3Mon" line="11"/>
   <dichannel id="ExcShtrMon" line="24"/>
-  <dichannel id="VideoResp"/> <!--line="4"-->
-  <dichannel id="VideoFrame"/> <!--line="5"-->
-  <dichannel id="VideoCmdMon"/> <!--line="13"-->
   <dichannel id="VideoLightMon" line="17"/>
-  <dichannel id="VideoShtrMon"/>
 
-  <dochannel id="ExcShtr" line="20"/>
-  <dochannel id="ExcLight" line="7"/>
-  <dochannel id="VideoShtr"/>
-  <dochannel id="TrigOx" line="30"/>
-  <dochannel id="TrigCc" line="31"/>
+  <dochannel id="Lamp:LED" line="7"/>
+  <dochannel id="Trigger:Ox" line="30"/>
+  <dochannel id="Trigger:Cc" line="31"/>
   <dochannel id="DO0" line="0" isstim="true"/>
   <dochannel id="DO1" line="1" isstim="true"/>
   <dochannel id="DO2" line="2" isstim="true"/>
   <dochannel id="DO3" line="3" isstim="true"/>
-  <dochannel id="VideoLight" line="16"/>
-  <dochannel id="VideoCmd"/> <!--line="12"-->
-  <dochannel id="VideoTrig"/> <!--line="14"-->
+  <dochannel id="Lamp:Video" line="16"/>
 </connections>
 
 </vsdscopeConnections>

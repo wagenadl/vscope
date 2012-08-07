@@ -25,7 +25,7 @@ public:
   int preHeatFrames() const { return preheat_frames; }
   bool trigEach() const { return trig_each; }
 private:
-  void generalPrep(ParamTree const *ptree);
+  void generalPrep(ParamTree const *ptree, ParamTree const *camtree);
 private:
   bool is_snap;
   int nscans; // Total number of scans in trial

@@ -145,8 +145,8 @@ void VideoCommPlugins::prepStim(ParamTree const *ptree,
   
   // Digital part of rendering: control of light
   Enumerator *lines = Enumerator::find("DIGILINES");
-  int lightline = lines->lookup("VideoLight");
-  ddata->defineLine(lightline, "VideoLight");
+  int lightline = lines->lookup("Lamp:Video");
+  ddata->defineLine(lightline, "Lamp:Video");
   info.dmask_light = ddata->maskForLine(lightline);
   info.destd = ddata->allData(dguard.key());
 

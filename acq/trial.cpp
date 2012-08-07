@@ -82,9 +82,9 @@ void Trial::prepare(ParamTree const *ptree) {
   
   dbg("trial:prepare contephys=%i. ephysacq=%p",dat->hasContEPhys(),ephysacq);
   if (dat->isCCD())
-    ccdacq->prepare(ptree, dat->timing());
+    ccdacq->prepare(ptree, dat->allTiming());
   ephysout->setMaster(dat->hasContEPhys() ? 0 : ephysacq);
-  ephysout->prepare(ptree, dat->timing());
+  ephysout->prepare(ptree, dat->allTiming());
   if (dat->isEPhys()) 
     ephysacq->prepare(ptree);
 
@@ -100,10 +100,10 @@ void Trial::prepareSnapshot(ParamTree const *ptree) {
   Dbg() << "Trial: preparing data";
   dat->prepareSnapshot(ptree);
   Dbg() << "Trial: preparing cameras";
-  bool ccdok = ccdacq->prepare(ptree, dat->timing());
+  bool ccdok = ccdacq->prepare(ptree, dat->allTiming());
   Dbg() << "Trial: camera status: " << ccdok;
   ephysout->setMaster(0);
-  ephysout->prepareSnap(ptree, dat->timing());
+  ephysout->prepareSnap(ptree, dat->allTiming());
   outcomplete = acqcomplete = false;
   prep = true;
 }
