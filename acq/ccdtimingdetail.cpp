@@ -16,9 +16,8 @@ void CCDTimingDetail::generalPrep(ParamTree const *ptree,
   setRate(ptree->find(PAR_OUTRATE).toDouble());
   double outrate_hz = fs_hz();
 
-  bool enableCCD = is_snap
-    ? true
-    : ptree->find("acqCCD/enable").toBool() && camtree->find("enable").toBool();
+  bool enableCCD = (is_snap ? true : ptree->find("acqCCD/enable").toBool())
+    && camtree->find("enable").toBool();
   double framerate_hz = camtree->find("rate").toDouble();
   double sequence_ms = enableCCD ? camtree->find("dur").toDouble() : 0;
   // Note: sequence_ms is not used for snapshots

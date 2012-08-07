@@ -89,32 +89,34 @@ bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
   isActive = false; isGood=false; isDone = false;
 
   try {
-    CCDConfig cfg;
     
     // I am calling ser=x, par=y.
-    QRect reg(ptree->find("acqCCD/region").toRect());
-    cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
-    QRect bin(ptree->find("acqCCD/binning").toRect());
-    cfg.binning = CCDBinning(bin.width(),bin.height());
-    cfg.iscont = false;
   
     for (int k=0; k<ncams; k++) {
-      ccdcfg[k] = cfg;
+      QString id = camids[k];
+      QString root = "acqCCD/camera:" + id;
+      CCDConfig cfg;
+      cfg.iscont = false;
+      QRect reg(ptree->find(root + "/region").toRect());
+      cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
+      QRect bin(ptree->find(root + "/binning").toRect());
+      cfg.binning = CCDBinning(bin.width(),bin.height());
       CCDTimingDetail const &detail = timing[camids[k]];
       bool trigEach = DutyCycle::triggerEach(detail.duty_percent());
   
       t0_ms = detail.t0_ms();
       dt_ms = detail.dt_ms();
       
-      ccdcfg[k].nframes = detail.nframes();
-      ccdcfg[k].expose_ms = dt_ms*detail.duty_percent()/100;
-      ccdcfg[k].trigmode = trigEach ? CCDTrigMode::EachFrame : CCDTrigMode::FirstFrame;
-      ccdcfg[k].clear_every_frame = false; // trigEach ? true : false;
+      cfg.nframes = detail.nframes();
+      cfg.expose_ms = dt_ms*detail.duty_percent()/100;
+      cfg.trigmode = trigEach ? CCDTrigMode::EachFrame : CCDTrigMode::FirstFrame;
+      cfg.clear_every_frame = false; // trigEach ? true : false;
   
-      ccdcfg[k].region = CCDRegion(caminfo[k]->placement.inverse()(reg));
+      cfg.region = CCDRegion(caminfo[k]->placement.inverse()(reg));
       Dbg() << "Camera " << camids[k] << ": region "
-	    << ccdcfg[k].region.smin << ":" << ccdcfg[k].region.smax
-	    << " " << ccdcfg[k].region.pmin << ":" << ccdcfg[k].region.pmax;
+	    << cfg.region.smin << ":" << cfg.region.smax
+	    << " " << cfg.region.pmin << ":" << cfg.region.pmax;
+      ccdcfg[k] = cfg;
     }
     
     for (int k=0; k<ncams; k++) {

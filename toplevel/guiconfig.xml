@@ -32,7 +32,6 @@
 
     <button id="acqEphys" label="Electrophys. Rec." x="0" y="1.2" bg="#bbffff"/>
     <button id="acqCCD" label="Image Acq." x="0" y="2.2" bg="#ccccff"/>
-    <!--button id="acqMEA" label="MEA Rec." x="0" y="3.2" bg="#bbffbb"/-->
     <button id="stimVideo" label="Video Stim." x="0" y="4.2" bg="#ffffbb"/>
     <button id="stimEphys" label="Electrophys. Stim." x="0" y="5.2" bg="#ffbbff"/>
 
@@ -47,27 +46,21 @@
 
   <!-- ************************ "SHOW WHAT" CHOICES ************************ -->
   <menu id="panelLeft"  rows="3" >
-    <break dx=" .5"/>
     <item value="VSDCc" label="Coumarin VSD"/>
     <item value="VSDOx" label="Oxonol VSD"/>
-    <break dx=".2"/>
     <item value="EphysInt" label="Intracellular E'phys"/>
     <item value="EphysExt" label="Extracellular E'phys"/>
     <item value="Stimuli"/>
-    <break dx=".2"/>
     <item value="VSDTraces" label="VSD Traces"/>
     <item value="Coherence" label="Coherence Map"/>
     <item value="CohGraph" label="Coherence Graph"/>
   </menu>
   <menu id="panelRight"  rows="3">
-    <break dx="0.5"/>
     <item value="VSDCc" label="Coumarin VSD"/>
     <item value="VSDOx" label="Oxonol VSD"/>
-    <break dx=".2"/>
     <item value="EphysInt" label="Intracellular E'phys"/>
     <item value="EphysExt" label="Extracellular E'phys"/>
     <item value="Stimuli"/>
-    <break dx=".2"/>
     <item value="VSDTraces" label="VSD Traces"/>
     <item value="Coherence" label="Coherence Map"/>
     <item value="CohGraph" label="Coherence Graph"/>
@@ -251,6 +244,7 @@
     <tabbedpage id="camera" subdxl="2.1" cols="4.5">
       <button id="enable" type="bool" alwayshidden="true"/>
       <group id="a">
+	<button id="master" label="Master"/>
 	<button id="binning" label="Binning" bg="#aaaaff"/>
 	<button id="region" label="Region" bg="#8888ff"/>
 	<button id="delay" label="VSD delay" bg="#88aaff"/>
@@ -261,6 +255,11 @@
 	<button id="postIllum" label="Post-illum" bg="#bb99ff"/>
 	<button id="preHeat" label="Pre-Heat" bg="#bb77ee" alwayshidden="true"/>
       </group>
+
+      <menu id="master" rows="5" cols="1.2">
+	<item value="self"/>
+	<auto enum="CAMERAS" exclude="*id"/>
+      </menu>
   
       <menu id="binning" rows="4" cols="4.8">
         <item value="1x1+0+0"/>
@@ -460,20 +459,25 @@
 
   <!-- %%%%%%%%%%%%%%%%%%%%% ACQUISITION PAGE %%%%%%%%%%%%%%%%%% -->
   <page id="acquisition" subdxr="4.1">
-    <button id="exptname" label="Expt. Name: %1" x="3.1" y="0" editcaption="Experiment Name" bg="#88aaff"/>
-    <button id="trialno" label="Trial No.: %1" editcaption="Trial Number" bg="#77bbff"/>
+    <button id="exptname" label="Expt. Name: %1" x="3.1" y="0"
+	    editcaption="Experiment Name" bg="#88aaff"/>
+    <button id="trialno" label="Trial No.: %1" editcaption="Trial Number"
+	    bg="#77bbff"/>
     <button id="load"  label="Load Old Data..." y="3" bg="#88ffff"/>
     
-    <button id="singleframe" label="Single Frame" bg="#ddbbff"/>
+    <button id="singleframe" label="Single Frame" x="4.1" y="0" bg="#ddbbff"/>
     <button id="singletrial" label="Single Trial" bg="#bb99ff"/>
     <button id="dummy" label="Dummy" type="bool" bg="#ffffff"/>
     <button id="log"  label="Log Note..." bg="#eeeecc"/>
-    <button id="contEphys" label="Cont. E'phys Disabled" x="2.1" y="1" type="bool" bg="#22ff77"/>
+    <button id="contEphys" label="Cont. E'phys Disabled" x="2.1" y="1"
+	    type="bool" bg="#22ff77"/>
     <button id="autoRun"  label="Auto Run Disabled" type="bool" bg="#9977ff"/>
     <group id="a">
       <button id="trialPeriod" label="Trial period" bg="#44ffaa"/>
-      <button id="camvalsCc" label="Coumarin" x="1.1" y="0" bg="#8888ff" value="-/-/-"/>
-      <button id="camvalsOx" label="Oxonol" x="2.1" y="0" bg="#ff8888" value="-/-/-"/>
+      <button id="camvalsCc" label="Coumarin" x="1.1" y="0" bg="#8888ff"
+	      value="-/-/-"/>
+      <button id="camvalsOx" label="Oxonol" x="2.1" y="0" bg="#ff8888"
+	      value="-/-/-"/>
     </group>
 
     <button id="walltime" label="%1" x="1.1" y="1" bg="#99aa99"/>
@@ -773,6 +777,7 @@
 
 <aliases>
   <alias id="off" label="Off"/>
+  <alias id="self" label="Self"/>
 
   <!-- Analog inputs -->
   <alias id="ME1_10Vm" label="V_m"/>

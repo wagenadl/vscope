@@ -136,17 +136,17 @@ void setupParsAndConns() {
   
   char const *envpath = getenv("VSCOPEPATH");
   QString fpath = "/";
-  if (envpath)
+  if (envpath) {
     fpath = envpath;
-  else {
+    Dbg() << "Got path from VSCOPEPATH: " << fpath;
+  } else {
     QDomElement e_path = pars.firstChildElement("filepath");
     if (e_path.isNull())
       fpath = QString(getenv("HOME")) + "/vsddata";
     else
       fpath = e_path.attribute("p");
-    if (!envpath)
-      fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
-	      qPrintable(fpath));
+    fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
+	    qPrintable(fpath));
   }
   
   QString connfn = fpath + "/_settings/_connections.xml";

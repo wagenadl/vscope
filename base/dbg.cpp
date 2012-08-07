@@ -10,6 +10,8 @@
 #include <base/exception.h>
 #include <QRectF>
 #include <QLineF>
+#include <QColor>
+#include <QPolygon>
 #include <QMessageBox>
 
 Dbg::Dbg(QObject const *x) throw() {
@@ -146,6 +148,18 @@ Dbg &Dbg::operator<<(QLine const &x) {
 Dbg &Dbg::operator<<(QLineF const &x) {
   return *this << x.p1() << "-" << x.p2();
 }
+
+Dbg &Dbg::operator<<(QColor const &x) {
+  return *this << x.name();
+}
+
+Dbg &Dbg::operator<<(QPolygon const &x) {
+  *this << "[";
+  foreach (QPoint const &p, x)
+    *this << p;
+  return *this << "]";
+}
+
 
 //////////////////////////////////////////////////////////////////////
 Warning::Warning() throw() {

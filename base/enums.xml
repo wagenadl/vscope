@@ -39,6 +39,10 @@
       <item tag="Action"/>
       <item tag="Grouped"/>
       <item tag="ArrayCtrl"/>
-    </enum>      
+    </enum>
+
+    <enum id="CAMERAS" prefix="CAM">
+      <item tag="self" value="-1"/>
+    </enum>
   </enums>
 </vscope>

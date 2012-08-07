@@ -192,9 +192,18 @@ namespace Connections {
     }
     
     // back connect camera pairs
-    foreach (QString id, camorder) 
-      if (cammap[id]->partnerid != "")
-	cammap[cammap[id]->partnerid]->partnerid = id;
+    foreach (QString id, camorder) {
+      CamCon *me = cammap[id];
+      QString pid = me->partnerid;
+      if (pid != "") {
+	CamCon *partner = cammap[pid];
+	if (partner->partnerid == "")
+	  partner->partnerid = id;
+	else if (partner->partnerid != id)
+	  throw Exception("Connections", "Cameras " + id + " and " + pid
+			  + " have inconsistent partnering");
+      }
+    }
   }
 
   void readDIChannels(QDomElement doc) {

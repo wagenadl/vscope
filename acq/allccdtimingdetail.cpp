@@ -3,6 +3,7 @@
 #include "allccdtimingdetail.h"
 #include <xml/connections.h>
 #include <base/exception.h>
+#include <QSet>
 
 AllCCDTimingDetail::AllCCDTimingDetail() {
   is_snap = false;
@@ -15,15 +16,30 @@ AllCCDTimingDetail::~AllCCDTimingDetail() {
     delete p;
 }
 
+static ParamTree const *camTree(ParamTree const *ptree, QString id) {
+  ParamTree const *camtree = &ptree->tree("acqCCD/camera:"+id);
+  QString master = camtree->find("master").toString();
+  QSet<ParamTree const *> seen;
+  seen.insert(camtree);
+  while (master != "self") {
+    camtree = &ptree->tree("acqCCD/camera:"+master);
+    master = camtree->find("master").toString();
+    if (seen.contains(camtree))
+      throw Exception("AllCCDTimingDetail", "Recursive master settings");
+    seen.insert(camtree);
+  }
+  return camtree;
+}
+
 void AllCCDTimingDetail::prepTrial(ParamTree const *ptree) {
   foreach (QString id, details.keys()) 
-    details[id]->prepTrial(ptree, &ptree->tree("acqCCD/camera:"+id));
+    details[id]->prepTrial(ptree, camTree(ptree, id));
   is_snap = false;
 }
 
 void AllCCDTimingDetail::prepSnap(ParamTree const *ptree) {
   foreach (QString id, details.keys()) 
-    details[id]->prepSnap(ptree, &ptree->tree("acqCCD/camera:"+id));
+    details[id]->prepSnap(ptree, camTree(ptree, id));
   is_snap = true;
 }
 

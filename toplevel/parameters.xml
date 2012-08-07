@@ -12,14 +12,8 @@
     <!-- These are now filled by Connections -->
   </enum>
 
-  <enum id="CAMERAS">
-    <item tag="self" value="-1"/>
-    <!-- The "self" tag is used to mark a camera as independent -->
-    <!-- Other values are filled by Connections -->
-  </enum>
-
   <enum id="SHOWWHAT">
-    <item tag="VSDCc" /> <!-- This should be renamed CCD:Cc -->
+    <item tag="VSDCc" /> <!-- This should be renamed CCD:Cc, and in fact be autoamated from Connections -->
     <item tag="VSDOx" />
     <item tag="EphysInt" />
     <item tag="EphysExt" />
@@ -93,6 +87,8 @@
 	     cond="master" enable_if="self"/>
       <param id="region" type="geometry" default="512x512+0+0"
 	     cond="master" enable_if="self"/>
+      <!-- Despite the fact that regions are now defined on a per-camera
+           basis, they are defined in global coordinates. -->
       <param id="delay" type="time" default="100 ms" min="0 ms" max="1 h"
 	     cond="master" enable_if="self"/>
       <param id="dur" type="time" default=".8 s" min="100 ms" max="1 h"
@@ -100,17 +96,23 @@
       <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="1000 Hz"
 	     cond="master" enable_if="self"/>
       <param id="dutyCycle" type="percentage" default="100%"
-	     min="0%" max="100%"/>
+	     min="0%" max="100%"
+	     cond="master" enable_if="self"/>
       <param id="preIllum" type="time" default="1.5 ms"
-	     min="0 ms" max="1 h"/>
+	     min="0 ms" max="1 h"
+	     cond="master" enable_if="self"/>
       <param id="postIllum" type="time" default="0.1 ms"
-	     min="0 ms" max="1 h"/>
+	     min="0 ms" max="1 h"
+	     cond="master" enable_if="self"/>
       <param id="preShutter" type="time" default="50 ms"
-	     min="0 ms" max="1 h"/>
+	     min="0 ms" max="1 h"
+	     cond="master" enable_if="self"/>
       <param id="postShutter" type="time" default="100 ms"
-	     min="0 ms" max="1 h"/>
+	     min="0 ms" max="1 h"
+	     cond="master" enable_if="self"/>
       <param id="preHeat" type="time" default="0 ms"
-	     min="0 ms" max="1 h"/>
+	     min="0 ms" max="1 h"
+	     cond="master" enable_if="self"/>
     </array>
   </category>
 

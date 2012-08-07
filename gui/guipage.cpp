@@ -186,6 +186,7 @@ guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
     g.last(doc.attribute("custom").toInt());
   b->setGeometry(g.bbox());
   g.right();
+  b->show();
 
   return b;
 }
@@ -633,7 +634,13 @@ QString guiPage::getCurrentElement() const {
 }
 
 bool guiPage::deleteButton(QString id) {
-  return buttons.remove(id)>0;
+  if (buttons.contains(id)) {
+    delete buttons[id];
+    buttons.remove(id);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 QList<guiButton *> guiPage::allButtons() {
