@@ -8,30 +8,18 @@
 #include <QDomElement>
 #include <QSet>
 #include <QString>
+#include <gui/guiradiogroup.h>
 
 class guiPage;
 class RadioGroup;
 class PageBuildGeom;
 
-class guiTabCtrl: public QObject {
+class guiTabCtrl: public guiRadioGroup {
   Q_OBJECT;
 public:
   guiTabCtrl(guiPage *parent);
   virtual ~guiTabCtrl();
   void build(PageBuildGeom &g, QDomElement doc);
-  bool mayResize();
-  QString id() const { return id_; }
-  QStringList childIDs() const;
-  guiPage *parent() { return parent_; }
-public slots:
-  void rebuild();
-  void add(class Button *b);
-private:
-  guiPage *parent_;
-  RadioGroup *rg;
-  QString id_;
-  QSet<class AutoButtons *> autoButtons;
-  QSet<QString> fixedids;
 };
 
 #endif

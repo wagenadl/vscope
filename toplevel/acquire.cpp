@@ -180,7 +180,8 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
 
   QVector<guiButton *> btn;
   foreach (QString id, camname)
-    btn.push_back(&Globals::gui->findButton("acquisition/camvals" + id));
+    btn.push_back(&Globals::gui->findButton(QString("acquisition/camvals")
+					    + ARRAYSEP + id));
 
   QVector<CCDData const *> src;
   foreach (QString id, camname)
@@ -224,7 +225,11 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     }
     double avg = double(sum)/nser/npar;
     QString s = QString("%1/%2/%3").arg(min).arg(int(avg)).arg(max);
+    if (btn[k]->getFormat().indexOf(":")<0)
+      btn[k]->setFormat(btn[k]->text() + ": %1");
+    Dbg() << "btn["<<k<<"]: format := " << btn[k]->getFormat();
     btn[k]->setValue(s);
+    Dbg() << "btn["<<k<<"]: format ::= " << btn[k]->getFormat();
     if (k)
       brightMsg += ";";
     brightMsg += " " + camname[k] + ": " + s;

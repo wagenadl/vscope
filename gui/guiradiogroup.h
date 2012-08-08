@@ -19,15 +19,22 @@ class guiRadioGroup: public QObject {
 public:
   guiRadioGroup(guiPage *parent);
   virtual ~guiRadioGroup();
-  void build(PageBuildGeom &g, QDomElement doc);
+  void build(PageBuildGeom &g, QDomElement doc, bool horifirst=false);
   QStringList childIDs() const;
+  QString id() const { return myid; }
+  guiPage *parentPage() { return page; }
+  bool mayResize();
 public slots:
   void selectDefaultButton();
+  virtual void add(class Button *b);
+  virtual void rebuild();
 private:
-  guiPage *parent_;
+  QString myid;
+  guiPage *page;
   RadioGroup *rg;
   QString dflt;
-  QSet<QString> ids;
+  QSet<class AutoButtons *> autoButtons;
+  QSet<QString> fixedids;
 };
 
 #endif
