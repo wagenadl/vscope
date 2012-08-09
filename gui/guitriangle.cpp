@@ -4,6 +4,8 @@
 #include "guipage.h"
 #include "guibutton.h"
 #include <QPainter>
+#include <base/dbg.h>
+#include <QDebug>
 
 guiTriangle::guiTriangle(guiPage *parent): parent(parent) {
   src = 0;
@@ -149,9 +151,12 @@ void guiTriangle::render() {
     return;
 
   QPainter p(parent);
-  p.setBrush(areaColor);
-  p.setPen(areaColor);
-  p.drawPolygon(area);
+  p.setPen(QPen(areaColor));
+  p.setBrush(QBrush(areaColor));
+  Dbg() << "guitriangle: area is " << areaColor << " / " << area;
+  qDebug() << p.brush();
+  p.drawPolygon(area, Qt::WindingFill);
+  /* Why doesn't this work?? */
 
   p.setPen(lightColor);
   p.drawPolyline(lightLine);

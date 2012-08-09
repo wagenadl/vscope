@@ -22,6 +22,8 @@ HEADERS += scripts.h
 SOURCES += scripts.cpp
 HEADERS += ccdscroll.h
 SOURCES += ccdscroll.cpp
+HEADERS += camimages.h
+SOURCES += camimages.cpp
  
 LIBS += -L../base -L../gfx -L../xml -L../gui
 LIBS += -lvscope-base -lvscope-gfx -lvscope-xml -lvscope-gui

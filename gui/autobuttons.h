@@ -10,12 +10,12 @@
 #include <QMap>
 #include <QSet>
 #include <xml/enumerator.h>
-#include <gui/guitabctrl.h>
+#include <gui/guiradiogroup.h>
 
 class AutoButtons: public QObject {
   Q_OBJECT;
 public:
-  AutoButtons(guiTabCtrl *parent);
+  AutoButtons(guiPage *page, guiRadioGroup *group=0);
   void setup(PageBuildGeom &geom,
 	     QDomElement doc);
   void rebuild(PageBuildGeom *g_out=0);
@@ -23,7 +23,8 @@ public:
   bool isDynamic() const;
   QList<QString> childIDs() const;
 private:
-  guiTabCtrl *parent_;
+  guiPage *page;
+  guiRadioGroup *group;
   QStringList ids;
   QMap<QString, guiButton *> buttons;
   QDomElement doc;

@@ -29,6 +29,8 @@ public:
   Dbg &operator<<(class QSizeF const &);
   Dbg &operator<<(class QRectF const &);
   Dbg &operator<<(class QLineF const &);
+  Dbg &operator<<(class QColor const &);
+  Dbg &operator<<(class QPolygon const &);
   template <class X> Dbg &operator<<(X const &x) {
     *(QTextStream*)this << x; return *this;
   }

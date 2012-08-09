@@ -64,7 +64,6 @@ void guiTabbedPage::connectToParent(QDomElement doc) {
 guiTabbedPage::~guiTabbedPage() {
 }
 
-
 void guiTabbedPage::open(QString p) {
   int idx = p.lastIndexOf('/');
   QString elt = p.mid(idx+1);

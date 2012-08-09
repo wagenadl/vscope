@@ -5,6 +5,7 @@
 #include <base/exception.h>
 #include <base/dbg.h>
 #include <xml/attribute.h>
+#include "guiroot.h"
 
 AutoItems::AutoItems(guiPage *parent):
   QObject(parent), initialGeom(parent) {
@@ -26,21 +27,45 @@ QStringList AutoItems::selectIDs(QStringList inlist) {
   QStringList outlist;
   foreach (QString id, inlist) {
     // filter based on our xml doc
-    outlist.append(id);
+    QStringList exclude = doc.attribute("exclude").split(QRegExp("\\s+"));
+    bool ok = true;
+    foreach (QString s, exclude) {
+      if (s == "*id") {
+	guiPage *p = dynamic_cast<guiPage*>(parent());
+	Dbg() << "AutoItems: excluding *id p = " << p;
+	QString path = p->masterp()->pathInstantiate(p->path());
+	Dbg() << "  path = " << path;
+	int colon = path.lastIndexOf(":");
+	if (colon>=0) {
+	  path = path.mid(colon+1);
+	  int slash = path.indexOf("/");
+	  if (slash>=0)
+	    path = path.left(slash);
+	}
+	Dbg() << "  -> myid = " << path;
+	s = path;
+      }
+      if (id==s)
+	ok = false;
+    }
+    if (ok)
+      outlist.append(id);
   }
   return outlist;
 }
 
 void AutoItems::rebuild(PageBuildGeom *g_out) {
-  QStringList newids = selectIDs(enumerator->getAllTags());
+  QStringList newids = selectIDs(enumerator->getNonnegativeTags());
   if (newids == ids)
     return;
   
   guiPage *p = dynamic_cast<guiPage *>(parent());
   if (!p)
     throw Exception("AutoItems", "Parent is not a page");
-  foreach (QString id, items.keys())
-    p->deleteButton(id);
+  foreach (QString id, items.keys()) {
+    Dbg() << "AutoItems: deleting " << id;
+    Dbg() << "  result: " << p->deleteButton(id);
+  }
 
   items.clear();
 

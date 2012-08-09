@@ -13,7 +13,7 @@ namespace Connections {
   QMap<QString,AOChannel *> aomap;
   QMap<QString,DigiChannel *> digimap;
   QMap<QString,CamCon *> cammap;
-  QMap<int, QString> camorder;
+  QStringList camorder;
 
   AIChannel::AIChannel(QString id): id(id) {
     line = -1;
@@ -67,14 +67,14 @@ namespace Connections {
   }
 
   void writeCameras(QDomElement doc) {
-    for (QMap<QString,CamCon *>::const_iterator i=cammap.begin();
-         i!=cammap.end(); ++i) {
-      CamCon &cam = *(*i);
+    foreach (QString id, camorder) {
+      CamCon &cam = *cammap[id];
       QDomElement e = doc.ownerDocument().createElement("camera");
       doc.appendChild(e);
       e.setAttribute("id",cam.id);
-      e.setAttribute("order",cam.order);
       e.setAttribute("partnerid",cam.partnerid);
+      e.setAttribute("shutter",cam.shtrid);
+      e.setAttribute("lamp",cam.lampid);
       e.setAttribute("serno",cam.serno);
       e.setAttribute("xpix",QString::number(cam.xpix));
       e.setAttribute("ypix",QString::number(cam.ypix));
@@ -165,18 +165,20 @@ namespace Connections {
   }
 
   void readCameras(QDomElement doc) {
+    int order = 0;
     Enumerator *cam_enum = Enumerator::find("CAMERAS");
     for (QDomElement e=doc.firstChildElement("camera");
          !e.isNull(); e=e.nextSiblingElement("camera")) {
       QString id = xmlAttribute(e,"id");
-      int order = xmlAttribute(e,"order").toInt(0);
       CamCon *cam = new CamCon(id);
       cammap[id]=cam;
-      camorder[order] = id;
-      cam->order = order;
+      camorder.append(id);
+      cam->order = order++;
       cam->exists = false;
       cam->serno = e.attribute("serno");
       cam->partnerid = e.attribute("partnerid");
+      cam->shtrid = e.attribute("shutter");
+      cam->lampid = e.attribute("lamp");
       cam->xpix = e.attribute("xpix").toInt();
       cam->ypix = e.attribute("ypix").toInt();
       Param expo("time"); expo.set(e.attribute("focusexpose"));
@@ -186,6 +188,21 @@ namespace Connections {
       cam->isacceptor = role=="acceptor";
       cam->placement.read(e);
       cam_enum->add(id);
+      Dbg() << "Read info for camera " + id;
+    }
+    
+    // back connect camera pairs
+    foreach (QString id, camorder) {
+      CamCon *me = cammap[id];
+      QString pid = me->partnerid;
+      if (pid != "") {
+	CamCon *partner = cammap[pid];
+	if (partner->partnerid == "")
+	  partner->partnerid = id;
+	else if (partner->partnerid != id)
+	  throw Exception("Connections", "Cameras " + id + " and " + pid
+			  + " have inconsistent partnering");
+      }
     }
   }
 
@@ -324,59 +341,56 @@ namespace Connections {
   }
   
   QStringList allCams() {
-    QStringList sl;
-    foreach (QString id, camorder.values())
-      sl.append(id);
-    return sl;
+    return camorder;
   }
 
   QStringList donorCams() {
     QStringList sl;
-    foreach (QString id, camorder.values()) 
+    foreach (QString id, camorder) 
       if (cammap[id]->isdonor)
 	sl.append(id);
     return sl;
   }
 
   QString leaderCamera() {
-    foreach (QString id, camorder.values()) 
+    foreach (QString id, camorder) 
       if (cammap[id]->isdonor && cammap[id]->exists)
 	return id;
-    foreach (QString id, camorder.values()) 
+    foreach (QString id, camorder) 
       if (cammap[id]->exists)
 	return id;
-    foreach (QString id, camorder.values()) 
+    foreach (QString id, camorder) 
       if (cammap[id]->isdonor)
 	return id;
-    foreach (QString id, camorder.values()) 
+    foreach (QString id, camorder) 
       return id;
     return "";
   }
 
   CamPair leaderCamPair() {
     CamPair cp;
-    foreach (QString id, camorder.values()) {
+    foreach (QString id, camorder) {
       if (cammap[id]->isdonor && cammap[id]->exists) {
 	cp.donor = id;
 	cp.acceptor = cammap[id]->partnerid;
 	return cp;
       }
     }
-    foreach (QString id, camorder.values()) {
+    foreach (QString id, camorder) {
       if (cammap[id]->exists) {
 	cp.acceptor = id;
 	cp.donor = cammap[id]->partnerid;
 	return cp;
       }
     }
-    foreach (QString id, camorder.values()) {
+    foreach (QString id, camorder) {
       if (cammap[id]->isdonor) {
 	cp.donor = id;
 	cp.acceptor = cammap[id]->partnerid;
 	return cp;
       }
     }
-    foreach (QString id, camorder.values()) {
+    foreach (QString id, camorder) {
       cp.acceptor = id;
       cp.donor = cammap[id]->partnerid;
       return cp;

@@ -85,9 +85,16 @@ public:
    *:D Returns true if there are no actual definitions in this enum
    */
   QStringList getAllTags() const;
-  /*:F getAllTags
-   *:D Returns a list of all tags, in the order in which they were introduced.
+  QStringList getNonnegativeTags() const;
+  /*:F getAllTags, getNonnegativeTags
+   *:D Returns a list of all tags, or all nonnegative tags, in the order
+       in which they were introduced.
    */
+  void remove(QString id);
+  /*:F remove
+   *:D Remove a single tag. It is not an error if the tag didn't exist
+       in the first place.
+  */
   void reset();
   /*:F reset
    *:D Drops all tags

@@ -16,19 +16,18 @@ void CCDTimingDetail::generalPrep(ParamTree const *ptree,
   setRate(ptree->find(PAR_OUTRATE).toDouble());
   double outrate_hz = fs_hz();
 
-  bool enableCCD = is_snap
-    ? true
-    : ptree->find("acqCCD/enable").toBool() && camtree->find("enable").toBool();
+  bool enableCCD = (is_snap ? true : ptree->find("acqCCD/enable").toBool())
+    && camtree->find("enable").toBool();
   double framerate_hz = camtree->find("rate").toDouble();
   double sequence_ms = enableCCD ? camtree->find("dur").toDouble() : 0;
   // Note: sequence_ms is not used for snapshots
-  double preillum_ms = ptree->find("acqCCD/preIllum").toDouble();
+  double preillum_ms = camtree->find("preIllum").toDouble();
   double postillum_ms = is_snap ? 1
-    : ptree->find("acqCCD/postIllum").toDouble();
-  double preshtr_ms = ptree->find("acqCCD/preShutter").toDouble();
+    : camtree->find("postIllum").toDouble();
+  double preshtr_ms = camtree->find("preShutter").toDouble();
   double postshtr_ms = is_snap ? 1
-    : ptree->find("acqCCD/postShutter").toDouble();
-  double preheat_ms = ptree->find("acqCCD/preHeat").toDouble();
+    : camtree->find("postShutter").toDouble();
+  double preheat_ms = camtree->find("preHeat").toDouble();
   if (is_snap) 
     dbg("Post-illum/post-shtr ignored for snapshot. Using 1 ms fixed value.");
   double pre_ms = preillum_ms > preshtr_ms ? preillum_ms : preshtr_ms;

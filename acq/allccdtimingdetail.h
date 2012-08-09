@@ -16,7 +16,8 @@ public:
   void prepTrial(ParamTree const *ptree);
   void prepSnap(ParamTree const *ptree);
   int neededScans() const;
-  CCDTimingDetail const *operator[](QString camid) const;
+  CCDTimingDetail const &operator[](QString camid) const;
+  CCDTimingDetail const &first() const; // temp.
   bool isSnap() const { return is_snap; }
 private:
   bool is_snap;

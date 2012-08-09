@@ -4,7 +4,7 @@
 
 #define GUIMENU_H
 
-#include <guipage.h>
+#include <gui/guipage.h>
 
 class guiMenu: public guiPage {
   Q_OBJECT;
@@ -15,6 +15,8 @@ public:
 	  class guiRoot *master,
 	  class QRect const &geom);
   virtual ~guiMenu();
+public slots:
+  void updateAuto();
 protected:
   virtual VISUALTYPE visualTypeForParentButton() const;
   virtual void connectToParent(QDomElement doc);

@@ -83,37 +83,40 @@ CCDAcq::CCDAcq() {
   isDone=false;
 }
 
-bool CCDAcq::prepare(ParamTree const *ptree, CCDTimingDetail const &timing) {
+bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
   if (isActive)
     throw Exception("CCDAcq","Cannot prepare while active");
   isActive = false; isGood=false; isDone = false;
 
   try {
-    CCDConfig cfg;
     
     // I am calling ser=x, par=y.
-    QRect reg(ptree->find("acqCCD/region").toRect());
-    cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
-    QRect bin(ptree->find("acqCCD/binning").toRect());
-    cfg.binning = CCDBinning(bin.width(),bin.height());
-  
-    bool trigEach = DutyCycle::triggerEach(timing.duty_percent());
-  
-    t0_ms = timing.t0_ms();
-    dt_ms = timing.dt_ms();
-  
-    cfg.nframes = timing.nframes();
-    cfg.iscont = false;
-    cfg.expose_ms = dt_ms*timing.duty_percent()/100;
-    cfg.trigmode = trigEach ? CCDTrigMode::EachFrame : CCDTrigMode::FirstFrame;
-    cfg.clear_every_frame = false; // trigEach ? true : false;
   
     for (int k=0; k<ncams; k++) {
-      ccdcfg[k] = cfg;
-      ccdcfg[k].region = CCDRegion(caminfo[k]->placement.inverse()(reg));
+      QString id = camids[k];
+      QString root = "acqCCD/camera:" + id;
+      CCDConfig cfg;
+      cfg.iscont = false;
+      QRect reg(ptree->find(root + "/region").toRect());
+      cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
+      QRect bin(ptree->find(root + "/binning").toRect());
+      cfg.binning = CCDBinning(bin.width(),bin.height());
+      CCDTimingDetail const &detail = timing[camids[k]];
+      bool trigEach = DutyCycle::triggerEach(detail.duty_percent());
+  
+      t0_ms = detail.t0_ms();
+      dt_ms = detail.dt_ms();
+      
+      cfg.nframes = detail.nframes();
+      cfg.expose_ms = dt_ms*detail.duty_percent()/100;
+      cfg.trigmode = trigEach ? CCDTrigMode::EachFrame : CCDTrigMode::FirstFrame;
+      cfg.clear_every_frame = false; // trigEach ? true : false;
+  
+      cfg.region = CCDRegion(caminfo[k]->placement.inverse()(reg));
       Dbg() << "Camera " << camids[k] << ": region "
-	    << ccdcfg[k].region.smin << ":" << ccdcfg[k].region.smax
-	    << " " << ccdcfg[k].region.pmin << ":" << ccdcfg[k].region.pmax;
+	    << cfg.region.smin << ":" << cfg.region.smax
+	    << " " << cfg.region.pmin << ":" << cfg.region.pmax;
+      ccdcfg[k] = cfg;
     }
     
     for (int k=0; k<ncams; k++) {

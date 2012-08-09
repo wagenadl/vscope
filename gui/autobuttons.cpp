@@ -6,9 +6,11 @@
 #include <base/dbg.h>
 #include <xml/attribute.h>
 
-AutoButtons::AutoButtons(guiTabCtrl *parent):
-  QObject(parent), parent_(parent),
-  initialGeom(parent->parent()) {
+AutoButtons::AutoButtons(guiPage *page, guiRadioGroup *group):
+  QObject(page), page(page), group(group),
+  initialGeom(page) {
+  if (!page)
+    throw Exception("AutoButtons", "Missing a page");
   isDyn = false;
 }
 
@@ -16,6 +18,7 @@ void AutoButtons::setup(PageBuildGeom &geom,
 		      QDomElement doc_) {
   initialGeom = geom;
   doc = doc_;
+  initialGeom.go(doc);
   enumerator = Enumerator::find(doc.attribute("enum"));
   if (!enumerator)
     throw Exception("AutoButtons", "No enumerator");
@@ -33,16 +36,12 @@ QStringList AutoButtons::selectIDs(QStringList inlist) {
 }
 
 void AutoButtons::rebuild(PageBuildGeom *g_out) {
-  QStringList newids = selectIDs(enumerator->getAllTags());
-  //  Dbg() << "AutoButtons " << parent_->groupId() << ": rebuild " << newids.join(", ");
+  QStringList newids = selectIDs(enumerator->getNonnegativeTags());
   if (newids == ids)
     return;
 
-  guiPage *p = parent_->parent();
-  if (!p)
-    throw Exception("AutoButtons", "Grandparent is not a page");
   foreach (QString id, buttons.keys()) 
-    p->deleteButton(id);
+    page->deleteButton(id);
 
   buttons.clear();
 
@@ -52,8 +51,13 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
   QDomDocument xml;
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
+  QString pfx = doc.hasAttribute("id")
+    ? doc.attribute("id")
+    : group
+      ? group->id()
+      : "";
   foreach (QString id, ids) {
-    QString fullid = parent_->id() + ARRAYSEP + id;
+    QString fullid = pfx + ARRAYSEP + id;
     // let's build an item
     xml.setContent(hd1 + "\n" + hd2 + "\n"
 		   + "<button id=\""
@@ -63,9 +67,10 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
 		   + "\"/>\n");
     QDomElement e = xml.documentElement();
     Dbg() << "Adding autobutton " << fullid;
-    buttons[id] = p->addButton(g, e);
+    buttons[id] = page->addButton(g, e);
     g.up(); g.right();
-    parent_->add(buttons[id]);
+    if (group)
+      group->add(buttons[id]);
   }
   
   if (g_out)

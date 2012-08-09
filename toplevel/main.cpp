@@ -25,6 +25,7 @@
 #include <toplevel/panelhistory.h>
 #include <toplevel/mainwindow.h>
 #include <toplevel/scripts.h>
+#include <toplevel/camimages.h>
 #include <daq/daqbase.h>
 #include <pvp/campool.h>
 #include <base/roi3data.h>
@@ -136,17 +137,17 @@ void setupParsAndConns() {
   
   char const *envpath = getenv("VSCOPEPATH");
   QString fpath = "/";
-  if (envpath)
+  if (envpath) {
     fpath = envpath;
-  else {
+    Dbg() << "Got path from VSCOPEPATH: " << fpath;
+  } else {
     QDomElement e_path = pars.firstChildElement("filepath");
     if (e_path.isNull())
       fpath = QString(getenv("HOME")) + "/vsddata";
     else
       fpath = e_path.attribute("p");
-    if (!envpath)
-      fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
-	      qPrintable(fpath));
+    fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
+	    qPrintable(fpath));
   }
   
   QString connfn = fpath + "/_settings/_connections.xml";
@@ -240,20 +241,6 @@ void setupCCDScroll() {
   QObject::connect(&Globals::trove->trial(),
 		   SIGNAL(newData()),
 		   bar, SLOT(newData()));
-}
-
-void setupCCDImages() {
-  Globals::ccdw = new ROIImages(QRect(0,0,512,512));
-  foreach (QString id, Connections::allCams()) {
-    ROIImage *img = new ROIImage(Globals::leftplace);
-    img->setCamPair(Connections::camPair(id));
-    Globals::ccdw->add(id, img);
-    img->setGeometry(0,0,512,Globals::mainwindow->basey());
-    img->hide();
-  }
-  Globals::ccdw->setROIs(&Globals::trove->rois());
-  SHOWROIS sm = (SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt();
-  Globals::ccdw->showROIs(sm);
 }
 
 void setupVSDTraces() {
@@ -431,7 +418,10 @@ int main(int argc, char **argv) {
     setupCams();
 
     setupMainWindow(app);
-    setupCCDImages();
+
+    CamImages *ci = new CamImages;
+    Globals::ccdw = ci;
+
     setupVSDTraces();
     setupCoherence();
     
@@ -447,10 +437,13 @@ int main(int argc, char **argv) {
 
     Globals::gui = new vscopeGui(Globals::mainwindow, Globals::ptree,guiConf);
     Globals::gtslots = new gt_slots(Globals::gui);
+
+    ci->setup();
     setupCCDScroll();
 
     setupTimeButtons();
 
+    
     Globals::gui->rootPage().setGeometry(0,Globals::mainwindow->basey(),
 					 1024,256);
     Globals::gui->open();

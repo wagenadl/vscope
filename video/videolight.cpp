@@ -6,7 +6,7 @@
 #include "videolight.h"
 
 void VideoLight::set(bool on) {
-  int dline = Enumerator::find("DIGILINES")->lookup("VideoLight");
+  int dline = Enumerator::find("DIGILINES")->lookup("Lamp:Video");
   DigitalStep ds;
   uint32_t one=1;
   ds.setMask(one<<dline);

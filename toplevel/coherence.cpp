@@ -39,8 +39,8 @@ Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
 		   Globals::trove->trial().digitalData());
     Enumerator const *digilines = Enumerator::find("DIGILINES");
     foreach (QString cam, Connections::allCams()) {
-      if (digilines->has("Frame"+cam))
-	data->setFrameLine(cam, digilines->lookup("Frame"+cam));
+      if (digilines->has("Frame:"+cam))
+	data->setFrameLine(cam, digilines->lookup("Frame:"+cam));
     }
     owndata = true;
   }

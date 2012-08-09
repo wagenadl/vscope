@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <stdio.h>
 #include <base/xml.h>
+#include <base/dbg.h>
 
 ParamTree::ParamTree(QDomElement doc): base(doc) {
   construct();
@@ -273,6 +274,63 @@ ParamTree &ParamTree::child(QString id) {
     throw Exception(QString("ParamTree: No child named '") + id + "'");
 }
 
+ParamTree const *ParamTree::treep(QString path) const {
+  if (path.isEmpty())
+    return this;
+  QStringList p=path.split(QRegExp("[/:]"));
+  QString head = p.takeFirst();
+  QString tail = p.join("/");
+  ParamTree const *c = childp(head);
+  Dbg() << "head=" << head << " -> " << c;
+  if (c)
+    return c->treep(tail);
+  else
+    return 0;
+}
+
+ParamTree *ParamTree::treep(QString path) {
+  if (path.isEmpty())
+    return this;
+  QStringList p=path.split(QRegExp("[/:]"));
+  QString head = p.takeFirst();
+  QString tail = p.join("/");
+  ParamTree *c = childp(head);
+  Dbg() << "head=" << head << " -> " << c;
+  if (c)
+    return c->treep(tail);
+  else
+    return 0;
+}
+
+ParamTree const &ParamTree::tree(QString path) const {
+  ParamTree const *t = treep(path);
+  if (t)
+    return *t;
+  else
+    throw Exception("ParamTree", "No subtree named " + path,
+#if PARAM_DBG
+		    dbgPath
+#else
+		    ""
+#endif
+		    );
+}
+
+ParamTree &ParamTree::tree(QString path) {
+  ParamTree *t = treep(path);
+  if (t)
+    return *t;
+  else
+    throw Exception("ParamTree", "No subtree named " + path,
+#if PARAM_DBG
+		    dbgPath
+#else
+		    ""
+#endif
+		    );
+}
+
+
 Param const *ParamTree::findp(QString path) const {
   if (path.isEmpty())
     return leafp();
@@ -304,7 +362,13 @@ Param const &ParamTree::find(QString path) const {
   if (p)
     return *p;
   else
-    throw Exception("ParamTree","Cannot find parameter '"+path+"'","find");
+    throw Exception("ParamTree","Cannot find parameter '"+path+"'",
+#if PARAM_DBG
+		    dbgPath
+#else
+		    ""
+#endif
+		    );
 }
 
 Param &ParamTree::find(QString path) {
@@ -312,7 +376,13 @@ Param &ParamTree::find(QString path) {
   if (p)
     return *p;
   else
-    throw Exception("ParamTree","Cannot find parameter '"+path+"'","find");
+    throw Exception("ParamTree","Cannot find parameter '"+path+"'",
+#if PARAM_DBG
+		    dbgPath
+#else
+		    ""
+#endif
+		    );
 }
 
 int ParamTree::report(int level, int maxelts) const {
