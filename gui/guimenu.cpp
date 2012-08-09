@@ -97,3 +97,8 @@ void guiMenu::addAuto(PageBuildGeom &g, QDomElement doc) {
 bool guiMenu::mayResize() {
   return autoItems==0 || !autoItems->isDynamic();
 }
+
+void guiMenu::updateAuto() {
+  if (autoItems)
+    autoItems->rebuild();
+}

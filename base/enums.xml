@@ -43,6 +43,18 @@
 
     <enum id="CAMERAS" prefix="CAM">
       <item tag="self" value="-1"/>
+      <item tag="none" value="-2"/>
     </enum>
+
+  <enum id="SHOWWHAT" prefix="SW">
+    <item tag="EphysInt" />
+    <item tag="EphysExt" />
+    <item tag="Stimuli" />
+    <item tag="VSDTraces" />
+    <item tag="Coherence" />
+    <item tag="VideoMon" />
+    <item tag="CohGraph" />
+    <item tag="Welcome" value="-1"/>
+  </enum>
   </enums>
 </vscope>

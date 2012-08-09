@@ -23,6 +23,24 @@ void ROIImages::add(QString id, ROIImage *img) {
   imgs[id] = img;
 }
 
+void ROIImages::del(QString id) {
+  if (!imgs.contains(id))
+    return;
+  delete imgs[id];
+  imgs.remove(id);
+}
+
+QStringList ROIImages::ids() const {
+  QStringList r;
+  foreach (QString id, imgs.keys())
+    r.append(id);
+  return r;
+}
+
+bool ROIImages::has(QString id) const {
+  return imgs.contains(id);
+}
+
 ROIImage *ROIImages::get(QString id) {
   if (imgs.contains(id))
     return imgs.value(id);

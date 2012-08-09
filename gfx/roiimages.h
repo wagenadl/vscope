@@ -5,6 +5,7 @@
 #define ROIIMAGES_H
 
 #include <QString>
+#include <QStringList>
 #include <QMap>
 #include <QRect>
 #include <QSignalMapper>
@@ -17,9 +18,12 @@ class ROIImages: public QObject {
 public:
   ROIImages(QRect canvas);
   virtual ~ROIImages();
-  void add(QString id, ROIImage *img);
   ROIImage *get(QString id);
   ROIImage *first();
+  QStringList ids() const;
+  void add(QString id, ROIImage *img);
+  void del(QString id);
+  bool has(QString id) const;
 public slots:
   void setMode(ROIImage::ClickMode cm);
   void showROIs(SHOWROIS sm);

@@ -13,6 +13,7 @@
 #include <toplevel/cohgraph.h>
 #include <toplevel/exptlog.h>
 #include <gfx/roiimages.h>
+#include <xml/enumerator.h>
 
 PanelHistory::PanelHistory() {
   busy = false;
@@ -209,22 +210,27 @@ int PanelHistory::weakest(QString where) const {
 }
 
 QWidget *PanelHistory::childWidget(QString what) {
-  QWidget *child = 0;
-  if (what=="VSDTraces")
-    child = Globals::vsdtraces;
-  else if (what.startsWith("VSD"))
-    child = Globals::ccdw->get(what.mid(3));
-  else if (what=="EphysInt")
-    child = Globals::mgintra;
-  else if (what=="EphysExt")
-    child = Globals::mgextra;
-  else if (what=="Stimuli")
-    child = Globals::mgstim;
-  else if (what=="Coherence")
-    child = Globals::coherence;
-  else if (what=="CohGraph")
-    child = Globals::cohgraph;
-  return child;
+  if (what.startsWith("CCD-")) {
+    QString id = what.mid(4);
+    if (Globals::ccdw->has(id))
+      return Globals::ccdw->get(id);
+    else
+      return 0;
+  }
+  
+  QMap<SHOWWHAT, QWidget *> m;
+  m[SW_VSDTraces] = Globals::vsdtraces;
+  m[SW_EphysInt] = Globals::mgintra;
+  m[SW_EphysExt] = Globals::mgextra;
+  m[SW_Stimuli] = Globals::mgstim;
+  m[SW_Coherence] = Globals::coherence;
+  m[SW_CohGraph] = Globals::cohgraph;
+  
+  SHOWWHAT sw = (SHOWWHAT)Enumerator::find("SHOWWHAT")->lookup(what);
+  if (m.contains(sw))
+    return m[sw];
+
+  return 0;
 }
   
 

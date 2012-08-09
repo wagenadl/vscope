@@ -25,6 +25,7 @@
 #include <toplevel/panelhistory.h>
 #include <toplevel/mainwindow.h>
 #include <toplevel/scripts.h>
+#include <toplevel/camimages.h>
 #include <daq/daqbase.h>
 #include <pvp/campool.h>
 #include <base/roi3data.h>
@@ -242,20 +243,6 @@ void setupCCDScroll() {
 		   bar, SLOT(newData()));
 }
 
-void setupCCDImages() {
-  Globals::ccdw = new ROIImages(QRect(0,0,512,512));
-  foreach (QString id, Connections::allCams()) {
-    ROIImage *img = new ROIImage(Globals::leftplace);
-    img->setCamPair(Connections::camPair(id));
-    Globals::ccdw->add(id, img);
-    img->setGeometry(0,0,512,Globals::mainwindow->basey());
-    img->hide();
-  }
-  Globals::ccdw->setROIs(&Globals::trove->rois());
-  SHOWROIS sm = (SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt();
-  Globals::ccdw->showROIs(sm);
-}
-
 void setupVSDTraces() {
   Globals::vsdtraces = new VSDTraces(Globals::rightplace);
   Globals::vsdtraces->setGeometry(0,0,512,Globals::mainwindow->basey());
@@ -431,7 +418,10 @@ int main(int argc, char **argv) {
     setupCams();
 
     setupMainWindow(app);
-    setupCCDImages();
+
+    CamImages *ci = new CamImages;
+    Globals::ccdw = ci;
+
     setupVSDTraces();
     setupCoherence();
     
@@ -447,10 +437,13 @@ int main(int argc, char **argv) {
 
     Globals::gui = new vscopeGui(Globals::mainwindow, Globals::ptree,guiConf);
     Globals::gtslots = new gt_slots(Globals::gui);
+
+    ci->setup();
     setupCCDScroll();
 
     setupTimeButtons();
 
+    
     Globals::gui->rootPage().setGeometry(0,Globals::mainwindow->basey(),
 					 1024,256);
     Globals::gui->open();

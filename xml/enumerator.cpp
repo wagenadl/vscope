@@ -62,6 +62,14 @@ void Enumerator::add(QString s, int n) {
   //  Dbg() << "Added " << s << ": " << n << " to enum " << myname;
 }
 
+void Enumerator::remove(QString s) {
+  if (tag2val.contains(s)) {
+    val2tag.remove(tag2val[s]);
+    tag2val.remove(s);
+    orderedTags.removeAll(s);
+  }
+}
+
 int Enumerator::lookup(QString s, int dflt) const {
   if (has(s))
     return tag2val[s];

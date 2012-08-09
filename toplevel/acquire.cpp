@@ -227,9 +227,7 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     QString s = QString("%1/%2/%3").arg(min).arg(int(avg)).arg(max);
     if (btn[k]->getFormat().indexOf(":")<0)
       btn[k]->setFormat(btn[k]->text() + ": %1");
-    Dbg() << "btn["<<k<<"]: format := " << btn[k]->getFormat();
     btn[k]->setValue(s);
-    Dbg() << "btn["<<k<<"]: format ::= " << btn[k]->getFormat();
     if (k)
       brightMsg += ";";
     brightMsg += " " + camname[k] + ": " + s;

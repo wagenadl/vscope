@@ -46,24 +46,10 @@
 
   <!-- ************************ "SHOW WHAT" CHOICES ************************ -->
   <menu id="panelLeft"  rows="3" >
-    <item value="VSDCc" label="Coumarin VSD"/>
-    <item value="VSDOx" label="Oxonol VSD"/>
-    <item value="EphysInt" label="Intracellular E'phys"/>
-    <item value="EphysExt" label="Extracellular E'phys"/>
-    <item value="Stimuli"/>
-    <item value="VSDTraces" label="VSD Traces"/>
-    <item value="Coherence" label="Coherence Map"/>
-    <item value="CohGraph" label="Coherence Graph"/>
+    <auto enum="SHOWWHAT"/>
   </menu>
   <menu id="panelRight"  rows="3">
-    <item value="VSDCc" label="Coumarin VSD"/>
-    <item value="VSDOx" label="Oxonol VSD"/>
-    <item value="EphysInt" label="Intracellular E'phys"/>
-    <item value="EphysExt" label="Extracellular E'phys"/>
-    <item value="Stimuli"/>
-    <item value="VSDTraces" label="VSD Traces"/>
-    <item value="Coherence" label="Coherence Map"/>
-    <item value="CohGraph" label="Coherence Graph"/>
+    <auto enum="SHOWWHAT"/>
   </menu>
 
   <!-- ******************** EPHYS. RECORDING CONFIG PAGE ******************* -->
@@ -842,11 +828,24 @@
   <alias id="256x256+256+0" label="NE Quarter (256x256)"/>
   <alias id="256x256+0+256" label="SW Quarter (256x256)"/>
   <alias id="256x256+256+256" label="SE Quarter (256x256)"/>
+
+  <!-- For "SHOWWHAT -->
+  <alias id="EphysInt" label="Intracellular E'phys"/>
+  <alias id="EphysExt" label="Extracellular E'phys"/>
+  <alias id="VSDTraces" label="VSD Traces"/>
+  <alias id="Coherence" label="Coherence Map"/>
+  <alias id="CohGraph" label="Coherence Graph"/>
+  <!-- This mechanism can't turn CCD-Cc into CCD: Coumarin.
+       Should I allow for aliases in connections.xml? Probably.
+       Also, perhaps in connections I should give cameras a short ID
+       and a longer name? Or should I generate alias for "CCD-Cc" on
+       the fly, at least to "CCD: Cc", or otherwise to what's stored
+       in the trialdata for CCD name? -->
 </aliases>
 
 <colors>
-  <color id="CCDCc" value="#00ccff"/>
-  <color id="CCDOx" value="#ff8800"/>
+  <color id="CCD:Cc" value="#00ccff"/>
+  <color id="CCD:Ox" value="#ff8800"/>
   <color id="axisPen" value="#888888"/>
   <color id="tracePen" value="black"/>
   <color id="axisText" value="#880000"/>
