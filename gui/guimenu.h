@@ -16,7 +16,7 @@ public:
 	  class QRect const &geom);
   virtual ~guiMenu();
 public slots:
-  void updateAuto();
+  virtual void updateAuto();
 protected:
   virtual VISUALTYPE visualTypeForParentButton() const;
   virtual void connectToParent(QDomElement doc);

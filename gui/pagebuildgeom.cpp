@@ -17,14 +17,23 @@ PageBuildGeom::PageBuildGeom(PageBuildGeom const &src,
   parent(src.parent),
   master(src.master) {
 
-  double w = (doc.hasAttribute("spancols"))
-    ? src.button.dx*(doc.attribute("spancols").toInt()-1) + src.button.w
-    : src.button.w;
-  double h = (doc.hasAttribute("spanrows"))
-    ? src.button.dy*(doc.attribute("spanrows").toInt()-1) + src.button.h
-    : src.button.h;
-  double x0 = src.button.x0 + src.nextcol*src.button.dx;
-  double y0 = src.button.y0 + src.nextrow*src.button.dy;
+  double c0 = (doc.hasAttribute("x"))
+    ? doc.attribute("x").toDouble()
+    : src.nextcol;
+  int nc = (doc.hasAttribute("spancols"))
+    ? doc.attribute("spancols").toInt()
+    : src.cols-c0;
+  double r0 = (doc.hasAttribute("y"))
+    ? doc.attribute("y").toDouble()
+    : src.nextrow;
+  int nr = (doc.hasAttribute("spanrows"))
+    ? doc.attribute("spanrows").toInt()
+    : src.rows-r0;
+    
+  double w = src.button.dx*(nc-1) + src.button.w;
+  double h = src.button.dy*(nr-1) + src.button.h;
+  double x0 = src.button.x0 + c0*src.button.dx;
+  double y0 = src.button.y0 + r0*src.button.dy;
   Dbg() << "PBG: R=" << QRect(x0, y0, w, h);
   setup(doc, QRect(x0, y0, w, h));
 }  

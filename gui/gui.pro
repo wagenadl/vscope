@@ -25,8 +25,8 @@ SOURCES += guimenu.cpp guichecklist.cpp guitabbedpage.cpp
 HEADERS += guimenuitem.h   guichecklistitem.h   autoitems.h   autobuttons.h  
 SOURCES += guimenuitem.cpp guichecklistitem.cpp autoitems.cpp autobuttons.cpp
 
-HEADERS += guiradiogroup.h   guitabctrl.h  
-SOURCES += guiradiogroup.cpp guitabctrl.cpp
+HEADERS += guiradiogroup.h   
+SOURCES += guiradiogroup.cpp 
 
 LIBS += -L../base -lvscope-base -L../gfx -lvscope-gfx -L../xml -lvscope-xml
 LIBS += -L../video -lvscope-video

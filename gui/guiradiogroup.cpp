@@ -4,6 +4,7 @@
 #include "guipage.h"
 #include <gfx/radiogroup.h>
 #include <xml/enumerator.h>
+#include <xml/attribute.h>
 #include <base/exception.h>
 #include "autobuttons.h"
 
@@ -20,7 +21,8 @@ void guiRadioGroup::add(Button *b) {
   rg->add(b);
 }
 
-void guiRadioGroup::build(PageBuildGeom &g, QDomElement doc, bool horifirst) {
+void guiRadioGroup::build(PageBuildGeom &g0, QDomElement doc) {
+  PageBuildGeom g(g0, doc);
   myid = doc.attribute("id");
   for (QDomElement e=doc.firstChildElement(); !e.isNull();
        e=e.nextSiblingElement()) {
@@ -28,14 +30,12 @@ void guiRadioGroup::build(PageBuildGeom &g, QDomElement doc, bool horifirst) {
     if (tag=="button") {
       guiButton *b = page->addButton(g, e);
       rg->add(b); // this overrides visual type...
-      if (horifirst) {
-	g.up();
-	g.right();
-      }
       fixedids.insert(b->id());
       if (e.hasAttribute("vt")) // ... so we may have to restore it
 	b->setVisualType((VISUALTYPE)Enumerator::find("VISUALTYPE")
 			 ->lookup(e.attribute("vt")));
+    } else if (tag=="group") {
+      build(g, e);
     } else if (tag=="auto") {
       AutoButtons *a = new AutoButtons(page, this);
       a->setup(g, e);

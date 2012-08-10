@@ -73,4 +73,9 @@ void CamImages::setCameras(QStringList newids) {
       throw Exception("CamImages", "No panel menu " + p);
     menu->updateAuto();
   }
+  guiPage *page = Globals::gui->findpPage("acquisition");
+  if (!page)
+      throw Exception("CamImages", "No acquisition page");
+    page->updateAuto();
+    
 }

@@ -17,6 +17,7 @@ public:
   virtual void connectToParent(QDomElement doc);
   virtual ~guiTabbedPage();
   virtual QString getCurrentElement() const;
+  virtual void reconnect();
 public slots:
   virtual void open(QString elt);
   /*:F open

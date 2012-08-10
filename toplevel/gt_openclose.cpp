@@ -27,9 +27,9 @@ void hideTop() {
   Globals::leftplace->hide();
   Globals::rightplace->hide();
   guiPage &root = Globals::gui->rootPage();
-  foreach (QString id, root.radiogroupp("showLeft")->childIDs())
+  foreach (QString id, root.groupp("showLeft")->childIDs())
     root.buttonp(id)->setEnabled(false);
-  foreach (QString id, root.radiogroupp("showRight")->childIDs())
+  foreach (QString id, root.groupp("showRight")->childIDs())
     root.buttonp(id)->setEnabled(false);
 }
 
@@ -37,9 +37,9 @@ void showTop() {
   Globals::leftplace->show();
   Globals::rightplace->show();
   guiPage &root = Globals::gui->rootPage();
-  foreach (QString id, root.radiogroupp("showLeft")->childIDs())
+  foreach (QString id, root.groupp("showLeft")->childIDs())
     root.buttonp(id)->setEnabled(true);
-  foreach (QString id, root.radiogroupp("showRight")->childIDs())
+  foreach (QString id, root.groupp("showRight")->childIDs())
     root.buttonp(id)->setEnabled(true);
 }
 
