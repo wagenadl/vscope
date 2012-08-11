@@ -10,23 +10,23 @@
 
 <!-- *************************** TOP LEVEL ****************************** -->
 <page id="" subdxl="1.05" subdyt="1.2" subdxr="2.05" subdyb="0">
-  <group id="showLeft">
-    <button id="panelLeft1" label="*%1" x="1" y="0" bg="#ddffdd"
+  <group id="showLeft" x="1" y="0" spanrows="1">
+    <button id="panelLeft1" label="*%1" bg="#ddffdd"
 	    vt="PanelOpen"/>
-    <button id="panelLeft2" label="*%1" x="2" y="0" bg="#ddffdd"
+    <button id="panelLeft2" label="*%1" bg="#ddffdd"
 	    vt="PanelOpen"/>
-    <button id="panelLeft3" label="*%1" x="3" y="0" bg="#ddffdd"
-	    vt="PanelOpen"/>
-  </group>
-  <group id="showRight">
-    <button id="panelRight1" label="*%1" x="4.2" y="0" bg="#ffeedd"
-	    vt="PanelOpen"/>
-    <button id="panelRight2" label="*%1" x="5.2" y="0" bg="#ffeedd"
-	    vt="PanelOpen"/>
-    <button id="panelRight3" label="*%1" x="6.2" y="0" bg="#ffeedd"
+    <button id="panelLeft3" label="*%1" bg="#ddffdd"
 	    vt="PanelOpen"/>
   </group>
-  <group id="a">
+  <group id="showRight" x="4.2" y="0" spanrows="1">
+    <button id="panelRight1" label="*%1" bg="#ffeedd"
+	    vt="PanelOpen"/>
+    <button id="panelRight2" label="*%1" bg="#ffeedd"
+	    vt="PanelOpen"/>
+    <button id="panelRight3" label="*%1" bg="#ffeedd"
+	    vt="PanelOpen"/>
+  </group>
+  <group id="a" x="0" y="0">
     <button id="panelLeft" label="Left Panel" x="0" y="0.1" bg="#bbeebb"/>
     <button id="panelRight" label="Right Panel" x="7.2" y="0.1" bg="#eeccaa"/>
 
@@ -568,9 +568,9 @@
     </menu>
   </page>
 
-  <page id="maintenance" subdxr="2.1">
-    <group id="chk">
-      <button id="focus" label="Focus" x="3.1" y="0" bg="#ffcc88"/>
+  <page id="maintenance" subdxr="1.1">
+    <group id="chk" x="4.1" spancols="1.">
+      <button id="focus" label="Focus" bg="#ffcc88"/>
       <button id="liveEphys" label="Oscilloscope" bg="#eeaaaa"/>
       
       <button id="checkDaq" label="DAQ Board Status" bg="#bbffff"/>
@@ -580,32 +580,32 @@
     </group>
     <page id="focus">
       <button id="autoRange" label="Auto Range" x=".5" y="4" bg="#ddcc88"/>
-      <group id="rgn" default="viewAll">
-        <button id="viewAll" label="Two Full Images" x="2" y="0" bg="#eecc77"/>
+      <group id="rgn" default="viewAll" x="2" y="0">
+        <button id="viewAll" label="Two Full Images" bg="#eecc77"/>
         <button id="viewA" label="Coumarin and Central Zoom" bg="#bbddff"/>
         <button id="viewB" label="Oxonol and Central Zoom" bg="#ffff77"/>
         <button id="viewZoom" label="Coumarin and Oxonol Zooms" bg="#ddbb66"/>
         <button id="viewDiff" label="Difference and Central Zoom" bg="#ddbb66"/>
       </group>
-      <group id="val">
-        <button id="focusA" label="Coum. Focus" x="0" y="0" bg="#cceeff"/>
+      <group id="val" x="0" y="0" spancols="2" spanrows="4">
+        <button id="focusA" label="Coum. Focus" bg="#cceeff"/>
         <button id="focusB" label="Ox. Focus" bg="#ffff77"/>
-        <button id="intensityA" label="Coum. Avg/Max" x="0" y="2" bg="#bbddff"/>
+        <button id="intensityA" label="Coum. Avg/Max" bg="#bbddff"/>
         <button id="intensityB" label="Ox. Avg/Max" bg="#eeee55"/>
-        <button id="alignScale" label="Scale"  x="1" y="0." bg="#ffffaa"/>
+        <button id="alignScale" label="Scale"  bg="#ffffaa"/>
         <button id="alignRotate" label="Rotation" bg="#ffddcc"/>
         <button id="alignX" label="X Shift" bg="#ffdd99"/>
         <button id="alignY" label="Y Shift" bg="#ffddbb"/>
       </group>
     </page>
     <page id="liveEphys" subdxr="1.1">
-      <group id="a" default="timeBase">
-      <button id="timeBase" label="Time Base" x="2" bg="#dd9999"/>
-      <button id="aiChannels" label="Analog Inputs" bg="#ddbb99"/>
-      <!--button id="diChannels" label="Digital Inputs" bg="#ddbb99"/-->
-      <button id="vcoSource" label="VCO" bg="#ddbb99"/>
+      <group id="a" default="timeBase" x="3" colspan="1">
+	<button id="timeBase" label="Time Base" bg="#dd9999"/>
+	<button id="aiChannels" label="Analog Inputs" bg="#ddbb99"/>
+	<!--button id="diChannels" label="Digital Inputs" bg="#ddbb99"/-->
+	<button id="vcoSource" label="VCO" bg="#ddbb99"/>
       </group>
-      <button id="autoRange" label="Auto Range" x="2" y="4" bg="#dddd99"/>
+      <button id="autoRange" label="Auto Range" x="3" y="4" bg="#dddd99"/>
     <!-- ********************* MENUS FOR LIVE EPHYS. ******************** -->
       <checklist id="diChannels" rows="4" cols="4">
         <item value="DO0Mon"/>

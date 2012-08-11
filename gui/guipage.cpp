@@ -35,7 +35,6 @@ guiPage::guiPage(class QWidget *parent,
   AbstractPage(parent, ptree_, id, master_, geom),
   buildGeom(this) {
   triangle = new guiTriangle(this);
-  itemgroup = 0;
   topgroup = new RadioGroup(this);
 
   setLineWidth(0);
@@ -146,42 +145,13 @@ void guiPage::addRadioGroup(PageBuildGeom &g, QDomElement doc) {
   groups[doc.attribute("id")] = bg;
 }
 
-static QString itemID(QDomElement doc) {
-  if (doc.hasAttribute("id"))
-    return doc.attribute("id");
-  else if (doc.hasAttribute("custom"))
-    return "custom-"+doc.attribute("custom");
-  else if (doc.hasAttribute("value"))
-    return doc.attribute("value");
-  else
-    return "";
-}
-  
 
 guiItem *guiPage::createItem(QString) {
   throw Exception("guiPage", "Cannot create items");
 }
 
-guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
-  if (!itemgroup)
-    itemgroup = new RadioGroup(this);
-
-  QString id = itemID(doc);
-  if (id.isEmpty()) 
-    throw Exception("guiPage", "Empty item ID in page " + path());
-  
-  guiButton *b = createItem(id);
-  buttons[id] = b;
-  buttons[id]->setup(doc);
-  itemgroup->add(b);
-
-  if (doc.hasAttribute("custom"))
-    g.last(doc.attribute("custom").toInt());
-  b->setGeometry(g.bbox());
-  g.right();
-  b->show();
-
-  return b;
+guiButton *guiPage::addItem(PageBuildGeom &, QDomElement) {
+  throw Exception("guiPage", "Cannot add items to pages, only to menus and checklists");
 }
 
 void guiPage::addItems(PageBuildGeom &g, QDomElement doc) {

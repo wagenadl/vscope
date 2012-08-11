@@ -45,7 +45,8 @@ void guiRadioGroup::build(PageBuildGeom &g0, QDomElement doc) {
     }
   }
   if (doc.hasAttribute("default"))
-    dflt = doc.attribute("default"); 
+    dflt = doc.attribute("default");
+  g0.include(g.boundingBox());
 }
 
 void guiRadioGroup::selectDefaultButton() {

@@ -193,7 +193,6 @@ protected:
   /*:V pageEnabled
    *:D True if this page is enabled (by its Enable button or its parent)
    */
-  class RadioGroup *itemgroup;
 private slots:
   void addTriangle(QString id);
   void removeTriangle(QString id);
