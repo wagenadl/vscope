@@ -16,6 +16,7 @@ guiChecklist::guiChecklist(class QWidget *parent,
 		 class guiRoot *master,
 		 class QRect const &geom):
   guiMenu(parent, ptree, id, master, geom) {
+  setNonExclusive();
 }
 
 guiChecklist::~guiChecklist() {

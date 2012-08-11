@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <xml/enumerator.h>
 #include "autoitems.h"
+#include <gfx/radiogroup.h>
 
 guiMenu::guiMenu(class QWidget *parent,
 		 class ParamTree *ptree,
@@ -17,9 +18,16 @@ guiMenu::guiMenu(class QWidget *parent,
 		 class QRect const &geom):
   guiPage(parent, ptree, id, master, geom) {
   autoItems = 0;
+  itemgroup = new RadioGroup(this);
 }
 
 guiMenu::~guiMenu() {
+}
+
+void guiMenu::setNonExclusive() {
+  if (itemgroup)
+    delete itemgroup;
+  itemgroup = 0;
 }
 
 VISUALTYPE guiMenu::visualTypeForParentButton() const {
@@ -31,6 +39,38 @@ void guiMenu::connectToParent(QDomElement doc) {
   guiButton *b = parentPage()->buttonp(id());
   if (b)
     b->ensureValueInLabel();
+}
+
+static QString itemID(QDomElement doc) {
+  if (doc.hasAttribute("id"))
+    return doc.attribute("id");
+  else if (doc.hasAttribute("custom"))
+    return "custom-"+doc.attribute("custom");
+  else if (doc.hasAttribute("value"))
+    return doc.attribute("value");
+  else
+    return "";
+}
+  
+
+guiButton *guiMenu::addItem(PageBuildGeom &g, QDomElement doc) {
+  QString id = itemID(doc);
+  if (id.isEmpty()) 
+    throw Exception("guiPage", "Empty item ID in page " + path());
+  
+  guiButton *b = createItem(id);
+  buttons[id] = b;
+  buttons[id]->setup(doc);
+  if (itemgroup)
+    itemgroup->add(b);
+
+  if (doc.hasAttribute("custom"))
+    g.last(doc.attribute("custom").toInt());
+  b->setGeometry(g.bbox());
+  g.right();
+  b->show();
+
+  return b;
 }
 
 guiItem *guiMenu::createItem(QString id) {
