@@ -17,7 +17,7 @@ ParamTree::ParamTree(QDomElement doc): base(doc) {
 void ParamTree::construct() {  
   leaf_ = 0;
   arrayElement = "";
-  if (base.tagName()=="vsdscopeDefs") {
+  if (base.tagName()=="vscope") {
     base=base.firstChildElement("params");
     if (base.isNull())
       throw Exception("ParamTree","No <params> found.");

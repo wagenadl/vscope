@@ -158,8 +158,6 @@ void setupParsAndConns() {
   QDomElement cons = connDoc.root();
 
   Enumerator::readAll(enums);
-  Enumerator::readAll(pars);
-  Enumerator::readAll(cons); // This must happen before ptree is init'ed
   
   Connections::readXML(cons);
   
@@ -193,12 +191,11 @@ void setupExptName() {
 }
 
 void setupDAQ() {
-  Enumerator *daqenum = Enumerator::find("DAQDEV");
-  unsigned int daqtype = daqenum->has("TYPE")
-    ? daqenum->lookup("TYPE") : 0;
-  unsigned int daqserno = daqenum->has("SERNO")
-    ? daqenum->lookup("SERNO") : 0;
-  QString id = DAQDevice::search(daqtype, daqserno);
+  QString id = DAQDevice::search(0, 0);
+  /* There used to be a funky DAQDEV enum that defined TYPE and SERNO
+     tags. But it was an odd use of enums. Better to define a new <daq>
+     tag in connections. But for now: just assume one device, hence (0,0).
+  */
   DAQDevice::addAlias(id, "");
 }  
 

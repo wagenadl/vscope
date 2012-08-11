@@ -28,6 +28,7 @@ public:
   void up();
   void last(int n=1);
   QRect const &boundingBox() const;
+  void include(QRect bb);
 private:
   guiPage const *parent;
   guiGeom const *master;

@@ -100,6 +100,7 @@ void PageBuildGeom::right() {
     nextrow++;
   }
 }
+
 void PageBuildGeom::up() {
   nextrow--;
   if (nextrow<0) {
@@ -154,3 +155,7 @@ QRect PageBuildGeom::pbox() {
 QRect const &PageBuildGeom::boundingBox() const {
   return boundingbox;
 }  
+
+void PageBuildGeom::include(QRect bb) {
+  boundingbox |= bb;
+}
