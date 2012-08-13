@@ -15,8 +15,10 @@ public:
 	  class guiRoot *master,
 	  class QRect const &geom);
   virtual ~guiMenu();
+  virtual class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
 public slots:
-  void updateAuto();
+  virtual void updateAuto();
+  void setNonExclusive();
 protected:
   virtual VISUALTYPE visualTypeForParentButton() const;
   virtual void connectToParent(QDomElement doc);
@@ -26,6 +28,7 @@ protected:
   virtual bool mayResize();
 protected:
   class AutoItems *autoItems;
+  class RadioGroup *itemgroup;
 };
 
 #endif

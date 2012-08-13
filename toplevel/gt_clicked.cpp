@@ -78,11 +78,19 @@ void gt_slots::clicked(QString p) {
       Globals::exptelapsed->startCountUp();
       Globals::exptlog->addNote("Timer reset");
     } else if (p.startsWith("acquisition/camvals")) {
-      QStringList bits = p.split("/");
-      QString leaf = bits.takeLast();
-      QString id = bits.last().mid(8);
-      Globals::ccdw->get(id)->recolor(leaf);
-      Globals::acquire->redisplayCCD();
+      p = Globals::gui->pathInstantiate(p);
+      Dbg() << "path is " << p;
+      int cidx = p.lastIndexOf(":");
+      if (cidx>=0) {
+	QString id = p.mid(cidx+1);
+	int sidx = id.indexOf("/");
+	if (sidx>=0)
+	  id = id.left(sidx);
+	QStringList bits = p.split("/");
+	QString leaf = bits.takeLast();
+	Globals::ccdw->get(id)->recolor(leaf);
+	Globals::acquire->redisplayCCD();
+      }
     } else if (p=="scripts/load") {
       Globals::scripts->prepareLoad();
     } else if (p=="scripts/save") {

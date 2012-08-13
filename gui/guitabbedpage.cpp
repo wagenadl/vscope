@@ -1,7 +1,7 @@
 // guitabbedpage.cpp
 
 #include "guitabbedpage.h"
-#include "guitabctrl.h"
+#include "guiradiogroup.h"
 #include <base/exception.h>
 #include "guiroot.h"
 #include <base/dbg.h>
@@ -17,21 +17,25 @@ guiTabbedPage::guiTabbedPage(class QWidget *parent,
 
 void guiTabbedPage::connectToParent(QDomElement doc) {
   guiPage::connectToParent(doc);
-  
+  reconnect();
+}
+
+void guiTabbedPage::reconnect() {
   guiPage *par = parentPage();
   if (!par)
     return;
 
   guiButton *penable = buttonp("enable");
-  guiTabCtrl *pctrl = par->tabctrlp(id());
+  guiRadioGroup *pctrl = par->groupp(id());
 
   Dbg() << "guiTabbedPage id=" << id() << " penable=" << penable << " pctrl=" << pctrl;
 
   if (pctrl) {
     foreach (QString i, pctrl->childIDs()) {
+      Dbg() << "guiTabbedPage path="<<path()<< " id="<<id() << " i="<<i;
       guiButton *b = par->buttonp(id() + ARRAYSEP + i);
       if (!b) 
-	throw Exception("guiTabbedPage", "Button " + i + " not found in parent", path());
+	continue; //throw Exception("guiTabbedPage", "Button " + i + " not found in parent", path());
 
       connect(b, SIGNAL(selected(QString,QString)),this, SLOT(open(QString)));
       disconnect(b, SIGNAL(selected(QString,QString)),
@@ -44,10 +48,11 @@ void guiTabbedPage::connectToParent(QDomElement doc) {
 	      par, SLOT(addTriangle(QString)));
       connect(b, SIGNAL(deselected(QString,QString)),
 	      par, SLOT(removeTriangle(QString)));
-      b->setVisualType(VT_ArrayCtrl);
-      if (penable)
+      if (penable) {
+	b->setVisualType(VT_ArrayCtrl);
 	connect(b, SIGNAL(doubleClicked(QString,QString)),
 		penable, SLOT(toggleSelected()));
+      }
       connect(b, SIGNAL(doubleClicked(QString,QString)),
 	      master, SIGNAL(buttonDoubleClicked(QString,QString)));
     }

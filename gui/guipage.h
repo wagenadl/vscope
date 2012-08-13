@@ -54,10 +54,8 @@ public:
   virtual guiButton *buttonp(QString id);
   virtual guiPage const *subpagep(QString id) const;
   virtual guiPage *subpagep(QString id);
-  virtual class guiTabCtrl const *tabctrlp(QString id) const;
-  virtual class guiTabCtrl *tabctrlp(QString id);
-  virtual class guiRadioGroup const *radiogroupp(QString id) const;
-  virtual class guiRadioGroup *radiogroupp(QString id);
+  virtual class guiRadioGroup const *groupp(QString id) const;
+  virtual class guiRadioGroup *groupp(QString id);
   virtual QList<guiButton *> allButtons();
 public:
   class guiButton *addButton(PageBuildGeom &g, QDomElement elt);
@@ -132,6 +130,7 @@ public slots:
   /*:F close
    *:D Closes this page.
    */
+  virtual void updateAuto();
   void childItemSelected(QString path, QString text);
   /*:F childItemSelected
    *:D Connect the selected() signal from subpage menu items to this.
@@ -182,9 +181,9 @@ protected:
    *:D All our buttons by ID. (ID is leaf, not full path).
    */
   QMap<QString, class guiRadioGroup *> groups;
-  QMap<QString, class guiTabCtrl *> tabctrls;
-  /*:V tabctrls
-   *:D All our tab control groups by ID. (ID is leaf, not full path).
+  /*:V groups
+   *:D All our radio groups / tab control groups by ID. (ID is leaf, not
+       full path).
    */
   bool neverOpened;
   /*:V neverOpened
@@ -194,7 +193,6 @@ protected:
   /*:V pageEnabled
    *:D True if this page is enabled (by its Enable button or its parent)
    */
-  class RadioGroup *itemgroup;
 private slots:
   void addTriangle(QString id);
   void removeTriangle(QString id);

@@ -20,7 +20,6 @@
 #include <QPen>
 #include <gfx/radiogroup.h>
 #include <gui/guiradiogroup.h>
-#include <gui/guitabctrl.h>
 #include <gui/guimenu.h>
 #include <gui/guichecklist.h>
 #include <gui/guitabbedpage.h>
@@ -36,7 +35,6 @@ guiPage::guiPage(class QWidget *parent,
   AbstractPage(parent, ptree_, id, master_, geom),
   buildGeom(this) {
   triangle = new guiTriangle(this);
-  itemgroup = 0;
   topgroup = new RadioGroup(this);
 
   setLineWidth(0);
@@ -58,7 +56,7 @@ void guiPage::setup(QDomElement doc) {
 }
 
 bool guiPage::mayResize() {
-  foreach (guiTabCtrl *g, tabctrls)
+  foreach (guiRadioGroup *g, groups)
     if (!g->mayResize())
       return false;
   return true;
@@ -147,48 +145,13 @@ void guiPage::addRadioGroup(PageBuildGeom &g, QDomElement doc) {
   groups[doc.attribute("id")] = bg;
 }
 
-void guiPage::addTabCtrl(PageBuildGeom &g, QDomElement doc) {
-  guiTabCtrl *bg = new guiTabCtrl(this);
-  bg->build(g, doc);
-  tabctrls[doc.attribute("id")] = bg;
-}
-
-static QString itemID(QDomElement doc) {
-  if (doc.hasAttribute("id"))
-    return doc.attribute("id");
-  else if (doc.hasAttribute("custom"))
-    return "custom-"+doc.attribute("custom");
-  else if (doc.hasAttribute("value"))
-    return doc.attribute("value");
-  else
-    return "";
-}
-  
 
 guiItem *guiPage::createItem(QString) {
   throw Exception("guiPage", "Cannot create items");
 }
 
-guiButton *guiPage::addItem(PageBuildGeom &g, QDomElement doc) {
-  if (!itemgroup)
-    itemgroup = new RadioGroup(this);
-
-  QString id = itemID(doc);
-  if (id.isEmpty()) 
-    throw Exception("guiPage", "Empty item ID in page " + path());
-  
-  guiButton *b = createItem(id);
-  buttons[id] = b;
-  buttons[id]->setup(doc);
-  itemgroup->add(b);
-
-  if (doc.hasAttribute("custom"))
-    g.last(doc.attribute("custom").toInt());
-  b->setGeometry(g.bbox());
-  g.right();
-  b->show();
-
-  return b;
+guiButton *guiPage::addItem(PageBuildGeom &, QDomElement) {
+  throw Exception("guiPage", "Cannot add items to pages, only to menus and checklists");
 }
 
 void guiPage::addItems(PageBuildGeom &g, QDomElement doc) {
@@ -312,7 +275,7 @@ void guiPage::openChildren() {
 }
 
 void guiPage::prepForOpening() {
-  foreach (guiTabCtrl *g, tabctrls)
+  foreach (guiRadioGroup *g, groups)
     g->rebuild();
   
   foreach (QString id, buttons.keys()) {
@@ -539,8 +502,6 @@ void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
     QString tag = e.tagName();
     if (tag=="group")
       addRadioGroup(g,e);
-    else if (tag=="tabctrl")
-      addTabCtrl(g,e);
     else if (tag=="button")
       addButton(g,e);
     else if (tag=="item")
@@ -577,28 +538,14 @@ guiButton *guiPage::buttonp(QString id) {
     return 0;
 }
 
-guiTabCtrl const *guiPage::tabctrlp(QString id) const {
-  if (tabctrls.contains(id))
-    return tabctrls[id];
-  else
-    return 0;
-}
-
-guiTabCtrl *guiPage::tabctrlp(QString id) {
-  if (tabctrls.contains(id))
-    return tabctrls[id];
-  else
-    return 0;
-}
-
-guiRadioGroup const *guiPage::radiogroupp(QString id) const {
+guiRadioGroup const *guiPage::groupp(QString id) const {
   if (groups.contains(id))
     return groups[id];
   else
     return 0;
 }
 
-guiRadioGroup *guiPage::radiogroupp(QString id) {
+guiRadioGroup *guiPage::groupp(QString id) {
   if (groups.contains(id))
     return groups[id];
   else
@@ -645,4 +592,14 @@ bool guiPage::deleteButton(QString id) {
 
 QList<guiButton *> guiPage::allButtons() {
   return buttons.values();
+}
+
+void guiPage::updateAuto() {
+  foreach (guiRadioGroup *rg, groups)
+    rg->rebuild();
+  foreach (AbstractPage *p, subPages) {
+    guiTabbedPage *tp = dynamic_cast<guiTabbedPage *>(p);
+    if (tp)
+      tp->reconnect();
+  }
 }

@@ -1,223 +1,209 @@
 <?xml version="1.0" encoding="UTF-8" standalone='yes'?>
-<!DOCTYPE vsdscopeDefs>
-<vsdscopeDefs>
-
-<!-- *************************** VERSIONING ****************************** -->
-
-<version date="20120716"/>
-
-<!-- ************************** ENUMERATIONS ***************************** -->
-<enums>
-  <enum id="STIMCHS">
-    <!-- These are now filled by Connections -->
-  </enum>
-  <enum id="CURRENTCAMERAS">
-  </enum>
-</enums>
-
-<params>
-  <param id="filePath" type="string" save="false"/>
-  <param id="panelLeft" type="enum" enum="SHOWWHAT" default="Welcome"/>
-  <param id="panelRight" type="enum" enum="SHOWWHAT" default="Welcome"/>
-  <category id="panelHistory">
-    <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="VSDCc"/>
-    <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysInt"/>
-    <param id="whatLeft3" type="enum" enum="SHOWWHAT" default="Stimuli"/>
-    <param id="prioLeft1" type="double" default="3"/> <!-- large=stronger -->
-    <param id="prioLeft2" type="double" default="2"/>
-    <param id="prioLeft3" type="double" default="1"/>
-    <param id="whatRight1" type="enum" enum="SHOWWHAT" default="VSDOx"/>
-    <param id="whatRight2" type="enum" enum="SHOWWHAT" default="EphysExt"/>
-    <param id="whatRight3" type="enum" enum="SHOWWHAT" default="VSDTraces"/>
-    <param id="prioRight1" type="double" default="3"/>
-    <param id="prioRight2" type="double" default="2"/>
-    <param id="prioRight3" type="double" default="1"/>
-  </category>
-
-  <category id="acqEphys">
-    <param id="acqTime" type="time" default="1.1 s" min="1 s" max="1 h"/>
-    <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
-    <param id="acqFreq" type="freq" default="10 kHz" min="100 Hz" max="100 kHz"/>
-
-    <category id="vco">
-      <param id="Dest" type="enum" enum="AOCHAN" default="AO1"/>
-      <param id="F0" type="freq" default="130.8128 Hz"/>
-      <param id="dfdv_oct10mV" type="double" default="0.5"/>
-      <param id="Vpp" type="voltage" default="1V"/>
-      <param id="tau" type="time" default="0.01 s"/>
+<!DOCTYPE vscope>
+<vscope version="20120810">
+  <params>
+    <param id="filePath" type="string" save="false"/>
+    <param id="panelLeft" type="enum" enum="SHOWWHAT" default="Welcome"/>
+    <param id="panelRight" type="enum" enum="SHOWWHAT" default="Welcome"/>
+    <category id="panelHistory">
+      <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="VSDCc"/>
+      <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysInt"/>
+      <param id="whatLeft3" type="enum" enum="SHOWWHAT" default="Stimuli"/>
+      <param id="prioLeft1" type="double" default="3"/> <!-- large=stronger -->
+      <param id="prioLeft2" type="double" default="2"/>
+      <param id="prioLeft3" type="double" default="1"/>
+      <param id="whatRight1" type="enum" enum="SHOWWHAT" default="VSDOx"/>
+      <param id="whatRight2" type="enum" enum="SHOWWHAT" default="EphysExt"/>
+      <param id="whatRight3" type="enum" enum="SHOWWHAT" default="VSDTraces"/>
+      <param id="prioRight1" type="double" default="3"/>
+      <param id="prioRight2" type="double" default="2"/>
+      <param id="prioRight3" type="double" default="1"/>
     </category>
-
-  </category>
-
-  <category id="stimEphys">
-    <param id="enable" type="bool" default="true"/>
-    <array id="channel" enum="STIMCHS">
-      <param id="enable" type="bool" default="false"/>
-      <param id="delay" type="time" default="0 s" min="0 ms" max="1 h"/>
-      <param id="nTrains" type="int" default="1" min="1" max="1000"/>
-      <param id="trainPeriod" type="time" default="1 s" min="10 ms" max="1 h"/>
-      <param id="nPulses" type="int" default="5" min="1" max="1000"/>
-      <param id="pulsePeriod" type="time" default="100 ms" min="1 ms" max="1 h"/>
-      <param id="pulseType" type="enum" enum="PULSETYPE" cond="*index" enable_if="AO0 AO1 AO2 AO3" default="TTL"/>
-      <param id="pulseAmp" type="voltage" default="5V" min="-10V" max="10V" cond="pulseType" enable_if="Square Biphasic Ramp"/>
-      <param id="pulseAmp2" type="voltage" default="-5V" min="-10V" max="10V" cond="pulseType" enable_if="Biphasic Ramp"/>
-      <param id="pulseDur" type="time" default="10 ms" min="50 us" max="1 h"/>
-      <param id="pulseDur2" type="time" default="10 ms" min="50 us" max="1 h" cond="pulseType" enable_if="Biphasic"/>
-    </array>
-  </category>
-
-  <category id="acqCCD">
-    <param id="enable" type="bool" default="true"/>
-    <array id="camera" enum="CAMERAS">
-      <param id="enable" type="bool" default="true"/>
-      <param id="master" type="enum" enum="CAMERAS" default="self"/>
-      <param id="binning" type="geometry" default="1x1+0+0" 
-	     cond="master" enable_if="self"/>
-      <param id="region" type="geometry" default="512x512+0+0"
-	     cond="master" enable_if="self"/>
-      <!-- Despite the fact that regions are now defined on a per-camera
-           basis, they are defined in global coordinates. -->
-      <param id="delay" type="time" default="100 ms" min="0 ms" max="1 h"
-	     cond="master" enable_if="self"/>
-      <param id="dur" type="time" default=".8 s" min="100 ms" max="1 h"
-	     cond="master" enable_if="self"/>
-      <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="1000 Hz"
-	     cond="master" enable_if="self"/>
-      <param id="dutyCycle" type="percentage" default="100%"
-	     min="0%" max="100%"
-	     cond="master" enable_if="self"/>
-      <param id="preIllum" type="time" default="1.5 ms"
-	     min="0 ms" max="1 h"
-	     cond="master" enable_if="self"/>
-      <param id="postIllum" type="time" default="0.1 ms"
-	     min="0 ms" max="1 h"
-	     cond="master" enable_if="self"/>
-      <param id="preShutter" type="time" default="50 ms"
-	     min="0 ms" max="1 h"
-	     cond="master" enable_if="self"/>
-      <param id="postShutter" type="time" default="100 ms"
-	     min="0 ms" max="1 h"
-	     cond="master" enable_if="self"/>
-      <param id="preHeat" type="time" default="0 ms"
-	     min="0 ms" max="1 h"
-	     cond="master" enable_if="self"/>
-    </array>
-  </category>
-
-  <category id="stimVideo">
-    <param id="enable" type="bool" default="false"/>
-    <param id="avoidCCD" type="bool" default="false"/>
-    <param id="lightOn" type="bool" default="false" save="false"/>
-    <param id="delay" type="time" default="100 ms" min="10 ms" max="1 h"/>
-    <param id="dur" type="time" default="10 s" min="100 ms" max="1 h"/>
-    <param id="prog" type="string" default="1"/>
-    <param id="parA" type="double" default="0"/>
-    <param id="parB" type="double" default="0"/>
-    <param id="parC" type="double" default="0"/>
-    <param id="marginPreCCD" type="time" default="5.5 ms" min="0 ms" max="500 ms"/>
-    <param id="marginPostCCD" type="time" default="0.5 ms" min="0 ms" max="500 ms"/>
-    <param id="xscale" type="voltage" default="1.35 V"/>
-    <param id="yscale" type="voltage" default="1.5 V"/>
-    <param id="xhome" type="voltage" default="0 V"/>
-    <param id="yhome" type="voltage" default="0 V"/>
-    <param id="frameRate" type="freq" default="10 Hz"/>
-    <param id="preIllum" type="time" default="0 ms" min="0 ms" max="1 min"/>
-    <param id="postIllum" type="time" default="0 ms" min="0 ms" max="1 min"/>
-  </category>
-
-  <category id="acquisition">
-    <param id="exptname" type="string" default="nn" save="false"/>
-    <param id="trialno" type="int" default="0" save="false"/>
-    <param id="contephys_trialno" type="int" default="0" save="false"/>
-    <param id="autoRun" type="bool" default="false"/>
-    <param id="contEphys" type="bool" default="false"/>
-    <param id="dummy" type="bool" default="false" save="false"/>
-    <param id="trialPeriod" type="time" default="300 s" min="1 s" max="1000 h"/>
-    <array id="camvals" enum="CAMERAS" save="false">
-      <param id="levels" type="string" default="-"/>
-    </array>
-  </category>
-  <category id="analysis">
-    <param id="refType" type="enum" enum="REFTYPE" default="Analog"/>
-    <param id="refTrace" type="enum" enum="AICHAN" default="ME1_10Vm" cond="refType" enable_if="Analog"/>
-    <param id="refDigi" type="enum" enum="DIGILINES" default="DO0Mon" cond="refType" enable_if="Digital"/>
-    <param id="refFreq" type="freq" default="1 Hz" min="0.01 Hz" max="100 Hz" cond="refType" enable_if="Frequency"/>
-    <param id="showROIs" type="enum" enum="SHOWROIS" default="Outlines"/>
-    <param id="debleach" type="enum" enum="DEBLEACH" default="None"/>
-    <param id="vsdDelay" type="time" default="250 ms"/>
-  </category>
-  <category id="maintenance">
-    <category id="focus">
-    </category>
-    <category id="liveEphys">
-      <param id="timeBase" type="time" default="100 ms" min="10 ms" max="1 s"/>
-      <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
-      <param id="diChannels" type="set" enum="DIGILINES" default=""/>
-      <param id="vcoSource" type="enum" enum="AICHAN" default="off"/>
-    </category>
-    <category id="checkDaq"/>
-    <category id="checkCam"/>
-    <category id="checkMEA"/>
-    <category id="checkVideo"/>
-  </category>
-
-
-  <category id="custom">
-    <!-- Note that custom/ parameters are not specific for array elements -->
+  
     <category id="acqEphys">
-      <param id="acqTime-1" type="time" default="11 s"/>
-      <param id="acqFreq-1" type="freq" default="50 kHz"/>
-      <param id="trialPeriod-1" type="time" default="300 s"/>
+      <param id="acqTime" type="time" default="1.1 s" min="1 s" max="1 h"/>
+      <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
+      <param id="acqFreq" type="freq" default="10 kHz" min="100 Hz" max="100 kHz"/>
+  
+      <category id="vco">
+        <param id="Dest" type="enum" enum="AOCHAN" default="AO1"/>
+        <param id="F0" type="freq" default="130.8128 Hz"/>
+        <param id="dfdv_oct10mV" type="double" default="0.5"/>
+        <param id="Vpp" type="voltage" default="1V"/>
+        <param id="tau" type="time" default="0.01 s"/>
+      </category>
+  
     </category>
+  
     <category id="stimEphys">
-      <category id="channel">
-        <param id="nTrains-1" type="int" default="50"/>
-        <param id="nPulses-1" type="int" default="50"/>
-        <param id="delay-1" type="time" default="50 ms"/>
-        <param id="trainPeriod-1" type="time" default="60 s"/>
-        <param id="pulsePeriod-1" type="time" default="60 s"/>
-        <param id="pulseDur-1" type="time" default="60 s"/>
-        <param id="pulseDur2-1" type="time" default="60 s"/>
-        <param id="pulseAmp-1" type="voltage" default="2V"/>
-        <param id="pulseAmp2-1" type="voltage" default="-2V"/>
-      </category>
+      <param id="enable" type="bool" default="true"/>
+      <array id="channel" enum="STIMCHS">
+        <param id="enable" type="bool" default="false"/>
+        <param id="delay" type="time" default="0 s" min="0 ms" max="1 h"/>
+        <param id="nTrains" type="int" default="1" min="1" max="1000"/>
+        <param id="trainPeriod" type="time" default="1 s" min="10 ms" max="1 h"/>
+        <param id="nPulses" type="int" default="5" min="1" max="1000"/>
+        <param id="pulsePeriod" type="time" default="100 ms" min="1 ms" max="1 h"/>
+        <param id="pulseType" type="enum" enum="PULSETYPE" cond="*index" enable_if="AO0 AO1 AO2 AO3" default="TTL"/>
+        <param id="pulseAmp" type="voltage" default="5V" min="-10V" max="10V" cond="pulseType" enable_if="Square Biphasic Ramp"/>
+        <param id="pulseAmp2" type="voltage" default="-5V" min="-10V" max="10V" cond="pulseType" enable_if="Biphasic Ramp"/>
+        <param id="pulseDur" type="time" default="10 ms" min="50 us" max="1 h"/>
+        <param id="pulseDur2" type="time" default="10 ms" min="50 us" max="1 h" cond="pulseType" enable_if="Biphasic"/>
+      </array>
     </category>
+  
     <category id="acqCCD">
-      <category id="camera">
-	<param id="rate-1" type="freq" default="10 Hz"/>
-	<param id="delay-1" type="time" default="1.0 s"/>
-	<param id="dur-1" type="time" default="5 min"/>
-	<param id="preIllum-1" type="time" default="1.0 s"/>
-	<param id="postIllum-1" type="time" default="1.0 s"/>
-	<param id="preHeat-1" type="time" default="60 s"/>
-	<param id="dutyCycle-1" type="percentage" default="38 %"/>
-      </category>
+      <param id="enable" type="bool" default="true"/>
+      <array id="camera" enum="CAMERAS">
+        <param id="enable" type="bool" default="true"/>
+        <param id="master" type="enum" enum="CAMERAS" default="self"/>
+        <param id="binning" type="geometry" default="1x1+0+0" 
+  	     cond="master" enable_if="self"/>
+        <param id="region" type="geometry" default="512x512+0+0"
+  	     cond="master" enable_if="self"/>
+        <!-- Despite the fact that regions are now defined on a per-camera
+             basis, they are defined in global coordinates. -->
+        <param id="delay" type="time" default="100 ms" min="0 ms" max="1 h"
+  	     cond="master" enable_if="self"/>
+        <param id="dur" type="time" default=".8 s" min="100 ms" max="1 h"
+  	     cond="master" enable_if="self"/>
+        <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="1000 Hz"
+  	     cond="master" enable_if="self"/>
+        <param id="dutyCycle" type="percentage" default="100%"
+  	     min="0%" max="100%"
+  	     cond="master" enable_if="self"/>
+        <param id="preIllum" type="time" default="1.5 ms"
+  	     min="0 ms" max="1 h"
+  	     cond="master" enable_if="self"/>
+        <param id="postIllum" type="time" default="0.1 ms"
+  	     min="0 ms" max="1 h"
+  	     cond="master" enable_if="self"/>
+        <param id="preShutter" type="time" default="50 ms"
+  	     min="0 ms" max="1 h"
+  	     cond="master" enable_if="self"/>
+        <param id="postShutter" type="time" default="100 ms"
+  	     min="0 ms" max="1 h"
+  	     cond="master" enable_if="self"/>
+        <param id="preHeat" type="time" default="0 ms"
+  	     min="0 ms" max="1 h"
+  	     cond="master" enable_if="self"/>
+      </array>
     </category>
+  
     <category id="stimVideo">
-      <param id="delay-1" type="time" default="1.0 s"/>
-      <param id="dur-1" type="time" default="5 min"/>
-      <param id="frameRate-1" type="freq" default="60 Hz"/>
-      <param id="preIllum-1" type="time" default="1 s"/>
-      <param id="postIllum-1" type="time" default="1 s"/>
-      <param id="marginPreCCD-1" type="time" default="5 ms"/>
-      <param id="marginPostCCD-1" type="time" default="0.5 ms"/>
-      <param id="parA-1" type="double" default="0"/>
-      <param id="parB-1" type="double" default="0"/>
-      <param id="parC-1" type="double" default="0"/>
+      <param id="enable" type="bool" default="false"/>
+      <param id="avoidCCD" type="bool" default="false"/>
+      <param id="lightOn" type="bool" default="false" save="false"/>
+      <param id="delay" type="time" default="100 ms" min="10 ms" max="1 h"/>
+      <param id="dur" type="time" default="10 s" min="100 ms" max="1 h"/>
+      <param id="prog" type="string" default="1"/>
+      <param id="parA" type="double" default="0"/>
+      <param id="parB" type="double" default="0"/>
+      <param id="parC" type="double" default="0"/>
+      <param id="marginPreCCD" type="time" default="5.5 ms" min="0 ms" max="500 ms"/>
+      <param id="marginPostCCD" type="time" default="0.5 ms" min="0 ms" max="500 ms"/>
+      <param id="xscale" type="voltage" default="1.35 V"/>
+      <param id="yscale" type="voltage" default="1.5 V"/>
+      <param id="xhome" type="voltage" default="0 V"/>
+      <param id="yhome" type="voltage" default="0 V"/>
+      <param id="frameRate" type="freq" default="10 Hz"/>
+      <param id="preIllum" type="time" default="0 ms" min="0 ms" max="1 min"/>
+      <param id="postIllum" type="time" default="0 ms" min="0 ms" max="1 min"/>
     </category>
+  
     <category id="acquisition">
-      <param id="trialPeriod-1" type="time" default="12 s"/>
+      <param id="exptname" type="string" default="nn" save="false"/>
+      <param id="trialno" type="int" default="0" save="false"/>
+      <param id="contephys_trialno" type="int" default="0" save="false"/>
+      <param id="autoRun" type="bool" default="false"/>
+      <param id="contEphys" type="bool" default="false"/>
+      <param id="dummy" type="bool" default="false" save="false"/>
+      <param id="trialPeriod" type="time" default="300 s" min="1 s" max="1000 h"/>
+      <array id="camvals" enum="CAMERAS" save="false">
+        <param id="levels" type="string" default="-"/>
+      </array>
     </category>
     <category id="analysis">
-      <param id="refFreq-1" type="freq" default="1 Hz"/>
+      <param id="refType" type="enum" enum="REFTYPE" default="Analog"/>
+      <param id="refTrace" type="enum" enum="AICHAN" default="ME1_10Vm" cond="refType" enable_if="Analog"/>
+      <param id="refDigi" type="enum" enum="DIGILINES" default="DO0Mon" cond="refType" enable_if="Digital"/>
+      <param id="refFreq" type="freq" default="1 Hz" min="0.01 Hz" max="100 Hz" cond="refType" enable_if="Frequency"/>
+      <param id="showROIs" type="enum" enum="SHOWROIS" default="Outlines"/>
+      <param id="debleach" type="enum" enum="DEBLEACH" default="None"/>
+      <param id="vsdDelay" type="time" default="250 ms"/>
     </category>
-  </category>
-  <category id="savedSettings">
-    <param id="name" type="string" default="Default" save="false"/>
-  </category>
-  <category id="scripts">
-    <param id="run" type="bool" default="off" save="false"/>
-    <param id="name" type="string" default="" save="false"/>
-  </category>
-</params>
-</vsdscopeDefs>
+    <category id="maintenance">
+      <category id="focus">
+      </category>
+      <category id="liveEphys">
+        <param id="timeBase" type="time" default="100 ms" min="10 ms" max="1 s"/>
+        <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
+        <param id="diChannels" type="set" enum="DIGILINES" default=""/>
+        <param id="vcoSource" type="enum" enum="AICHAN" default="off"/>
+      </category>
+      <category id="checkDaq"/>
+      <category id="checkCam"/>
+      <category id="checkMEA"/>
+      <category id="checkVideo"/>
+    </category>
+  
+  
+    <category id="custom">
+      <!-- Note that custom/ parameters are not specific for array elements -->
+      <category id="acqEphys">
+        <param id="acqTime-1" type="time" default="11 s"/>
+        <param id="acqFreq-1" type="freq" default="50 kHz"/>
+        <param id="trialPeriod-1" type="time" default="300 s"/>
+      </category>
+      <category id="stimEphys">
+        <category id="channel">
+          <param id="nTrains-1" type="int" default="50"/>
+          <param id="nPulses-1" type="int" default="50"/>
+          <param id="delay-1" type="time" default="50 ms"/>
+          <param id="trainPeriod-1" type="time" default="60 s"/>
+          <param id="pulsePeriod-1" type="time" default="60 s"/>
+          <param id="pulseDur-1" type="time" default="60 s"/>
+          <param id="pulseDur2-1" type="time" default="60 s"/>
+          <param id="pulseAmp-1" type="voltage" default="2V"/>
+          <param id="pulseAmp2-1" type="voltage" default="-2V"/>
+        </category>
+      </category>
+      <category id="acqCCD">
+        <category id="camera">
+  	<param id="rate-1" type="freq" default="10 Hz"/>
+  	<param id="delay-1" type="time" default="1.0 s"/>
+  	<param id="dur-1" type="time" default="5 min"/>
+  	<param id="preIllum-1" type="time" default="1.0 s"/>
+  	<param id="postIllum-1" type="time" default="1.0 s"/>
+  	<param id="preHeat-1" type="time" default="60 s"/>
+  	<param id="dutyCycle-1" type="percentage" default="38 %"/>
+        </category>
+      </category>
+      <category id="stimVideo">
+        <param id="delay-1" type="time" default="1.0 s"/>
+        <param id="dur-1" type="time" default="5 min"/>
+        <param id="frameRate-1" type="freq" default="60 Hz"/>
+        <param id="preIllum-1" type="time" default="1 s"/>
+        <param id="postIllum-1" type="time" default="1 s"/>
+        <param id="marginPreCCD-1" type="time" default="5 ms"/>
+        <param id="marginPostCCD-1" type="time" default="0.5 ms"/>
+        <param id="parA-1" type="double" default="0"/>
+        <param id="parB-1" type="double" default="0"/>
+        <param id="parC-1" type="double" default="0"/>
+      </category>
+      <category id="acquisition">
+        <param id="trialPeriod-1" type="time" default="12 s"/>
+      </category>
+      <category id="analysis">
+        <param id="refFreq-1" type="freq" default="1 Hz"/>
+      </category>
+    </category>
+    <category id="savedSettings">
+      <param id="name" type="string" default="Default" save="false"/>
+    </category>
+    <category id="scripts">
+      <param id="run" type="bool" default="off" save="false"/>
+      <param id="name" type="string" default="" save="false"/>
+    </category>
+  </params>
+</vscope>

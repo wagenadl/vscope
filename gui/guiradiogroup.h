@@ -19,7 +19,7 @@ class guiRadioGroup: public QObject {
 public:
   guiRadioGroup(guiPage *parent);
   virtual ~guiRadioGroup();
-  void build(PageBuildGeom &g, QDomElement doc, bool horifirst=false);
+  void build(PageBuildGeom &g, QDomElement doc);
   QStringList childIDs() const;
   QString id() const { return myid; }
   guiPage *parentPage() { return page; }
