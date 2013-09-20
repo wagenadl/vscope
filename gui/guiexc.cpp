@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QPushButton>
 #include <stdlib.h>
+#include <unistd.h>
 #include <xml/settingsfile.h>
 
 QString GUIExc::settingsdir;

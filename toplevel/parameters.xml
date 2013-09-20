@@ -6,13 +6,13 @@
     <param id="panelLeft" type="enum" enum="SHOWWHAT" default="Welcome"/>
     <param id="panelRight" type="enum" enum="SHOWWHAT" default="Welcome"/>
     <category id="panelHistory">
-      <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="VSDCc"/>
-      <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysInt"/>
+      <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="EphysInt"/>
+      <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysExt"/>
       <param id="whatLeft3" type="enum" enum="SHOWWHAT" default="Stimuli"/>
       <param id="prioLeft1" type="double" default="3"/> <!-- large=stronger -->
       <param id="prioLeft2" type="double" default="2"/>
       <param id="prioLeft3" type="double" default="1"/>
-      <param id="whatRight1" type="enum" enum="SHOWWHAT" default="VSDOx"/>
+      <param id="whatRight1" type="enum" enum="SHOWWHAT" default="EphysInt"/>
       <param id="whatRight2" type="enum" enum="SHOWWHAT" default="EphysExt"/>
       <param id="whatRight3" type="enum" enum="SHOWWHAT" default="VSDTraces"/>
       <param id="prioRight1" type="double" default="3"/>
