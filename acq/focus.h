@@ -7,6 +7,7 @@
 #include <QFrame>
 #include <QWidget>
 #include <base/types.h>
+#include <base/enums.h>
 
 class Focus: public QFrame {
   Q_OBJECT;
@@ -19,13 +20,6 @@ public:
     At a minimum, that would require new "scale", "shiftx", and "shifty"
     variables in the cameras' Connections information.
    */
-  enum ViewMode {
-    ViewAll,
-    ViewA,
-    ViewB,
-    ViewZoom,
-    ViewDiff
-  };
 public:
   Focus(QWidget *parent);
   virtual ~Focus();
@@ -36,7 +30,7 @@ protected:
   void resizeEvent(class QResizeEvent *);
 public slots:
   void setCams(QString idA); // automatically finds partner
-  void setViewMode(enum ViewMode vm);
+  void setViewMode(enum FOCUSMODE vm);
   void autoRange();
 protected slots:
   void dataAvailable();
@@ -64,7 +58,7 @@ private:
   class CCDConfig *cfgA, *cfgB;
   class QTimer *timer;
   bool isActive;
-  enum ViewMode viewMode;
+  enum FOCUSMODE viewMode;
   uint16_t const *frmA;
   uint16_t const *frmB; // we do not own these
   int npix, X, Y; // eventually, these should be separate for A and B

@@ -134,12 +134,19 @@
     </category>
     <category id="maintenance">
       <category id="focus">
+        <param id="camA" type="enum" enum="CAMERAS" default="none" save="false"/>
+        <param id="camB" type="enum" enum="CAMERAS" default="none" save="false"/>
+        <param id="mode" type="enum" enum="FOCUSMODE" default="TwoFull" save="false"/>
       </category>
       <category id="liveEphys">
-        <param id="timeBase" type="time" default="100 ms" min="10 ms" max="1 s"/>
-        <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
-        <param id="diChannels" type="set" enum="DIGILINES" default=""/>
-        <param id="vcoSource" type="enum" enum="AICHAN" default="off"/>
+        <param id="timeBase" type="time" default="100 ms" 
+               min="10 ms" max="1 s" save="false"/>
+        <param id="aiChannels" type="set" enum="AICHAN" 
+               default="ME1_10Vm ME2_Vm" save="false"/>
+        <param id="diChannels" type="set" enum="DIGILINES"
+               default="" save="false"/>
+        <param id="vcoSource" type="enum" enum="AICHAN" 
+               default="off" save="false"/>
       </category>
       <category id="checkDaq"/>
       <category id="checkCam"/>

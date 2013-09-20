@@ -578,26 +578,34 @@
       <!--button id="checkMEA" label="MEA Status" bg="#bbffbb"/>
       <button id="checkVideo" label="Video Status" bg="#ffffbb"/-->
     </group>
-    <page id="focus">
-      <button id="autoRange" label="Auto Range" x=".5" y="4" bg="#ddcc88"/>
-      <group id="rgn" default="viewAll" x="2" y="0">
-        <button id="viewAll" label="Two Full Images" bg="#eecc77"/>
-        <button id="viewA" label="Coumarin and Central Zoom" bg="#bbddff"/>
-        <button id="viewB" label="Oxonol and Central Zoom" bg="#ffff77"/>
-        <button id="viewZoom" label="Coumarin and Oxonol Zooms" bg="#ddbb66"/>
-        <button id="viewDiff" label="Difference and Central Zoom" bg="#ddbb66"/>
+    <page id="focus" subdxr="1.05" subdxl="2.05">
+      <button id="autoRange" label="Auto Range" x="0.5" y="4" bg="#ddcc88"/>
+      <group id="a" default="mode" x="3" y="0" spancols="1" spanrows="4">
+        <button id="mode" label="View mode" bg="#eecc77"/>
+        <button id="camA" label="Camera A"  bg="#bbddff"/>
+        <button id="camB" label="Camera B"  bg="#ffff77"/>
       </group>
       <group id="val" x="0" y="0" spancols="2" spanrows="4">
-        <button id="focusA" label="Coum. Focus" bg="#cceeff"/>
-        <button id="focusB" label="Ox. Focus" bg="#ffff77"/>
-        <button id="intensityA" label="Coum. Avg/Max" bg="#bbddff"/>
-        <button id="intensityB" label="Ox. Avg/Max" bg="#eeee55"/>
+        <button id="focusA" label="A Focus" bg="#cceeff"/>
+        <button id="focusB" label="B Focus" bg="#ffff77"/>
+        <button id="intensityA" label="A Avg/Max" bg="#bbddff"/>
+        <button id="intensityB" label="B Avg/Max" bg="#eeee55"/>
         <button id="alignScale" label="Scale"  bg="#ffffaa"/>
         <button id="alignRotate" label="Rotation" bg="#ffddcc"/>
         <button id="alignX" label="X Shift" bg="#ffdd99"/>
         <button id="alignY" label="Y Shift" bg="#ffddbb"/>
       </group>
+      <menu id="camA" cols="1" rows="5">
+        <auto enum="CAMERAS"/>
+      </menu>
+      <menu id="camB" cols="1" rows="5">
+        <auto enum="CAMERAS"/>
+      </menu>
+      <menu id="mode" cols="1" rows="5">
+        <auto enum="FOCUSMODE"/>
+      </menu>
     </page>
+
     <page id="liveEphys" subdxr="1.1">
       <group id="a" default="timeBase" x="3" colspan="1">
 	<button id="timeBase" label="Time Base" bg="#dd9999"/>
@@ -839,6 +847,13 @@
        and a longer name? Or should I generate alias for "CCD-Cc" on
        the fly, at least to "CCD: Cc", or otherwise to what's stored
        in the trialdata for CCD name? -->
+
+  <!-- For FocusMode -->
+  <alias id="TwoFull" label="A and B Full"/>
+  <alias id="AZoom" label="A and Zoom"/>
+  <alias id="BZoom" label="B and Zoom"/>
+  <alias id="TwoZoom" label="A and B Zoom"/>
+  <alias id="Difference" label="Diff. and Zoom"/>
 </aliases>
 
 <colors>

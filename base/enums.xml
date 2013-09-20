@@ -67,6 +67,14 @@
       <item tag="Welcome" value="-1"/>
     </enum>
 
+    <enum id="FOCUSMODE" prefix="FM">
+      <item tag="TwoFull"/>
+      <item tag="AZoom"/>
+      <item tag="BZoom"/>
+      <item tag="TwoZoom"/>
+      <item tag="Difference"/>
+    </enum>
+
     <enum id="STIMCHS">
     </enum>
 

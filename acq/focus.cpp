@@ -2,6 +2,7 @@
 
 #include "focus.h"
 
+#include <base/enums.h>
 #include <math.h>
 #include <xml/paramtree.h>
 #include <xml/enumerator.h>
@@ -23,7 +24,7 @@
 Focus::Focus(QWidget *parent): QFrame(parent) {
   CamPool::initialize();
   isActive = false;
-  viewMode = ViewAll;
+  viewMode = FM_TwoFull;
   timer = 0;
   
   butFocus[0] = butFocus[1] = 0;
@@ -53,7 +54,7 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
   setCams("");
 }
 
-void Focus::setCams(QString idA) {
+void Focus::setCams(QString idA, QString idB) {
   if (idA=="")
     idA = Connections::leaderCamera();
 
@@ -112,7 +113,7 @@ Focus::~Focus() {
   delete cfgB;
 }
 
-void Focus::setViewMode(enum Focus::ViewMode vm) {
+void Focus::setViewMode(enum FOCUSMODE vm) {
   viewMode=vm;
   newViewMode();
 }
@@ -121,19 +122,19 @@ void Focus::newViewMode() {
   left->resetZoom();
   right->resetZoom();
   switch (viewMode) {
-  case ViewAll:
+  case FM_TwoFull:
     break;
-  case ViewA:
+  case FM_AZoom:
     right->zoomIn();
     break;
-  case ViewB:
+  case FM_BZoom:
     left->zoomIn();
     break;
-  case ViewZoom:
+  case FM_TwoZoom:
     left->zoomIn();
     right->zoomIn();
     break;
-  case ViewDiff:
+  case FM_Difference:
     right->zoomIn();
     break;
   }
@@ -159,7 +160,7 @@ void Focus::dataAvailable() {
       dbg("  No B frame read");
     }
   }
-  if (viewMode==ViewDiff) {
+  if (viewMode==FM_Difference) {
     if (newA) {
       if (isfirstA)
 	hiddenA->autoRange(frmA,X,Y);
@@ -194,20 +195,20 @@ void Focus::dataAvailable() {
       }
     }    
   } else {
-    if (viewMode!=ViewB && newA) {
+    if (viewMode!=FM_BZoom && newA) {
       if (isfirstA)
 	left->autoRange(frmA,X,Y);
       isfirstA=false;
       left->newImage(frmA,X,Y,flipXA,flipYA);
-      if (viewMode==ViewA)
+      if (viewMode==FM_AZoom)
 	right->overwriteImage(left->currentImage());
     }
-    if (viewMode!=ViewA && newB) {
+    if (viewMode!=FM_AZoom && newB) {
       if (isfirstB)
 	right->autoRange(frmB,X,Y);
       isfirstB=false;
       right->newImage(frmB,X,Y,flipXA,flipYB);
-      if (viewMode==ViewB)
+      if (viewMode==FM_BZoom)
 	left->overwriteImage(right->currentImage());
     }
   }

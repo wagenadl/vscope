@@ -28,6 +28,7 @@
 #include <toplevel/savedsettings.h>
 #include <base/roidata3set.h>
 #include <base/enums.h>
+#include <acq/focus.h>
 
 static QString immediateCCDMaster(QString id) {
   /* Returns the master of camera ID, or "" if self. */
@@ -215,6 +216,13 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::scripts->setRunning(Globals::ptree->find(p).toBool());
     } else if (p.startsWith("panel")) {
       ;
+    } else if (p=="focus/camA") {
+      dbg("focus/camA");
+      ;
+    } else if (p=="focus/camB") {
+      dbg("focus/camB");
+    } else if (p=="focus/mode") {
+      Globals::focus->setViewMode(FOCUSMODE(Globals::ptree->find(p).toInt()));
     } else {
       // Create log entry
       QRegExp re("/([^/:]+):([^/]+)/");

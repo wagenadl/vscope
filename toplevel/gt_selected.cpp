@@ -20,16 +20,6 @@ void gt_slots::selected(QString p) {
     QString tail=l.last();
     if (p.startsWith("panel")) 
       Globals::panelHistory->oldSelection(p);
-    else if (p=="maintenance/focus/viewAll" && Globals::focus)
-      Globals::focus->setViewMode(Focus::ViewAll);
-    else if (p=="maintenance/focus/viewA" && Globals::focus)
-      Globals::focus->setViewMode(Focus::ViewA);
-    else if (p=="maintenance/focus/viewB" && Globals::focus)
-      Globals::focus->setViewMode(Focus::ViewB);
-    else if (p=="maintenance/focus/viewZoom" && Globals::focus) 
-      Globals::focus->setViewMode(Focus::ViewZoom);
-    else if (p=="maintenance/focus/viewDiff" && Globals::focus) 
-      Globals::focus->setViewMode(Focus::ViewDiff);
     else if (p=="analysis/zoom") 
       Globals::ccdw->setMode(ROIImage::CM_Zoom);
     else if (p=="analysis/roiBlob") 
