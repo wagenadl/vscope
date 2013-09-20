@@ -30,6 +30,9 @@ protected:
   void resizeEvent(class QResizeEvent *);
 public slots:
   void setCams(QString idA); // automatically finds partner
+  void setCams(QString idA, QString idB);
+  void setCamA(QString idA);
+  void setCamB(QString idB);
   void setViewMode(enum FOCUSMODE vm);
   void autoRange();
 protected slots:

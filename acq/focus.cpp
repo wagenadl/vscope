@@ -54,6 +54,18 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
   setCams("");
 }
 
+void Focus::setCams(QString idA) {
+  setCams(idA, "");
+}
+
+void Focus::setCamA(QString idA) {
+  setCams(idA, camB ? camB->getID() : "");
+}
+
+void Focus::setCamB(QString idB) {
+  setCams(camA ? camA->getID() : "", idB);
+}
+
 void Focus::setCams(QString idA, QString idB) {
   if (idA=="")
     idA = Connections::leaderCamera();
@@ -65,7 +77,10 @@ void Focus::setCams(QString idA, QString idB) {
   Dbg() << "Focus::setCams("<<idA<<")";
   
   Connections::CamCon const *ccA = Connections::findpCam(idA);
-  Connections::CamCon const *ccB = ccA
+  Connections::CamCon const *ccB =
+    idB!=""
+    ? Connections::findpCam(idA)
+    : ccA
     ? Connections::findpCam(ccA->partnerid)
     : 0;
   Dbg() << "  Focus: ccA=" << ccA << ". ccB=" << ccB;
