@@ -222,7 +222,7 @@ void Focus::dataAvailable() {
       if (isfirstB)
 	right->autoRange(frmB,X,Y);
       isfirstB=false;
-      right->newImage(frmB,X,Y,flipXA,flipYB);
+      right->newImage(frmB,X,Y,flipXB,flipYB);
       if (viewMode==FM_BZoom)
 	left->overwriteImage(right->currentImage());
     }
