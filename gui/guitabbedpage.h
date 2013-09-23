@@ -4,7 +4,7 @@
 
 #define GUITABBEDPAGE_H
 
-#include <guipage.h>
+#include <gui/guipage.h>
 
 class guiTabbedPage: public guiPage {
   Q_OBJECT;

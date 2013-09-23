@@ -4,5 +4,6 @@
      <file alias="guiconfig.xml">toplevel/guiconfig.xml</file>
      <file alias="connections.xml">toplevel/connections.xml</file>
      <file alias="version.xml">toplevel/version.xml</file>
+     <file alias="enums.xml">base/enums.xml</file>
  </qresource>
 </RCC>
