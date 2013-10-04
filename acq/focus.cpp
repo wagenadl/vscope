@@ -54,6 +54,14 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
   setCams("");
 }
 
+QString Focus::getCamA() const {
+  return camA ? camA->getID() : "none";
+}
+
+QString Focus::getCamB() const {
+  return camA ? camB->getID() : "none";
+}
+
 void Focus::setCams(QString idA) {
   setCams(idA, "");
 }

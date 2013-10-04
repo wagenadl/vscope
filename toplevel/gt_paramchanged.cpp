@@ -216,12 +216,33 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::scripts->setRunning(Globals::ptree->find(p).toBool());
     } else if (p.startsWith("panel")) {
       ;
-    } else if (p=="focus/camA") {
+    } else if (p=="maintenance/focus/camA") {
       dbg("focus/camA");
-      ;
-    } else if (p=="focus/camB") {
+      QString oldA = Globals::focus->getCamA();
+      QString oldB = Globals::focus->getCamB();
+      QString newA = Globals::ptree->find(p).toString();
+      QString newB = oldB;
+      if (newA==oldB) {
+        newB = oldA;
+        Globals::ptree->find("maintenance/focus/camB").set(newB);
+        // may have to set the menu option as well
+        // this doesn't work when camera is not present
+      }
+      Globals::focus->setCams(newA, newB);
+    } else if (p=="maintenance/focus/camB") {
       dbg("focus/camB");
-    } else if (p=="focus/mode") {
+      QString oldA = Globals::focus->getCamA();
+      QString oldB = Globals::focus->getCamB();
+      QString newB = Globals::ptree->find(p).toString();
+      QString newA = oldA;
+      if (newB==oldA) {
+        newA = oldB;
+        Globals::ptree->find("maintenance/focus/camA").set(newA);
+        // may have to set the menu option as well
+        // this doesn't work when camera is not present
+      }
+      Globals::focus->setCams(newA, newB);
+    } else if (p=="maintenance/focus/mode") {
       Globals::focus->setViewMode(FOCUSMODE(Globals::ptree->find(p).toInt()));
     } else {
       // Create log entry

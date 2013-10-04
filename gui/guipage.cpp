@@ -67,7 +67,6 @@ void guiPage::sizeToFit() {
     return;
   QRect b0 = QRect(0, 0, origGeom.width(), origGeom.height());
   QRect bb = buildGeom.boundingBox();
-  //  Dbg() << "guiPage["<<path()<<"]: sizetofit b0="<<b0<<"; bb="<<bb;
   bb.setWidth(bb.width()+bb.left());
   bb.setHeight(bb.height()+bb.top());
   bb &= b0;
@@ -214,7 +213,6 @@ void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc,"id",
 			  "guiPage (addTabbedPage)","Cannot read subpage ID");
   ParamTree *subtree = ptree ? ptree->childp(id) : 0;
-  Dbg() << "addTabbedPage: " << path() << " : " << id;
   // note that this will be NULL if we are a tabbed page
 
   guiPage *p = new guiTabbedPage(this, subtree, id, master, g.pbox());
@@ -246,7 +244,6 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
 
 void guiPage::open() {
   emit opening(pathInstantiate(myPath), (QWidget*)(this));
-  Dbg() << "guiPage:"<<myPath<<": open first=" << neverOpened;
 
   Param *p = ptree->findp("enable");
   setPageEnabled(p ? p->toBool() : true);

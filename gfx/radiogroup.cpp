@@ -48,17 +48,14 @@ void RadioGroup::remove(Button *b) {
 
 void RadioGroup::select() {
   QObject *src = sender();
-  Dbg() << "RadioGroup[" << this << "]: select " << src << " was " << selection;
   if (selection!=src)
     if (!selection.isNull())
       selection->setSelected(false);
   selection = dynamic_cast<Button *>(src);
-  Dbg() << " -> selection=" << selection;
 }
 
 void RadioGroup::deselect() {
   QObject *src = sender();
-  Dbg() << "RadioGroup[" << this << "]: deselect " << src << " was " << selection;
   if (selection==src)
     selection = 0;
 }

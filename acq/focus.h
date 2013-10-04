@@ -26,6 +26,8 @@ public:
   void contactButtons(class guiRoot *gui);
   void activate();
   void deactivate();
+  QString getCamA() const;
+  QString getCamB() const;
 protected:
   void resizeEvent(class QResizeEvent *);
 public slots:

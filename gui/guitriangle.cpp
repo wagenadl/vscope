@@ -153,10 +153,8 @@ void guiTriangle::render() {
   QPainter p(parent);
   p.setPen(QPen(areaColor));
   p.setBrush(QBrush(areaColor));
-  Dbg() << "guitriangle: area is " << areaColor << " / " << area;
   qDebug() << p.brush();
   p.drawPolygon(area, Qt::WindingFill);
-  /* Why doesn't this work?? */
 
   p.setPen(lightColor);
   p.drawPolyline(lightLine);
