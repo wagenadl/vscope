@@ -295,7 +295,7 @@ void CohData::recalcReference() const {
     DigitalData::DataType const *dsrc = refType==RT_Digital
       ? ddata->allData() : 0;
     DigitalData::DataType dmask = refType==RT_Digital
-      ? ddata->maskForLine(ref_line) : 0;
+      ? ddata->maskForLine(ref_chn) : 0;
     double const *asrc = refType==RT_Analog
       ? adata->channelData(ref_chn) : 0;
     int astep = asrc
@@ -437,9 +437,9 @@ void CohData::recalcReference() const {
   }
 }
 
-void CohData::setRefDigi(int digiline) {
+void CohData::setRefDigi(QString digiline) {
   refType = RT_Digital;
-  ref_line = digiline;
+  ref_chn = digiline;
   invalidate();
 }
 

@@ -27,7 +27,7 @@ public slots:
 		class DigitalData const *dd);
   void setCCDData(class ROIData3Set *rs3d);
   void setRefTrace(QString achn);
-  void setRefDigi(int digiline);
+  void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void invalidate();
 private slots:
@@ -54,8 +54,7 @@ private:
   class DigitalData const *ddata; // we do not own this
 private:
   REFTYPE refType;
-  QString ref_chn; // for RT_Analog mode
-  int ref_line; // for RT_Digital mode
+  QString ref_chn; // for RT_Analog and RT_Digital mode
   double ref_hz; // for RT_Frequency mode
   struct Data {
     QMap<int, double> coh_mag;

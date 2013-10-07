@@ -27,7 +27,7 @@ public:
 public slots:
   void updateSelection(int id);
   void setRefTrace(QString chn);
-  void setRefDigi(int chn);
+  void setRefDigi(QString chn);
   void setRefFreq(double frqhz);
 private slots:
   void updateEPhysData();

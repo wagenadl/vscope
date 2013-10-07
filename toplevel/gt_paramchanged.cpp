@@ -88,7 +88,7 @@ static void setRefTrace() {
     Globals::coherence->setRefTrace(chn);
     Globals::cohgraph->setRefTrace(chn);
   } else if (typ==e->lookup("Digital")) {
-    int chn = Globals::ptree->find("analysis/refDigi").toInt();
+    QString chn = Globals::ptree->find("analysis/refDigi").toString();
     Globals::vsdtraces->setRefDigi(chn);
     Globals::coherence->setRefDigi(chn);
     Globals::cohgraph->setRefDigi(chn);

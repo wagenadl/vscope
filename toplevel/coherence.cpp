@@ -131,7 +131,7 @@ void Coherence::perhapsRefresh() {
     update();
 }
 
-void Coherence::setRefDigi(int digiline) {
+void Coherence::setRefDigi(QString digiline) {
   if (data)
     data->setRefDigi(digiline);
   perhapsRefresh();

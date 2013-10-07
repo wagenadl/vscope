@@ -506,7 +506,7 @@
       <button id="roiAdd" label="Create Elliptic ROI" bg="#ffff00"/>
     </group>
     <button id="roiDelete" label="Delete ROI" x="4.1" y="3" bg="#ff8833"/>
-    <group id="subs">
+    <group id="subs" x="0" y="0">
       <button id="refType" label="Ref. Type" x="3.1" y="3" bg="#44ffee"/>
       <button id="refTrace" label="Ref. Trace" x="3.1" y="4" bg="#55ccdd" hidewhendisabled="yes"/>
       <button id="refDigi" label="Digi. Ref." x="3.1" y="4" bg="#55ccdd" hidewhendisabled="yes"/>
@@ -542,17 +542,8 @@
       <item custom="1" editcaption="Reference freq."/>
     </menu>
 
-    <menu id="refDigi"  cols="3">
-      <item value="DO0mon"/>
-      <item value="DO1mon"/>
-      <item value="DO2mon"/>
-      <item value="DO3mon"/>
-      <item value="VideoLightMon"/>
-      <item value="ExcShtrMon"/>
-      <item value="TrigCcMon"/>
-      <item value="TrigOxMon"/>
-      <item value="Frame:Cc"/>
-      <item value="Frame:Ox"/>
+    <menu id="refDigi" rows="4" cols="4">
+      <auto enum="DIGILINES"/>
     </menu>
 
     <menu id="refTrace" rows="4" cols="4">
@@ -652,10 +643,9 @@
         <item value="Stim3Mon" />
         <!--item value="60HzRef"  label="60 Hz ref."/-->
       </checklist>
-      <menu id="vcoSource"  cols="1">
-        <item value="off" />
-        <item value="ME1_10Vm" />
-        <item value="ME2_Vm"   />
+      <menu id="vcoSource"  cols="4">
+        <item value="Silent" />
+	<auto enum="AICHAN"/>
       </menu>
       <menu id="timeBase" cols="4.8">
         <item value="10 ms"/>
@@ -677,8 +667,12 @@
         <item value="10 min"/>
       </menu>
     </page>
-    <page id="checkDaq"/>
-    <page id="checkCam"/>
+    <page id="checkDaq">
+      <button id="hideme" label="." x="2.5" y="3" alwayshidden="1"/>
+    </page>
+    <page id="checkCam">
+      <button id="hideme" label="." x="2.5" y="3" alwayshidden="1"/>
+    </page>
     <page id="checkMEA"/>
     <page id="checkVideo"/>
   </page>
@@ -794,12 +788,12 @@
   <!-- Digital inputs -->
   <alias id="Frame:Ox" label="Frm_Ox"/>
   <alias id="Frame:Cc" label="Frm_Cc"/>
-  <alias id="TrigOxMon" label="Trg_Ox"/>
-  <alias id="TrigCcMon" label="Trg_Cc"/>
-  <alias id="DO0Mon" label="DO_0" />
-  <alias id="DO1Mon" label="DO_1" />
-  <alias id="DO2Mon" label="DO_2" />
-  <alias id="DO3Mon" label="DO_3" />
+  <alias id="TrigOxMon" label="TrgM_Ox"/>
+  <alias id="TrigCcMon" label="TrgM_Cc"/>
+  <alias id="DO0Mon" label="DM_0" />
+  <alias id="DO1Mon" label="DM_1" />
+  <alias id="DO2Mon" label="DM_2" />
+  <alias id="DO3Mon" label="DM_3" />
   <alias id="ExcShtrMon" label="Shtr_exc" />
   <alias id="VideoResp" label="Resp_vid" />
   <alias id="VideoFrame" label="Frm_vid" />

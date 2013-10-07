@@ -57,7 +57,7 @@ void VSDTraces::setRefTrace(QString id) {
   updateEPhysData();
 }
 
-void VSDTraces::setRefDigi(int) {
+void VSDTraces::setRefDigi(QString) {
   dbg("VSDTraces::setRefDigi: not yet implemented");
 }
 

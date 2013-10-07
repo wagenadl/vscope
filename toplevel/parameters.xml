@@ -125,8 +125,8 @@
     </category>
     <category id="analysis">
       <param id="refType" type="enum" enum="REFTYPE" default="Analog"/>
-      <param id="refTrace" type="enum" enum="AICHAN" default="ME1_10Vm" cond="refType" enable_if="Analog"/>
-      <param id="refDigi" type="enum" enum="DIGILINES" default="DO0Mon" cond="refType" enable_if="Digital"/>
+      <param id="refTrace" type="enum" enum="AICHAN" cond="refType" enable_if="Analog"/>
+      <param id="refDigi" type="enum" enum="DIGILINES" cond="refType" enable_if="Digital"/>
       <param id="refFreq" type="freq" default="1 Hz" min="0.01 Hz" max="100 Hz" cond="refType" enable_if="Frequency"/>
       <param id="showROIs" type="enum" enum="SHOWROIS" default="Outlines"/>
       <param id="debleach" type="enum" enum="DEBLEACH" default="None"/>
@@ -146,7 +146,7 @@
         <param id="diChannels" type="set" enum="DIGILINES"
                default="" save="false"/>
         <param id="vcoSource" type="enum" enum="AICHAN" 
-               default="off" save="false"/>
+               default="Silent" save="false"/>
       </category>
       <category id="checkDaq"/>
       <category id="checkCam"/>

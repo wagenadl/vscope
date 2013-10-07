@@ -118,7 +118,7 @@ void CohGraph::perhapsRefresh() {
     update();
 }
 
-void CohGraph::setRefDigi(int digiline) {
+void CohGraph::setRefDigi(QString digiline) {
   if (data)
     data->setRefDigi(digiline);
   perhapsRefresh();
