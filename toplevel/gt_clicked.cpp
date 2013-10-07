@@ -45,6 +45,10 @@ void gt_slots::clicked(QString p) {
     dimple(p);
     printf("clicked %s\n",qPrintable(p));
     if (p=="quit") {
+      if (Globals::focus)
+	Globals::focus->deactivate(true);
+      if (Globals::liveephys)
+	Globals::liveephys->deactivate();
       QApplication::quit();
     } else if (p=="minimize") {
       Globals::mainwindow->setWindowState(Qt::WindowMinimized);

@@ -19,7 +19,7 @@ public:
   void activate(class ParamTree *p); // this activates as stand-alone
   void activate(class ParamTree *p,
 		class ContAcq *ca); // this activates as passive follower
-  void deactivate();
+  void deactivate(bool quietIfAlready=false);
   void newTimebase();
   void newAIChannels();
   void newDIChannels();

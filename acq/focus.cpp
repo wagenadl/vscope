@@ -281,8 +281,12 @@ void Focus::autoRange() {
 void Focus::activate(bool quietIfAlready) {
   frmA = frmB = 0;
   //  dbg("Focus::activate");
-  if (isActive && !quietIfAlready)
-    throw Exception("Focus","Attempt to activate while already active");
+  if (isActive) {
+    if (quietIfAlready)
+      return;
+    else
+      throw Exception("Focus","Attempt to activate while already active");
+  }
 
 #if SELFPOLL
   if (!timer) {
@@ -320,8 +324,9 @@ void Focus::resizeEvent(class QResizeEvent *) {
 
 void Focus::deactivate(bool quietIfAlready) {
   Dbg() << "Focus::deactivate";
-  if (!isActive && !quietIfAlready) {
-    fprintf(stderr,"Focus: Deactivated while not active\n");
+  if (!isActive) {
+    if (!quietIfAlready) 
+      fprintf(stderr,"Focus: Deactivated while not active\n");
     return;
   }
 

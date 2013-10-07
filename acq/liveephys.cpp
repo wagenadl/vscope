@@ -302,10 +302,11 @@ void LiveEPhys::addChannel(QString cid) {
 		 :AnalogIn::NRSE);
 }
 
-void LiveEPhys::deactivate() {
+void LiveEPhys::deactivate(bool quietIfAlready) {
   //  dbg("LiveEPhys(%p)::deactivate");
   if (!isActive) {
-    fprintf(stderr,"LiveEPhys: Deactivated while not active\n");
+    if (!quietIfAlready)
+      fprintf(stderr,"LiveEPhys: Deactivated while not active\n");
     return;
   }
 
