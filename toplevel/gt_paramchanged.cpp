@@ -216,17 +216,22 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::scripts->setRunning(Globals::ptree->find(p).toBool());
     } else if (p.startsWith("panel")) {
       ;
-    } else if (p=="maintenance/focus/camA") {
-      dbg("focus/camA");
+    } else if (p.startsWith("maintenance/focus/cam")) {
       QString oldA = Globals::focus->getCamA();
       QString oldB = Globals::focus->getCamB();
-      QString newA = Globals::ptree->find(p).toString();
-      QString newB = oldB;
-      if (newA==oldB) {
-        newB = oldA;
+      QString newA = Globals::ptree->find("maintenance/focus/camA").toString();
+      QString newB = Globals::ptree->find("maintenance/focus/camB").toString();
+      if (newA==newB) {
+	if (p.endsWith("A"))
+	  newB = oldA;
+	else
+	  newA = oldB;
+	Dbg() << "cams was" << oldA<<oldB << " new " << newA<<newB;
+        Globals::ptree->find("maintenance/focus/camA").set(newA);
         Globals::ptree->find("maintenance/focus/camB").set(newB);
-        // may have to set the menu option as well
-        // this doesn't work when camera is not present
+	guiPage *pg = Globals::gui->findpPage("maintenance/focus");
+	if (pg && pg->isVisible())
+	  pg->open();
       }
       Globals::focus->setCams(newA, newB);
     } else if (p=="maintenance/focus/camB") {

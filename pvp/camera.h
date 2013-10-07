@@ -23,6 +23,7 @@ public:
   void setID(QString newid);
 
   // Setting configuration
+  CCDConfig const &getConfig() const;
   void setConfig(CCDConfig const &cfg);
   
   // Querying configured sequence

@@ -43,6 +43,52 @@ void showTop() {
     root.buttonp(id)->setEnabled(true);
 }
 
+static bool ensureFocusCams() {
+  QString idA = Globals::ptree->find("maintenance/focus/camA").toString();
+  QString idB = Globals::ptree->find("maintenance/focus/camB").toString();
+  Connections::CamCon const *camA = Connections::findpCam(idA);
+  Connections::CamCon const *camB = Connections::findpCam(idB);
+  Dbg() << "ensureFocusCams" << idA << ":" << idB;
+  bool anyChg = false;
+  if (!camA) {
+    if (camB) {
+      idA = camB->partnerid;
+      camA = Connections::findpCam(idA);
+    }
+    if (!camA) {
+      foreach (QString id, Connections::allCams()) {
+	if (id!=idB) {
+	  idA = id;
+	  camA = Connections::findpCam(idA);
+	  break;
+	}
+      }
+    }
+    Globals::ptree->find("maintenance/focus/camA").set(idA);
+    if (Connections::findpCam(idA))
+      anyChg = true;
+  }
+  if (!camB) {
+    if (camA) {
+      idB = camA->partnerid;
+      camB = Connections::findpCam(idB);
+    }
+    if (!camB) {
+      foreach (QString id, Connections::allCams()) {
+	if (id!=idA) {
+	  idB = id;
+	  camB = Connections::findpCam(idB);
+	  break;
+	}
+      }
+    }
+    Globals::ptree->find("maintenance/focus/camB").set(idB);
+    if (Connections::findpCam(idB))
+      anyChg = true;
+  }
+  return anyChg;
+}
+
 void gt_slots::pgopen(QString p, QWidget *w) {
   try {
     dbg("pgopen %s\n",qPrintable(p));
@@ -56,8 +102,14 @@ void gt_slots::pgopen(QString p, QWidget *w) {
       checkvid(w);
     else if (p=="maintenance/focus") {
       hideTop();
-      if (Globals::focus)
-        Globals::focus->activate();
+      if (Globals::focus) {
+	if (ensureFocusCams())
+	  Globals::gui->findpPage(p)->open();
+
+	Globals::focus->setCams(Globals::ptree->find(p+"/camA").toString(),
+				Globals::ptree->find(p+"/camB").toString());
+        Globals::focus->activate(true);
+      }
     } else if (p=="maintenance/liveEphys") {
       hideTop();
       if (Globals::liveephys) {

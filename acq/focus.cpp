@@ -31,6 +31,7 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
   butRotate = butScale = 0;
   butShiftX = butShiftY = 0;
 
+  camIDA = camIDB = "";
   camA = camB = 0;
   frmA = frmB = 0;
   
@@ -50,77 +51,106 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
 
   cfgA->iscont = true;
   cfgB->iscont = true;
-
-  setCams("");
 }
 
 QString Focus::getCamA() const {
-  return camA ? camA->getID() : "none";
+  return camIDA;
 }
 
 QString Focus::getCamB() const {
-  return camA ? camB->getID() : "none";
-}
-
-void Focus::setCams(QString idA) {
-  setCams(idA, "");
-}
-
-void Focus::setCamA(QString idA) {
-  setCams(idA, camB ? camB->getID() : "");
-}
-
-void Focus::setCamB(QString idB) {
-  setCams(camA ? camA->getID() : "", idB);
+  return camIDB;
 }
 
 void Focus::setCams(QString idA, QString idB) {
-  if (idA=="")
-    idA = Connections::leaderCamera();
+  bool wasactive = isActive;
+  if (wasactive)
+    deactivate();
+
+  setCamA("");
+  setCamB("");
+
+  setCamA(idA);
+  setCamB(idB);
+
+  if (wasactive)
+    activate();
+}
+  
+
+void Focus::setCamA(QString idA) {
 
   bool wasactive = isActive;
   if (wasactive)
     deactivate();
 
-  Dbg() << "Focus::setCams("<<idA<<")";
-  
   Connections::CamCon const *ccA = Connections::findpCam(idA);
-  Connections::CamCon const *ccB =
-    idB!=""
-    ? Connections::findpCam(idA)
-    : ccA
-    ? Connections::findpCam(ccA->partnerid)
-    : 0;
-  Dbg() << "  Focus: ccA=" << ccA << ". ccB=" << ccB;
-
-  flipXA = ccA ? ccA->placement.reflectsX() : false;
-  flipYA = ccA ? ccA->placement.reflectsY() : false;
-  exp_msA = ccA ? ccA->focusexp_ms : 100;
-
-  flipXB = ccB ? ccB->placement.reflectsX() : false;
-  flipYB = ccB ? ccB->placement.reflectsY() : false;
-  exp_msB = ccB ? ccB->focusexp_ms : 100;
-
-  X = ccA ? ccA->xpix : 512; 
-  Y = ccA ? ccA->ypix : 512;
-  npix = X*Y;
-  if (ccB && (ccB->xpix!=X || ccB->ypix!=Y))
-    throw Exception("Focus","Pixel count mismatch","constructor");
-
+  if (ccA) {
+    if (ccA==Connections::findpCam(camIDB))
+      throw Exception("Focus","Cameras cannot be the same: " + idA,"setCamA");
+    flipXA = ccA->placement.reflectsX();
+    flipYA = ccA->placement.reflectsY();
+    exp_msA = ccA->focusexp_ms;
+    X = ccA->xpix;
+    Y = ccA->ypix;
+    npix = X*Y;
+    if (camB && camB->getConfig().getPixPerFrame()!=npix)
+      throw Exception("Focus","Pixel count mismatch","setCamA");
+    camA = CamPool::findp(ccA->serno);
+  } else {
+    if (idA!="")
+      Dbg() << "No camera named" << idA;
+    flipXA = false;
+    flipYA = false;
+    exp_msA = 100;
+    camA = 0;
+  }
+  
+  camIDA = idA;
   cfgA->expose_ms = exp_msA;
   cfgA->clear_every_frame = exp_msA < 100;
   cfgA->region = CCDRegion(0, X-1, 0, Y-1);
 
-  cfgB->expose_ms = exp_msB;
-  cfgB->clear_every_frame = exp_msA < 100;
-  cfgB->region = CCDRegion(0, X-1, 0, Y-1);
+  if (wasactive)
+    activate();
+}
 
-  camA = ccA ? CamPool::findp(ccA->serno) : 0;
-  camB = ccB ? CamPool::findp(ccB->serno) : 0;
+void Focus::setCamB(QString idB) {
+  bool wasactive = isActive;
+  if (wasactive)
+    deactivate();
+
+  Connections::CamCon const *ccB = Connections::findpCam(idB);
+  if (ccB) {
+    if (ccB==Connections::findpCam(camIDA))
+      throw Exception("Focus","Cameras cannot be the same: " + idB,"setCamB");
+
+    flipXB = ccB->placement.reflectsX();
+    flipYB = ccB->placement.reflectsY();
+    exp_msB = ccB->focusexp_ms;
+    X = ccB->xpix;
+    Y = ccB->ypix;
+    npix = X*Y;
+    if (camB && camB->getConfig().getPixPerFrame()!=npix)
+      throw Exception("Focus","Pixel count mismatch","setCamB");
+    camB = CamPool::findp(ccB->serno);
+  } else {
+    if (idB!="")
+      Dbg() << "No camera named" << idB;
+    flipXB = false;
+    flipYB = false;
+    exp_msB = 100;
+    camB = 0;
+  }
+
+  camIDB = idB;
+  cfgB->expose_ms = exp_msB;
+  cfgB->clear_every_frame = exp_msB < 100;
+  cfgB->region = CCDRegion(0, X-1, 0, Y-1);
 
   if (wasactive)
     activate();
 }
+
 
 Focus::~Focus() {
   if (isActive) {
@@ -248,10 +278,10 @@ void Focus::autoRange() {
   isfirstA = isfirstB = true; // so we'll auto-range at next frame.
 }
 
-void Focus::activate() {
+void Focus::activate(bool quietIfAlready) {
   frmA = frmB = 0;
   //  dbg("Focus::activate");
-  if (isActive)
+  if (isActive && !quietIfAlready)
     throw Exception("Focus","Attempt to activate while already active");
 
 #if SELFPOLL
@@ -288,9 +318,9 @@ void Focus::resizeEvent(class QResizeEvent *) {
   right->setGeometry(width()/2,0,width()/2,height());
 }
 
-void Focus::deactivate() {
+void Focus::deactivate(bool quietIfAlready) {
   Dbg() << "Focus::deactivate";
-  if (!isActive) {
+  if (!isActive && !quietIfAlready) {
     fprintf(stderr,"Focus: Deactivated while not active\n");
     return;
   }

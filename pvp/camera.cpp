@@ -5,6 +5,7 @@
 #include <base/types.h>
 #include <base/dbg.h>
 #include <base/memalloc.h>
+#include <QTime>
 
 Camera::Camera(QString camname) {
   pvpcam = new pvpCamera(camname);
@@ -32,6 +33,10 @@ Camera::~Camera() {
 
 QString Camera::getSerialNumber() const {
   return pvpcam->getSerialNumber();
+}
+
+CCDConfig const &Camera::getConfig() const {
+  return cfg;
 }
 
 void Camera::setConfig(CCDConfig const &cfg0) {
@@ -86,6 +91,12 @@ void Camera::stopContinuous() {
   if (!cfg.iscont)
     throw Exception("Camera", "stopContinuous() is not for finite acq.");
   pvpcam->stopContinuous();
+  // wait for it to actually stop:
+  QTime timeout = QTime::currentTime().addSecs(2); // timeout in two sec
+  while (isRunning()) {
+    if (QTime::currentTime()>=timeout)
+      throw Exception("Camera", "Timeout while stopping acquisition");
+  }
 }
 
 void Camera::abort() {

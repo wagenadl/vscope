@@ -24,14 +24,13 @@ public:
   Focus(QWidget *parent);
   virtual ~Focus();
   void contactButtons(class guiRoot *gui);
-  void activate();
-  void deactivate();
+  void activate(bool quietIfAlready=false);
+  void deactivate(bool quietIfAlready=false);
   QString getCamA() const;
   QString getCamB() const;
 protected:
   void resizeEvent(class QResizeEvent *);
 public slots:
-  void setCams(QString idA); // automatically finds partner
   void setCams(QString idA, QString idB);
   void setCamA(QString idA);
   void setCamB(QString idB);
@@ -56,8 +55,8 @@ protected:
 		    int x0, int x1, int y0, int y1,
 		    double avgA, double avgB);  
 private:
+  QString camIDA, camIDB;
   class Camera *camA, *camB;
-
   class CCDImage *left, *right;
   class CCDImage *hiddenA, *hiddenB;
   class CCDConfig *cfgA, *cfgB;
