@@ -2,9 +2,16 @@
 
 BASEDIR=`dirname $0`
 
-MYPATH=""
-for a in $BASEDIR/*/; do
-  MYPATH=$a:$MYPATH
-done
-
-LD_LIBRARY_PATH=$MYPATH$LD_LIBRARY_PATH $BASEDIR/vscope.bin
+if [[ `uname` =~ "CYGWIN*" ]]; then
+    echo Cygwin detected
+    cd $BASEDIR
+    ./vscope.exe
+else
+    echo No Cygwin detected - Assuming Linux
+    MYPATH=""
+    for a in $BASEDIR/*/; do
+	MYPATH=$a:$MYPATH
+    done
+    
+    LD_LIBRARY_PATH=$MYPATH$LD_LIBRARY_PATH $BASEDIR/vscope.bin
+fi
