@@ -365,14 +365,14 @@ void reportCameraSituation() {
 #ifndef vsdLINUX
   if (okCams.isEmpty()) {
   #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
-    GUIExc::warn("Cameras not available. Acquisition will take black frames.");
+    Warning() << "Cameras not available. Acquisition will take black frames.";
   #else
-    GUIExc::warn("Cameras not available. No CCD data will be acquired.");
+    Warning() << "Cameras not available. No CCD data will be acquired.";
   #endif
   } else if (!missingCams.isEmpty()) {
-    GUIExc::warn("Found camera(s): " + okCams.join(", ")
-		 + ",  but missing camera(s): " + missingCams.join(", ")
-		 + ".");
+    Warning() << "Found camera(s): " << okCams.join(", ")
+	      << ",  but missing camera(s): " << missingCams.join(", ")
+	      << ".";
   }
 #endif
 }
@@ -383,10 +383,10 @@ void reportDAQSituation() {
 #ifdef vsdLINUX
     Dbg() << "DAQ not available.";
 #else
-    GUIExc::warn(msg + "\n"
-		 + "Please adjust TYPE and/or SERNO in the DAQDEV enum "
-		 + "in 'connections.xml'. "
-		 + "Acquisition will NOT work otherwise.");
+    Warning() << msg + "\n"
+	      << "Please adjust TYPE and/or SERNO in the DAQDEV enum "
+	      << "in 'connections.xml'. "
+	      << "Acquisition will NOT work otherwise.";
 #endif
   }
 }

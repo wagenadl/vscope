@@ -5,25 +5,21 @@ BASE=$2
 
 TMP=version.tmp
 rm -f $TMP
-BZR=$BASE/.bzr
-REPO=$BZR/repository
-CHKO=$BZR/checkout
-[ -d $REPO ] || REPO=$BASE/../.bzr/repository
 
-if [ -d $CHKO ] && [ -d $REPO ]; then
-    # We have bazaar
-    [ -f $OUT ] && [ $OUT -nt $CHKO ] && [ $OUT -nt $REPO ] && [ $OUT -nt $0 ] && exit 0
-    fi
-
-if bzr version-info > $TMP; then
-    vDATE=`grep '^date:' $TMP | cut -c7-`
+if bzr log -r. --show-ids > $TMP; then
+    vDATE=`grep '^timestamp:' $TMP | cut -c16-`
     vREVNO=`grep '^revno:' $TMP | cut -c8-`
-    vBRANCH=`grep '^branch-nick:' $TMP | cut -c14-`
-    vBUILDDATE=`grep '^build-date:' $TMP | cut -c13-`
-    vYEAR=`grep '^date:' $TMP | cut -c7-10`
-    echo gotcha
-else
-    echo nover/nobazaar
+    [[ -z `bzr status` ]] || vREVNO=$vREVNO"+"
+    vBRANCH=`grep '^branch nick:' $TMP | cut -c14-`
+    vYEAR=`grep '^timestamp:' $TMP | cut -c16-19`
+    if [[ `uname` == CYGWIN* ]]; then
+	EXENAME=vscope.exe
+    else
+	EXENAME=vscope.bin
+    fi
+    vBUILDDATE=`ls -l --time-style='+%Y-%m-%d %H:%M:%S %z' $EXENAME |cut -d' ' -f6-8`
+else    
+    echo No bazaar
     [ -f $OUT ] && exit 0
     vDATE="?"
     vREVNO="?"

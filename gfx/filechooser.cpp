@@ -53,6 +53,7 @@ FileChooser::~FileChooser() {
 void FileChooser::populateFiles(QDir const &src, QString extn, bool hideextn) {
   list->populateFiles(src,extn,hideextn);
   //  dbg("fc:popdirs");
+  Dbg() << "FileChooser::populateFiles" << src.absolutePath() << " : " << extn;
   isDirs=false;
   relayout();
   scrollTo();

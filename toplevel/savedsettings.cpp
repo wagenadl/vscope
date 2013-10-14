@@ -44,7 +44,7 @@ void SavedSettings::showEvent(class QShowEvent *e) {
   QRect r(p->geometry());
   r.adjust(2,2,-2,-2);
   setGeometry(r);
-  p->hide();
+  //p->hide();
   QPoint tl = r.topLeft();
   QPoint br = r.bottomRight();
   // QRect r1(p->mapTo(parentWidget(),tl), p->mapTo(parentWidget(),br));
@@ -53,7 +53,7 @@ void SavedSettings::showEvent(class QShowEvent *e) {
   //     r1.left(),r1.top(), r1.right(),r1.bottom());
   // setGeometry(r1);
   populateFiles(QDir(Globals::filePath()+"/_settings"),"xml");
-  show();
+  //show();
 }
 
 void SavedSettings::loadSettings(QString fn) {

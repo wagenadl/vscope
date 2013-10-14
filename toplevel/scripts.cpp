@@ -120,7 +120,7 @@ void Scripts::prepareSave() {
 void Scripts::resave() {
   Dbg() << "Scripts::resave";
   if (name.isEmpty()) {
-    GUIExc::warn("Cannot save: no name set");
+    Warning() << "Cannot save: no name set";
     return;
   }
   doSave(name);
@@ -147,7 +147,7 @@ void Scripts::doLoad(QString fn) {
   setName(fn);
   QFile f(fn);
   if (!f.open(QIODevice::ReadOnly)) {
-    GUIExc::warn("Cannot read script '" + fn + "'");
+    Warning() << "Cannot read script '" + fn + "'";
     return;
   }
   QTextStream ts(&f);
@@ -165,7 +165,7 @@ void Scripts::doSave(QString fn) {
   setName(fn);
   QFile f(fn);
   if (!f.open(QIODevice::WriteOnly)) {
-    GUIExc::warn("Cannot save script '" + fn + "'");
+    Warning() << "Cannot save script '" + fn + "'";
     return;
   }
   QTextStream ts(&f);
@@ -213,7 +213,7 @@ void Scripts::timeout() {
 
 void Scripts::run() {
   if (!status()) {
-    GUIExc::warn("Cannot run script with errors");
+    Warning() << "Cannot run script with errors";
     Globals::ptree->find("scripts/run").set("off");
     Globals::gui->findPage("scripts").open();
     return;

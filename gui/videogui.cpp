@@ -97,9 +97,9 @@ bool VideoGUI::changeParam(guiRoot *gui, ParamTree *ptree, QString parid) {
 }
 
 void VideoGUI::failure(Exception const &e, guiRoot *gui, ParamTree *ptree) {
-  GUIExc::warn("Communication failure with Video device: " + e + ".\n" + 
+  Warning() << "Communication failure with Video device: " + e + ".\n" + 
 	       "Video production disabled. " +
-	       "Please ensure the Video device is operational and try again.");
+	       "Please ensure the Video device is operational and try again.";
   ptree->find("stimVideo/enable").setBool(false);
   connect(this,SIGNAL(failed()),
 	  gui->findpPage("stimVideo"),SLOT(open()),Qt::QueuedConnection);
