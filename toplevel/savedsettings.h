@@ -21,6 +21,7 @@ protected:
   virtual void showEvent(class QShowEvent *);
 private:
   void visualdeselect();
+  void visualselect(QString fn);
 signals:
   void selected(QString fn);
 private:

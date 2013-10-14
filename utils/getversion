@@ -6,27 +6,22 @@ BASE=$2
 TMP=version.tmp
 rm -f $TMP
 
-if bzr log -r. --show-ids > $TMP; then
+if bzr log -r-1 --show-ids > $TMP; then
     vDATE=`grep '^timestamp:' $TMP | cut -c16-`
     vREVNO=`grep '^revno:' $TMP | cut -c8-`
     [[ -z `bzr status` ]] || vREVNO=$vREVNO"+"
     vBRANCH=`grep '^branch nick:' $TMP | cut -c14-`
     vYEAR=`grep '^timestamp:' $TMP | cut -c16-19`
-    if [[ `uname` == CYGWIN* ]]; then
-	EXENAME=vscope.exe
-    else
-	EXENAME=vscope.bin
-    fi
-    vBUILDDATE=`ls -l --time-style='+%Y-%m-%d %H:%M:%S %z' $EXENAME |cut -d' ' -f6-8`
 else    
     echo No bazaar
     [ -f $OUT ] && exit 0
     vDATE="?"
     vREVNO="?"
     vBRANCH="?"
-    vBUILDDATE=`date '+%Y-%m-%d %H:%M:%S %z' `
     vYEAR=`date '+%Y'`
 fi
+
+vBUILDDATE=`date '+%Y-%m-%d %H:%M:%S %z' `
 
 
 echo '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' > $OUT

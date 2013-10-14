@@ -36,15 +36,15 @@ void SavedSettings::showEvent(class QShowEvent *e) {
   dbg("SavedSettings::showEvent");
   FileChooser::showEvent(e);
 
-  QWidget *p = Globals::gui->findpPage("savedSettings/name");
-  if (!p)
-    throw Exception("SavedSettings","Cannot find savedSettings/name page",
+  QWidget *p1 = Globals::gui->findpButton("savedSettings/_a");
+  QWidget *p2 = Globals::gui->findpButton("savedSettings/_b");
+  if (!p1 || !p2) 
+    throw Exception("SavedSettings","Cannot find savedSettings _a and _b buttons",
 		    "showEvent");
-  setParent(p->parentWidget());
-  QRect r(p->geometry());
-  r.adjust(2,2,-2,-2);
+  setParent(p1->parentWidget());
+  QRect r(p1->geometry());
+  r |= p2->geometry();
   setGeometry(r);
-  //p->hide();
   QPoint tl = r.topLeft();
   QPoint br = r.bottomRight();
   // QRect r1(p->mapTo(parentWidget(),tl), p->mapTo(parentWidget(),br));
@@ -53,7 +53,10 @@ void SavedSettings::showEvent(class QShowEvent *e) {
   //     r1.left(),r1.top(), r1.right(),r1.bottom());
   // setGeometry(r1);
   populateFiles(QDir(Globals::filePath()+"/_settings"),"xml");
-  //show();
+
+  p1->hide();
+  p2->hide();
+  show();
 }
 
 void SavedSettings::loadSettings(QString fn) {
@@ -72,19 +75,27 @@ void SavedSettings::loadSettings(QString fn) {
       setname = setname.mid(lastslash+1);
     setname = setname.left(setname.length()-4); // drop the ".xml";
     Globals::exptlog->markLoadSettings(setname);
-    visualdeselect();
-    Button *b = buttonp(bfn);
-    if (b) 
-      b->setSelected(true);
-    lastsel = bfn;
+    visualselect(bfn);
   } catch (Exception const &e) {
     GUIExc::report(e,"SavedSettings::loadSettings");
   }
 }
 
 void SavedSettings::anythingChanged() {
-  Globals::ptree->find("savedSettings/name").set("Modified");
+  //  Globals::ptree->find("savedSettings/name").set("Modified");
   visualdeselect();
+}
+
+void SavedSettings::visualselect(QString fn) {
+  QStringList bits = fn.split("/");
+  QString bfn = bits.takeLast();
+  if (bfn.endsWith(".xml"))
+    bfn=bfn.left(bfn.length()-4);
+  visualdeselect();
+  Button *b = buttonp(bfn);
+  if (b) 
+    b->setSelected(true);
+  lastsel = bfn;
 }
 
 void SavedSettings::visualdeselect() {
@@ -155,7 +166,9 @@ void SavedSettings::saveSettings(QString fn) {
   } catch (Exception const &e) {
     dbg("SavedSettings::saveSettings: Caught exception");
   }
-  if (isVisible())
+  if (isVisible()) {
     populateFiles(QDir(Globals::filePath() + "/_settings"),"xml");
+    visualselect(fn);
+  }
 }
 

@@ -680,10 +680,8 @@
   <page id="savedSettings" subdxr="1.1">
     <button id="save" label="Save..." x="4.1" y="0" bg="#ff99cc"/>
     <button id="delete" label="Delete" x="4.1" y="4" bg="#ff4433"/>
-    <button id="name" label="(name)" x="10" y="0"/>
-    <menu id="name" rows="5" cols="6">
-      <item value="(..)"/>
-    </menu>
+    <button id="_a" x="0" y="0"/>
+    <button id="_b" x="3" y="4"/>
   </page>
 
   <page id="scripts" subdxr="1.1">
