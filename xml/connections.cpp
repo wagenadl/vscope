@@ -25,6 +25,8 @@ namespace Connections {
 
   AOChannel::AOChannel(QString id): id(id) {
     line = -1;
+    scale = 1000;
+    unit = "mV";
   }
 
   CamCon::CamCon(QString id): id(id) {
@@ -47,6 +49,8 @@ namespace Connections {
       e.setAttribute("id",aoc->id);
       if (aoc->line>=0)
 	e.setAttribute("line",QString("%1").arg(aoc->line));
+      e.setAttribute("unit",aoc->unit);
+      e.setAttribute("scale",QString("%1").arg(aoc->scale));
     }
   }
 
@@ -160,7 +164,15 @@ namespace Connections {
 	aoc->stim = attributeTrue(e, "isstim");
 	if (aoc->stim)
 	  stimchs->add(id);
+	if (e.hasAttribute("scale")) {
+	  Param p("double");
+	  p.set(e.attribute("scale"));
+	  aoc->scale = p.toDouble();
+	}
+	if (e.hasAttribute("unit"))
+	  aoc->unit = e.attribute("unit");
       }
+      //Dbg() << "Connections: aimap["<<id<<"] has line="<<aimap[id]->line;
     }
   }
 

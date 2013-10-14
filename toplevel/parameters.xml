@@ -44,7 +44,7 @@
         <param id="trainPeriod" type="time" default="1 s" min="10 ms" max="1 h"/>
         <param id="nPulses" type="int" default="5" min="1" max="1000"/>
         <param id="pulsePeriod" type="time" default="100 ms" min="1 ms" max="1 h"/>
-        <param id="pulseType" type="enum" enum="PULSETYPE" cond="*index" enable_if="AO0 AO1 AO2 AO3" default="TTL"/>
+        <param id="pulseType" type="enum" enum="PULSETYPE" cond="*index" enable_if="AO0 AO1 AO2 AO3" default="Square"/>
         <param id="pulseAmp" type="voltage" default="5V" min="-10V" max="10V" cond="pulseType" enable_if="Square Biphasic Ramp"/>
         <param id="pulseAmp2" type="voltage" default="-5V" min="-10V" max="10V" cond="pulseType" enable_if="Biphasic Ramp"/>
         <param id="pulseDur" type="time" default="10 ms" min="50 us" max="1 h"/>

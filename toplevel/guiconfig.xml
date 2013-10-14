@@ -126,11 +126,10 @@
       </group>
   
       <menu id="pulseType" rows="4" cols="1">
-	<auto enum="PULSETYPE"/>
-        <!--item value="TTL"/>
+	<!--auto enum="PULSETYPE"/-->
         <item value="Square"/>
         <item value="Biphasic"/>
-        <item value="Ramp"/-->
+        <item value="Ramp"/>
       </menu>    
     
       <menu id="nTrains"  cols="4.1">

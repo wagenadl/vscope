@@ -233,7 +233,8 @@ void EPhysOut::setupAData_stim(ParamTree const *ptree) {
   adata->reshape(nscans, nchans);
   int idx=0;
   foreach (QString name, channelList) {
-    adata->defineChannel(idx++, name);
+    Connections::AOChannel const &aoc = Connections::findAO(name);
+    adata->defineChannel(idx++, name, aoc.scale, aoc.unit);
 
     if (stimChannels.contains(name))
       setupAData_mkStim(ptree, name,

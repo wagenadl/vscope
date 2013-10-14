@@ -201,7 +201,9 @@ void MGAuto::newtraces() {
 		      astim->getNumChannels());
 	  tr->setScaleFactor(astim->getScaleAtIndex
 			     (astim->whereIsChannel(c.id)));
-	  g->setYLabel("(V)"); // AO always in volts for now
+	  g->setYLabel("("
+		       +astim->getUnitAtIndex(astim->whereIsChannel(c.id))
+		       +")");
 	}
 	break;
       case Channel::DI:

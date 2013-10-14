@@ -4,16 +4,13 @@
   <connections>
     <aichannel id="ME1_10Vm" line="0"
        ground="RSE" range="5V" unit="mV" scale="100"/>
-       <!-- That is, 1V of output corresponds to 100 mV of input -->
+       <!-- That is, 1V at ADC corresponds to 100 mV in real world -->
     <aichannel id="ME2_Vm" line="1"
        ground="RSE" range="5V" unit="mV" scale="100"/> 
-       <!-- That is, 1V of output corresponds to 100 mV of input -->
     <aichannel id="ME1_I" line="2"
        ground="RSE" range="5V" unit="nA" scale="10"/>      
-       <!-- That is, 1V of output corresponds to 10 nA of input -->
     <aichannel id="ME2_I" line="3"
        ground="RSE" range="5V" unit="nA" scale="10"/>    
-       <!-- That is, 1V of output corresponds to 10 nA of input -->
     <aichannel id="Stim0Mon" line="4"
        ground="RSE" range="5V" unit="V" scale="1"/> 
     <aichannel id="Stim1Mon" line="5"
@@ -41,7 +38,8 @@
     <aichannel id="ExtVB4" line="23"
        ground="RSE" range="5V" unit="V" scale="1"/>
   
-    <aochannel id="AO0" line="0" isstim="true"/>
+    <aochannel id="AO0" line="0" isstim="true" unit="nA" scale="1"/>
+    <!-- Right now, units don't actually work yet. -->
     <aochannel id="AO1" line="1" isstim="true"/>
     <aochannel id="VidX" line="2"/>
     <aochannel id="VidY" line="3"/>

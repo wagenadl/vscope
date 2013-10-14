@@ -45,6 +45,11 @@ namespace Connections {
     QString id;     // id of this channel (as in enum AOCHAN)
     int line;       // line of this channel
     bool stim;
+    double scale;   // this says by how much a DAQ value (in volts) has to be
+                    // multiplied to get our desired units.
+                    // For instance, if our multiclamp produces 400 pA / V,
+                    // unit could be "nA" and scale "0.4".
+    QString unit;   // e.g. "mV" or "pA".
   };
   
   class DigiChannel {
