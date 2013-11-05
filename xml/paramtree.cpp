@@ -281,7 +281,6 @@ ParamTree const *ParamTree::treep(QString path) const {
   QString head = p.takeFirst();
   QString tail = p.join("/");
   ParamTree const *c = childp(head);
-  Dbg() << "head=" << head << " -> " << c;
   if (c)
     return c->treep(tail);
   else
@@ -295,7 +294,6 @@ ParamTree *ParamTree::treep(QString path) {
   QString head = p.takeFirst();
   QString tail = p.join("/");
   ParamTree *c = childp(head);
-  Dbg() << "head=" << head << " -> " << c;
   if (c)
     return c->treep(tail);
   else

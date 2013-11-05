@@ -91,10 +91,13 @@ bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
   try {
     
     // I am calling ser=x, par=y.
-  
+
+    QList<bool> camEnabled;
+    
     for (int k=0; k<ncams; k++) {
       QString id = camids[k];
       QString root = "acqCCD/camera:" + id;
+      camEnabled.append(ptree->find(root + "/enabled").toBool());
       CCDConfig cfg;
       cfg.iscont = false;
       QRect reg(ptree->find(root + "/region").toRect());
@@ -120,8 +123,10 @@ bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
     }
     
     for (int k=0; k<ncams; k++) {
-      cameras[k] = CamPool::findp(camids[k]);
-      // actually, we should check whether this camera is enabled in the ptree.
+      if (camEnabled[k])
+	cameras[k] = CamPool::findp(camids[k]);
+      else
+	cameras[k] = 0;
       Dbg() << "CCDAcq: camera "<< k << ": " << camids[k]<<" is " << cameras[k] << "; dest is " << dest[k];
 
 #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
@@ -146,7 +151,7 @@ bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
         cameras[k]->setConfig(ccdcfg[k]);
   
     for (int k=0; k<ncams; k++)
-      if (!cameras[k])
+      if (camEnabled[k] && !cameras[k])
 	return false;
 
     return true;
