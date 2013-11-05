@@ -19,3 +19,4 @@ toplevel/version.tmp
 toplevel/version.xml
 flat.pro
 tests/flattest.pro
+version.tmp

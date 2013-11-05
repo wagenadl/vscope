@@ -97,7 +97,7 @@ bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
     for (int k=0; k<ncams; k++) {
       QString id = camids[k];
       QString root = "acqCCD/camera:" + id;
-      camEnabled.append(ptree->find(root + "/enabled").toBool());
+      camEnabled.append(ptree->find(root + "/enable").toBool());
       CCDConfig cfg;
       cfg.iscont = false;
       QRect reg(ptree->find(root + "/region").toRect());
@@ -185,7 +185,7 @@ void CCDAcq::start() {
   isGood=false; isDone = false;
 
   for (int k=0; k<ncams; k++)
-    if (!dest[k] && cameras[k])
+    if (cameras[k] && !dest[k])
       throw Exception("CCDAcq","Cannot start without destination buffers");
 
   for (int k=0; k<ncams; k++)
