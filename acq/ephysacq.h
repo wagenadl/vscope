@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QMutex>
 
+#define EPHYSACQ_TOLERATE_MISSING_EPHYS 1
+
 class EPhysAcq: public QObject {
   Q_OBJECT;
 public:

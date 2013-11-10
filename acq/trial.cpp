@@ -83,17 +83,25 @@ void Trial::prepare(ParamTree const *ptree) {
   dbg("trial:prepare contephys=%i. ephysacq=%p",dat->hasContEPhys(),ephysacq);
   if (dat->isCCD()) {
     bool ccdok = ccdacq->prepare(ptree, dat->allTiming());
-#if !CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
-    if (!ccdok)
+    if (!ccdok) {
+#if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
+      dbg("trial:prepare: no camera. will simulate");
+#else
       throw Exception("Trial", "Trouble configuring cameras");
 #endif
+    }
   }
   ephysout->setMaster(dat->hasContEPhys() ? 0 : ephysacq);
   ephysout->prepare(ptree, dat->allTiming());
   if (dat->isEPhys())  {
     bool ephysok = ephysacq->prepare(ptree);
-    if (!ephysok) 
+    if (!ephysok) {
+#if EPHYSACQ_TOLERATE_MISSING_EPHYS
+      dbg("trial:prepare: No ephys device, will simulate");
+#else
       throw Exception("Trial", "Trouble configuring ephys");
+#endif
+    }
   }
 
   outcomplete = acqcomplete = false;
