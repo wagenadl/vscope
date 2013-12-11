@@ -20,3 +20,6 @@ toplevel/version.xml
 flat.pro
 tests/flattest.pro
 version.tmp
+*.oct
+mtpsd/bin/*
+mtpsd/lib/*
