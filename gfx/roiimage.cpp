@@ -123,28 +123,58 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
   //  dbg("roiimage:paintevent");
   CCDImage::paintEvent(e);
   QPainter p(this);
+  QPen pen = p.pen();
+  pen.setWidthF(1.0);
+  QColor color("#ffff00");
+  QBrush nobrush;
+  QVector<double> dashes; dashes << 1; dashes << 5;
+  pen.setDashPattern(dashes);
   bool resetPen = true;
+  bool wasmycam = false;
+  bool wasselected = false;
 
   foreach (int id, roiset->ids()) {
+    bool isselected = id==selectedroi;
+    bool ismycam = campair==roiset->cam(id);
     bool showID = showMode==SR_Full || showMode==SR_IDs;
-    bool showDot = showMode==SR_Centers && !id==selectedroi;
-    bool showOutline = showMode==SR_Full || showMode==SR_Outlines ||
-      id==selectedroi;
-    if (editing && id==selectedroi)
+    bool showDot = showMode==SR_Centers && !isselected;
+    bool showOutline = showMode==SR_Full || showMode==SR_Outlines || isselected;
+    
+    if (editing && isselected)
       showID = showDot = showOutline = false;
 
-    if (id==selectedroi) {
-      p.setPen(QColor("#ff0000"));
-      if (showMode==SR_Centers)
-	p.setBrush(QColor("#ff0000"));
+    if (ismycam!=wasmycam) {
+      if (ismycam)
+        color.setAlpha(255);
+      else
+        color.setAlpha(50);
+      if (ismycam)
+	pen.setStyle(Qt::SolidLine);
+      else
+	pen.setStyle(Qt::CustomDashLine);
       resetPen = true;
-    } else if (resetPen) {
-      p.setPen(QColor("#ffff00"));
-      if (showMode==SR_Centers)
-	p.setBrush(QColor("#ffff00"));
+      wasmycam = ismycam;
+    }
+    if (isselected!=wasselected) {
+      if (isselected)
+	color.setGreen(0);
+      else
+	color.setGreen(255);
+      resetPen = true;
+      wasselected = isselected;
+    }
+    Dbg() << id << isselected << ismycam << "(" << roiset->cam(id).donor << roiset->cam(id).acceptor << " / " << campair.donor << campair.acceptor << ")" << color << color.alpha();
+    if (resetPen) {
+      pen.setColor(color);
+      p.setPen(pen);
       resetPen = false;
     }      
-    
+
+    if (showDot)
+      p.setBrush(color);
+    else
+      p.setBrush(nobrush);
+
     QPointF xy0 = canvasToScreen()(roiset->get(id).center());
     if (showDot) 
       p.drawEllipse(xy0,2,2);

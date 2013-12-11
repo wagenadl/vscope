@@ -48,7 +48,7 @@ void gt_slots::clicked(QString p) {
       if (Globals::focus)
 	Globals::focus->deactivate(true);
       if (Globals::liveephys)
-	Globals::liveephys->deactivate();
+	Globals::liveephys->deactivate(true);
       QApplication::quit();
     } else if (p=="minimize") {
       Globals::mainwindow->setWindowState(Qt::WindowMinimized);

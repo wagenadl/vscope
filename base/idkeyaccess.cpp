@@ -33,7 +33,10 @@ void IDKeyAccess::checkin(WriteKey *key) {
   } else if (key2id.contains(key)) {
     int id = key2id[key];
     key2id.remove(key);
-    id2key.remove(id, key);
+    QMultiMap<int, WriteKey *>::iterator i = id2key.find(id, key);
+    if (i!=id2key.end())
+      id2key.erase(i);
+    // for some reason, the simple "id2key.remove(id, key)" fails in Qt 4.5.2
     if (id2key.find(id)==id2key.end())
       emit newDatum(id);
   }

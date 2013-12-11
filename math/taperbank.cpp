@@ -82,10 +82,10 @@ void Taperbank::instaPrep(TaperID const &id) {
   Dbg() << "Taperbank::instaPrep: " << id.name() << ": " << fn;
   QProcess mkdpss(this);
   QStringList args;
+  args.append(fn);
   args.append(QString::number(id.N));
   args.append(QString::number(id.nw));
   args.append(QString::number(id.K));
-  args.append(fn);
   mkdpss.start("mkdpss", args);
   if (!mkdpss.waitForStarted() || !mkdpss.waitForFinished())
     throw Exception("Taperbank", "Cannot run mkdpss");

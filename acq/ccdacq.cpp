@@ -33,7 +33,7 @@ static void generateMockData(CCDData *dest, CCDData::WriteKey *key, int seed) {
 	double val1 = 0;
 	for (int k=0; k<10; k++)
 	  val1 += double(rand())/RAND_MAX - 0.5;
-	uint16_t val = 2000+100*(nx^2)+50*(ny^2)+val0*100+val1*0;
+	uint16_t val = uint16_t(2000+100*(nx^2)+50*(ny^2)+val0*100+val1*0);
 	int w = x1-x0;
 	int h = y1-y0;
 	for (int y=0; y<h; y++) {
@@ -54,7 +54,7 @@ static void generateMockData(CCDData *dest, CCDData::WriteKey *key, int seed) {
     if (y1>hei)
       y1=hei;
     double val0 = n%5;
-    uint16_t val = 2500+100*val0;
+    uint16_t val = uint16_t(2500+100*val0);
     for (int y=y0; y<y1; y++) {
       uint16_t *patch = data + n*(wid*hei) + y*wid;
       for (int x=x0; x<x1; x++)
