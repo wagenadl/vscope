@@ -16,6 +16,9 @@ public:
   bool operator==(CamPair const &other) const {
     return donor==other.donor && acceptor==other.acceptor;
   }
+  bool operator!=(CamPair const &other) const {
+    return !operator==(other);
+  }
 };
 
 inline uint qHash(CamPair const &cp) {

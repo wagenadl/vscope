@@ -332,6 +332,8 @@ int ROIImage::findNearestROI(QPoint xy, double marg) {
   int bestid=0;
   double dd;
   foreach (int id, roiset->ids()) {
+    if (campair!=roiset->cam(id))
+      continue; // we won't select ROIs that are not on this camera (pair)
     double d = euclideanDist2(xy_, roiset->get(id).center());
     if (bestid==0 || d<dd) {
       bestid = id;
