@@ -87,7 +87,7 @@ void Trial::prepare(ParamTree const *ptree) {
 #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
       dbg("trial:prepare: no camera. will simulate");
 #else
-      throw Exception("Trial", "Trouble configuring cameras");
+      dbg("trial:prepare: trouble configuring cameras.");
 #endif
     }
   }
