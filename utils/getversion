@@ -1,7 +1,8 @@
 #!/bin/sh
 
 OUT=$1
-BASE=$2
+
+[ -z $OUT ] && exit 1
 
 TMP=version.tmp
 rm -f $TMP
@@ -9,7 +10,7 @@ rm -f $TMP
 if bzr log -r-1 --show-ids > $TMP; then
     vDATE=`grep '^timestamp:' $TMP | cut -c16-`
     vREVNO=`grep '^revno:' $TMP | cut -c8-`
-    [[ -z `bzr status` ]] || vREVNO=$vREVNO"+"
+    [ -z "`bzr status`" ] || vREVNO=$vREVNO"+"
     vBRANCH=`grep '^branch nick:' $TMP | cut -c14-`
     vYEAR=`grep '^timestamp:' $TMP | cut -c16-19`
 else    
@@ -20,6 +21,8 @@ else
     vBRANCH="?"
     vYEAR=`date '+%Y'`
 fi
+
+rm -f $TMP
 
 vBUILDDATE=`date '+%Y-%m-%d %H:%M:%S %z' `
 

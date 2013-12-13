@@ -7,7 +7,7 @@
 #include <QSignalMapper>
 #include <base/exception.h>
 #include <base/dbg.h>
-
+#include <QDir>
 
 Taperbank::Taperbank(QString dir): dir(dir) {
   Dbg() << "Taperbank: path = " << dir;
@@ -79,6 +79,9 @@ void Taperbank::destroy(TaperID const &id) {
 
 void Taperbank::instaPrep(TaperID const &id) {
   QString fn = buildfn(id);
+  QDir d(dir);
+  if (!d.mkpath(d.absolutePath()))
+    throw Exception("Taperbank", "Cannot make taperbank dir");
   Dbg() << "Taperbank::instaPrep: " << id.name() << ": " << fn;
   QProcess mkdpss(this);
   QStringList args;
@@ -89,13 +92,14 @@ void Taperbank::instaPrep(TaperID const &id) {
   mkdpss.start("mkdpss", args);
   if (!mkdpss.waitForStarted() || !mkdpss.waitForFinished())
     throw Exception("Taperbank", "Cannot run mkdpss");
+  Dbg() << "Taperbank::instaPrep done";
 }
 
 bool Taperbank::couldExist(TaperID const &id) {
   return id.K>0;
 }
 
-bool Taperbank::canProvide(TaperID const &id) {
+bool Taperbank::canProvide(TaperID const &id, bool guarantee) {
   Dbg() << "Taperbank::canProvide: " << id.name() << " K="<<id.K;
   if (contains(id))
     return true;
@@ -103,13 +107,21 @@ bool Taperbank::canProvide(TaperID const &id) {
   if (id.K<=0)
     return false;
   
-  QProcess mkdpss(this);
-  QStringList args;
-  args.append("--help");
-  mkdpss.start("mkdpss", args);
-  bool ok = mkdpss.waitForStarted() && mkdpss.waitForFinished();
-  Dbg() << "Taperbank::canProvide " << id.name() << ": " << ok;
-  return ok;
+  if (guarantee) {
+    try {
+      find(id);
+    } catch (Exception const &e) {
+      return false;
+    }
+    return true;
+  } else {
+    QProcess mkdpss(this);
+    QStringList args;
+    args.append("--help");
+    mkdpss.start("mkdpss", args);
+    bool ok = mkdpss.waitForStarted() && mkdpss.waitForFinished();
+    return ok;
+  }
 }
 
 void Taperbank::prepare(TaperID const &id) {

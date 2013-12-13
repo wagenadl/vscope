@@ -35,13 +35,15 @@ public:
   /*:F contains
    *:D Returns true if the named taper exists in memory or on disk.
    */
-  bool canProvide(TaperID const &id);
+  bool canProvide(TaperID const &id, bool guarantee=false);
   /*:F canProvide
    *:D Returns true if the named taper exists in memory or on disk, or if
        we believe we are able to create it.
    *:N This is a heuristic, based on the availability of the mkdpss program.
        canProvide does not guarantee that a subsequent call to find() will
        actually succeed. After all, mkdpss can fail.
+   *:N If guarantee=true, we actually run mkdpss if needed, so the result
+       will be authoritative.
    */
   bool couldExist(TaperID const &id);
   /*:F couldExist

@@ -135,7 +135,7 @@ bool CohData::validate() const {
       if (N>0) {
 	TaperID tid(N, dt_s, df_hz);
 	trc.resize(N);
-	if (Taperbank::bank().canProvide(tid)) {
+	if (Taperbank::bank().canProvide(tid, true)) {
 	  /* We should be using the prepare() interface to do this
 	     in the background. Later.
 	  */
@@ -398,7 +398,7 @@ void CohData::recalcReference() const {
     //dbg("coherence:recalcref: isdigi=%i chn=%i",ref_is_digital,ref_chn);
     TaperID tid(N, dt_s, df_hz);
     data.taperIDs[cp] = tid;
-    if (Taperbank::bank().canProvide(tid)) {
+    if (Taperbank::bank().canProvide(tid, true)) {
       Tapers const &tapers = Taperbank::bank().find(tid);
       psdest->compute(ref, dt_s, df_hz, tapers);
       double max=0;
