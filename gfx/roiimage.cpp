@@ -124,11 +124,9 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
   CCDImage::paintEvent(e);
   QPainter p(this);
   QPen pen = p.pen();
-  pen.setWidthF(1.0);
   QColor color("#ffff00");
+  color.setAlpha(80);
   QBrush nobrush;
-  QVector<double> dashes; dashes << 1; dashes << 5;
-  pen.setDashPattern(dashes);
   bool resetPen = true;
   bool wasmycam = false;
   bool wasselected = false;
@@ -144,14 +142,7 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
       showID = showDot = showOutline = false;
 
     if (ismycam!=wasmycam) {
-      if (ismycam)
-        color.setAlpha(255);
-      else
-        color.setAlpha(50);
-      if (ismycam)
-	pen.setStyle(Qt::SolidLine);
-      else
-	pen.setStyle(Qt::CustomDashLine);
+      pen.setWidthF(ismycam ? 2.0 : 1.0);
       resetPen = true;
       wasmycam = ismycam;
     }
@@ -163,7 +154,6 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
       resetPen = true;
       wasselected = isselected;
     }
-    Dbg() << id << isselected << ismycam << "(" << roiset->cam(id).donor << roiset->cam(id).acceptor << " / " << campair.donor << campair.acceptor << ")" << color << color.alpha();
     if (resetPen) {
       pen.setColor(color);
       p.setPen(pen);
@@ -176,8 +166,10 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
       p.setBrush(nobrush);
 
     QPointF xy0 = canvasToScreen()(roiset->get(id).center());
-    if (showDot) 
-      p.drawEllipse(xy0,2,2);
+    if (showDot) {
+      double r = ismycam ? 2 : 1.5;
+      p.drawEllipse(xy0, r, r);
+    }
 
     if (showOutline) {
       ROICoords const &roi = roiset->get(id);
