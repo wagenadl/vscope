@@ -189,9 +189,15 @@ void Trial::allEPhysComplete() {
     dbg("trial complete, ccd ok");
   }
   active = false;
+
+  if (dat->isCCD())
+    dat->refineCCDTiming();
+  
   QDomElement info = dat->getXML()->find("info");
   QDateTime now(QDateTime::currentDateTime());
   info.setAttribute("enddate",now.toString("yyMMdd"));
   info.setAttribute("endtime",now.toString("hhmmss"));
   emit ended(dat->exptName(), dat->trialID());
 }
+
+  

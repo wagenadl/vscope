@@ -5,7 +5,6 @@
 #include "guibutton.h"
 #include <QPainter>
 #include <base/dbg.h>
-#include <QDebug>
 
 guiTriangle::guiTriangle(guiPage *parent): parent(parent) {
   src = 0;
@@ -153,7 +152,6 @@ void guiTriangle::render() {
   QPainter p(parent);
   p.setPen(QPen(areaColor));
   p.setBrush(QBrush(areaColor));
-  qDebug() << p.brush();
   p.drawPolygon(area, Qt::WindingFill);
 
   p.setPen(lightColor);

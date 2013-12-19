@@ -32,12 +32,26 @@ template <class X> Range ti_minmax99(X const*xx, int N, int step,
   // of N elements.
   // Note that this is slower than ti_minmax, since it needs to copy the
   // data for the purpose of nth_element. Still, it is linear time.
-  if (N==0 || !xx)
+  if (N<=0 || !xx)
     return Range();
 
-  if (frc0<=0 && (frc1<=0 || frc1>=1))
-    return ti_minmax(xx,N,step);
-  
+  int n0=int(floor(frc0*N));
+  if (n0<0)
+    n0=0;
+  else if (n0>=N)
+    n0=N-1;
+
+  if (frc1<=0)
+    frc1=1-frc0;
+  int n1=int(floor(frc1*N));
+  if (n1<0)
+    n1=0;
+  else if (n1>=N)
+    n1=N-1;
+
+  if (n0==0 && n1==N-1)
+    return ti_minmax(xx, N, step);
+
   X *yy = memalloc<X>(N, "ti_minmax99");
   X *yyp = yy;
   for (int n=0; n<N; n++) {
@@ -46,25 +60,12 @@ template <class X> Range ti_minmax99(X const*xx, int N, int step,
     xx+=step;
   }
 
-  int n0=int(floor(frc0*N));
-  if (n0<0)
-    n0=0;
-  else if (n0>=N)
-    n0=N-1;
   std::nth_element(yy,yy+n0,yy+N);
   double x0 = yy[n0];
 
-  if (frc1<=0)
-    frc1=1-frc0;
-  else if (frc1<.5)
-    frc1=1-.5;
-  int n1=int(floor(frc1*N));
-  if (n1<0)
-    n1=0;
-  else if (n1>=N)
-    n1=N-1;
   std::nth_element(yy,yy+n1,yy+N);
   double x1 = yy[n1];
+
   delete [] yy;
   return Range(x0,x1);
 }  

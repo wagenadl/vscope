@@ -70,6 +70,11 @@ public:
   Transform const &ccdPlacement(QString camid) const;
   /*:F ccdPlacement
     :N Throws exception if camid not found */
+  void refineCCDTiming();
+  /*:F refineCCDTiming
+   *:D After trial is complete, update the CCD data's t0 and dt based
+       on actual frame times.
+  */
 private:
   static QString trialname(class ParamTree const *tree);
   void generalPrep(class ParamTree const *ptree, bool newccds);

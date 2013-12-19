@@ -395,3 +395,42 @@ void TrialData::readCCD(XML &myxml, QString base) {
   if (newset!=oldset)
     emit newCameras();
 }
+
+void TrialData::refineCCDTiming() {
+  if (!ddataIn)
+    return;
+
+  foreach (QString camid, ccddata.keys()) {
+    QString lineid = "Frame:" + camid;
+    if (ddataIn->hasLine(lineid)) {
+      DigitalData::DataType msk = 1;
+      msk <<= ddataIn->findLine(lineid);
+      int i0 = -1;
+      int n = 0;
+      int i1 = 0;
+      DigitalData::DataType const *ddat = ddataIn->allData();
+      int N = ddataIn->getNumScans();
+      bool old = false;
+      for (int k=0; k<N; k++) {
+	bool now = (ddat[k] & msk) != 0;
+	if (now!=old) {
+	  if (now) {
+	    if (i0<0)
+	      i0 = k;
+	    i1 = k;
+	    n++;
+	  }
+	  old = now;
+	}
+      }
+      double f_hz = ddataIn->getSamplingFrequency();
+      if (n>=2) 
+	ccddata[camid]->setTimeBase(1e3 * i0/f_hz, 1e3*(i1-i0)/(n-1)/f_hz);
+      else
+	Dbg() << "Couldn't set timebase for " << camid << ": not enough frames";
+    } else {
+      Dbg() << "trialdata: could not refine timing for camera " << camid;
+    }
+  }
+}
+

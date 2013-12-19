@@ -279,6 +279,7 @@ void Acquire::loadData(QString xmlfn) {
     GUIExc::report(e,"load data");
   }
   Globals::trial->reconstructStim(Globals::ptree);
+  Globals::trove->trial().refineCCDTiming();
 
   Globals::ptree->find("acquisition/exptname").set(exptbit);
   Globals::ptree->find("acquisition/trialno").set(trialbit);
