@@ -96,6 +96,8 @@ public:
         looking at a subset of the data.
   */
   void trueBlue(double x0, double dx, int M,
+                QVector<double> &outmin, QVector<double> &outmax) const;
+  void trueBlue(double x0, double dx, int M,
 		double *outmin, double *outmax) const;
   /*:F trueBlue
    *:D Minima and maxima in bins, scaled.
@@ -104,6 +106,7 @@ public:
        If there are 0 elements in the bin, the next element is used, unless
        there are no data at all.
        The output is scaled by the current scale factor.
+       The vector version automatically resizes the vectors if needed.
   */
   void report() const;
 private:

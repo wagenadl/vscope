@@ -2,16 +2,13 @@
 
 #include <base/analogdata.h>
 #include <base/dbg.h>
-#include <base/memalloc.h>
-#include <base/ptrguard.h>
 #include <base/unitqty.h>
 
 AnalogData::AnalogData(int nscans_, int nchannels_, double fs_hz_) {
   nscans = nscans_;
   nchannels = nchannels_;
   fs_hz = fs_hz_;
-  ndoubles_allocated = nchannels * nscans;
-  data = memalloc<double>(ndoubles_allocated, "AnalogData constructor");
+  data.resize(nchannels * nscans);
 
   index2id.resize(nchannels);
   index2scale.resize(nchannels);
@@ -27,17 +24,11 @@ AnalogData::AnalogData(int nscans_, int nchannels_, double fs_hz_) {
 }
 
 AnalogData::~AnalogData() {
-  try {
-    if (data)
-      delete [] data;
-  } catch (...) {
-    fprintf(stderr,"AnalogData: Memory freeing failed. Armageddon imminent.");
-  }
 }
 
 void AnalogData::setNumScans(int nscans1) {
   KeyGuard guard(*this);
-  if (nscans1*nchannels>ndoubles_allocated)
+  if (nscans1*nchannels>data.size())
     throw Exception("AnalogData","Noncredible number of scans","setNumScans");
   nscans = nscans1;
 }		   
@@ -46,12 +37,8 @@ bool AnalogData::reshape(int nscans1, int nchannels1, bool free) {
   KeyGuard guard(*this);
   int needed=nscans1*nchannels1;
   bool r=false;
-  if (!data || needed > ndoubles_allocated ||
-      (free && (needed < ndoubles_allocated))) {
-    if (data)
-      delete [] data;
-    data = memalloc<double>(needed, "AnalogData::reshape");
-    ndoubles_allocated = needed;
+  if (needed > data.size() || (free && needed < data.size())) {
+    data.resize(needed);
     r=true;
   }
   nscans = nscans1;
@@ -121,11 +108,12 @@ void AnalogData::write(QString ofn, QDomElement elt) {
 AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
   dbg("adata:writeint16. ofn=%s",qPrintable(ofn));
   dbg("  nch=%i nsc=%i",nchannels,nscans);
-  PtrGuard<double> range(memalloc<double>(nchannels,
-					  "AnalogData::writeInt16"));
-  for (int c=0; c<nchannels; ++c)
-    range[c]=1e-6; // base range is 1 uV, we don't want to get division by zero
-  double *dp = data;
+  Q_ASSERT(nchannels*nscans <= data.size());
+  
+  QVector<double> range(nchannels, 1e-6);
+  // base range is 1 uV, we don't want to get division by zero
+
+  double const *dp = data.constData();
   for (int s=0; s<nscans; s++) {
     for (int c=0; c<nchannels; c++) {
       double v = *dp++;
@@ -136,24 +124,22 @@ AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
     }
   }
 
-  PtrGuard<int16_t> buffer(memalloc<int16_t>(nchannels*1024,
-					     "AnalogData::writeInt16"));
+  const int BUFSIZE = 1024;
+  QVector<int16_t> buffer(nchannels*BUFSIZE);
   QFile ofd(ofn);
   if (!ofd.open(QFile::WriteOnly)) 
     throw SysExc("AnalogData::writeInt16: Cannot write '" + ofn + "'");
 
   int scansleft = nscans;
-  dp = data;
+  dp = data.constData();
   while (scansleft>0) {
-    int now = scansleft;
-    if (now>1024)
-      now=1024;
-    int16_t *bp = buffer;
+    int now = scansleft < BUFSIZE ? scansleft : BUFSIZE;
+    int16_t *bp = buffer.data();
     for (int s=0; s<now; s++) 
       for (int c=0; c<nchannels; c++) 
 	*bp++ = int16_t(*dp++ * 32767 / range[c]);
     int nbytes = nchannels*2*now;
-    if (ofd.write((char const *)buffer.ptr(), nbytes) != nbytes)
+    if (ofd.write((char const *)buffer.constData(), nbytes) != nbytes)
       throw SysExc("AnalogData::writeInt16: Cannot write '" + ofn + "'");
     scansleft -= now;
   }
@@ -232,20 +218,18 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps) {
 		       "readInt16");
   reshape(newscans,nchannels);
 
-  PtrGuard<int16_t> buffer(memalloc<int16_t>(nchannels*1024,
-					     "AnalogData::readInt16"));
+  const int BUFSIZE = 1024;
+  QVector<int16_t> buffer(nchannels*BUFSIZE);
   int scansleft = newscans;
-  double *dp = data;
+  double *dp = data.data();
   dbg("analogdata::readint16 nchannels=%i newscans=%i",nchannels,newscans);
   while (scansleft) {
-    int now = scansleft;
-    if (now>1024)
-      now=1024;
+    int now = scansleft < BUFSIZE ? scansleft : BUFSIZE;
     int nbytes = nchannels*2*now;
-    if (ifd.read((char *)buffer.ptr(), nbytes) != nbytes)
+    if (ifd.read((char *)buffer.data(), nbytes) != nbytes)
       throw SysExc("AnalogData::readInt16: Cannot read '" + ifn + "'");
 
-    int16_t *bp = buffer;
+    int16_t const *bp = buffer.constData();
     for (int s=0; s<now; s++)
       for (int c=0; c<nchannels; c++)
 	*dp++ = *bp++ * steps[index2id[c]];
@@ -270,26 +254,26 @@ void AnalogData::setSamplingFrequency(double f) {
 }
 
 double const *AnalogData::allData() const {
-  return data;
+  return data.constData();
 }
 
 double *AnalogData::allData(WriteKey *key) {
   verifyKey(key, "channelData");
-  return data;
+  return data.data();
 }
 double const *AnalogData::channelData(QString id) const {
   if (contains(id)) 
-    return data + id2index[id];
+    return data.constData() + id2index[id];
   else
-    return data;
+    return data.constData();
 }
 
 double *AnalogData::channelData(AnalogData::WriteKey *key, QString id) {
   verifyKey(key, "channelData");
   if (contains(id)) 
-    return data + id2index[id];
+    return data.data() + id2index[id];
   else
-    return data;
+    return data.data();
 }
 
 QString AnalogData::getChannelAtIndex(int n) const {

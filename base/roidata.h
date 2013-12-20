@@ -70,16 +70,16 @@ private:
   public:
     BitmapCache();
     ~BitmapCache();
-    bool const *bitmap() const { return bm; }
+    bool const *bitmap() const { return bm.constData(); }
     QRect const &rect() const { return rec; }
-    int npixels() const { return npix; }
+    int npixels() const { return npix; } // inside the ROI, not the bitmap
     void setROI(ROICoords const *roi);
     void setTransformAndClip(Transform const &t, QRect const &clip);
     void unsetTransformAndClip();
   protected:
     virtual void validator();
   private:
-    bool *bm;
+    QVector<bool> bm;
     QRect rec; // in image coordinates
     int npix; // number of pixels inside the ROI
     class BlobROI *blobROI;
@@ -95,12 +95,11 @@ private:
   public:
     DataCache();
     ~DataCache();
-    double *data() const { return dat; }
-    int length() const { return len; }
+    double *data() { return dat.data(); }
+    int length() const { return dat.size(); }
     void resize(int len);
   private:
-    double *dat;
-    int len;
+    QVector<double> dat;
   };
   class CCDData const *source;
   DEBLEACH debleach;

@@ -4,7 +4,6 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <base/dbg.h>
-#include <base/memalloc.h>
 
 VisiBlob::VisiBlob(QWidget *parent): QWidget(parent) {
   pb = 0;
@@ -85,18 +84,16 @@ bool VisiBlob::complete(QMouseEvent *) {
   switch (dragtype) {
   case CREATE: {
     int k = newpoly->size();
-    double *xx = memalloc<double>(k, "VisiBlob");
-    double *yy = memalloc<double>(k, "VisiBlob");
+    QVector<double> xx(k);
+    QVector<double> yy(k);
     for (int i=0; i<k; i++) {
       QPointF xy = tinv((*newpoly)[i]);
       xx[i] = xy.x();
       yy[i] = xy.y();
     }
-    pb->build(k, xx, yy);
+    pb->build(xx, yy);
     delete newpoly;
     newpoly = 0;
-    delete [] xx;
-    delete [] yy;
   } break;
   case DISTORT:
     break;

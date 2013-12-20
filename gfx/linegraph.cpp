@@ -1,7 +1,6 @@
 // linegraph.cpp
 
 #include <gfx/linegraph.h>
-#include <base/memalloc.h>
 #include <base/numbers.h>
 #include <base/minmax.h>
 #include <gfx/colors.h>
@@ -557,9 +556,9 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
     p.drawPolyline(pts);
   } else {
     // more than one data point per pixel
-    double *yy_min = memalloc<double>(M, "Linegraph");
-    double *yy_max = memalloc<double>(M, "Linegraph");
-    ti->trueBlue(x0,dx_per_pix,M, yy_min,yy_max);
+    QVector<double> yy_min;
+    QVector<double> yy_max;
+    ti->trueBlue(x0, dx_per_pix, M, yy_min, yy_max);
     
     int m0=0, m1=M;
     for (int m=0; m<M; m++) {
@@ -582,30 +581,22 @@ void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
       // POLYGON DRAWING STYLE
       p.setBrush(QBrush(p.pen().color()));
       int x0pix = contentsX0();
-      QPoint *pts = memalloc<QPoint>(2*M, "LineGraph");
+      QPolygon pts(2*M);
       for (int m=0; m<M; m++) {
-        pts[m].setX(x0pix+m+m0);
-        pts[m].setY(dataToScreenY(yy_min[m+m0]));
-        pts[2*M-m-1].setX(x0pix+m+m0);
-        pts[2*M-m-1].setY(dataToScreenY(yy_max[m+m0]));
+        pts.setPoint(m, x0pix+m+m0, dataToScreenY(yy_min[m+m0]));
+        pts.setPoint(2*M-m-1, x0pix+m+m0, dataToScreenY(yy_max[m+m0]));
       }
-      p.drawPolygon(pts,2*M);
-      delete [] pts;
+      p.drawPolygon(pts);
     } else {
       // LINES DRAWING STYLE
-      QVector<QPoint> pts(2*M);
+      QPolygon pts(2*M);
       int x0pix = contentsX0();
       for (int m=0; m<M; m++) {
-        pts[2*m].setX(x0pix+m+m0);
-        pts[2*m+1].setX(x0pix+m+m0);
-        pts[2*m].setY(dataToScreenY(yy_min[m+m0]));
-        pts[2*m+1].setY(dataToScreenY(yy_max[m+m0]));
+        pts.setPoint(2*m, x0pix+m+m0, dataToScreenY(yy_min[m+m0]));
+        pts.setPoint(2*m+1, x0pix+m+m0, dataToScreenY(yy_max[m+m0]));
       }
       p.drawLines(pts);
     }
-    
-    delete [] yy_min;
-    delete [] yy_max;
   }
 }
 

@@ -8,7 +8,6 @@ include(../config.pro)
 HEADERS += base26.h \
            dbg.h \
 	   exception.h \
-           memalloc.h \
 	   minmax.h \
            numbers.h \
            range.h \
@@ -23,7 +22,7 @@ HEADERS += base26.h \
 	xml.h unitqty.h xyabc.h \
         ccdtiming.h \
         roicoords.h transform.h campair.h \
-        ptrguard.h keyaccess.h idkeyaccess.h object.h cache.h keyagg.h \
+        keyaccess.h idkeyaccess.h object.h cache.h keyagg.h \
         tests.h \
         istype.h
 	   
@@ -40,7 +39,7 @@ SOURCES += base26.cpp \
 	roiset.cpp roidata3set.cpp \
 	analogdata.cpp digitaldata.cpp \
 	xml.cpp unitqty.cpp xyabc.cpp \
-        ccdtiming.cpp memalloc.cpp \
+        ccdtiming.cpp \
         roicoords.cpp transform.cpp \
         keyaccess.cpp idkeyaccess.cpp object.cpp cache.cpp keyagg.cpp \
         tests.cpp

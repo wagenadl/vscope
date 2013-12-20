@@ -14,7 +14,6 @@
 #include <base/numbers.h>
 #include <base/minmax.h>
 #include <base/xyabc.h>
-#include <base/memalloc.h>
 
 #define CCDImage_GAMMA_Entries 4096
 
@@ -22,7 +21,6 @@ CCDImage::CCDImage(QWidget *parent):
   QWidget(parent) {
   min = 0;
   max = 65535;
-  gamma_table = 0;
   adjust_black = adjust_white = 0;
   rebuildGammaTable();
   rubberband = 0;
@@ -38,8 +36,6 @@ CCDImage::CCDImage(QWidget *parent):
 }
 
 CCDImage::~CCDImage() {
-  if (gamma_table)
-    delete [] gamma_table;
 }
 
 void CCDImage::setCanvas(QRect r) {
@@ -59,9 +55,7 @@ void CCDImage::resetCanvas() {
 }
 
 void CCDImage::rebuildGammaTable() {
-  if (!gamma_table)
-    gamma_table = memalloc<int>(CCDImage_GAMMA_Entries,
-				"CCDImage::rebuildGammaTable");
+  gamma_table.resize(CCDImage_GAMMA_Entries);
   for (int k=0; k<CCDImage_GAMMA_Entries; k++) {
     double v = double(k) / (CCDImage_GAMMA_Entries-1);
     v = 1-pow(1-pow(v,1+adjust_black),1+adjust_white);
@@ -79,19 +73,19 @@ void CCDImage::createTestImage() {
   uint32_t *dst = (uint32_t*)image.bits();
   int phase1 = ccdTestImageCounter*138;
   int phase2 = ccdTestImageCounter*38901;
-  uint8_t *costbl = memalloc<uint8_t>(256, "CCDImage::createTestImage");
+  QVector<uint8_t> costbl(256);
   for (int i=0; i<256; i++)
     costbl[i] = uint8_t(127+127*cos(i*6.2832/256));
   ccdTestImageCounter++;
+  uint8_t const *cosdata = costbl.constData();
   for (int y=0; y<hei; y++) {
     for (int x=0; x<wid; x++) {
-      uint8_t rd = costbl[int(256*2*y/hei+phase1)%256];
-      uint8_t gr = costbl[int(256*3*x/wid+phase2)%256];
-      uint8_t bl = costbl[int(256*2*y/hei+256*3*x/wid+phase1+phase2)%256];
+      uint8_t rd = cosdata[int(256*2*y/hei+phase1)&255];
+      uint8_t gr = cosdata[int(256*3*x/wid+phase2)&255];
+      uint8_t bl = cosdata[int(256*2*y/hei+256*3*x/wid+phase1+phase2)&255];
       *dst++ = (rd<<16) + (gr<<8) + bl + 0xff000000;
     }
   }
-  delete [] costbl;
 }
 
 void CCDImage::newImage(uint16_t const *data, int X, int Y,
@@ -118,6 +112,7 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
   for (int y=0; y<Y; y++) {
     uint16_t const *row = flipY ? (data+(Y-1-y)*X) : data+y*X;
     if (adjust_black>0 || adjust_white>0) {
+      int const *gamma = gamma_table.constData();
       for (int x=0; x<X; x++) {
 	int px = row[flipX ? (X-1-x) : x] - min;
 	px*=CCDImage_GAMMA_Entries;
@@ -126,7 +121,7 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
 	  px=0;
 	else if (px>=CCDImage_GAMMA_Entries)
 	  px=CCDImage_GAMMA_Entries-1;
-	*dst++ = gamma_table[px]*0x010101 + 0xff000000;
+	*dst++ = gamma[px]*0x010101 + 0xff000000;
       }
     } else {
       for (int x=0; x<X; x++) {
@@ -183,29 +178,29 @@ void CCDImage::adjustedRange(uint16_t const *data, int X, int Y) {
 void CCDImage::autoRange(uint16_t const *data, int X, int Y,
 			 double frc0, double frc1) {
   if (data && X*Y>0) {
-    if (frc0>0 || frc1<1) {
-      uint16_t *cp = memalloc<uint16_t>(X*Y, "CCDImage::autorange");
-      memcpy((void*)cp,(void*)data,X*Y*2);
+    int kmin = int(floor(frc0*X*Y));
+    if (kmin<0)
+      kmin=0;
+    else if (kmin>=X*Y)
+      kmin=X*Y-1;
     
-      int kmin = int(floor(frc0*X*Y));
-      if (kmin<0)
-        kmin=0;
-      else if (kmin>=X*Y)
-        kmin=X*Y-1;
-    
-      int kmax = int(floor(frc1*X*Y));
-      if (kmax<0)
-        kmax=0;
-      else if (kmax>=X*Y)
-        kmax=X*Y-1;
-    
-      std::nth_element(cp,cp+kmin,cp+X*Y);
+    int kmax = int(floor(frc1*X*Y));
+    if (kmax<0)
+      kmax=0;
+    else if (kmax>=X*Y)
+      kmax=X*Y-1;
+
+    if (kmin>0 || kmax<X*Y-1) {
+      QVector<uint16_t> cp(X*Y);
+      memcpy((void *)cp.data(), (void const *)data, X*Y*2);
+
+      uint16_t *d = cp.data();
+
+      std::nth_element(d, d+kmin, d+X*Y);
       min=cp[kmin];
     
-      std::nth_element(cp,cp+kmax,cp+X*Y);
+      std::nth_element(d, d+kmax, d+X*Y);
       max=cp[kmax];
-    
-      delete [] cp;
     } else {
       min=data[0];
       max=data[0];

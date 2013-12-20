@@ -7,6 +7,7 @@
 #include <base/exception.h>
 #include <pvp/ccdconfig.h>
 #include <QStringList>
+#include <QVector>
 #include <base/types.h>
 
 class Camera {
@@ -49,8 +50,7 @@ private:
   CCDConfig cfg;
   double expose_ms;
   size_t npixels_for_seq;
-  uint16_t *contBuffer;
-  size_t npixels_in_buffer;
+  QVector<uint16_t> contBuffer;
 };
 
 #endif

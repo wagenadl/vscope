@@ -2,29 +2,22 @@
 
 #include <base/digitaldata.h>
 
-#include <base/memalloc.h>
 #include <base/unitqty.h>
 #include <base/dbg.h>
 #include <QFile>
 
 DigitalData::DigitalData(int nscans_, double fs) {
   fs_hz = fs;
-  nallocated = nscans = nscans_;
-  data = 0;
-  data = memalloc<DataType>(nscans, "DigitalData constructor");
+  nscans = nscans_;
+  data.resize(nscans);
   cmask = 0;
 }
 
 DigitalData::~DigitalData() {
-  try {
-    delete [] data;
-  } catch (...) {
-    fprintf(stderr,"DigitalData: Memory freeing failed. Armageddon imminent.");
-  }
 }
 
 void DigitalData::setNumScans(int nscans1) {
-  if (nscans1>nallocated)
+  if (nscans1>data.size())
     throw Exception("DigitalData","Noncredible number of scans","setNumScans");
   nscans = nscans1;
 }
@@ -36,12 +29,8 @@ void DigitalData::setSamplingFrequency(double f) {
 
 bool DigitalData::reshape(int nscans1, bool free) {
   bool r=false;
-  if (nscans1 > nallocated ||
-      (free && (nscans1 < nallocated))) {
-    if (data)
-      delete [] data;
-    data = memalloc<DataType>(nscans1, "AnalogData");
-    nallocated = nscans1;
+  if (nscans1 > data.size() || (free && nscans1 < data.size())) {
+    data.resize(nscans1);
     r=true;
   }
   nscans = nscans1;
@@ -102,7 +91,7 @@ void DigitalData::writeUInt32(QString ofn) {
   if (!ofd.open(QFile::WriteOnly))
     throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
   int nbytes = nscans*4;
-  if (ofd.write((char const *)data, nbytes) != nbytes)
+  if (ofd.write((char const *)data.constData(), nbytes) != nbytes)
     throw SysExc("DigitalData::writeUInt32: Cannot write '" + ofn + "'");
   if (!ofd.flush())
     throw SysExc("DigitalData::writeUInt32: Cannot flush '" + ofn + "'");
@@ -121,7 +110,7 @@ void DigitalData::readUInt32(QString ifn) {
 		       "Unexpected file size: not a multiple of scan size",
 		       "readUInt32");
   reshape(newscans);
-  if (ifd.read((char*)data, filelength_bytes) != filelength_bytes)
+  if (ifd.read((char*)data.data(), filelength_bytes) != filelength_bytes)
     throw Exception("DigitalData", "Cannot read '" + ifn + "'");
   ifd.close();
   cmask = ~0;
@@ -209,7 +198,5 @@ DigitalData::DataType DigitalData::maskForLine(QString id) const {
 }
 
 void DigitalData::zero() {
-  if (data)
-    for (int n=0; n<nscans; n++)
-      data[n]=0;
+  data.fill(0);
 }

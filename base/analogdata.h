@@ -110,12 +110,11 @@ private:
   int32_t nscans;
   int32_t nchannels;
   double fs_hz;
-  int32_t ndoubles_allocated;
   QVector<QString> index2id;
   QVector<double> index2scale;
   QVector<QString> index2unit;
   QMap<QString, int32_t> id2index;
-  double *data; // by index
+  QVector<double> data; // by index
 };
 
 #endif

@@ -4,7 +4,6 @@
 #include "pvpCamera.h"
 #include <base/types.h>
 #include <base/dbg.h>
-#include <base/memalloc.h>
 #include <QTime>
 
 Camera::Camera(QString camname) {
@@ -12,8 +11,6 @@ Camera::Camera(QString camname) {
   id = pvpcam->getSerialNumber();
   expose_ms=0; // i.e. undefined
   npixels_for_seq = 0;
-  contBuffer = 0;
-  npixels_in_buffer = 0;
 }
 
 Camera::~Camera() {
@@ -27,8 +24,6 @@ Camera::~Camera() {
     e.report();
   }
 
-  if (contBuffer)
-    delete [] contBuffer;
 }
 
 QString Camera::getSerialNumber() const {
@@ -58,12 +53,8 @@ void Camera::setConfig(CCDConfig const &cfg0) {
     : pvpcam->configFinite(rgn,trigmode,expotime,cfg.nframes);
 
   if (cfg.iscont) {
-    if (!contBuffer || npixels_in_buffer<npixels_for_seq) {
-      if (contBuffer)
-	delete [] contBuffer;
-      contBuffer = memalloc<uint16_t>(npixels_in_buffer = npixels_for_seq,
-				      "Camera");
-    }
+    if (contBuffer.size()<npixels_for_seq)
+      contBuffer.resize(npixels_for_seq);
   }
 }
 
@@ -82,7 +73,7 @@ void Camera::startContinuous() {
     throw Exception("Camera", "startContinuous() is not for finite acq.");
   if (isRunning())
     throw Exception("Camera", "Already running");
-  pvpcam->startContinuous(contBuffer, npixels_in_buffer);
+  pvpcam->startContinuous(contBuffer.data(), contBuffer.size());
 }  
 
 void Camera::stopContinuous() {
@@ -124,7 +115,7 @@ bool Camera::hasCompleted() {
 
 size_t Camera::nPixelsSoFar() {
   return cfg.iscont
-    ? pvpcam->nPixelsSoFarContinuous(npixels_in_buffer)
+    ? pvpcam->nPixelsSoFarContinuous(contBuffer.size())
     : pvpcam->nPixelsSoFarFinite();
 }
 

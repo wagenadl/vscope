@@ -1,7 +1,6 @@
 // contacq.cpp
 
 #include "contacq.h"
-#include <base/memalloc.h>
 #include <base/analogdata.h>
 #include <base/digitaldata.h>
 #include <acq/ephysacq.h>
@@ -40,7 +39,7 @@ ContAcq::ContAcq() {
   analogStream = 0;
   digitalStream = 0;
 
-  analogBinary = 0;
+  analogBinaryScans = 0;
   
   prep=false;
   active = false;
@@ -249,18 +248,15 @@ void ContAcq::stop() {
 void ContAcq::dataAvailable(int analogscans, int digitalscans) {
   if (analogscans) {
     int nchans = adataIn->getNumChannels();
-    if (analogBinary && analogBinaryScans<analogscans)
-      delete [] analogBinary;
-    if (!analogBinary || analogBinaryScans<analogscans) {
-      analogBinaryScans = analogscans;
-      analogBinary = 0;
-      analogBinary = memalloc<int16_t>(analogBinaryScans * nchans,
-				       "ContAcq::dataAvailable");
-    }
+    if (analogscans*nchans>analogBinary.size()) 
+      analogBinary.resize(analogscans*nchans);
+    
+    analogBinaryScans = analogscans;
     bool anymax=false;
-    if (analogMax.isEmpty()) 
-      for (int c=0; c<nchans; c++)
-	analogMax.push_back(0);
+    if (analogMax.isEmpty()) {
+      analogMax.resize(nchans);
+      analogMax.fill(0);
+    }
     for (int c=0; c<nchans; c++) {
       double mx = 0;
       double const *dat = adataIn->channelData(adataIn->getChannelAtIndex(c));
@@ -298,7 +294,10 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
     }
     
     double const *src = adataIn->allData();
-    int16_t *dst = analogBinary;
+    int16_t *dst = analogBinary.data();
+    Q_ASSERT(analogBinary.size() >= analogscans*nchans);
+    Q_ASSERT(adataIn->getNumChannels()==nchans);
+    Q_ASSERT(adataIn->getNumScans()>=analogscans);
     for (int s=0; s<analogscans; s++) {
       for (int c=0; c<nchans; c++) {
 	double x = *src++;
@@ -307,7 +306,8 @@ void ContAcq::dataAvailable(int analogscans, int digitalscans) {
       }
     }
     if (!dummy)
-      analogStream->writeRawData((char*)analogBinary,2*analogscans*nchans);
+      analogStream->writeRawData((char*)analogBinary.constData(),
+                                 2*analogscans*nchans);
     analogFileOffset += analogscans;
   }
 

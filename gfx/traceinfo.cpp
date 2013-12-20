@@ -2,10 +2,10 @@
 
 #include <gfx/traceinfo.h>
 #include <base/dbg.h>
-#include <base/memalloc.h>
 
 #include <algorithm>
 #include <math.h>
+#include <QVector>
 
 template <class X> Range ti_minmax(X const*xx, int N, int step) {
   // For arbitrary data type X, returns the min and max of N elements
@@ -52,22 +52,20 @@ template <class X> Range ti_minmax99(X const*xx, int N, int step,
   if (n0==0 && n1==N-1)
     return ti_minmax(xx, N, step);
 
-  X *yy = memalloc<X>(N, "ti_minmax99");
-  X *yyp = yy;
+  QVector<X> yy(N);
+  X *yyp = yy.data();
   for (int n=0; n<N; n++) {
-    *yyp = *xx;
-    yyp++;
+    *yyp++ = *xx;
     xx+=step;
   }
 
-  std::nth_element(yy,yy+n0,yy+N);
+  yyp = yy.data();
+  std::nth_element(yyp, yyp+n0, yyp+N);
   double x0 = yy[n0];
-
-  std::nth_element(yy,yy+n1,yy+N);
+  std::nth_element(yyp, yyp+n1, yyp+N);
   double x1 = yy[n1];
 
-  delete [] yy;
-  return Range(x0,x1);
+  return Range(x0, x1);
 }  
 
 template <class X> void ti_trueblue(X const *data,
@@ -205,9 +203,9 @@ void TraceInfo::setData(double datax0_, double datadx_,
   dataptr = dp_;
   N = dataptr.ptr.dp_none ? N_ : 0;
   step = step_;
-  //Dbg() << "TraceInfo::setData. x0="<<datax0<< " dx="<<datadx
-  //	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
-  //	<<" N="<<N<<" step="<<step;
+  Dbg() << "TraceInfo::setData. x0="<<datax0<< " dx="<<datadx
+  	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
+  	<<" N="<<N<<" step="<<step;
 }
 
 void TraceInfo::setScaleFactor(double sf) {
@@ -361,6 +359,18 @@ Range TraceInfo::range99(int n0, int n1, double frc0, double frc1) const {
   r.add(offset);
   return r;
 }
+
+void TraceInfo::trueBlue(double x0, double dx, int M,
+			 QVector<double> &outmin,
+                         QVector<double> &outmax) const {
+  if (outmin.size() != M)
+    outmin.resize(M);
+  if (outmax.size() != M)
+    outmax.resize(M);
+  trueBlue(x0, dx, M, outmin.data(), outmax.data());
+}
+  
+
 
 void TraceInfo::trueBlue(double x0, double dx, int M,
 			 double *outmin, double *outmax) const {

@@ -23,3 +23,9 @@ version.tmp
 *.oct
 mtpsd/bin/*
 mtpsd/lib/*
+libmtpsd.a
+libdpss.a
+utils/mtpsd/bin/dpss
+utils/mtpsd/bin/dpss.oct
+utils/mtpsd/bin/mkdpss
+utils/mtpsd/bin/mtpsd.oct

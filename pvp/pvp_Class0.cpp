@@ -4,8 +4,6 @@
 #include <QTextStream>
 #include <pvp/dwpvcam.h>
 
-#include <base/memalloc.h>
-
 bool pvpCamera::availDdInfoLength() throw(pvpException) {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_DD_INFO_LENGTH,ATTR_AVAIL,&avail))
@@ -442,11 +440,10 @@ int pvpCamera::countDdInfo() throw(pvpException) {
 QString pvpCamera::getDdInfo() throw(pvpException) {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char *x = memalloc<char>(getDdInfoLength(), "pvcam");
-    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_CURRENT,x))
+    QByteArray ar(getDdInfoLength(), 0);
+    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read DD_INFO");
-    QString y = x;
-    delete [] x;
+    QString y = ar.data();
     return y;
   } else {
     throw pvpException("DD_INFO not accessible for reading");

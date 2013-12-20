@@ -7,6 +7,7 @@
 #include <base/types.h>
 #include <base/transform.h>
 #include <base/keyaccess.h>
+#include <QVector>
 #include <QFile>
 
 class CCDData: public KeyAccess {
@@ -67,8 +68,7 @@ private:
   int parpix;
   int nframes;
   int framepix;
-  int allocpix;
-  uint16_t *data;
+  QVector<uint16_t> data;
   double t0_ms, dt_ms;
   Transform t;
 };

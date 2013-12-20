@@ -54,7 +54,7 @@ private:
   QDomElement info_elt;
   QDomElement ana_elt;
   QDomElement digi_elt;
-  int16_t *analogBinary;
+  QVector<int16_t> analogBinary;
   int analogBinaryScans;
 };
 

@@ -61,7 +61,6 @@ void CohData::updateROIs() {
 }
 
 void CohData::setEPhys(AnalogData const *ad, DigitalData const *dd) {
-  dbg("cohdata::newephys");
   adata = ad;
   ddata = dd;
   invalidate();
@@ -130,7 +129,6 @@ bool CohData::validate() const {
       CCDTiming const &t = data.timing[cp];
       double dt_s = t.dt_ms()/1000;
       double df_hz = 2./3;
-      dbg("cohdata:recalc: nfr=%i dt=%g df=%g",t.nframes(),dt_s,df_hz);
       int N = t.nframes() - COH_STRIP_START - COH_STRIP_END;
       if (N>0) {
 	TaperID tid(N, dt_s, df_hz);
@@ -147,8 +145,6 @@ bool CohData::validate() const {
 			  tapers, data.fstar_hz[cp]);
 	  data.coh_mag[id] = cohest->magnitude[0];
 	  data.coh_pha[id] = cohest->phase[0];
-	  dbg("cohdata %i: %4.2f %3.0f",id,
-	      data.coh_mag[id],data.coh_pha[id]*180/3.1415);
 	} else if (Taperbank::bank().couldExist(tid) &&
 		   !warned.contains(tid.name())) {
 	  Warning()
@@ -202,7 +198,6 @@ void CohData::recalcTiming() const {
       data.timing[cp]
 	.setFrames(example->getAcceptorNFrames())
 	.setTiming(example->getAcceptorT0ms(), example->getAcceptorDTms());
-    Dbg() << "timing: " << data.timing[cp].t0_ms() << "+" << data.timing[cp].dt_ms() << "x" << data.timing[cp].nframes();
   }
 
   // let's see if and what we can refine
@@ -256,8 +251,6 @@ void CohData::recalcTiming() const {
 			   (ilatest-istart)*1000.0/count
 			   /data.timing[cp].fs_hz());
     } else {
-      dbg("istart=%i ilatest=%i count=%i nfr=%i mask=0x%08x",istart,ilatest,
-	  count,data.timing[cp].nframes(),mask);   
       dbg("CohData: WARNING: Could not count CCD frames");
       // I could give a GUI warning, but this probably only ever happens
       // when there are no cameras. Even otherwise, the problem will be minor.
@@ -284,7 +277,6 @@ void CohData::recalcReference() const {
     case RT_Digital: ok = ddata!=0; break;
     case RT_Frequency: ok = ref_hz>0; break;
     }
-    dbg("CohData::recalcReference: reftype=%i ok=%i",refType,ok);
     if (!ok) {
       for (int k=0; k<N; k++)
 	ref[k]=0;
@@ -310,8 +302,6 @@ void CohData::recalcReference() const {
       : refType==RT_Analog ? adata->getSamplingFrequency()
       : refType==RT_Frequency ? 1e6
       : 0;
-    dbg("CohData: adata=%p adata->data=%p asrc=%p ref_chn=%s",
-	adata,adata?adata->allData():0,asrc,qPrintable(ref_chn));
     
     if (refType==RT_Digital)
       ok = dsrc!=0;
@@ -351,7 +341,6 @@ void CohData::recalcReference() const {
 	  break;
 	case RT_Frequency:
 	  ref[k] = -1. + 2.*(fmod((tstart+tend)/2/1000 * ref_hz, 1) < 0.5);
-	  dbg("coherence: ref[%03i]=%g",k,ref[k]);
 	  break;
 	}
       } else {
@@ -394,8 +383,6 @@ void CohData::recalcReference() const {
     // run a psdest to find spectral peak
     double dt_s = t.dt_ms()/1000;
     double df_hz = 1./3;
-    //dbg("coherence:recalcref: nfr=%i dt=%g df=%g",data.timing.nframes,dt_s,df_hz);
-    //dbg("coherence:recalcref: isdigi=%i chn=%i",ref_is_digital,ref_chn);
     TaperID tid(N, dt_s, df_hz);
     data.taperIDs[cp] = tid;
     if (Taperbank::bank().canProvide(tid, true)) {

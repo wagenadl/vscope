@@ -6,6 +6,7 @@
 
 #include <base/types.h>
 #include <base/transform.h>
+#include <QVector>
 
 class BlobROI {
   /*:C BlobROI
@@ -58,24 +59,26 @@ public:
    *:D Returns number of booleans to allocate for the destination buffer
        for bitmap().
   */
-  double *weightmap() const { return weight; }
+  double const *weightmap() const { return weight.constData(); }
   /*:F weightmap
    *:D Returns a pointer to a WxH array of doubles with weights for each
        pixel. Weights are 1 inside, 0 outside, and intermediate near the
        edge, depending on the border width.
   */
+  QVector<bool> bitmap() const;
   int bitmap(bool *dst, int dstSize) const;
   /*:F bitmap
    *:D Returns a binarized version of the weight map. You must allocate enough
        space before calling; use bitmapNPixels to find out how much.
    *:R Number of bools written or 0 if dstSize was not big enough.
+   *:N The QVector version automatically resizes as needed
   */
 private:
   int x0; // x_left of defined area
   int w;  // width of defined area
   int y0; // y_top of defined area
   int h; // height of defined area
-  double *weight; // width x height area of weights for pixels
+  QVector<double> weight; // width x height area of weights for pixels
   /* Weights are 1 inside, 0 outside, and intermediate near border,
      dep. on blur.
   */

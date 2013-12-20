@@ -4,11 +4,9 @@
 #include <base/polyblob.h>
 #include <base/minmax.h>
 #include <base/numbers.h>
-#include <base/memalloc.h>
 #include <base/dbg.h>
 
 BlobROI::~BlobROI() {
-  delete [] weight;
 }
 
 BlobROI::BlobROI(PolyBlob const &src, Transform const &t, double border) {
@@ -66,7 +64,7 @@ void BlobROI::construct(PolyBlob const &src, Transform const &t,
     w=h=1;
     
   
-  weight = memalloc<double>(w*h, "BlobROI");
+  weight.resize(w*h);
   sumw = 0;
   npix = 0;
   Transform tinv = t.inverse();
@@ -96,10 +94,17 @@ int BlobROI::nPixels() const {
   return npix;
 }
 
+QVector<bool> BlobROI::bitmap() const {
+  QVector<bool> dst(w*h);
+  bitmap(dst.data(), w*h);
+  return dst;
+}
+
 int BlobROI::bitmap(bool *dst, int dstSize) const {
   if (dstSize<w*h)
     return 0;
-  double *src = weight;
+  double const *src = weight.constData();
+  Q_ASSERT(weight.size()==w*h);
   for (int j=0; j<h; j++)
     for (int i=0; i<w; i++)
       *dst++ = *src++ >= 0.5;

@@ -9,6 +9,7 @@
 #include <base/keyaccess.h>
 #include <QDomElement>
 #include <QMap>
+#include <QVector>
 
 class DigitalData: public KeyAccess {
   /*:C DigitalData
@@ -38,8 +39,8 @@ public:
   /*:F readUInt32
    *:D Reads data back from a file previously written by writeUInt32.
    */
-  DataType const *allData() const { return data; }
-  DataType *allData(KeyAccess::WriteKey *) { return data; }
+  DataType const *allData() const { return data.constData(); }
+  DataType *allData(KeyAccess::WriteKey *) { return data.data(); }
   /*:F unsigned long *allData()
    *:D Returns a pointer to all data, that is, to the first scan.
    *:R Pointer to data.
@@ -83,9 +84,8 @@ private:
   void ensureIDs();
 private:
   int32_t nscans;
-  int32_t nallocated;
   double fs_hz;
-  DataType *data;
+  QVector<DataType> data;
   DataType cmask;
   QMap<QString, unsigned int> id2line;
   QMap<unsigned int, QString> line2id;

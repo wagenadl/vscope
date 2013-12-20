@@ -69,7 +69,8 @@ public:
   /*:F Read
    *:D Reads polygon data from an xml element
    */
-  void build(int k, double *xx, double *yy);
+  void build(QVector<double> const &xx, QVector<double> const &yy);
+  void build(int k, double const *xx, double const *yy);
   /*:F build
    *:D Build a polygon from a set of k vertices. Interpolation to 2^log2n
        vertices is performed internally.

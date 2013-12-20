@@ -22,7 +22,7 @@ class CCDImage_ {
   class QRubberBand *rubberband; // used during zoom dragging
   QPoint clickPoint; // location of most recent mouse press
   double adjust_black, adjust_white;
-  int *gamma_table;
+  QVector<int> gamma_table;
 };
 
 class CCDImage: public QWidget, protected CCDImage_ {

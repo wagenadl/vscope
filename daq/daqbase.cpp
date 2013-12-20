@@ -15,28 +15,25 @@ void daqTry(int errcode, char const *issuer,
     throw exc;
   }
 
-  int n = DAQmxGetErrorString(errcode,0,0);
+  int n = DAQmxGetErrorString(errcode, 0, 0);
   if (n<0 || n>1000)
     n=1000;
+  QByteArray ar(n, 0);
+  int e = DAQmxGetErrorString(errcode, ar.data(), n);
+  QString daqerr = (e<0) ? "unknown" : QString(ar);
+  fprintf(stderr,"DAQ Problem #%i: '%s'\n", n, daqerr.toUtf8().constData());
 
-  char *data = memalloc<char>(n, "daqTry");
-  int e=DAQmxGetErrorString(errcode,data,n);
-  if (e<0)
-    sprintf(data,"Unknown.");
-  fprintf(stderr,"DAQ Problem #%i: '%s'\n",errcode,data);  
   if (errcode>0) {
     // this is a warning only
-    fprintf(stderr,"Warning: %s",issuer?issuer:"");
+    fprintf(stderr,"Warning: %s", issuer ? issuer : "");
     if (aux)
-      fprintf(stderr," (%s)",aux);
+      fprintf(stderr," (%s)", aux);
     if (msg)
-      fprintf(stderr,": %s",msg);
-    fprintf(stderr,": %s\n",data);
-    delete [] data;
+      fprintf(stderr,": %s", msg);
+    fprintf(stderr,": %s\n", daqerr.toUtf8().constData());
   } else {
     daqException exc(issuer, msg, aux);
-    exc.addMessage(data);
-    delete [] data;
+    exc.addMessage(daqerr);
     throw exc;
   }
 }

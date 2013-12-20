@@ -98,11 +98,11 @@ public:
   */
 protected:
   ROIData datDonor, datAcceptor;
-  mutable double *datRatio;
+  mutable QVector<double> datRatio;
   DEBLEACH debleach;
-  int nRatio;
   double t0Ratio_ms, dtRatio_ms;
   mutable bool validRatio;
+  bool haveRatio;
 };
 
 #endif

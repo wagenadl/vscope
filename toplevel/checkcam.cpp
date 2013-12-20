@@ -5,17 +5,16 @@
 
 #include <QLabel>
 #include <QStringList>
+#include <QList>
 
 #include <base/dbg.h>
 #include <pvp/campool.h>
 #include <pvp/camera.h>
 #include <toplevel/globals.h>
 #include <xml/connections.h>
-#include <base/memalloc.h>
 
 static QLabel *lbl = 0;
-static QLabel **camlbls = 0;
-static int ncameras = 0;
+static QList<QLabel *> camlbls;
 
 QStringList checkcam() {
   QStringList list;
@@ -81,23 +80,14 @@ void checkcam(QWidget *dest) {
   lbl->setText(s);
   
   int ncams = list.size();
-  if (ncams != ncameras) {
-    if (camlbls)
-      delete [] camlbls;
-    if (ncams>0) {
-      camlbls = memalloc<QLabel*>(ncams, "checkcam");
-      for (int i=0; i<ncams; i++)
-	camlbls[i]=0;
-    }
-    ncameras = ncams;
-  }
+  while (camlbls.size()>ncams) 
+    delete camlbls.takeLast();
+  while (camlbls.size()<ncams) 
+    camlbls << new QLabel(dest);
 
   for (int i=0; i<ncams; i++) {
-    if (!camlbls[i])
-      camlbls[i] = new QLabel(dest);
     camlbls[i]->setGeometry(10+i*(wid-20)/ncams,40,(wid-20)/ncams, hei-50);
-    QString s = list.takeFirst();
-    camlbls[i]->setText(s);
+    camlbls[i]->setText(list[i]);
     camlbls[i]->show();
   }
 }

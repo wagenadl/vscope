@@ -5,13 +5,6 @@
 #include <base/object.h>
 #include <QQueue>
 
-/* Note that these classes cannot use memalloc<...>, because that could easily
-   lead to terrible recursion during error handling. */
-
-//#include <iostream>
-//#include <fstream>
-//using namespace std;
-
 #include <errno.h>
 
 #ifdef vsdLINUX

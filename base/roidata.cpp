@@ -7,7 +7,6 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 #include <base/blobroi.h>
-#include <base/memalloc.h>
 #include <base/range.h>
 
 inline double sq(double x) { return x*x; }
@@ -93,40 +92,27 @@ bool ROIData::ensureBitmap() const {
 
 //////////////////////////////////////////////////////////////////////
 ROIData::DataCache::DataCache() {
-  dat = 0;
-  len = 0;
 }
 
 ROIData::DataCache::~DataCache() {
-  if (dat)
-    delete [] dat;
 }
 
-void ROIData::DataCache::resize(int len_) {
-  if (len_==len)
+void ROIData::DataCache::resize(int len) {
+  if (len == dat.size())
     return;
 
-  if (dat)
-    delete [] dat;
-  dat = 0;
-  
-  len = len_;
-  if (len>0) 
-    dat = memalloc<double>(len, "ROIData");
+  dat.resize(len);
   valid = len==0;
 }
 
 //////////////////////////////////////////////////////////////////////
 ROIData::BitmapCache::BitmapCache() {
-  bm = 0;
   roi = 0;
   blobROI = 0;
   haveTransformAndClip = 0;
 }
 
 ROIData::BitmapCache::~BitmapCache() {
-  if (bm)
-    delete bm;
   if (blobROI)
     delete blobROI;
 }
@@ -171,19 +157,8 @@ void ROIData::BitmapCache::makePolyBitmap(PolyBlob const &blob) {
   int h1 = blobROI->bitmapH();
   npix = blobROI->nPixels();
 
-  if (bm && rec.width()*rec.height() != w1*h1) {
-    delete bm;
-    bm = 0;
-  }
   rec = QRect(xl, yt, w1, h1);
-  int rectpix = w1*h1;
-  if (!bm)
-    bm = memalloc<bool>(rectpix, "ROIData");
-  int r = blobROI->bitmap(bm, rectpix);
-  if (r!=rectpix)
-    throw Exception("ROIData",
-		    QString("Unexpected bm size: %1 instead of %2*%3")
-		    .arg(r).arg(w1).arg(h1));
+  bm = blobROI->bitmap();
   valid = true;
 }      
 
@@ -199,15 +174,10 @@ void ROIData::BitmapCache::makeXYRRABitmap(XYRRA const &roi) {
   int yb = rangelimit(ceili(bb.bottom()),clip.top(),clip.bottom()+1);
   int w1 = xr-xl;
   int h1 = yb-yt;
-  if (bm && rec.width()*rec.height() != w1*h1) {
-    delete bm;
-    bm = 0;
-  }
   rec = QRect(xl, yt, w1, h1);
   int rectpix = rec.width()*rec.height();
-  if (!bm) 
-    bm = memalloc<bool>(rectpix, "ROIData");
-  bool *ptr = bm;
+  bm.resize(rectpix);
+  bool *ptr = bm.data();
   double cs = cos(xyrra.a);
   double sn = sin(xyrra.a);
   npix = 0;

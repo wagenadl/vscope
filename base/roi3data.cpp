@@ -2,21 +2,17 @@
 
 #include "roi3data.h"
 #include <base/ccddata.h>
-#include <base/memalloc.h>
 #include <base/dbg.h>
 
 ROI3Data::ROI3Data() {
-  datRatio=0;
-  nRatio=0;
   t0Ratio_ms = 0;
   dtRatio_ms = 0;
   validRatio=false;
   debleach=DB_None;
+  haveRatio = false;
 }
 
 ROI3Data::~ROI3Data() {
-  if (datRatio)
-    delete [] datRatio;
 }
 
 void ROI3Data::setROI(ROICoords const *roi) {
@@ -42,13 +38,12 @@ void ROI3Data::updateData() {
   bool useDonor = datDonor.haveData();
   t0Ratio_ms = useDonor ? getDonorT0ms() : getAcceptorT0ms();
   dtRatio_ms = useDonor ? getDonorDTms() : getAcceptorDTms();
-  int newNRatio = useDonor ? getDonorNFrames() : getAcceptorNFrames();
-  if (newNRatio != nRatio) {
-    if (datRatio)
-      delete datRatio;
-    datRatio = 0;
-    nRatio = newNRatio;
+  haveRatio = useDonor && getDonorNFrames() == getAcceptorNFrames();
+  if (datDonor.haveData() && datAcceptor.haveData() && !haveRatio) {
+    Dbg() << "ROI3Data cannot yet ratio if frame count doesn't match.";
+    Dbg() << "Returning unratioed donor data.";
   }
+  datRatio.resize(haveRatio ? getDonorNFrames() : 0);
   validRatio = false;
 }
 
@@ -90,7 +85,15 @@ double ROI3Data::getDonorDTms() const {
 }
 
 int ROI3Data::getRatioNFrames() const {
-  return nRatio;
+  if (haveRatio)
+    return datRatio.size();
+  else if (datDonor.haveData())
+    return getDonorNFrames();
+  else if (datAcceptor.haveData())
+    return getAcceptorNFrames();
+  else
+    return 0;
+
 }
 
 double ROI3Data::getRatioT0ms() const {
@@ -108,41 +111,26 @@ double const *ROI3Data::dataAcceptor() const {
 
 
 double const *ROI3Data::dataRatio() const {
-  //Dbg() << "ROI3Data::dataRatio valid="<<validRatio
-  //	<< " donor.have="<<datDonor.haveData()
-  //	<< " donor.data="<<dataDonor()
-  //	<< " donor.n="<<datDonor.getNFrames()
-  //	<< " acc.have="<<datAcceptor.haveData()
-  //	<< " acc.data="<<dataAcceptor()
-  //	<< " acc.n="<<datAcceptor.getNFrames()
-  //	<< " datRatio="<<datRatio
-  //	<< " nRatio="<<nRatio;
   if (validRatio)
-    return datRatio;
+    return datRatio.constData();
 
-  if (!datDonor.haveData() || !datAcceptor.haveData()) {
-    if (datDonor.haveData())
-      return dataDonor();
-    else if (datAcceptor.haveData())
-      return dataAcceptor();
-    else
-      return 0;
-  }
-
-  if (nRatio==0)
+  if (haveRatio) {
+    double const *dd = dataDonor();
+    double const *da = dataAcceptor();
+    double *dr = datRatio.data();
+    int N = datRatio.size();
+    for (int n=0; n<N; n++)
+      *dr++ = *dd++ - *da++;
+    
+    validRatio = true;
+    return datRatio.constData();
+  } else if (datDonor.haveData()) {
+    return dataDonor();
+  } else if (datAcceptor.haveData()) {
+    return dataAcceptor();
+  } else {
     return 0;
-
-  if (!datRatio) 
-    datRatio = memalloc<double>(nRatio, "ROI3Data");
-
-  double const *dd = dataDonor();
-  double const *da = dataAcceptor();
-  
-  for (int n=0; n<nRatio; n++)
-    datRatio[n] = dd[n] - da[n];
-
-  validRatio = true;
-  return datRatio;
+  }
 }
 
 Range ROI3Data::timeRange() const {

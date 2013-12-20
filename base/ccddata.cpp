@@ -2,7 +2,6 @@
 
 #include "ccddata.h"
 #include <base/exception.h>
-#include <base/memalloc.h>
 #include <base/dbg.h>
 #include <base/unitqty.h>
 
@@ -11,22 +10,16 @@ CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   parpix = parpix_;
   nframes = nframes_;
   framepix = serpix*parpix;
-  allocpix = framepix*nframes;
-  data = 0;
-  data = memalloc<uint16_t>(allocpix, "CCDData:: constructor");
+  data.resize(framepix*nframes);
   t0_ms = 0;
   dt_ms = 0; // default value: meaningless on purpose
 }
 
 bool CCDData::reshape(int ser, int par, int nfr, bool free) {
   int needed = ser*par*nfr;
-  bool realloc = needed>allocpix || (needed<allocpix && free);
-  if (realloc) {
-    delete [] data;
-    data=0;
-    allocpix = needed;
-    data = memalloc<uint16_t>(allocpix, "CCDData::reshape");
-  }
+  bool realloc = needed>data.size() || (needed<data.size() && free);
+  if (realloc)
+    data.resize(needed);
   serpix = ser;
   parpix = par;
   framepix = ser*par;
@@ -36,28 +29,28 @@ bool CCDData::reshape(int ser, int par, int nfr, bool free) {
 }
 
 CCDData::~CCDData() {
-  if (data)
-    delete [] data;
 }
 
 uint16_t const *CCDData::frameData(int frame) const {
   if (frame<0)
-    return data;
+    return data.constData();
   else if (frame<nframes)
-    return data + frame*framepix;
+    return data.constData() + frame*framepix;
   else
-    throw Exception("CCDData","Bad frame number","frameData");
+    throw Exception("CCDData", "Bad frame number: " + QString::number(frame),
+                    "frameData");
 
 }
 
 uint16_t *CCDData::frameData(WriteKey *key, int frame) {
   verifyKey(key,"frameData called with unknown key");
   if (frame<0)
-    return data;
+    return data.data();
   else if (frame<nframes)
-    return data + frame*framepix;
+    return data.data() + frame*framepix;
   else
-    throw Exception("CCDData","Bad frame number","frameData");
+    throw Exception("CCDData","Bad frame number: " + QString::number(frame),
+                    "frameData");
 }
 
 void CCDData::setTimeBase(double t0, double dt) {
@@ -87,7 +80,8 @@ QDomElement CCDData::write(QFile &f, QDomElement dst) const {
   t.write(dst);
 
   int nbytes = nframes*serpix*parpix*2;
-  if (f.write((char const*)data, nbytes) != nbytes)
+  Q_ASSERT(data.size()>=serpix*parpix*nframes);
+  if (f.write((char const*)data.constData(), nbytes) != nbytes)
     throw Exception("CCDData","Cannot write to file");
   
   return dst;
@@ -134,7 +128,8 @@ void CCDData::read(QFile &f, QDomElement src) {
   setDataToCanvas(t);
   
   int nbytes = nfrm*nser*npar*2;
-  if (f.read((char*)data, nbytes) != nbytes)
+  Q_ASSERT(data.size() >= nfrm*nser*npar);
+  if (f.read((char*)data.data(), nbytes) != nbytes)
     throw Exception("CCDData", "Cannot read CCD data");
 }
 

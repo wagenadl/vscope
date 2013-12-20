@@ -100,7 +100,6 @@ bool Taperbank::couldExist(TaperID const &id) {
 }
 
 bool Taperbank::canProvide(TaperID const &id, bool guarantee) {
-  Dbg() << "Taperbank::canProvide: " << id.name() << " K="<<id.K;
   if (contains(id))
     return true;
 

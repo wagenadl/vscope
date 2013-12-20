@@ -1,8 +1,6 @@
 // polyblob.cpp
 
 #include "polyblob.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 #include <base/numbers.h>
 #include <base/minmax.h>
@@ -12,7 +10,6 @@
 #include <QDomDocument>
 #include <QPainter>
 #include <base/dbg.h>
-#include <base/memalloc.h>
 #include <base/transform.h>
 
 #define POLYBLOB_SCALE  50.0
@@ -141,13 +138,17 @@ void polyblob_rphi::set(double x_, double y_, double x0, double y0) {
     phi += 2*numbers.pi;
 }
 
-int polyblob_rphi_cmp(void const *a, void const *b) {
-  polyblob_rphi const *aa = (polyblob_rphi const*)a;
-  polyblob_rphi const *bb = (polyblob_rphi const*)b;
-  return (aa->phi < bb->phi) ? -1 : (aa->phi > bb->phi) ? 1 : 0;
+int polyblob_rphi_cmp(polyblob_rphi const &a, polyblob_rphi const &b) {
+  double dif = a.phi - b.phi;
+  return dif>0 ? 1 : dif<0  ? -1 : 0;
 }
 
-void PolyBlob::build(int k, double *xx, double *yy) {
+void PolyBlob::build(QVector<double> const &xx, QVector<double> const &yy) {
+  Q_ASSERT(xx.size()==yy.size());
+  build(xx.size(), xx.constData(), yy.constData());
+}
+
+void PolyBlob::build(int k, double const *xx, double const *yy) {
   double x0=0;
   for (int j=0; j<k; j++)
     x0+=xx[j]/k;
@@ -155,19 +156,17 @@ void PolyBlob::build(int k, double *xx, double *yy) {
   for (int j=0; j<k; j++)
     y0+=yy[j]/k;
 
-  polyblob_rphi *src = memalloc<polyblob_rphi>(k+1, "PolyBlob");
+  QVector<polyblob_rphi> src(k+1);
   for (int j=0; j<k; j++)
-    src[j].set(xx[j],yy[j],x0,y0);
-  qsort((void*)src, k, sizeof(polyblob_rphi), &polyblob_rphi_cmp);
+    src[j].set(xx[j], yy[j], x0, y0);
+  qSort(src.begin(), src.end()-1, polyblob_rphi_cmp);
   src[k] = src[0];
   src[k].phi += 2*numbers.pi;
-  //  fprintf(stderr,"sorted, building\n");
   for (int j=0; j<k; j++) {
     double phi0 = src[j].phi;
     double phi1 = src[j+1].phi;
     int i0 = ceili(phi0*n/(2*numbers.pi));
     int i1 = ceili(phi1*n/(2*numbers.pi));
-    //    fprintf(stderr,"j=%i phi0=%g phi1=%g i0=%i i1=%i\n",j,phi0,phi1,i0,i1);
     for (int i=i0; i<i1; i++) {
       double phi = i*2*numbers.pi/n;
       double a = (phi-phi0) / (phi1-phi0+1e-20);
@@ -179,7 +178,6 @@ void PolyBlob::build(int k, double *xx, double *yy) {
     }
   }
   recalc_center();
-  delete [] src;
 }
 
 void PolyBlob::recalc_center() {
