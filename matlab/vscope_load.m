@@ -99,12 +99,16 @@ elseif endswith(ifn,'.xml')
     end
   end
   fclose(ifd);
+  
   roifn = strrep(ifn,'.xml','-rois.xml');
   if exist(roifn)
     ifd = fopen(roifn,'r');
     dat.rois = vsdl_rois(ifd);
     fclose(ifd);
   end
+
+  dat.ccd.info.frame_s = vsdl_getframetimes(dat);
+
 else
   fclose(ifd);
   error(['vscope_load: Unknown filetype "' ifn '"']);
@@ -714,4 +718,30 @@ if scl==0
   scl = 1;
   uni = 'mV';
   fprintf(1,'Warning: assuming scale=1 mV.\n');
+end
+
+
+function t = vsdl_frametimes(dat)
+t = cell(0,0);
+if ~isfield(dat, 'ccd')
+  return;
+end
+if ~isfield(dat, 'digital')
+  return;
+end
+
+ids = dat.ccd.info.camid;
+lines = dat.digital.info.lineid;
+fhz = dat.digital.info.rate_hz;
+
+C = length(ids);
+K = length(lines);
+t = cell(C,1);
+for c=1:C
+  idx = find(strcmp(['Frame:' ids{c}], lines));
+  if length(idx)==1
+    dd = bitand(dat.digital.dat, uint32(2^(idx-1))) > 0;
+    [iup, idn] = schmitt(dd);
+    t{c} = (iup-1)/fhz;
+  end
 end
