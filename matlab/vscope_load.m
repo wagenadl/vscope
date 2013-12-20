@@ -465,13 +465,17 @@ if nargin<5
 end
 
 kv = vsdl_params(str);
+ncams  = atoi(vsdl_getval(kv,'cameras'));
+% Following may be overwritten by the actual camera defs, and they may
+% not be defined yet
 ntypebyt = atoi(vsdl_getval(kv,'typebytes'));
 nframes  = atoi(vsdl_getval(kv,'frames'));
 npar  = atoi(vsdl_getval(kv,'parpix'));
 nser  = atoi(vsdl_getval(kv,'serpix'));
-ncams  = atoi(vsdl_getval(kv,'cameras'));
 rate = vsdl_getval(kv,'rate');
+typ = vsdl_getval(kv,'type');
 
+% Following is just for old styles
 flipx = zeros(ncams,1); flipx(1) = johnsscope;
 flipy = zeros(ncams,1); flipy(1) = ~johnsscope;
 for c=1:ncams
@@ -481,13 +485,12 @@ for c=1:ncams
   ccd.info.xform{c}.by=0;
 end
 
-typ = vsdl_getval(kv,'type');
 if isempty(rate)
-    ccd.info.rate_hz = cell(ncams,1);
-    ccd.info.delay_ms = cell(ncams,1);
+  ccd.info.rate_hz = cell(ncams,1);
+  ccd.info.delay_ms = cell(ncams,1);
 else
-    ccd.info.rate_hz = vsdl_freq(rate);
-    ccd.info.delay_ms = vsdl_time(vsdl_getval(kv,'delay'));
+  ccd.info.rate_hz = vsdl_freq(rate);
+  ccd.info.delay_ms = vsdl_time(vsdl_getval(kv,'delay'));
 end
 ccd.info.camid = cell(ncams,1);
 ccd.info.ncams = ncams;
@@ -510,7 +513,7 @@ while 1
     kv = vsdl_params(str);
     idx = atoi(vsdl_getval(kv,'idx'));
     if isnan(idx)
-        idx=idx0;
+        idx = idx0;
         idx0 = idx0 + 1;
     end
     id = vsdl_getval(kv,'name');
@@ -518,12 +521,6 @@ while 1
     if isnan(npar)
       % New style
       cnframes  = atoi(vsdl_getval(kv,'frames'));
-      if cnframes==0
-	ncams = ncams - 1;
-	ccd.info.ncams = ccd.info.ncams - 1;
-	idx0 = idx0 - 1;
-	continue;
-      end
       cnpar  = atoi(vsdl_getval(kv,'parpix'));
       cnser  = atoi(vsdl_getval(kv,'serpix'));
       ccd.info.pix{idx+1} = [cnser cnpar];
@@ -535,30 +532,30 @@ while 1
       typ=typ1;
     
       if isempty(rate)
-          % Newer style (r100+)
-          ccd.info.rate_hz{idx+1} = vsdl_freq(vsdl_getval(kv,'rate'));
-          ccd.info.delay_ms{idx+1} = vsdl_time(vsdl_getval(kv,'delay'));
-          while 1
-              str = fgetl(ifd);
-              if ~ischar(str)
-                  break;
-              elseif ~isempty(findstr(str,'</camera'))
-                  break;
-              elseif ~isempty(findstr(str,'transform'))
-                kv = vsdl_params(str);
-                flipx(idx+1) = atoi(vsdl_getval(kv,'ax'))<0;
-                flipy(idx+1) = atoi(vsdl_getval(kv,'ay'))<0;
-		ccd.info.xform{idx+1}.ax = atoi(vsdl_getval(kv,'ax'));
-		ccd.info.xform{idx+1}.ay = atoi(vsdl_getval(kv,'ay'));
-		ccd.info.xform{idx+1}.bx = atoi(vsdl_getval(kv,'bx'));
-		ccd.info.xform{idx+1}.by = atoi(vsdl_getval(kv,'by'));
-              end
+        % Newer style (r100+)
+        ccd.info.rate_hz{idx+1} = vsdl_freq(vsdl_getval(kv,'rate'));
+        ccd.info.delay_ms{idx+1} = vsdl_time(vsdl_getval(kv,'delay'));
+        while 1
+          str = fgetl(ifd);
+          if ~ischar(str)
+            break;
+          elseif ~isempty(findstr(str,'</camera'))
+            break;
+          elseif ~isempty(findstr(str,'transform'))
+            kv = vsdl_params(str);
+            flipx(idx+1) = atoi(vsdl_getval(kv,'ax'))<0;
+            flipy(idx+1) = atoi(vsdl_getval(kv,'ay'))<0;
+            ccd.info.xform{idx+1}.ax = atoi(vsdl_getval(kv,'ax'));
+            ccd.info.xform{idx+1}.ay = atoi(vsdl_getval(kv,'ay'));
+            ccd.info.xform{idx+1}.bx = atoi(vsdl_getval(kv,'bx'));
+            ccd.info.xform{idx+1}.by = atoi(vsdl_getval(kv,'by'));
           end
+        end
       else
-	fx = vsdl_getval(kv,'flipx');
-	if ~isempty(fx)
+        fx = vsdl_getval(kv,'flipx');
+        if ~isempty(fx)
 	  flipx(idx+1) = vsdl_bool(fx);
-	end
+        end
 	fy = vsdl_getval(kv,'flipy');
 	if ~isempty(fy)
 	  flipy(idx+1) = vsdl_bool(fy);
@@ -586,34 +583,50 @@ if getdat && ncams>0
   
   if isnan(npar)
     % New style, with information for individual cameras
-    nser = ccd.info.pix{1}(1);
-    npar = ccd.info.pix{1}(2);
-    nframes = ccd.info.nframes{1};
-    for k=2:ncams
-      if ccd.info.pix{k}(1)~=nser || ccd.info.pix{k}(2)~=npar
-	error('vscope_load: cannot deal with unequal frame sizes');
+    nser = 0;
+    npar = 0;
+    nframes = 0;
+    for k=1:ncams
+      if isempty(ccd.info.pix{k})
+        ccd.info.pix{k} = [0 0];
       end
-      if ccd.info.nframes{k}~=nframes
-	error('vscope_load: cannot deal with unequal frame counts');
+      if ccd.info.pix{k}(1)>nser
+        nser = ccd.info.pix{k}(1);
+      end
+      if ccd.info.pix{k}(2)>npar
+        nper = ccd.info.pix{k}(2);
+      end
+      if ccd.info.nframes{k}>nframes
+        nframes = ccd.info.nframes{k};
       end
     end
     newstyle = 1;
     perm=[2 1 4 3];
     siz=[nser npar nframes ncams];
+    ccd.dat = zeros(siz, typ) + nan;
+    for k=1:ncams
+      ns1 = ccd.info.pix{k}(1);
+      np1 = ccd.info.pix{k}(2);
+      nf1 = ccd.info.nframes{k};
+      if ns1*np1*nf1>0
+        dat = fread(ifd, [ns1*np1 nf1], typ);
+        ccd.dat(1:ns1, 1:np1, 1:nf1, k) = reshape(dat,[ns1 np1 nf1]);
+      end
+    end
   else
     newstyle = 0;
     perm=[2 1 3 4];
     siz=[nser npar ncams nframes];
+    ccd.dat = fread(ifd,[nser*npar ncams*nframes],typ);
+    ccd.dat = reshape(ccd.dat,siz);
   end
-  ccd.dat = fread(ifd,[nser*npar ncams*nframes],typ);
-  ccd.dat = reshape(ccd.dat,siz);
   ccd.dat = permute(ccd.dat,perm);
-  
+
   for k=1:ncams
     if flipy(k)
       ccd.dat(:,:,k,:) = ccd.dat(end:-1:1,:,k,:);
-      ccd.info.xform{k}.ay=-ccd.info.xform{k}.ay;
-      ccd.info.xform{k}.by=ccd.info.xform{k}.by ...
+      ccd.info.xform{k}.ay = -ccd.info.xform{k}.ay;
+      ccd.info.xform{k}.by = ccd.info.xform{k}.by ...
 	  - ccd.info.xform{k}.ay*ccd.info.pix{k}(2);
     end
     if flipx(k)
