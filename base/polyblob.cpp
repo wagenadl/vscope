@@ -138,9 +138,8 @@ void polyblob_rphi::set(double x_, double y_, double x0, double y0) {
     phi += 2*numbers.pi;
 }
 
-int polyblob_rphi_cmp(polyblob_rphi const &a, polyblob_rphi const &b) {
-  double dif = a.phi - b.phi;
-  return dif>0 ? 1 : dif<0  ? -1 : 0;
+int polyblob_rphi_less(polyblob_rphi const &a, polyblob_rphi const &b) {
+  return a.phi < b.phi;
 }
 
 void PolyBlob::build(QVector<double> const &xx, QVector<double> const &yy) {
@@ -151,17 +150,18 @@ void PolyBlob::build(QVector<double> const &xx, QVector<double> const &yy) {
 void PolyBlob::build(int k, double const *xx, double const *yy) {
   double x0=0;
   for (int j=0; j<k; j++)
-    x0+=xx[j]/k;
+    x0 += xx[j]/k;
   double y0=0;
   for (int j=0; j<k; j++)
-    y0+=yy[j]/k;
+    y0 += yy[j]/k;
 
   QVector<polyblob_rphi> src(k+1);
   for (int j=0; j<k; j++)
     src[j].set(xx[j], yy[j], x0, y0);
-  qSort(src.begin(), src.end()-1, polyblob_rphi_cmp);
+  qSort(src.begin(), src.end()-1, polyblob_rphi_less);
   src[k] = src[0];
   src[k].phi += 2*numbers.pi;
+  
   for (int j=0; j<k; j++) {
     double phi0 = src[j].phi;
     double phi1 = src[j+1].phi;

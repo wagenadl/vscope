@@ -91,7 +91,6 @@ static bool ensureFocusCams() {
 
 void gt_slots::pgopen(QString p, QWidget *w) {
   try {
-    dbg("pgopen %s\n",qPrintable(p));
     if (p=="maintenance/checkDaq")
       checkdaq(w);
     else if (p=="maintenance/checkCam")
@@ -142,7 +141,6 @@ void gt_slots::pgopen(QString p, QWidget *w) {
 
 void gt_slots::pgclose(QString p, QWidget *) {
   try {
-    dbg("pgclose %s\n",qPrintable(p));
     if (p=="maintenance/liveEphys") {
       if (Globals::liveephys) {
         Globals::liveephys->deactivate();

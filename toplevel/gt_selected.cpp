@@ -44,7 +44,6 @@ void gt_slots::selected(QString p) {
 }  
 void gt_slots::deselected(QString p) {
   try {
-    dbg("deselected %s\n",qPrintable(p));
   } catch (Exception const &e) {
     report(e,"deselect button");
   }

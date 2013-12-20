@@ -70,9 +70,9 @@ private:
   public:
     BitmapCache();
     ~BitmapCache();
-    bool const *bitmap() const { return bm.constData(); }
-    QRect const &rect() const { return rec; }
-    int npixels() const { return npix; } // inside the ROI, not the bitmap
+    bool const *bitmap() const;
+    QRect const &rect() const;
+    int npixels() const;
     void setROI(ROICoords const *roi);
     void setTransformAndClip(Transform const &t, QRect const &clip);
     void unsetTransformAndClip();

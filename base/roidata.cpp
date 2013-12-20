@@ -36,22 +36,29 @@ void ROIData::setDebleach(DEBLEACH d) {
 }
 
 void ROIData::setData(CCDData const *src) {
-  if (src==0)
-    bitmap.unsetTransformAndClip();
-  else
-    bitmap.setTransformAndClip(src->dataToCanvas(),
-			       QRect(0,0, src->getSerPix(), src->getParPix()));
+  Dbg() << "ROIData("<<this<<"): setData("<<src<<")" << " - " << getNFrames();
   source = src;
   updateData();
 }
 
 void ROIData::updateData() {
+  Dbg() << "ROIData("<<this<<"): updateData - " << getNFrames();
+
+  // we used to do the following in setData, but that was a bug because
+  // ROIs didn't get the message that CCDData had changed shape.
+  if (source==0)
+    bitmap.unsetTransformAndClip();
+  else
+    bitmap.setTransformAndClip(source->dataToCanvas(),
+			       QRect(0,0, source->getSerPix(),
+                                     source->getParPix()));
   raw.invalidate();
   debleached.invalidate();
 }
 
 
 void ROIData::setROI(ROICoords const *roi) {
+  Dbg() << "ROIData("<<this<<"): setROI("<<roi<<")" << " - " << getNFrames();
   bitmap.setROI(roi);
   raw.invalidate();
   debleached.invalidate();
@@ -129,6 +136,7 @@ void ROIData::BitmapCache::unsetTransformAndClip() {
 
 void ROIData::BitmapCache::setTransformAndClip(Transform const &t_,
 					       QRect const &bb) {
+  Dbg() << "BitmapCache: transform" << t_ << bb << "("<<t<<clip<<")";
   if (haveTransformAndClip && t==t_ && clip==bb)
     return;
   t = t_;
@@ -136,6 +144,25 @@ void ROIData::BitmapCache::setTransformAndClip(Transform const &t_,
   haveTransformAndClip = true;
   valid = false;
 }
+
+bool const *ROIData::BitmapCache::bitmap() const {
+  if (!valid)
+    Dbg() << "ROIData::BitmapCache::bitmap: not valid";
+  return bm.constData();
+}
+
+QRect const &ROIData::BitmapCache::rect() const {
+  if (!valid)
+    Dbg() << "ROIData::BitmapCache::rect: not valid";
+  return rec;
+}
+
+int ROIData::BitmapCache::npixels() const {
+  if (!valid)
+    Dbg() << "ROIData::BitmapCache::npixels: not valid";
+  return npix;
+ }
+  
 
 void ROIData::BitmapCache::validator() {
   if (roi && roi->isBlob())
@@ -217,7 +244,7 @@ double const *ROIData::getRaw() const {
   int w = rect.width();
   int ymul = source->getSerPix();
   double sum1 = bitmap.npixels();
-    double *data = raw.data();
+  double *data = raw.data();
   for (int n=0; n<N; n++) {
     double sum=0;
     uint16_t const *srcfrm = source->frameData(n)
@@ -234,6 +261,8 @@ double const *ROIData::getRaw() const {
     }
     data[n] = (sum1>0) ? sum/sum1 : 0;
   }
+
+  Dbg() << "ROIData:raw" << rect << ymul << "/" << sum1;
 
   //  Dbg() << "ROIData: returning dataRaw=" << data;
 

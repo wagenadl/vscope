@@ -13,6 +13,7 @@ CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   data.resize(framepix*nframes);
   t0_ms = 0;
   dt_ms = 0; // default value: meaningless on purpose
+  Dbg() << "New CCDData" << this << serpix_ << parpix_ << nframes_;
 }
 
 bool CCDData::reshape(int ser, int par, int nfr, bool free) {
@@ -131,5 +132,7 @@ void CCDData::read(QFile &f, QDomElement src) {
   Q_ASSERT(data.size() >= nfrm*nser*npar);
   if (f.read((char*)data.data(), nbytes) != nbytes)
     throw Exception("CCDData", "Cannot read CCD data");
+
+  Dbg() << "CCDData " << this << "read";
 }
 

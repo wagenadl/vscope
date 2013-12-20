@@ -73,8 +73,6 @@ template <class X> void ti_trueblue(X const *data,
 				    int dataN, int step,
 				    double x0, double dx, int M,
 				    double *outmin, double *outmax) {
-  //dbg("ti_trueblue datax0=%g datadx=%g dataN=%i  x0=%g dx=%g M=%i",
-  //    datax0,datadx,dataN, x0,dx,M);
   if (dataN==0 || !data) {
     for (int m=0; m<M; m++) {
       outmin[m]=numbers.inf;
@@ -83,8 +81,6 @@ template <class X> void ti_trueblue(X const *data,
   } else {
     for (int m=0; m<M; m++) {
       int i0=int(floor(((x0+m*dx)-datax0) / datadx));
-      //if (m%30==0)
-      //  dbg("trueblue m=%i i0=%i",m,i0);
       if (i0>=dataN || i0<0) {
 	outmin[m]=1;//data[(dataN-1)*step];
 	outmax[m]=-1;//data[(dataN-1)*step];
@@ -104,8 +100,6 @@ template <class X> void ti_trueblue(X const *data,
 	}
 	outmin[m]=min;
 	outmax[m]=max;
-	//if (m%30==0)
-	//  dbg("ti_trueblue m=%i i0=%i i1=%i min=%g max=%g",m,i0,i1,min,max);
       }
     }
   }
@@ -117,8 +111,7 @@ void ti_trueblue_binary(uint32_t const *data, uint32_t bit,
 			double *outmin, double *outmax) {
   uint32_t one = 1;
   uint32_t mask = one<<bit;
-  //dbg("ti_trueblue datax0=%g datadx=%g dataN=%i  x0=%g dx=%g M=%i",
-  //    datax0,datadx,dataN, x0,dx,M);
+
   if (dataN==0 || !data) {
     for (int m=0; m<M; m++) {
       outmin[m]=numbers.inf;
@@ -127,8 +120,6 @@ void ti_trueblue_binary(uint32_t const *data, uint32_t bit,
   } else {
     for (int m=0; m<M; m++) {
       int i0=int(floor(((x0+m*dx)-datax0) / datadx));
-      //if (m%30==0)
-      //  dbg("trueblue m=%i i0=%i",m,i0);
       if (i0>=dataN) {
 	double v = (data[(dataN-1)*step]&mask) ? 1 : 0;
 	outmin[m]=outmax[m]=v;
@@ -151,8 +142,6 @@ void ti_trueblue_binary(uint32_t const *data, uint32_t bit,
 	}
 	outmin[m]=min;
 	outmax[m]=max;
-	//if (m%30==0)
-	//  dbg("ti_trueblue m=%i i0=%i i1=%i min=%g max=%g",m,i0,i1,min,max);
       }
     }
   }
@@ -168,6 +157,7 @@ TraceInfo::TraceInfo() {
 }
 
 void TraceInfo::report() const {
+#if 0
   //Dbg() << "TraceInfo("<<this<<")::report"
   //	<<" x0="<<datax0<< " dx="<<datadx
   //	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
@@ -194,6 +184,7 @@ void TraceInfo::report() const {
       break;
     }
   }
+#endif
 }
 
 void TraceInfo::setData(double datax0_, double datadx_,
@@ -203,9 +194,9 @@ void TraceInfo::setData(double datax0_, double datadx_,
   dataptr = dp_;
   N = dataptr.ptr.dp_none ? N_ : 0;
   step = step_;
-  Dbg() << "TraceInfo::setData. x0="<<datax0<< " dx="<<datadx
-  	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
-  	<<" N="<<N<<" step="<<step;
+  //Dbg() << "TraceInfo::setData. x0="<<datax0<< " dx="<<datadx
+  //	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
+  //	<<" N="<<N<<" step="<<step;
 }
 
 void TraceInfo::setScaleFactor(double sf) {

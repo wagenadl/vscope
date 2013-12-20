@@ -171,7 +171,6 @@ void MGAuto::newtraces() {
   AnalogData const *astim = Globals::trove->trial().analogStimuli();
   DigitalData const *dstim = Globals::trove->trial().digitalStimuli();
   double outrate_hz = Globals::ptree->find(PAR_OUTRATE).toDouble();
-  Dbg() << "MGAuto: outrate: " << outrate_hz;
 
   foreach (Channel c, pool) {
     if (actual.contains(c.id)) {
@@ -194,7 +193,6 @@ void MGAuto::newtraces() {
 	break;
       case Channel::AO:
 	if (astim) {
-	  Dbg() << "MGAuto: AO:"<< c.id<<": " << astim->contains(c.id) << "="<<astim->whereIsChannel(c.id)<<" scale="<<astim->getScaleAtIndex(astim->whereIsChannel(c.id));
 	  tr->setData(0,1/outrate_hz,
 		      DataPtr(astim->channelData(c.id)),
 		      astim->getNumScans(),
