@@ -36,13 +36,13 @@ void ROIData::setDebleach(DEBLEACH d) {
 }
 
 void ROIData::setData(CCDData const *src) {
-  Dbg() << "ROIData("<<this<<"): setData("<<src<<")" << " - " << getNFrames();
+  //  Dbg() << "ROIData("<<this<<"): setData("<<src<<")" << " - " << getNFrames();
   source = src;
   updateData();
 }
 
 void ROIData::updateData() {
-  Dbg() << "ROIData("<<this<<"): updateData - " << getNFrames();
+  //  Dbg() << "ROIData("<<this<<"): updateData - " << getNFrames();
 
   // we used to do the following in setData, but that was a bug because
   // ROIs didn't get the message that CCDData had changed shape.
@@ -58,7 +58,7 @@ void ROIData::updateData() {
 
 
 void ROIData::setROI(ROICoords const *roi) {
-  Dbg() << "ROIData("<<this<<"): setROI("<<roi<<")" << " - " << getNFrames();
+  //  Dbg() << "ROIData("<<this<<"): setROI("<<roi<<")" << " - " << getNFrames();
   bitmap.setROI(roi);
   raw.invalidate();
   debleached.invalidate();
@@ -136,7 +136,7 @@ void ROIData::BitmapCache::unsetTransformAndClip() {
 
 void ROIData::BitmapCache::setTransformAndClip(Transform const &t_,
 					       QRect const &bb) {
-  Dbg() << "BitmapCache: transform" << t_ << bb << "("<<t<<clip<<")";
+  //  Dbg() << "BitmapCache: transform" << t_ << bb << "("<<t<<clip<<")";
   if (haveTransformAndClip && t==t_ && clip==bb)
     return;
   t = t_;
@@ -262,7 +262,7 @@ double const *ROIData::getRaw() const {
     data[n] = (sum1>0) ? sum/sum1 : 0;
   }
 
-  Dbg() << "ROIData:raw" << rect << ymul << "/" << sum1;
+  //  Dbg() << "ROIData:raw" << rect << ymul << "/" << sum1;
 
   //  Dbg() << "ROIData: returning dataRaw=" << data;
 
@@ -282,6 +282,28 @@ double const *ROIData::getDebleachedDFF() const {
 
   double *dst = debleached.data();
   double const *src = raw.data();
+
+  /* Very often, the first one or two frames and certainly the last several
+     frames are messed up because of incorrect synchronization of the lamp.
+     Those frames should not be part of the debleach.
+     My algorithm is very simple. I will simply ignore the first two points
+     and the last two points. In addition, if the data drops below 90% of the
+     running mean at any point after N/2 points, I cut right there.     
+  */
+  int n0 = N<10 ? 1 : 2; // don't use first point(s)
+  int n1max = N<10 ? N-1 : N-2; // don't use last point(s)
+  int nused = 0;
+  int n1 = n0;
+  double sums = 0;
+  for (int n=n0; n<n1max; n++) {
+    double v = src[n];
+    if (nused>=N/2 && v*nused < 0.9*sums)
+      break;
+    nused ++;
+    sums += v;
+    n1 = n+1;
+  }
+  
   if (debleach == DB_None) {
     for (int n=0; n<N; n++)
       dst[n] = src[n];
@@ -311,12 +333,12 @@ double const *ROIData::getDebleachedDFF() const {
     */
     double t0 = double(N-1)/2;
     double sY=0;
-    for (int n=1; n<N-1; n++)
+    for (int n=n0; n<n1; n++)
       sY+=src[n];
-    double y0 = sY/(N-2);
+    double y0 = sY/nused;
 
     double sTT=0, sTY=0;
-    for (int n=1; n<N-1; n++) {
+    for (int n=n0; n<n1; n++) {
       sTT+=sq(n-t0);
       sTY+=(n-t0)*(src[n]-y0);
     }
@@ -367,14 +389,14 @@ double const *ROIData::getDebleachedDFF() const {
     */
     double t0 = double(N-1)/2;
     double sY=0, s1=0;
-    for (int n=1; n<N-1; n++) {
+    for (int n=n0; n<n1; n++) {
       sY+=src[n];
       s1++;
     }
     double y0 = sY/s1;
     double sTY=0, sTTY=0;
     double sTT=0, sTTTT=0;
-    for (int n=1; n<N-1; n++) {
+    for (int n=n0; n<n1; n++) {
       sTT+=sq(n-t0);
       sTTTT+=sq(sq(n-t0));
       double dy = src[n]-y0;
@@ -393,12 +415,12 @@ double const *ROIData::getDebleachedDFF() const {
 
   /* The final step is to normalize the debleached data. */
   double sY=0, sYY=0;
-  for (int n=1; n<N-1; n++) {
+  for (int n=n0; n<n1; n++) {
     double x = dst[n];
     sY+=x;
     sYY+=x*x;
   }
-  double avg = sY/(N-2);
+  double avg = sY/nused;
   //double var = (sYY-sY*sY/(N-2))/(N-2);
   //  dbg("getdebDFF: avg=%g var=%g",sY,avg,var);
 

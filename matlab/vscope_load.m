@@ -107,7 +107,7 @@ elseif endswith(ifn,'.xml')
     fclose(ifd);
   end
 
-  dat.ccd.info.frame_s = vsdl_getframetimes(dat);
+  dat.ccd.info.frame_s = vsdl_frametimes(dat);
 
 else
   fclose(ifd);
@@ -741,7 +741,8 @@ for c=1:C
   idx = find(strcmp(['Frame:' ids{c}], lines));
   if length(idx)==1
     dd = bitand(dat.digital.dat, uint32(2^(idx-1))) > 0;
-    [iup, idn] = schmitt(dd);
-    t{c} = (iup-1)/fhz;
+    [iup, idn] = schmitt(dd, [], [], 2);
+    imid = (iup+idn-1)/2;
+    t{c} = (imid-1)/fhz;
   end
 end

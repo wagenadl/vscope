@@ -405,27 +405,32 @@ void TrialData::refineCCDTiming() {
     if (ddataIn->hasLine(lineid)) {
       DigitalData::DataType msk = 1;
       msk <<= ddataIn->findLine(lineid);
-      int i0 = -1;
+      int i0 = -1; // will be index of first pulse start
       int n = 0;
-      int i1 = 0;
+      int i1 = 0; // will be index of last pulse start
+      int ie = -1; // will be index of first pulse end
       DigitalData::DataType const *ddat = ddataIn->allData();
       int N = ddataIn->getNumScans();
       bool old = false;
       for (int k=0; k<N; k++) {
 	bool now = (ddat[k] & msk) != 0;
 	if (now!=old) {
-	  if (now) {
+	  if (now) { // start of pulse
 	    if (i0<0)
 	      i0 = k;
 	    i1 = k;
 	    n++;
+	  } else { // end of pulse
+	    if (ie<0)
+	      ie = k;
 	  }
 	  old = now;
 	}
       }
       double f_hz = ddataIn->getSamplingFrequency();
       if (n>=2) 
-	ccddata[camid]->setTimeBase(1e3 * i0/f_hz, 1e3*(i1-i0)/(n-1)/f_hz);
+	ccddata[camid]->setTimeBase(1e3 * (i0+ie)/2/f_hz,
+				    1e3*(i1-i0)/(n-1)/f_hz);
       else
 	Dbg() << "Couldn't set timebase for " << camid << ": not enough frames";
     } else {

@@ -76,6 +76,8 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
   Dbg() << "AutoItems::rebuild " << enumerator->getName();
+  Dbg() << 1;
+  Dbg() << 2;
   foreach (QString id, ids) {
     Dbg() << " add " << id << "=" << enumerator->lookup(id);
     if (enumerator->lookup(id)>=0) {

@@ -185,9 +185,14 @@ void setupExptName() {
   while (d.exists(fpath + "/" + exptname + addn)) 
     addn = num2az(++adno);
   Globals::ptree->find("acquisition/exptname").set(exptname + addn);
+}
+
+void setupDbgFile() {
+  QString fpath = Globals::filePath();
+  QString exptname = Globals::ptree->find("acquisition/exptname").toString();
   if (!dbgfile)
     dbgfile = new DbgFile();
-  dbgfile->setDir(fpath + "/" + exptname + addn);
+  dbgfile->setDir(fpath + "/" + exptname);
 }
 
 void setupDAQ() {
@@ -463,6 +468,8 @@ int main(int argc, char **argv) {
     reportCameraSituation();
     reportDAQSituation();
 
+    setupDbgFile();
+    
     Dbg() << "Starting application";
     int res = app.exec();
     Dbg() << "Application done";

@@ -1,6 +1,6 @@
-function y = unpackbits(x)
-% UNPACKBITS - Unpack a bit array stored in uint32 to booleans
-%   y = UNPACKBITS(x) where X is an Nx1 or 1xN vector of uint32s
+function y = vscope_unpackbits(x)
+% VSCOPE_UNPACKBITS - Unpack a bit array stored in uint32 to booleans
+%   y = VSCOPE_UNPACKBITS(x) where X is an Nx1 or 1xN vector of uint32s
 %   returns a Nx32 or 32xN matrix of booleans with the bits of X
 %   unpacked.
 
