@@ -20,7 +20,7 @@
 #include <gui/videogui.h>
 #include <gfx/roiimages.h>
 #include <gfx/coherence.h>
-#include <toplevel/cohgraph.h>
+#include <gfx/cohgraph.h>
 #include <xml/enumerator.h>
 #include <acq/datatrove.h>
 #include <toplevel/scripts.h>

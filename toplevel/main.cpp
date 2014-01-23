@@ -56,7 +56,7 @@
 #include <toplevel/mgauto.h>
 #include <toplevel/vsdtraces.h>
 #include <gfx/coherence.h>
-#include <toplevel/cohgraph.h>
+#include <gfx/cohgraph.h>
 #include <toplevel/savedsettings.h>
 #include <toplevel/exptlog.h>
 #include <gfx/blackout.h>
