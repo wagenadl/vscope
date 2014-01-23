@@ -4,12 +4,13 @@
 
 #define COHERENCE_H
 
+#include <QSet>
+
 #include <gfx/ccdimage.h>
 #include <base/roidata.h>
 #include <gfx/roiimage.h>
 //#include <toplevel/globals.h>
 #include <math/cvec.h>
-#include <QSet>
 #include <base/ccdtiming.h>
 #include <base/enums.h>
 
