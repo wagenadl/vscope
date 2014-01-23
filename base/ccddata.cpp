@@ -13,6 +13,7 @@ CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   data.resize(framepix*nframes);
   t0_ms = 0;
   dt_ms = 0; // default value: meaningless on purpose
+  dur_ms = 0; // default value: meaningless on purpose
   Dbg() << "New CCDData" << this << serpix_ << parpix_ << nframes_;
 }
 
@@ -54,9 +55,10 @@ uint16_t *CCDData::frameData(WriteKey *key, int frame) {
                     "frameData");
 }
 
-void CCDData::setTimeBase(double t0, double dt) {
+void CCDData::setTimeBase(double t0, double dt, double dur) {
   t0_ms = t0;
   dt_ms = dt;
+  dur_ms = dur;
   emitUnlessCheckedOut();
 }
 
@@ -78,6 +80,7 @@ QDomElement CCDData::write(QFile &f, QDomElement dst) const {
   dst.setAttribute("parpix",QString::number(parpix));
   dst.setAttribute("delay",UnitQty(t0_ms,"ms").pretty());
   dst.setAttribute("rate",UnitQty(1/dt_ms,"kHz").pretty());
+  dst.setAttribute("framedur",UnitQty(dur_ms,"ms").pretty());
   t.write(dst);
 
   int nbytes = nframes*serpix*parpix*2;
@@ -113,9 +116,10 @@ void CCDData::read(QFile &f, QDomElement src) {
 
   double t0_ms = UnitQty::str2num(src.attribute("delay"),"ms");
   double rate_hz = UnitQty::str2num(src.attribute("rate"),"Hz");
+  double dur_ms = UnitQty::str2num(src.attribute("framedur"),"ms");
   
   reshape(nser, npar, nfrm);
-  setTimeBase(t0_ms, rate_hz ? 1e3/rate_hz : 1);
+  setTimeBase(t0_ms, rate_hz ? 1e3/rate_hz : 1, dur_ms);
   Transform t;
   if (src.hasAttribute("flipx")) {
     /* Old style format with flipx and flipy instead of full transform. */

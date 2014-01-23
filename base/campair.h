@@ -6,6 +6,7 @@
 
 #include <QString>
 #include <QHash>
+#include <QTextStream>
 
 class CamPair {
 public:
@@ -23,6 +24,11 @@ public:
 
 inline uint qHash(CamPair const &cp) {
   return qHash(cp.donor) + ~qHash(cp.acceptor);
+}
+
+inline QTextStream &operator<<(QTextStream &ts, CamPair const &cp) {
+  ts << (cp.donor + ":" + cp.acceptor);
+  return ts;
 }
 
 #endif

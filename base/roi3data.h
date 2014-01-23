@@ -52,20 +52,24 @@ public:
   int getRatioNFrames() const;
   double getRatioT0ms() const;
   double getRatioDTms() const;
-  /*:F getRatioNFrames, getRatioT0ms, getRatioDTms
+  double getRatioDurms() const;
+  /*:F getRatioNFrames, getRatioT0ms, getRatioDTms, getRatioDurms
    *:D Timing information of the ratio trace.
    *:D If there are two cameras, then the ratio trace is the ratio of donor
        over acceptor, or actually the dF/F of the donor minusthe dF/F of the
        acceptor. If there is only one camera, then the ratio trace is just the
        dF/F of that camera.
-   *:N There is no sign inversion even if the one camera is the acceptor.
+   *:D t0 is the start time of the first frame; dt is the frame period;
+       dur is the duration of each frame
    */
   int getAcceptorNFrames() const;
   double getAcceptorT0ms() const;
   double getAcceptorDTms() const;
+  double getAcceptorDurms() const;
   int getDonorNFrames() const;
   double getDonorT0ms() const;
   double getDonorDTms() const;
+  double getDonorDurms() const;
   Range timeRange() const;
   double const *dataDonor() const;
   /*:F dataDonor
@@ -100,7 +104,7 @@ protected:
   ROIData datDonor, datAcceptor;
   mutable QVector<double> datRatio;
   DEBLEACH debleach;
-  double t0Ratio_ms, dtRatio_ms;
+  double t0Ratio_ms, dtRatio_ms, durRatio_ms;
   mutable bool validRatio;
   bool haveRatio;
 };

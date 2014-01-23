@@ -429,8 +429,9 @@ void TrialData::refineCCDTiming() {
       }
       double f_hz = ddataIn->getSamplingFrequency();
       if (n>=2) 
-	ccddata[camid]->setTimeBase(1e3 * (i0+ie)/2/f_hz,
-				    1e3*(i1-i0)/(n-1)/f_hz);
+	ccddata[camid]->setTimeBase(1e3 * i0 / f_hz,
+				    1e3 * (i1-i0) / (n-1) / f_hz,
+				    1e3 * (ie-i0) / f_hz);
       else
 	Dbg() << "Couldn't set timebase for " << camid << ": not enough frames";
     } else {

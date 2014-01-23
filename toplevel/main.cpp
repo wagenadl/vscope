@@ -292,6 +292,7 @@ void setupCoherence() {
     setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
   Globals::coherence->
     setShowMode((SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt());
+  Globals::coherence->setCamPair(Connections::leaderCamPair());
   Globals::coherence->hide();
 
   Globals::cohgraph = new CohGraph(Globals::coherence->getData(),

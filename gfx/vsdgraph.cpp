@@ -97,17 +97,20 @@ void VSDGraph::paintEvent(class QPaintEvent *e) {
       bool plotAcceptor = d3->getAcceptorNFrames();
       bool plotRatio = d3->getRatioNFrames() && plotDonor && plotAcceptor;
       if (plotDonor)
-	trcDonor->setData(d3->getDonorT0ms()/1e3,
+	trcDonor->setData(d3->getDonorT0ms()/1e3
+			  + d3->getDonorDurms()/2e3,
 			  d3->getDonorDTms()/1e3,
 			  DataPtr(d3->dataDonor()),
 			  d3->getDonorNFrames());
       if (plotAcceptor)
-	trcAcceptor->setData(d3->getAcceptorT0ms()/1e3,
+	trcAcceptor->setData(d3->getAcceptorT0ms()/1e3
+			     + d3->getAcceptorDurms()/2e3,
 			     d3->getAcceptorDTms()/1e3,
 			     DataPtr(d3->dataAcceptor()),
 			     d3->getAcceptorNFrames());
       if (plotRatio)
-	trcRatio->setData(d3->getRatioT0ms()/1e3,
+	trcRatio->setData(d3->getRatioT0ms()/1e3
+			  + d3->getRatioDurms()/2e3,
 			  d3->getRatioDTms()/1e3,
 			  DataPtr(d3->dataRatio()),
 			  d3->getRatioNFrames());

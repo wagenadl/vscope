@@ -61,6 +61,7 @@ public:
   int getNFrames() const;
   double getT0ms() const;
   double getDTms() const;
+  double getDurms() const;
   Range timeRange() const;
   bool haveData() const;
 private:

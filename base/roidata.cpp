@@ -80,6 +80,10 @@ double ROIData::getDTms() const {
   return source ? source->getDTms() : 0;
 }
 
+double ROIData::getDurms() const {
+  return source ? source->getDurms() : 0;
+}
+
 Range ROIData::timeRange() const {
   if (source) 
     return Range(getT0ms(), getT0ms() + getDTms()*getNFrames());

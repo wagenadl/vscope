@@ -31,6 +31,7 @@ public:
    *:D Redraws the current image and any ROIs
    */
   class CohData /*const*/ *getData() const { return data; }
+  void setCamPair(class CamPair const &);
 public slots:
   void setRefTrace(QString achn);
   void setRefDigi(QString digiline);
@@ -61,6 +62,7 @@ private:
   class CohData *data;
   bool owndata;
   int selectedID;
+  CamPair cp;
 private: // these will not be implemented
   Coherence(Coherence const &other);
   Coherence &operator=(Coherence const &other);

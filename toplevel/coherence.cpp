@@ -67,6 +67,8 @@ void Coherence::paintEvent(QPaintEvent *e) {
   foreach (int id, roiset->ids()) {
     if (id<=0)
       continue; // this should not happen
+    if (roiset->cam(id) != cp)
+      continue; // only current camera
     ROICoords const &roi = roiset->get(id);
     QPointF xy = canvasToScreen()(roi.center());
     double pha = data->phase(id);
@@ -209,5 +211,10 @@ void Coherence::select(int id) {
 
 void Coherence::updateSelection(int id) {
   selectedID = id;
+  update();
+}
+
+void Coherence::setCamPair(CamPair const &c) {
+  cp = c;
   update();
 }

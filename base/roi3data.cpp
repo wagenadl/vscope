@@ -7,6 +7,7 @@
 ROI3Data::ROI3Data() {
   t0Ratio_ms = 0;
   dtRatio_ms = 0;
+  durRatio_ms = 0;
   validRatio=false;
   debleach=DB_None;
   haveRatio = false;
@@ -38,6 +39,7 @@ void ROI3Data::updateData() {
   bool useDonor = datDonor.haveData();
   t0Ratio_ms = useDonor ? getDonorT0ms() : getAcceptorT0ms();
   dtRatio_ms = useDonor ? getDonorDTms() : getAcceptorDTms();
+  durRatio_ms = useDonor ? getDonorDurms() : getAcceptorDurms();
   haveRatio = useDonor && getDonorNFrames() == getAcceptorNFrames();
   if (datDonor.haveData() && datAcceptor.haveData() && !haveRatio) {
     Dbg() << "ROI3Data cannot yet ratio if frame count doesn't match.";
@@ -72,6 +74,10 @@ double ROI3Data::getAcceptorDTms() const {
   return datAcceptor.getDTms();
 }
 
+double ROI3Data::getAcceptorDurms() const {
+  return datAcceptor.getDurms();
+}
+
 int ROI3Data::getDonorNFrames() const {
   return datDonor.getNFrames();
 }
@@ -82,6 +88,10 @@ double ROI3Data::getDonorT0ms() const {
 
 double ROI3Data::getDonorDTms() const {
   return datDonor.getDTms();
+}
+
+double ROI3Data::getDonorDurms() const {
+  return datDonor.getDurms();
 }
 
 int ROI3Data::getRatioNFrames() const {
@@ -100,8 +110,13 @@ double ROI3Data::getRatioT0ms() const {
   return t0Ratio_ms;
 }
 
+
 double ROI3Data::getRatioDTms() const {
   return dtRatio_ms;
+}
+
+double ROI3Data::getRatioDurms() const {
+  return durRatio_ms;
 }
 
 double const *ROI3Data::dataAcceptor() const {

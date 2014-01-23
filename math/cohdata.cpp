@@ -145,6 +145,8 @@ bool CohData::validate() const {
 			  tapers, data.fstar_hz[cp]);
 	  data.coh_mag[id] = cohest->magnitude[0];
 	  data.coh_pha[id] = cohest->phase[0];
+	//Dbg() << "CohData " << id << " / " << tid.name() << ": " << N 
+	//	<< dt_s << " @ " <<  df_hz << " @ " << data.fstar_hz[cp];
 	} else if (Taperbank::bank().couldExist(tid) &&
 		   !warned.contains(tid.name())) {
 	  Warning()
@@ -165,7 +167,7 @@ void CohData::recalcTiming() const {
   data.timing.clear();
 
   /* Our plan is to calculate the precise timing for each camera pair based
-     on actual frame times.
+     on actual frame times. (We can now get that straight from the ROIData.)
      In the end, this should be made more sophisticated to deal with cameras
      with unequal timing, but for now, I am going to assume that the timing
      of the ratio trace is what we must use.
@@ -193,68 +195,20 @@ void CohData::recalcTiming() const {
     if (example->getDonorNFrames())
       data.timing[cp]
 	.setFrames(example->getDonorNFrames())
-	.setTiming(example->getDonorT0ms(), example->getDonorDTms());
+	.setTiming(example->getDonorT0ms(),
+		   example->getDonorDTms(),
+		   example->getDonorDurms()*100.0/example->getDonorDTms());
     else
       data.timing[cp]
 	.setFrames(example->getAcceptorNFrames())
-	.setTiming(example->getAcceptorT0ms(), example->getAcceptorDTms());
-  }
-
-  // let's see if and what we can refine
-  if (!ddata)
-    return;
-
-  QMap<CamPair, int> framelines;
-  foreach (CamPair const &cp, campair_exemplars.keys()) {
-    int donorLine = digilines.contains(cp.donor)
-      ? digilines[cp.donor]
-      : -1;
-    int acceptorLine = digilines.contains(cp.acceptor)
-      ? digilines[cp.acceptor]
-      : -1;
-
-    int frameline = (donorLine>=0 && ddata->hasLine(donorLine))
-      ? donorLine
-      : (acceptorLine>=0 && ddata->hasLine(acceptorLine))
-      ? acceptorLine
-      : -1;
-
-    if (frameline<0)
-      continue;
-
-    // let's refine!
-    DigitalData::DataType const *src = ddata->allData();
-    int K = ddata->getNumScans();
-    DigitalData::DataType mask=1; mask<<=frameline;
-    bool ready = true;
-    int istart=-1;
-    int count=0;
-    int ilatest=-1;
-    for (int k=0; k<K; k++) {
-      if (ready) {
-	if (src[k] & mask) {
-	  if (istart<0)
-	    istart=k;
-	  else
-	    count++;
-	  ilatest=k;
-	  ready=false;
-	}
-      } else {
-	if (!(src[k] & mask)) {
-	  ready = true;
-	}
-      }
-    }
-    if (istart>=0 && count==data.timing[cp].nframes()-1) {
-      data.timing[cp].setTiming(istart*1000.0/data.timing[cp].fs_hz(),
-			   (ilatest-istart)*1000.0/count
-			   /data.timing[cp].fs_hz());
-    } else {
-      dbg("CohData: WARNING: Could not count CCD frames");
-      // I could give a GUI warning, but this probably only ever happens
-      // when there are no cameras. Even otherwise, the problem will be minor.
-    }
+	.setTiming(example->getAcceptorT0ms(),
+		   example->getAcceptorDTms(),
+		   example->getAcceptorDurms()
+		   *100.0/example->getAcceptorDTms());
+    Dbg() << "CohData: timing for " << cp << ": "
+	  << data.timing[cp].t0_ms() << " + "
+	  << data.timing[cp].dt_ms() << " / " 
+	  << data.timing[cp].duty_percent();
   }
 }  
 

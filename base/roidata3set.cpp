@@ -146,3 +146,20 @@ void ROIData3Set::updateROIs() {
     changeROIcore(id);
 }
 
+double ROIData3Set::getT0ms(QString camid) const {
+  if (d.ccdData.contains(camid)) {
+    return d.ccdData[camid]->getT0ms();
+  } else {
+    Dbg() << "Caution: ROIData3Set: no timing info for CCD" << camid;
+    return 0;
+  }
+}
+
+double ROIData3Set::getDTms(QString camid) const {
+  if (d.ccdData.contains(camid)) {
+    return d.ccdData[camid]->getDTms();
+  } else {
+    Dbg() << "Caution: ROIData3Set: no timing info for CCD" << camid;
+    return 0;
+  }
+}

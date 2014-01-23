@@ -41,6 +41,8 @@ public:
   bool haveData(int id) const;
   QList<int> allIDs() const;
   void setCCDData(QString camid, class CCDData const *data);
+  double getT0ms(QString camid) const;
+  double getDTms(QString camid) const;
 public slots:
   void updateROI(int id);
   void updateROIs();

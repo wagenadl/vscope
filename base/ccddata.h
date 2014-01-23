@@ -24,9 +24,11 @@ public:
    *:A True if reallocation occurred.
    *:N Emits newData() unless a key has been checked out.
    */
-  void setTimeBase(double t0_ms, double dt_ms);
+  void setTimeBase(double t0_ms, double dt_ms, double dur_ms=0);
   /*:F setTimeBase
    *:D Store timing information with the data.
+   *:D t0_ms is start of first frame, dt_ms is interval between frames,
+       dur_ms is duration of each frame.
    *:N Emits newData() unless a key has been checked out.
   */
   void setDataToCanvas(Transform const &t);
@@ -63,13 +65,14 @@ public:
   int getTotalPix() const { return nframes*framepix; }
   double getT0ms() const { return t0_ms; }
   double getDTms() const { return dt_ms; }
+  double getDurms() const { return dur_ms; }
 private:
   int serpix;
   int parpix;
   int nframes;
   int framepix;
   QVector<uint16_t> data;
-  double t0_ms, dt_ms;
+  double t0_ms, dt_ms, dur_ms;
   Transform t;
 };
 
