@@ -73,7 +73,10 @@ void ROISet::write(QDomElement dst) const {
     QDomElement e = doc.createElement("roi");
     dst.appendChild(e);
     e.setAttribute("id",QString("%1").arg(id));
-    e.setAttribute("cam",cams[id].donor + ":" + cams[id].acceptor);
+    QString pairid = cams[id].donor;
+    if (!cams[id].acceptor.isEmpty())
+      pairid += ":" + cams[id].acceptor;
+    e.setAttribute("cam", pairid);
     map[id].write(e);
   }
 }

@@ -9,7 +9,10 @@ function [dat] = vscope_extractrois(ccd, roi)
 
 if nargin==1
   roi = ccd.rois;
+  roicams = ccd.roicams;
   ccd = ccd.ccd;
+else
+  roicams = {};
 end
 
 PHOTONS_PER_DIGI = 4.25;
@@ -26,11 +29,13 @@ end
 
 ccd.dat = reshape(ccd.dat,[X*Y C T]);
 
-dat = zeros(T,N,C);
+dat = zeros(T,N,C) + nan;
 
 for n=1:N
   for c=1:C
-    dat(:,n,c) = squeeze(sum(ccd.dat(idx{n,c},c,:)-DIGI_BASE,1));
+    if isempty(roicams) || ~isempty(strmatch(ccd.info.camid{c}, roicams{n}, 'exact'))
+      dat(:,n,c) = squeeze(sum(ccd.dat(idx{n,c},c,:)-DIGI_BASE,1));
+    end
   end
 end
 

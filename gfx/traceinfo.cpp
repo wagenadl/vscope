@@ -253,15 +253,19 @@ Range TraceInfo::zoomrange99(double x0, double x1,
   if (N==0 || datadx==0)
     return Range();
   int n0 = int((x0-datax0)/datadx);
+  int n1 = int((x1-datax0)/datadx);
   if (n0<0)
     n0=0;
   else if (n0>N)
     n0=N;
-  int n1 = int((x1-datax0)/datadx);
+  if (N>=50 && n0<3 && n1>3)
+    n0 = 3;
   if (n1>N)
     n1=N;
   else if (n1<n0)
     n1=n0;
+  if (N>=50 && n1>N-3 && n0<N-3)
+    n1 = N-3;
   return range99(n0,n1,frc0,frc1);
 }
 

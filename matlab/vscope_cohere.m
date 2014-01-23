@@ -8,9 +8,9 @@ function str=vscope_cohere(x, ref, dff, ofnbase)
 %    loaded using VSCOPE_LOAD, or a structure loaded by VSCOPE_LOAD.
 %    VSCOPE_COHERE(x, ref, dff) prespecifies the signals. Otherwise, they
 %    are extracted using VSCOPE_RATIO with debleach set to 2.
-%    It is also allowed for REF to be a vector specifying a reference signal
-%    directly. In that case, REF must be the same length as the columns of
-%    DFF.
+%    REF may be a named signal (e.g., 'ME1_10Vm' as above), or a vector 
+%    specifying a reference signal directly. In that case, REF must be 
+%    the same length as the columns of DFF.
 %    VSCOPE_COHERE(..., ofnbase) saves the graphs
 %    str = VSCOPE_COHERE(...) returns the data
 %    If X is a number and OFNBASE is not given, it is automatically set.
@@ -61,7 +61,7 @@ title_string = sprintf('%s #%03i',x.info.expt, x.info.trial);
 e_phys_plot_tog=zeros(1,length(x.analog.info.channo));
 e_phys_plot_tog(chanidx)=1;
 
-N=length(x.rois);
+N=size(dff, 2);
 sig_labels=cell(N,1);
 for n=1:N
   if isnan(dff(1,n))
@@ -84,6 +84,7 @@ elseif ~isempty(f_star_hz)
   y_ref = sin(2*pi*tt*f_star);
 else
   y_ref = ref(2:end);
+  y_ref = y_ref(:); % Make column vector
 end
 y_ref = detrend(y_ref);
 
@@ -114,7 +115,7 @@ y_sigs(isnan(y_sigs))=rndn(isnan(y_sigs));
 
 % estimate the coherence
 [f_o,C_mag,C_phase,C_mag_lo,C_phase_lo,C_mag_hi,C_phase_hi]=...
-  coh_mtm0(tt,y_sigs,repmat(y_ref,[1 N]),f_res_coh,alpha_ci);
+  coh_mtm0(tt,y_sigs,y_ref,f_res_coh,alpha_ci);
 
 % calc the coherence magnitude threshold
 C_mag_thresh=...
@@ -136,14 +137,16 @@ C_phase_hi_star_corrected=C_phase_hi_star+phase_offset;
 
 % plot the ROI frame
 % plot both mag and phase on the ROIs
-mean_frame = mean(x.ccd.dat(:,:,1,:),4);
-vscope_cohrois(mean_frame,...
-    x.rois, ...
-    sig_labels, ...
-    C_mag_star,...
-    C_phase_star_corrected,...
-    C_mag_thresh,...
-    title_string);
+if length(x.rois) == size(y_sigs,2)
+  mean_frame = mean(x.ccd.dat(:,:,1,:),4);
+  vscope_cohrois(mean_frame,...
+      x.rois, ...
+      sig_labels, ...
+      C_mag_star,...
+      C_phase_star_corrected,...
+      C_mag_thresh,...
+      title_string);
+end
 
 % do the polar plot of coherence at f_star
 vscope_cohpolar(...

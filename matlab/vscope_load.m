@@ -95,7 +95,7 @@ elseif endswith(ifn,'.xml')
       johnsscope = any(wht=='j');
       dat.ccd = vsdl_ccd(str,ifd,ifn, any(wht=='c'), johnsscope);
     elseif ~isempty(strfind(str,'<rois'))
-      dat.rois = vsdl_rois(ifd); 
+      [dat.rois dat.roicams] = vsdl_rois(ifd); 
     end
   end
   fclose(ifd);
@@ -103,7 +103,7 @@ elseif endswith(ifn,'.xml')
   roifn = strrep(ifn,'.xml','-rois.xml');
   if exist(roifn)
     ifd = fopen(roifn,'r');
-    dat.rois = vsdl_rois(ifd);
+    [dat.rois, dat.roicams] = vsdl_rois(ifd);
     fclose(ifd);
   end
 
@@ -647,8 +647,9 @@ else
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function rr = vsdl_rois(ifd)
+function [rr, roicams] = vsdl_rois(ifd)
 rr=cell(0,0);
+roicams = cell(0, 0);
 while 1
   str = fgetl(ifd);
   if ~ischar(str)
@@ -662,6 +663,8 @@ while 1
     kv = vsdl_params(str);
     id = atoi(vsdl_getval(kv,'id'));
     n = vsdl_getval(kv,'n');
+    roicams{id} = strtoks(vsdl_getval(kv, 'cam'), ':');
+    
     if isempty(n)
       % This is xyrra
       x0 = str2num(vsdl_getval(kv,'x0'));

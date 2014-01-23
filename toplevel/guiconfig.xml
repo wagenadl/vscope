@@ -832,13 +832,7 @@
   <alias id="VSDTraces" label="VSD Traces"/>
   <alias id="Coherence" label="Coherence Map"/>
   <alias id="CohGraph" label="Coherence Graph"/>
-  <!-- This mechanism can't turn CCD-Cc into CCD: Coumarin.
-       Should I allow for aliases in connections.xml? Probably.
-       Also, perhaps in connections I should give cameras a short ID
-       and a longer name? Or should I generate alias for "CCD-Cc" on
-       the fly, at least to "CCD: Cc", or otherwise to what's stored
-       in the trialdata for CCD name? -->
-
+  <alias id="CCD-*" label="CCD: "/>
   <!-- For FocusMode -->
   <alias id="TwoFull" label="A and B Full"/>
   <alias id="AZoom" label="A and Zoom"/>

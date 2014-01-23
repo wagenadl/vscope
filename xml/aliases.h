@@ -14,7 +14,8 @@ public:
   static QString lookup(QString id);
   static bool has(QString id);
 private:
-  static QMap<QString,QString> map;
+  static QMap<QString, QString> map;
+  static QMap<QString, QString> wildcarded;
 };
 
 #endif

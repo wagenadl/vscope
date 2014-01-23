@@ -123,7 +123,7 @@ void VSDAllGraph::paintEvent(class QPaintEvent *e) {
   
   // Following is not really great, I think it may mess up zoom, but
   // where else can I reasonably do this?
-  autoSetYRange(0.05,0.10);
+  autoSetYRange(0.0,0.10);
   
   // Let LineGraph draw our stuff.
   LineGraph::paintEvent(e);
