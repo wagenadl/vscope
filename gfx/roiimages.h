@@ -12,37 +12,33 @@
 
 #include <base/enums.h>
 #include <gfx/roiimage.h>
+#include <gfx/ccdimages.h>
 
-class ROIImages: public QObject {
+class ROIImages: public CCDImages {
   Q_OBJECT;
 public:
   ROIImages(QRect canvas);
   virtual ~ROIImages();
   ROIImage *get(QString id);
   ROIImage *first();
-  QStringList ids() const;
   void add(QString id, ROIImage *img);
-  void del(QString id);
-  bool has(QString id) const;
-  QRect const &currentCanvas() const { return canvas; }
 public slots:
   void setMode(ROIImage::ClickMode cm);
   void showROIs(SHOWROIS sm);
-  void setCanvas(QRect const &r);
   void setROIs(class ROISet *);
   void updateZoom(QRect); // rectangle in global coords
   void updateSelection(int);
 signals:
   void newZoom(QRect); // rectangle in global coords
-  void newSelection(int);
+   void newSelection(int);
 private slots:
   void shareZoom(QString);
   void shareSelection(QString);
-private:
-  QMap<QString, ROIImage *> imgs;
-  QSignalMapper *zm;
+protected:
+  QList<ROIImage *> images();
+protected:
   QSignalMapper *sm;
-  QRect canvas;
+  QSignalMapper *zm;
 };
 
 #endif

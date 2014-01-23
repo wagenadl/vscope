@@ -40,6 +40,8 @@ public slots:
   void updateSelection(int);
 signals:
   void newSelection(int);
+public:
+  int currentROI() const { return selectedID; }
 protected:
   virtual void mouseReleaseEvent(class QMouseEvent *);
   /*:F mouseReleaseEvent

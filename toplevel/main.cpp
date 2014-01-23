@@ -55,7 +55,7 @@
 #include <toplevel/acquire.h>
 #include <toplevel/mgauto.h>
 #include <toplevel/vsdtraces.h>
-#include <toplevel/coherence.h>
+#include <gfx/coherence.h>
 #include <toplevel/cohgraph.h>
 #include <toplevel/savedsettings.h>
 #include <toplevel/exptlog.h>

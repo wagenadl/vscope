@@ -19,7 +19,7 @@
 #include <video/videolight.h>
 #include <gui/videogui.h>
 #include <gfx/roiimages.h>
-#include <toplevel/coherence.h>
+#include <gfx/coherence.h>
 #include <toplevel/cohgraph.h>
 #include <xml/enumerator.h>
 #include <acq/datatrove.h>

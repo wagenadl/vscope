@@ -13,7 +13,7 @@
 #include <gfx/roiimages.h>
 #include <base/dbg.h>
 #include <toplevel/vsdtraces.h>
-#include <toplevel/coherence.h>
+#include <gfx/coherence.h>
 #include <gfx/blackout.h>
 #include <gfx/filedlgkey.h>
 #include <gui/timebutton.h>

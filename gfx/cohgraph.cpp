@@ -11,7 +11,6 @@
 #include <math/cohest.h>
 #include <math/psdest.h>
 #include <gui/guiexc.h>
-#include <toplevel/vsdtraces.h>
 #include <xml/enumerator.h>
 #include <base/analogdata.h>
 #include <base/digitaldata.h>
@@ -29,7 +28,6 @@
 
 CohGraph::CohGraph(CohData *dat, QWidget *parent): RadialGraph(parent) {
   data = dat;
-  owndata = false;
   selectedID = 0;  
 
   connect(data, SIGNAL(newData()), this, SLOT(updateData()));
@@ -41,8 +39,6 @@ CohGraph::CohGraph(CohData *dat, QWidget *parent): RadialGraph(parent) {
 }
 
 CohGraph::~CohGraph() {
-  if (owndata && data) 
-    delete data;
 }
 
 void CohGraph::paintEvent(QPaintEvent *e) {

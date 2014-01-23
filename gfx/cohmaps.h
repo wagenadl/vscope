@@ -12,34 +12,31 @@
 
 #include <base/enums.h>
 #include <gfx/roiimage.h>
+#include <gfx/ccdimages.h>
+#include <gfx/coherence.h>
 
-class CohMaps: public QObject {
+class CohMaps: public CCDImages {
   Q_OBJECT;
 public:
   CohMaps(QRect canvas);
   virtual ~CohMaps();
   Coherence *get(QString id);
   Coherence *first();
-  QStringList ids() const;
   void add(QString id, Coherence *img);
-  void del(QString id);
-  bool has(QString id) const;
 public slots:
   void setRefTrace(QString achn);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void setShowMode(SHOWROIS sm);
   void updateSelection(int);
-  void setCanvas(QRect const &r);
 signals:
   void newSelection(int);
 private slots:
   void shareSelection(QString);
-private:
-  QMap<QString, Coherence *> imgs;
-  QSignalMapper *zm;
+protected:
+  QList<Coherence *> images();
+protected:
   QSignalMapper *sm;
-  QRect canvas;
 };
 
 #endif

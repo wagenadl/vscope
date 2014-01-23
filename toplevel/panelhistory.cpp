@@ -9,7 +9,7 @@
 #include <QDir>
 #include <toplevel/mgauto.h>
 #include <toplevel/vsdtraces.h>
-#include <toplevel/coherence.h>
+#include <gfx/coherence.h>
 #include <toplevel/cohgraph.h>
 #include <toplevel/exptlog.h>
 #include <gfx/roiimages.h>

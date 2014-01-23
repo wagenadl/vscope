@@ -6,8 +6,6 @@
 
 #include <base/roidata.h>
 #include <gfx/radialgraph.h>
-#include <toplevel/globals.h>
-#include <toplevel/vsdtraces.h>
 #include <math/cvec.h>
 #include <QSet>
 #include <base/ccdtiming.h>
