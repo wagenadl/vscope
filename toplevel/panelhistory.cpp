@@ -9,7 +9,7 @@
 #include <QDir>
 #include <toplevel/mgauto.h>
 #include <toplevel/vsdtraces.h>
-#include <gfx/coherence.h>
+#include <gfx/cohmaps.h>
 #include <gfx/cohgraph.h>
 #include <toplevel/exptlog.h>
 #include <gfx/roiimages.h>
@@ -216,14 +216,18 @@ QWidget *PanelHistory::childWidget(QString what) {
       return Globals::ccdw->get(id);
     else
       return 0;
-  }
-  
+  } else if (what.startsWith("Coh-")) {
+    QString id = what.mid(4);
+    if (Globals::cohmaps->has(id))
+      return Globals::cohmaps->get(id);
+    else
+      return 0;
+  }  
   QMap<SHOWWHAT, QWidget *> m;
   m[SW_VSDTraces] = Globals::vsdtraces;
   m[SW_EphysInt] = Globals::mgintra;
   m[SW_EphysExt] = Globals::mgextra;
   m[SW_Stimuli] = Globals::mgstim;
-  m[SW_Coherence] = Globals::coherence;
   m[SW_CohGraph] = Globals::cohgraph;
   
   SHOWWHAT sw = (SHOWWHAT)Enumerator::find("SHOWWHAT")->lookup(what);

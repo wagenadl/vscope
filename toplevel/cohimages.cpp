@@ -1,6 +1,7 @@
-// camimages.cpp
+// cohimages.cpp
 
-#include "camimages.h"
+#include "cohimages.h"
+#include <gfx/roiimages.h>
 #include <xml/connections.h>
 #include "globals.h"
 #include <acq/datatrove.h>
@@ -11,28 +12,26 @@
 #include <gui/guimenu.h>
 #include "vscopegui.h"
 
-CamImages::CamImages(): ROIImages(QRect(0, 0, 512, 512)) {
+CohImages::CohImages(CohData *data):
+  CohMaps(QRect(0, 0, 512, 512)), data(data) {
 }
 
-CamImages::~CamImages() {
+CohImages::~CohImages() {
 }
 
-void CamImages::setup() {
+void CohImages::setup() {
   setCameras(Connections::allCams());
   connect(&Globals::trove->trial(), SIGNAL(newCameras()),
 	  this, SLOT(updateCameras()));
-  // I am not sure if the following needs to be done in updateCameras as well.
-  setROIs(&Globals::trove->rois());
-  SHOWROIS sm = (SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt();
-  showROIs(sm);
+  //  setROIs(&Globals::trove->rois());
 }
 
-void CamImages::updateCameras() {
+void CohImages::updateCameras() {
   QStringList ids = Globals::trove->trial().cameras();
   setCameras(ids);
 }
 
-void CamImages::setCameras(QStringList newids) {
+void CohImages::setCameras(QStringList newids) {
   QStringList oldids = ids();
 
   QSet<QString> droppool;
@@ -43,7 +42,12 @@ void CamImages::setCameras(QStringList newids) {
     if (droppool.contains(id)) {
       droppool.remove(id);
     } else {
-      ROIImage *img = new ROIImage(Globals::leftplace);
+      Coherence *img = new Coherence(data, Globals::leftplace);
+      img->setCanvas(Globals::ccdw->currentCanvas());
+      img->setGeometry(0,0,512,Globals::mainwindow->basey());
+      img->setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
+      img->setShowMode((SHOWROIS)Globals::ptree->find("analysis/showROIs").
+                       toInt());
       img->setCamPair(Connections::camPair(id)); // Really, this should be
       // ... derived from TrialData too, but we don't have it there yet.
       add(id, img);
@@ -58,23 +62,7 @@ void CamImages::setCameras(QStringList newids) {
   Enumerator *curcams = Enumerator::find("CURRENTCAMERAS");
   Enumerator *showwhat = Enumerator::find("SHOWWHAT");
   foreach (QString id, curcams->getAllTags())
-    showwhat->remove("CCD-"+id);
-  curcams->reset();
-  foreach (QString id, newids) {
-    curcams->add(id);
-    showwhat->add("CCD-"+id);
-  }
-
-  QStringList pp = QString("Left Right").split(" ");
-  foreach (QString p, pp) {
-    guiMenu *menu = dynamic_cast<guiMenu*>(Globals::gui->findpPage("panel"+p));
-    if (!menu)
-      throw Exception("CamImages", "No panel menu " + p);
-    menu->updateAuto();
-  }
-  guiPage *page = Globals::gui->findpPage("acquisition");
-  if (!page)
-      throw Exception("CamImages", "No acquisition page");
-    page->updateAuto();
-    
+    showwhat->remove("Coh-"+id);
+  foreach (QString id, newids) 
+    showwhat->add("Coh-"+id);
 }

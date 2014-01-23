@@ -42,7 +42,7 @@ void gt_slots::selected(QString p) {
     report(e,"select button");
   }
 }  
-void gt_slots::deselected(QString p) {
+void gt_slots::deselected(QString) {
   try {
   } catch (Exception const &e) {
     report(e,"deselect button");

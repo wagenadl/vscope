@@ -23,6 +23,9 @@ public:
   Coherence *get(QString id);
   Coherence *first();
   void add(QString id, Coherence *img);
+  void adjustedRange(QString camid, uint16_t const *data, int X, int Y);
+  void newImage(QString camid, uint16_t const *data, int X, int Y,
+                Transform const &t);
 public slots:
   void setRefTrace(QString achn);
   void setRefDigi(QString digiline);

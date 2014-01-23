@@ -28,7 +28,13 @@ public:
   QRect const &currentCanvas() const { return canvas; }
 public slots:
   void setCanvas(QRect const &r);
+  void updateZoom(QRect); // rectangle in global coords
+signals:
+  void newZoom(QRect); // rectangle in global coords
+private slots:
+  void shareZoom(QString);
 protected:
+  QSignalMapper *zm;
   QMap<QString, CCDImage *> imgs;
   QRect canvas;
 };

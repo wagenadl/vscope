@@ -13,7 +13,7 @@
 #include <gfx/roiimages.h>
 #include <base/dbg.h>
 #include <toplevel/vsdtraces.h>
-#include <gfx/coherence.h>
+#include <gfx/cohmaps.h>
 #include <gfx/blackout.h>
 #include <gfx/filedlgkey.h>
 #include <gui/timebutton.h>
@@ -192,7 +192,6 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     cams.push_back(Connections::findpCam(id));
 
   QString brightMsg = "Pixel values:";
-  bool first = true;
   for (int k=0; k<K; k++) {
     if (!src[k] || src[k]->getNFrames()==0)
       continue;
@@ -202,13 +201,10 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     imgs[k]->adjustedRange(dat,nser,npar);
     imgs[k]->newImage(dat,nser,npar,
 		      Globals::trove->trial().ccdPlacement(camname[k]));
-    if (first) {
-      Globals::coherence->adjustedRange(dat,nser,npar);
-      Globals::coherence->newImage(dat,nser,npar,
-				   Globals::trove->trial()
-				   .ccdPlacement(camname[k]));
-    first = false;
-    }
+    Globals::cohmaps->adjustedRange(camname[k], dat, nser, npar);
+    Globals::cohmaps->newImage(camname[k], dat, nser, npar,
+                               Globals::trove->trial()
+                               .ccdPlacement(camname[k]));
     uint16_t min = 65535;
     uint16_t max = 0;
     uint64_t sum = 0;

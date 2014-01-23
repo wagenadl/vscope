@@ -830,9 +830,9 @@
   <alias id="EphysInt" label="Intracellular E'phys"/>
   <alias id="EphysExt" label="Extracellular E'phys"/>
   <alias id="VSDTraces" label="VSD Traces"/>
-  <alias id="Coherence" label="Coherence Map"/>
   <alias id="CohGraph" label="Coherence Graph"/>
   <alias id="CCD-*" label="CCD: "/>
+  <alias id="Coh-*" label="Coherence Map: "/>
   <!-- For FocusMode -->
   <alias id="TwoFull" label="A and B Full"/>
   <alias id="AZoom" label="A and Zoom"/>

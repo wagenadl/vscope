@@ -19,7 +19,7 @@
 #include <video/videolight.h>
 #include <gui/videogui.h>
 #include <gfx/roiimages.h>
-#include <gfx/coherence.h>
+#include <gfx/cohmaps.h>
 #include <gfx/cohgraph.h>
 #include <xml/enumerator.h>
 #include <acq/datatrove.h>
@@ -85,17 +85,17 @@ static void setRefTrace() {
   if (typ==e->lookup("Analog")) {
     QString chn = Globals::ptree->find("analysis/refTrace").toString();
     Globals::vsdtraces->setRefTrace(chn);
-    Globals::coherence->setRefTrace(chn);
+    Globals::cohmaps->setRefTrace(chn);
     Globals::cohgraph->setRefTrace(chn);
   } else if (typ==e->lookup("Digital")) {
     QString chn = Globals::ptree->find("analysis/refDigi").toString();
     Globals::vsdtraces->setRefDigi(chn);
-    Globals::coherence->setRefDigi(chn);
+    Globals::cohmaps->setRefDigi(chn);
     Globals::cohgraph->setRefDigi(chn);
   } else if (typ==e->lookup("Frequency")) {
     double frqhz = Globals::ptree->find("analysis/refFreq").toDouble();
     Globals::vsdtraces->setRefFreq(frqhz);
-    Globals::coherence->setRefFreq(frqhz);
+    Globals::cohmaps->setRefFreq(frqhz);
     Globals::cohgraph->setRefFreq(frqhz);
   } else {
     dbg("gt_paramchanged: Unknown reference type");
@@ -112,7 +112,7 @@ void gt_slots::everythingChanged() {
 
   SHOWROIS sm = (SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt();
   Globals::ccdw->showROIs(sm);
-  Globals::coherence->setShowMode(sm);
+  Globals::cohmaps->setShowMode(sm);
   Globals::trove->roidata().
     setDebleach((DEBLEACH)Globals::ptree->find("analysis/debleach").toInt());
   Globals::acquire->newTrialPeriod();
@@ -151,7 +151,7 @@ void gt_slots::paramchanged(QString p, QString val) {
     } else if (p=="analysis/showROIs") {
       SHOWROIS sm = (SHOWROIS)Globals::ptree->find(p).toInt();
       Globals::ccdw->showROIs(sm);
-      Globals::coherence->setShowMode(sm);
+      Globals::cohmaps->setShowMode(sm);
     } else if (p=="analysis/debleach") {
       Globals::trove->roidata().
 	setDebleach((DEBLEACH)Globals::ptree->find(p).toInt());

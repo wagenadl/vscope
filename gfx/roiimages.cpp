@@ -6,8 +6,6 @@
 
 ROIImages::ROIImages(QRect c): CCDImages(c) {
   sm = new QSignalMapper(this);
-  zm = new QSignalMapper(this);
-  connect(zm, SIGNAL(mapped(QString)), SLOT(shareZoom(QString)));
   connect(sm, SIGNAL(mapped(QString)), SLOT(shareSelection(QString)));
 }
 
@@ -16,9 +14,7 @@ ROIImages::~ROIImages() {
 
 void ROIImages::add(QString id, ROIImage *img) {
   CCDImages::add(id, img);
-  connect(img,SIGNAL(newZoom(QRect)), zm, SLOT(map()));
   connect(img,SIGNAL(newSelection(int)), sm, SLOT(map()));
-  zm->setMapping(img, id);
   sm->setMapping(img, id);
 }
 
@@ -55,17 +51,6 @@ void ROIImages::setROIs(ROISet *rs) {
     ri->setROIs(rs);
 }
 
-void ROIImages::shareZoom(QString id) {
-  Dbg() << "ROIImages::shareZoom from " << id;
-  QRect zr = get(id)->currentZoom();
-  foreach (QString id1, imgs.keys()) {
-    if (id1!=id) {
-      imgs[id1]->updateZoom(zr);
-    }
-  }
-  emit newZoom(zr);
-}
-
 void ROIImages::shareSelection(QString id) {
   Dbg() << "ROIImages::shareSelection from " << id;
   int sel = get(id)->currentROI();
@@ -74,11 +59,6 @@ void ROIImages::shareSelection(QString id) {
       get(id1)->updateSelection(sel);
   Dbg() << "ROIImages: emitting new selection: " << sel;
   emit newSelection(sel);
-}
-
-void ROIImages::updateZoom(QRect zr) {
-  foreach (ROIImage *ri, images())
-    ri->updateZoom(zr);
 }
 
 void ROIImages::updateSelection(int sel) {

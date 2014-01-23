@@ -6,6 +6,8 @@
 #include <base/dbg.h>
 
 CCDImages::CCDImages(QRect c): canvas(c) {
+  zm = new QSignalMapper(this);
+  connect(zm, SIGNAL(mapped(QString)), SLOT(shareZoom(QString)));
 }
 
 CCDImages::~CCDImages() {
@@ -13,7 +15,9 @@ CCDImages::~CCDImages() {
 
 void CCDImages::add(QString id, CCDImage *img) {
   img->setCanvas(canvas);
-   imgs[id] = img;
+  imgs[id] = img;
+  connect(img,SIGNAL(newZoom(QRect)), zm, SLOT(map()));
+  zm->setMapping(img, id);
 }
 
 void CCDImages::del(QString id) {
@@ -51,4 +55,20 @@ CCDImage *CCDImages::first() {
 void CCDImages::setCanvas(QRect const &r) {
   foreach (CCDImage *ri, imgs.values())
     ri->setCanvas(r);
+}
+
+void CCDImages::shareZoom(QString id) {
+  Dbg() << "CCDImages::shareZoom from " << id;
+  QRect zr = get(id)->currentZoom();
+  foreach (QString id1, imgs.keys()) {
+    if (id1!=id) {
+      imgs[id1]->updateZoom(zr);
+    }
+  }
+  emit newZoom(zr);
+}
+
+void CCDImages::updateZoom(QRect zr) {
+  foreach (CCDImage *ri, imgs.values())
+    ri->updateZoom(zr);
 }

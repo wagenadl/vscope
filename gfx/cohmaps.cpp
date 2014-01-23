@@ -83,3 +83,28 @@ QList<Coherence *> CohMaps::images() {
   return res;
 }
 
+void CohMaps::adjustedRange(QString camid, uint16_t const *data, int X, int Y) {
+  if (has(camid)) {
+    Coherence *img = get(camid);
+    if (img)
+      img->adjustedRange(data, X, Y);
+    else
+      Dbg() << "CohMaps::adjustedRange: bad id: " << camid;
+  } else {
+    Dbg() << "CohMaps::adjustedRange: no such id: " << camid;
+  }
+}
+
+void CohMaps::newImage(QString camid, uint16_t const *data, int X, int Y,
+                       Transform const &t) {
+  Dbg() << "CohMaps::newImage " << camid;
+  if (has(camid)) {
+    Coherence *img = get(camid);
+    if (img)
+      img->newImage(data, X, Y, t);
+    else
+      Dbg() << "CohMaps::newImage: bad id: " << camid;
+  } else {
+    Dbg() << "CohMaps::newImage: no such id: " << camid;
+  }
+}

@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "xml/paramtree.cpp"
+#include <gfx/cohmaps.h>
 
 vscopeGui *Globals::gui;
 gt_slots *Globals::gtslots;
@@ -10,7 +11,7 @@ QWidget *Globals::rightplace;
 
 ROIImages *Globals::ccdw;
 VSDTraces *Globals::vsdtraces;
-Coherence *Globals::coherence;
+CohMaps *Globals::cohmaps;
 CohGraph *Globals::cohgraph;
 
 MGAuto *Globals::mgintra;

@@ -26,19 +26,15 @@ public slots:
   void setMode(ROIImage::ClickMode cm);
   void showROIs(SHOWROIS sm);
   void setROIs(class ROISet *);
-  void updateZoom(QRect); // rectangle in global coords
   void updateSelection(int);
 signals:
-  void newZoom(QRect); // rectangle in global coords
-   void newSelection(int);
+  void newSelection(int);
 private slots:
-  void shareZoom(QString);
   void shareSelection(QString);
 protected:
   QList<ROIImage *> images();
 protected:
   QSignalMapper *sm;
-  QSignalMapper *zm;
 };
 
 #endif

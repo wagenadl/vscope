@@ -20,7 +20,7 @@ public:
   
   static class ROIImages *ccdw;   
   static class VSDTraces *vsdtraces; 
-  static class Coherence *coherence; 
+  static class CohMaps *cohmaps; 
   static class CohGraph *cohgraph; 
 
   static class MGAuto *mgintra; 

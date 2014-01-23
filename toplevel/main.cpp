@@ -26,6 +26,7 @@
 #include <toplevel/mainwindow.h>
 #include <toplevel/scripts.h>
 #include <toplevel/camimages.h>
+#include <toplevel/cohimages.h>
 #include <daq/daqbase.h>
 #include <pvp/campool.h>
 #include <base/roi3data.h>
@@ -284,19 +285,11 @@ void setupFocus() {
   }
 }
 
-void setupCoherence() {
-  Globals::coherence = new Coherence(&Globals::trove->cohdata(),
-				     Globals::rightplace);
-  Globals::coherence->setCanvas(Globals::ccdw->currentCanvas());
-  Globals::coherence->setGeometry(0,0,512,Globals::mainwindow->basey());
-  Globals::coherence->
-    setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
-  Globals::coherence->
-    setShowMode((SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt());
-  Globals::coherence->setCamPair(Connections::leaderCamPair());
-  Globals::coherence->hide();
-
-  Globals::cohgraph = new CohGraph(Globals::coherence->getData(),
+CohImages *setupCoherence() {
+  CohImages *coi = new CohImages(&Globals::trove->cohdata());
+  Globals::cohmaps = coi;
+  
+  Globals::cohgraph = new CohGraph(&Globals::trove->cohdata(),
 				   Globals::rightplace);
   Globals::cohgraph->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::cohgraph->
@@ -304,29 +297,30 @@ void setupCoherence() {
   Globals::cohgraph->hide();
 
   QObject::connect(Globals::ccdw, SIGNAL(newZoom(QRect)),
-		   Globals::coherence, SLOT(updateZoom(QRect)));
-  QObject::connect(Globals::coherence, SIGNAL(newZoom(QRect)),
+		   Globals::cohmaps, SLOT(updateZoom(QRect)));
+  QObject::connect(Globals::cohmaps, SIGNAL(newZoom(QRect)),
 		   Globals::ccdw, SLOT(updateZoom(QRect)));
 
   QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
-		   Globals::coherence, SLOT(updateSelection(int)));
+		   Globals::cohmaps, SLOT(updateSelection(int)));
   QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
-		   Globals::cohgraph, SLOT(updateSelection(int)));
+		   Globals::cohmaps, SLOT(updateSelection(int)));
 
-  QObject::connect(Globals::coherence, SIGNAL(newSelection(int)),
+  QObject::connect(Globals::cohmaps, SIGNAL(newSelection(int)),
 		   Globals::ccdw, SLOT(updateSelection(int)));
-  QObject::connect(Globals::coherence, SIGNAL(newSelection(int)),
+  QObject::connect(Globals::cohmaps, SIGNAL(newSelection(int)),
 		   Globals::cohgraph, SLOT(updateSelection(int)));
-  QObject::connect(Globals::coherence, SIGNAL(newSelection(int)),
+  QObject::connect(Globals::cohmaps, SIGNAL(newSelection(int)),
 		   Globals::vsdtraces, SLOT(updateSelection(int)));
 
   QObject::connect(Globals::cohgraph, SIGNAL(newSelection(int)),
 		   Globals::ccdw, SLOT(updateSelection(int)));
   QObject::connect(Globals::cohgraph, SIGNAL(newSelection(int)),
-		   Globals::coherence, SLOT(updateSelection(int)));
+		   Globals::cohmaps, SLOT(updateSelection(int)));
   QObject::connect(Globals::cohgraph, SIGNAL(newSelection(int)),
 		   Globals::vsdtraces, SLOT(updateSelection(int)));
 
+  return coi;
 }
  
 void setupAcquisition(QDomElement &guiConf) {
@@ -427,7 +421,7 @@ int main(int argc, char **argv) {
     Globals::ccdw = ci;
 
     setupVSDTraces();
-    setupCoherence();
+    CohImages *coi = setupCoherence();
     
     Globals::videogui = new VideoGUI(VideoProg::find());
 
@@ -443,6 +437,7 @@ int main(int argc, char **argv) {
     Globals::gtslots = new gt_slots(Globals::gui);
 
     ci->setup();
+    coi->setup();
     setupCCDScroll();
 
     setupTimeButtons();
