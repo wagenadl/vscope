@@ -419,6 +419,3 @@ double CohData::getTypicalFStarHz() const {
     return 1;
 }
 
-void CohData::setFrameLine(QString cam, int line) {
-  digilines[cam] = line;
-}

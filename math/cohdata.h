@@ -21,7 +21,6 @@ public:
   CohData();
   virtual ~CohData();
 public slots:
-  void setFrameLine(QString camera, int line);
   void setROISet(class ROISet const *roiset);
   void setEPhys(class AnalogData const *ad,
 		class DigitalData const *dd);
@@ -68,7 +67,6 @@ private:
   mutable Data data;
   class CohEst *cohest;
   class PSDEst *psdest;
-  QHash<QString, int> digilines;
 private:
   static QSet<QString> warned;
   /*:V warned

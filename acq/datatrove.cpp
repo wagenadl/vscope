@@ -26,6 +26,10 @@ void DataTrove::constructData() {
   add(roidata_);
   add(cohdata_);
 
+  cohdata_->setROISet(rois_);
+  cohdata_->setCCDData(roidata_);
+  cohdata_->setEPhys(trial_->analogData(), trial_->digitalData());
+
   updateCameras();
 
   connect(trial_, SIGNAL(newCameras()), SLOT(updateCameras()));

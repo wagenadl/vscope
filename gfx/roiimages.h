@@ -24,11 +24,11 @@ public:
   void add(QString id, ROIImage *img);
   void del(QString id);
   bool has(QString id) const;
+  QRect const &currentCanvas() const { return canvas; }
 public slots:
   void setMode(ROIImage::ClickMode cm);
   void showROIs(SHOWROIS sm);
   void setCanvas(QRect const &r);
-  QRect const &currentCanvas() const { return canvas; }
   void setROIs(class ROISet *);
   void updateZoom(QRect); // rectangle in global coords
   void updateSelection(int);

@@ -285,7 +285,8 @@ void setupFocus() {
 }
 
 void setupCoherence() {
-  Globals::coherence = new Coherence(0, Globals::rightplace);
+  Globals::coherence = new Coherence(&Globals::trove->cohdata(),
+				     Globals::rightplace);
   Globals::coherence->setCanvas(Globals::ccdw->currentCanvas());
   Globals::coherence->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::coherence->

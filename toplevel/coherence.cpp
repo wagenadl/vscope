@@ -12,7 +12,6 @@
 #include <math/cohest.h>
 #include <math/psdest.h>
 #include <gui/guiexc.h>
-#include <toplevel/vsdtraces.h>
 #include <xml/enumerator.h>
 #include <base/analogdata.h>
 #include <base/digitaldata.h>
@@ -28,29 +27,12 @@
 #include <QRubberBand>
 
 Coherence::Coherence(CohData *dat, QWidget *p): CCDImage(p) {
-  if (dat) {
-    data = dat;
-    owndata = false;
-  } else {
-    data = new CohData();
-    data->setROISet(&Globals::trove->rois());
-    data->setCCDData(&Globals::trove->roidata());
-    data->setEPhys(Globals::trove->trial().analogData(),
-		   Globals::trove->trial().digitalData());
-    Enumerator const *digilines = Enumerator::find("DIGILINES");
-    foreach (QString cam, Connections::allCams()) {
-      if (digilines->has("Frame:"+cam))
-	data->setFrameLine(cam, digilines->lookup("Frame:"+cam));
-    }
-    owndata = true;
-  }
+  data = dat;
   connect(data, SIGNAL(newData()), SLOT(updateData()));
   selectedID=0;
 }
 
 Coherence::~Coherence() {
-  if (owndata && data) 
-    delete data;
 }
 
 void Coherence::paintEvent(QPaintEvent *e) {

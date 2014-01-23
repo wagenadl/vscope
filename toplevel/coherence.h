@@ -7,8 +7,7 @@
 #include <gfx/ccdimage.h>
 #include <base/roidata.h>
 #include <gfx/roiimage.h>
-#include <toplevel/globals.h>
-#include <toplevel/vsdtraces.h>
+//#include <toplevel/globals.h>
 #include <math/cvec.h>
 #include <QSet>
 #include <base/ccdtiming.h>
