@@ -304,7 +304,8 @@ CohImages *setupCoherence() {
   QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
 		   Globals::cohmaps, SLOT(updateSelection(int)));
   QObject::connect(Globals::ccdw, SIGNAL(newSelection(int)),
-		   Globals::cohmaps, SLOT(updateSelection(int)));
+		   Globals::cohgraph, SLOT(updateSelection(int)));
+  // ccdw and vsdtraces are connected in setupVSDTraces
 
   QObject::connect(Globals::cohmaps, SIGNAL(newSelection(int)),
 		   Globals::ccdw, SLOT(updateSelection(int)));

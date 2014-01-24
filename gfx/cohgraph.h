@@ -8,6 +8,8 @@
 #include <gfx/radialgraph.h>
 #include <math/cvec.h>
 #include <QSet>
+#include <QMap>
+#include <QPointF>
 #include <base/ccdtiming.h>
 
 class CohGraph: public RadialGraph {
