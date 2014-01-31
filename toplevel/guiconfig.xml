@@ -606,41 +606,11 @@
       <button id="autoRange" label="Auto Range" x="3" y="4" bg="#dddd99"/>
     <!-- ********************* MENUS FOR LIVE EPHYS. ******************** -->
       <checklist id="diChannels" rows="4" cols="4">
-        <item value="DO0Mon"/>
-        <item value="DO1Mon"/>
-        <item value="DO2Mon"/>
-        <item value="DO3Mon"/>
-
-        <item value="VideoFrame" />
-        <item value="VideoLightMon"/>
-        
-        <item value="TrigCcMon"/>
-        <item value="TrigOxMon"/>
-        <item value="Frame:Cc"/>
-        <item value="Frame:Ox"/>
+	<auto enum="DIGILINES"/>
       </checklist>
       <checklist id="aiChannels" rows="4" cols="4">
         <!-- "values" match "tags" in AICHAIN enum -->
-        <item value="ME1_10Vm" />
-        <item value="ME2_Vm"   />
-        <item value="ME1_I"    />
-        <item value="ME2_I"    />
-        
-        <item value="ExtVA1"   />
-        <item value="ExtVA2"   />
-        <item value="ExtVA3"   />
-        <item value="ExtVA4"   />
-        
-        <item value="ExtVB1"   />
-        <item value="ExtVB2"   />
-        <item value="ExtVB3"   />
-        <item value="ExtVB4"   />
-        
-        <item value="Stim0Mon" />
-        <item value="Stim1Mon" />
-        <item value="Stim2Mon" />
-        <item value="Stim3Mon" />
-        <!--item value="60HzRef"  label="60 Hz ref."/-->
+	<auto enum="AICHAN"/>
       </checklist>
       <menu id="vcoSource"  cols="4">
         <item value="Silent" />
@@ -722,6 +692,10 @@
   <graph ch="Frame:Ox" typ="di" tiny="yes" if_enabled="acqCCD"/>
 </multigraph>
 <multigraph id="extra">
+  <graph ch="EC1" typ="ai"/>
+  <graph ch="EC2" typ="ai"/>
+  <graph ch="EC3" typ="ai"/>
+  <graph ch="EC4" typ="ai"/>
   <graph ch="ExtVA1" typ="ai"/>
   <graph ch="ExtVA2" typ="ai"/>
   <graph ch="ExtVA3" typ="ai"/>
@@ -747,6 +721,10 @@
   <graph ch="Frame:Ox" typ="di" tiny="yes"/>
 </multigraph>
 <multigraph id="liveEPhysRight">   <!-- if_enabled needed here? -->
+  <graph ch="EC1" typ="ai"/>
+  <graph ch="EC2" typ="ai"/>
+  <graph ch="EC3" typ="ai"/>
+  <graph ch="EC4" typ="ai"/>
   <graph ch="ExtVA1" typ="ai"/>
   <graph ch="ExtVA2" typ="ai"/>
   <graph ch="ExtVA3" typ="ai"/>
