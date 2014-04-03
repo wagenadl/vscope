@@ -96,11 +96,11 @@ void ROISet::read(QDomElement src) {
     allids.insert(id);
     cams[id] = CamPair();
     if (e.hasAttribute("cam")) {
-      QStringList c = e.attribute("cam").split(":");
-      if (c.size()>=2) {
+      QStringList c = e.attribute("cam").split(":"); 
+      if (c.size()>=1)
 	cams[id].donor = c[0];
+      if (c.size()>=2) 
 	cams[id].acceptor = c[1];
-      }
     }
     if (cams[id].donor=="" && cams[id].acceptor=="")
       cams[id] = dfltcam;

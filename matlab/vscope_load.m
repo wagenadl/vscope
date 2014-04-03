@@ -705,6 +705,11 @@ while 1
     end
   end
 end
+for k=1:length(roicams)
+  if isempty(roicams{k})
+    roicams{k} = cell(0,0);
+  end
+end
 
 function [scl,uni] = vsdl_getscale(scl_u)
 if endswith(scl_u,'V')

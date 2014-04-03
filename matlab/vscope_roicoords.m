@@ -10,6 +10,8 @@ function [xx,yy] = vscope_roicoords(roi,X,Y)
 %    Caution: xyrra-defined ROIs can result in off-image coordinates.
 %    Calling as VSCOPE_ROICOORDS(roi,X,Y) to specify image size avoids this
 %    problem.
+%    Note: here X refers to the first dimension of the data, Y to the second;
+%    at least for polygon-style ROIs. I clearly need to check this.
 if iscell(roi) 
   K = length(roi);
   if nargout==2
