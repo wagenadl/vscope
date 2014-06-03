@@ -263,10 +263,11 @@ public:
    *:D Computes a suitable range for the x-axis given the current data.
    *:N Returns an empty Range if there are no traces.
    */
-  Range computeYRange(double frc=0) const;
+  Range computeYRange(double frc=0, double mrg=0) const;
   /*:F computeYRange
    *:D Computes a suitable range for the y-axis given the current data.
    *:A frc: fraction of points that are allowed to end up off-graph.
+   *:A mrg: margin to be added on top and bottom (fraction of range)
    *:N Returns an empty Range if there are no traces.
    */
   int dataToScreenX(double x) const;
@@ -367,6 +368,10 @@ protected:
   /*:F paintTrace
    *:D Draws the given trace.
    */
+  void paintZoomRect(QPainter &p);
+  /*:F paintZoomRect
+   *:D Draws a representation of zoom selection
+   */
 signals:
   void zoomRequest(Range xx);
 protected:
@@ -405,9 +410,10 @@ protected:
   TraceLabels traceLabels;
   QMap<QString, bool> traceVisible;
 
-  class QRubberBand *rubberband;
   QPoint clickPoint;
   DrawMode drawMode;
+  QRect zoomRect;
+  bool zooming;
 };
 
 #endif

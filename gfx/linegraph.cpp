@@ -37,7 +37,7 @@ LineGraph::LineGraph(QWidget *parent): QFrame(parent),
 				       xtickLabelsShown(true),
 				       ytickLabelsShown(true) {
   //  dbg("LineGraph(%p)",this);
-  rubberband = 0;
+  zooming = false;
   setAutoFillBackground(true);
   QPalette p = palette();
   p.setColor(QPalette::Window, backgroundColor);
@@ -154,13 +154,18 @@ Range LineGraph::computeXRange() const {
   return xx;
 }
 
-Range LineGraph::computeYRange(double frc) const {
+Range LineGraph::computeYRange(double frc, double mrg) const {
   Range yy;
   foreach (QString id, traces.keys()) {
     if (traceVisible[id]) {
       TraceInfo const *ti = traces[id];
       yy.expand(ti->zoomrange99(x0,x1,frc));
     }
+  }
+  if (mrg>0) {
+    double dy = yy.max-yy.min;
+    yy.min -= mrg*dy;
+    yy.max += mrg*dy;
   }
   return yy;
 }
@@ -620,6 +625,22 @@ void LineGraph::paintEvent(class QPaintEvent *) {
   }
   paintXAxis(p);
   paintYAxis(p);
+  if (zooming)
+    paintZoomRect(p);
+}
+
+void LineGraph::paintZoomRect(QPainter &p) {
+  QColor b("#ffcccc");
+  Dbg() << "paintZoomRect" << zoomRect;
+  b.setAlpha(100);
+  p.setBrush(b);
+  b.setAlpha(150);
+  p.setPen(QPen(b));
+  if (zoomRect.width()>2*zoomRect.height())
+    p.drawRect(zoomRect.left(), 0, zoomRect.width(), height());
+  else if (zoomRect.height()>2*zoomRect.width())
+    p.drawRect(0, zoomRect.top(), width(), zoomRect.height());
+    
 }
 
 int LineGraph::reasonablePrecision(double dx) {
@@ -629,49 +650,76 @@ int LineGraph::reasonablePrecision(double dx) {
 
 void LineGraph::mousePressEvent(QMouseEvent *e) {
   clickPoint = e->pos();
-  if (!rubberband)
-    rubberband = new QRubberBand(QRubberBand::Rectangle, this);
-  rubberband->setGeometry(e->x(),e->y(),0,0);
-  rubberband->show();
 }
 
 void LineGraph::mouseMoveEvent(QMouseEvent *e) {
-  if (!rubberband)
-    return; // this shouldn't happen
-  rubberband->setGeometry(QRect(clickPoint,e->pos()).normalized());
-  // QRect g = rubberband->geometry();
-  //  dbg("rb %i-%i (%i)",g.left(),g.right(),g.width());
+  if ((clickPoint - e->pos()).manhattanLength() > 10) 
+    zooming = true;
+  if (zooming) {
+    zoomRect = QRect(clickPoint,e->pos()).normalized();
+    update();
+  }
 }
 
 void LineGraph::mouseReleaseEvent(QMouseEvent *e) {
   if (clickPoint.x()<0)
     return; // it's a double click; we don't care
-  if (!rubberband)
-    return; // this should not happen
-  rubberband->setGeometry(QRect(clickPoint,e->pos()).normalized());
-  QRect r = rubberband->geometry();
-  int x0pix, x1pix;
-  int y0pix, y1pix;
-  if (r.width()<5 && r.height()<5) {
-    // it's a click -> zoom in
-    x0pix = clickPoint.x()-rect().width()/4;
-    x1pix = clickPoint.x()+rect().width()/4;
-    y0pix = y1pix = 0;
+
+  if (zooming) {
+    zooming = false;
+    QRect r = QRect(clickPoint,e->pos()).normalized();
+    if (r.width() > 2*r.height())
+      // horizontal shape
+      emit zoomRequest(Range(screenToDataX(r.left()),
+			     screenToDataX(r.right())));
+    else if (r.height() > 2*r.width())
+      // vertical shape
+      setYRange(Range(screenToDataY(r.bottom()),
+		      screenToDataY(r.top())));
+    else
+      update();
   } else {
-    x0pix = r.left();
-    x1pix = r.right();
-    y0pix = r.top();
-    y1pix = r.bottom();
-  }
-  delete rubberband;
-  rubberband=0;
-  //  dbg("zoomreq x0=%i x1=%i",x0pix,x1pix);
-  if (y1pix-y0pix > x1pix-x0pix) {
-    // vertical shape
-    setYRange(Range(screenToDataY(y1pix), screenToDataY(y0pix)));
-  } else {
-    // horizontal shape
-    emit zoomRequest(Range(screenToDataX(x0pix),screenToDataX(x1pix)));
+    // just a click
+    int x = clickPoint.x();
+    int y = clickPoint.y();
+    Range xx = computeXRange(); // natural range
+    Range yy = computeYRange(0, 0.5); // natural range
+    if (x<width()/4) {
+      // click on the far left -> zoom out to left
+      double xl = x0 - (x1-x0)/2; // half current range again
+      if (xl<xx.min)
+	xl = xx.min;
+      emit zoomRequest(Range(xl, x1));
+    } else if (x>3*width()/4) {
+      // click on the far right -> zoom out to right
+      double xr = x1 + (x1-x0)/2; // half current range again
+      if (xr>xx.max)
+	xr = xx.max;
+      emit zoomRequest(Range(x0, xr));
+    } else if (y<height()/4) {
+      // click near top -> zoom out to top
+      double yt = y1 + (y1-y0)/2; // half current range again
+      if (yt>yy.max)
+	yt = yy.max;
+      setYRange(Range(y0, yt));
+    } else if (y>3*height()/4) {
+      // click near bottom -> zoom out to bottom
+      double yb = y0 - (y1-y0)/2; // half current range again
+      if (yb<yy.min)
+	yb = yy.min;
+      setYRange(Range(yb, y1));
+    } else {
+      // click in middle area -> ignore
+      // double yc = screenToDataY(y);
+      // double dy = 3*(y1-y0)/8;
+      // double yt = yc + dy;
+      // if (yt>yy.max)
+      // 	yt = yy.max;               // TRACK PRO Y!
+      // double yb = yc - dy;
+      // if (yb<yy.min)
+      // 	yb = yy.min;
+      // setYRange(Range(yb, yt));
+    }      
   }
 }
 
