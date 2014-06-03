@@ -154,18 +154,13 @@ Range LineGraph::computeXRange() const {
   return xx;
 }
 
-Range LineGraph::computeYRange(double frc, double mrg) const {
+Range LineGraph::computeYRange(double frc) const {
   Range yy;
   foreach (QString id, traces.keys()) {
     if (traceVisible[id]) {
       TraceInfo const *ti = traces[id];
       yy.expand(ti->zoomrange99(x0,x1,frc));
     }
-  }
-  if (mrg>0) {
-    double dy = yy.max-yy.min;
-    yy.min -= mrg*dy;
-    yy.max += mrg*dy;
   }
   return yy;
 }
@@ -683,7 +678,6 @@ void LineGraph::mouseReleaseEvent(QMouseEvent *e) {
     int x = clickPoint.x();
     int y = clickPoint.y();
     Range xx = computeXRange(); // natural range
-    Range yy = computeYRange(0, 0.5); // natural range
     if (x<width()/4) {
       // click on the far left -> zoom out to left
       double xl = x0 - (x1-x0)/2; // half current range again
@@ -699,26 +693,12 @@ void LineGraph::mouseReleaseEvent(QMouseEvent *e) {
     } else if (y<height()/4) {
       // click near top -> zoom out to top
       double yt = y1 + (y1-y0)/2; // half current range again
-      if (yt>yy.max)
-	yt = yy.max;
       setYRange(Range(y0, yt));
     } else if (y>3*height()/4) {
       // click near bottom -> zoom out to bottom
       double yb = y0 - (y1-y0)/2; // half current range again
-      if (yb<yy.min)
-	yb = yy.min;
       setYRange(Range(yb, y1));
     } else {
-      // click in middle area -> ignore
-      // double yc = screenToDataY(y);
-      // double dy = 3*(y1-y0)/8;
-      // double yt = yc + dy;
-      // if (yt>yy.max)
-      // 	yt = yy.max;               // TRACK PRO Y!
-      // double yb = yc - dy;
-      // if (yb<yy.min)
-      // 	yb = yy.min;
-      // setYRange(Range(yb, yt));
     }      
   }
 }
