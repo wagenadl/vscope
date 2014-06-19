@@ -37,12 +37,10 @@ Coherence *CohMaps::first() {
 }
 
 void CohMaps::shareSelection(QString id) {
-  Dbg() << "CohMaps::shareSelection from " << id;
   int sel = get(id)->currentROI();
   foreach (QString id1, imgs.keys()) 
     if (id1!=id) 
       get(id1)->updateSelection(sel);
-  Dbg() << "CohMaps: emitting new selection: " << sel;
   emit newSelection(sel);
 }
 
@@ -97,7 +95,6 @@ void CohMaps::adjustedRange(QString camid, uint16_t const *data, int X, int Y) {
 
 void CohMaps::newImage(QString camid, uint16_t const *data, int X, int Y,
                        Transform const &t) {
-  Dbg() << "CohMaps::newImage " << camid;
   if (has(camid)) {
     Coherence *img = get(camid);
     if (img)

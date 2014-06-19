@@ -62,8 +62,9 @@ void Acquire::acqFrame() {
     Globals::blackout->setText("Starting *DUMMY* Frame Acquisition...");
   } else {
     Globals::blackout->setText("Starting Frame Acquisition...");
-    Globals::trialelapsed->startCountUp(); // hmmm...
     Globals::exptelapsed->startCountUp(true);
+    Globals::trialelapsed->setFormat("Since Snap: %1");
+    Globals::trialelapsed->startCountUp(); 
     incTrialNo();
   }
   
@@ -88,8 +89,9 @@ void Acquire::acqTrial() {
     Globals::blackout->setText("Starting *DUMMY* Trial Acquisition...");
   } else {
     Globals::blackout->setText("Starting Trial Acquisition...");
-    Globals::trialelapsed->startCountUp();
     Globals::exptelapsed->startCountUp(true);
+    Globals::trialelapsed->setFormat("Since Trial: %1");
+    Globals::trialelapsed->startCountUp();
     incTrialNo();
   }
   
@@ -337,7 +339,6 @@ void Acquire::setContEphys() {
   bool contephys = Globals::ptree->find("acquisition/contEphys").toBool();
   if (contephys) {
     if (Globals::contacq->isActive()) {
-      Dbg() << "Acquire: continuous acquisition already active";
       return;
     }
     incTrialNo();
@@ -347,7 +348,6 @@ void Acquire::setContEphys() {
     Globals::contacq->start();
   } else {
     if (!Globals::contacq->isActive()) {
-      Dbg() << "Acquire: continuous acquisition already stopped";
       return;
     }
     Globals::contacq->stop();

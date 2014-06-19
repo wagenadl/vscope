@@ -189,7 +189,6 @@ pvpCamera::Status pvpCamera::getContinuousStatus() {
   uns32 bufcount;
   if (!pl_exp_check_cont_status(camh, &status, &bytecount, &bufcount))
     throw pvpException("pvpCamera: check_status failed");
-  Dbg() << "pvpCamera("<<camname<<":"<<serno<<")::getContStatus: " << status;
   switch (status) {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;
@@ -206,7 +205,6 @@ pvpCamera::Status pvpCamera::getFiniteStatus() {
   uns32 bytecount;
   if (!pl_exp_check_status(camh, &status, &bytecount))
     throw pvpException("pvpCamera: check_status failed");
-  Dbg() << "pvpCamera("<<camname<<":"<<serno<<")::getFiniteStatus: " << status;
   switch (status) {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;

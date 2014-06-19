@@ -53,9 +53,7 @@ void AnalogOut::commit() {
   if (data->getNumChannels() != channelmap.size())
     throw Exception("AnalogOut", "Channel map does not match production data");
   
-  dbg("AnalogOut(%p):commit",this);
   daqTask::preCommit();
-  dbg("  aout:precommitted");
 
   foreach (Channel c, channelmap) {
     QByteArray chname = channelName(c).toAscii();
@@ -64,13 +62,10 @@ void AnalogOut::commit() {
 				    -range,range,
 				    DAQmx_Val_Volts,0),
 	   "AnalogOut", "Create AO channel");
-    Dbg() << "AOut: Created channel " << channelName(c);
   }
 
   int bufsi = isCont ? dmabufsize : data->getNumScans();
 
-  dbg("  aout:channels created. bufsi=%i",bufsi);
-  
   if (master) {
     QByteArray clockname = ("/" + deviceID() + "/ai/SampleClock").toAscii();
     if (isCont)
@@ -106,22 +101,15 @@ void AnalogOut::commit() {
 	     "Cannot configure finite-length production as master");
     }
   }
-  dbg("aout: dmabufsize=%i iscont=%i",dmabufsize,isCont);
-
   daqTry(DAQmxCfgOutputBuffer(th,bufsi),
 	 "AnalogOut","Cannot create output buffer");
 
   writeData();
-  dbg("  aout:datawritten");
-  dbg("  bufsi=%i",bufsi);
   
   postCommit();
-  dbg("  aout:postcommitted");
 
   if (doslave) {
-    dbg("  aout:slavecommit");
     doslave->commit();
-    dbg("  aout:slavecommitted");
   }
 
 }
@@ -142,15 +130,11 @@ void AnalogOut::writeData() {
   while (index<nscans) {
     int now = nscans-index;
     int32 scanswritten;
-    dbg("aout: index=%i nscans=%i nchans=%i now=%i",
-	index,nscans,nchans,now);
     daqTry(DAQmxWriteAnalogF64(th,now,false,timeout,
 			       DAQmx_Val_GroupByScanNumber,
 			       srcptr,
 			       &scanswritten, 0),
 	   "AnalogOut","Write data (preparation)");
-    dbg("aout: index=%i nscans=%i nchans=%i now=%i scanswr=%i",
-	index,nscans,nchans,now,scanswritten);
     index+=scanswritten;
     srcptr+=scanswritten*nchans;
   }
@@ -188,19 +172,16 @@ void AnalogOut::callbackEvery(int nscans) {
 }
 
 void AnalogOut::start() {
-  dbg("AnalogOut(%p)::start",this);
   preStart();
 
   if (doslave)
     doslave->start();
 
   postStart();
-  dbg("  AnalogOut::start: started");
 
   uInt32 bs,obs;
   daqTry(DAQmxGetBufOutputBufSize(th,&bs),"AnalogOut","Cannot read bs");
   daqTry(DAQmxGetBufOutputOnbrdBufSize(th,&obs),"AnalogOut","Cannot read obs");
-  dbg("aout bs=%i obs=%i",bs,obs);
 }
 
 int AnalogOut::countScansSoFar() {
@@ -213,7 +194,6 @@ int AnalogOut::countScansSoFar() {
 }
 
 void AnalogOut::stop() {
-  dbg("analogout(%p)::stop (doslave=%p)",this,doslave);
   daqTask::preStop();
   if (doslave)
     doslave->stop();
@@ -252,7 +232,6 @@ int AnalogOut::countScansAvailable() {
   uInt32 cnt;
   daqTry(DAQmxGetWriteSpaceAvail(th,&cnt),
 	 "AnalogOut","Cannot count scans");
-  dbg("aout: space avail: %i",cnt);
   return cnt;
 }
 

@@ -33,7 +33,6 @@ void daqTask::setFrequency(double freq_hz) {
 }
 
 void daqTask::commit() {
-  dbg("daqtask(%p/%s)::commit",this,name());
   if (committed)
     return;
   preCommit();
@@ -41,34 +40,24 @@ void daqTask::commit() {
 }
 
 void daqTask::preCommit() {
-  dbg("daqtask(%p/%s)::precommit sizeof(th)=%li\n",this,name(),sizeof(th));
   th=(TaskHandle)(-1);
   daqTry(DAQmxCreateTask("", &th),"daqTask","Task creation failed");
-  dbg("  daqtask precommit: task created: %i\n",int(th));
 }
 
 void daqTask::postCommit() {
-  dbg("daqtask(%p/%s)::postcommit\n",this,name());
   if (startTrig) {
     char chname[64];
     sprintf(chname,"/%s/PFI0",deviceID().toAscii().constData());
     daqTry(DAQmxCfgDigEdgeStartTrig(th,chname,DAQmx_Val_Rising),
 	   "daqTask","Set digital trigger");
-    dbg("postcommit: trigger enabled\n");
-  } else {
-    dbg("postcommit: no trigger\n");
   }
   daqTry(DAQmxTaskControl(th,DAQmx_Val_Task_Verify),"daqTask","Cannot verify task");
   daqTry(DAQmxTaskControl(th,DAQmx_Val_Task_Reserve),"daqTask","Cannot reserve task resources");
   daqTry(DAQmxTaskControl(th,DAQmx_Val_Task_Commit),"daqTask","Cannot commit task");
-  dbg("  daqtask: postcommit: done");
   committed = true;
 }
 
 void daqTask::uncommit() {
-  dbg("daqtask(%p/%s)::uncommit",this,name());
-  // daqTry(DAQmxStopTask(th),"daqTask","Cannot stop task"); // should we do this?
-
   daqTry(DAQmxClearTask(th),"daqTask","Cannot clear task");
   committed = false;
 }
@@ -87,25 +76,20 @@ void daqTask::callbackDone(int status) {
 }
 
 int32 CVICALLBACK daqTask_CallbackEvery(TaskHandle, int32 /* type */, uInt32 nscans, void *callbackData) {
-  // dbg("daqTask_CallbackEvery %p %i\n",callbackData,nscans);
   daqTask *me = (daqTask *)callbackData;
   me->callbackEvery(nscans);
   return 0;
 }
 
 void daqTask::callbackEvery(int) {
-  // dbg("daqTask::callbackEvery\n");
 }
 
 void daqTask::preStart() {
-  dbg("daqTask(%p/%s):prestart %i",this,name(), th);
   commit();
   
   daqTry(DAQmxRegisterDoneEvent(th,0,
 				&daqTask_CallbackDone,(void*)this),
 	 "daqTask","Cannot register Done event");
-  dbg("daqTask::prestart: pollperiod=%i dmabufsize=%i\n",
-      pollPeriod,dmabufsize);
   if (pollPeriod>0) {
     int pollp = pollPeriod;
     int bufsi = dmabufsize;
@@ -126,22 +110,16 @@ void daqTask::preStart() {
 			       pollp,0,
 			       &daqTask_CallbackEvery,(void*)this),
 	   "daqTask","Cannot register EveryN event");
-      dbg("  daqtask::prestart: everyn registered pollp=%i",pollp);
   }
-  dbg("  daqtask:prestart: done");
 }
 
 void daqTask::postStart() {
-  dbg("daqTask(%p/%s)::poststart %i",this,name(),th);
   daqTry(DAQmxStartTask(th),"daqTask","Cannot start task");
-  dbg("  daqtask:poststart: started %i", th);
 }
 
 void daqTask::start() {
-  dbg("daqTask(%p/%s)::start",this,name());
   preStart();
   postStart();
-  dbg("daqTask(%p/%s)::start ok",this,name());
 }
 
 bool daqTask::isRunning() {
@@ -180,37 +158,29 @@ void daqTask::setTriggering(bool trg) {
 }
 
 void daqTask::preStop() {
-  dbg("daqtask(%p/%s)::prestop %i",this,name(), th);
   daqTry(DAQmxStopTask(th),"daqTask","Cannot stop task");
 }
 
 void daqTask::postStop() {
-  dbg("daqtask(%p/%s)::poststop %i",this,name(), th);
 }
 
 void daqTask::stop() {
-  dbg("daqtask(%p/%s)::stop",this,name());
   preStop();
   postStop();
-  dbg("daqtask(%p/%s)::stop ok",this,name());
 }
 
 void daqTask::preAbort() {
-  dbg("daqtask(%p/%s)::preabort %i",this,name(), th);
   daqTry(DAQmxTaskControl(th,DAQmx_Val_Task_Abort),"daqTask","Cannot abort task");
 }
 
 void daqTask::postAbort() {
-  dbg("daqtask(%p/%s)::postabort %i",this,name(), th);
   stop();
   uncommit();
 }
 
 void daqTask::abort() {
-  dbg("daqtask(%p/%s)::abort",this,name());
   preAbort();
   postAbort();
-  dbg("  daqtask(%p/%s)::abort ok",this,name());
 }
 
 char const *daqTask::name() const { return "daqTask"; }

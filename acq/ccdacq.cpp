@@ -70,13 +70,11 @@ CCDAcq::CCDAcq() {
     camids.append(id);
     caminfo.append(Connections::findpCam(id));
     camidx[id]=ncams;
-    Dbg() << "CCDAcq: found camera #"<<ncams<<": " << id;
     ncams++;
   }
   ccdcfg.resize(ncams);
   dest.fill(0, ncams);
   cameras.fill(0, ncams);
-  Dbg() << "CCDAcq: camera count: "<<ncams;
 
   isActive=false;
   isGood=false;
@@ -116,9 +114,6 @@ bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
       cfg.clear_every_frame = false; // trigEach ? true : false;
   
       cfg.region = CCDRegion(caminfo[k]->placement.inverse()(reg));
-      Dbg() << "Camera " << camids[k] << ": region "
-	    << cfg.region.smin << ":" << cfg.region.smax
-	    << " " << cfg.region.pmin << ":" << cfg.region.pmax;
       ccdcfg[k] = cfg;
     }
     
@@ -127,7 +122,6 @@ bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
 	cameras[k] = CamPool::findp(camids[k]);
       else
 	cameras[k] = 0;
-      Dbg() << "CCDAcq: camera "<< k << ": " << camids[k]<<" is " << cameras[k] << "; dest is " << dest[k];
 
 #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
       // we are going to generate mock data
@@ -234,8 +228,10 @@ bool CCDAcq::hasEnded() {
   QString npix="";
   foreach (QString id, camids) 
     npix += QString(" %1:%2").arg(id).arg(nPixelsSoFar(id));
-  Dbg() << "ccdacq: hasended? npix: " << npix;
-  dbg("ccdacq::hasended actv=%i done=%i good=%i",isActive,isDone,isGood);
+  Dbg() << "ccdacq: hasended? npix=" << npix 
+	<< " actv="<<isActive
+	<< " done="<<isDone
+	<< " good="<<isGood;
   if (!isActive)
     return isDone;
 

@@ -28,11 +28,9 @@ void guiTabbedPage::reconnect() {
   guiButton *penable = buttonp("enable");
   guiRadioGroup *pctrl = par->groupp(id());
 
-  Dbg() << "guiTabbedPage id=" << id() << " penable=" << penable << " pctrl=" << pctrl;
 
   if (pctrl) {
     foreach (QString i, pctrl->childIDs()) {
-      Dbg() << "guiTabbedPage path="<<path()<< " id="<<id() << " i="<<i;
       guiButton *b = par->buttonp(id() + ARRAYSEP + i);
       if (!b) 
 	continue; //throw Exception("guiTabbedPage", "Button " + i + " not found in parent", path());

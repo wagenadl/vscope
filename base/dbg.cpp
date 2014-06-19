@@ -93,7 +93,6 @@ DbgFile &DbgFile::operator<<(QString const &str) {
         }
       }
       if (f.open(QIODevice::WriteOnly | QIODevice::Append)) {
-	printf("openend fn\n");
         ts = new QTextStream(&f);
         foreach (QString s, backlog) 
   	  *ts << s;

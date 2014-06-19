@@ -648,7 +648,7 @@ void LineGraph::mousePressEvent(QMouseEvent *e) {
 }
 
 void LineGraph::mouseMoveEvent(QMouseEvent *e) {
-  if ((clickPoint - e->pos()).manhattanLength() > 10) 
+  if ((clickPoint - e->pos()).manhattanLength() > 40) 
     zooming = true;
   if (zooming) {
     zoomRect = QRect(clickPoint,e->pos()).normalized();
@@ -657,8 +657,13 @@ void LineGraph::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void LineGraph::mouseReleaseEvent(QMouseEvent *e) {
-  if (clickPoint.x()<0)
+  if (clickPoint.x()<0) {
+    if (zooming) {
+      zooming = false;
+      update();
+    }
     return; // it's a double click; we don't care
+  }
 
   if (zooming) {
     zooming = false;

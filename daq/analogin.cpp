@@ -95,12 +95,10 @@ void AnalogIn::setAcqLength(int nscans_) {
 }
 
 void AnalogIn::commit() {
-  //  dbg("analogin(%p)::commit\n",this);
   if (committed)
     return;
 
   daqTask::preCommit();
-  //  dbg("analogin::precommit ok\n");
 
   for (int n=0; n<ai_channel_list.size(); n++) {
     Channel ain = ai_channel_list[n];
@@ -115,9 +113,7 @@ void AnalogIn::commit() {
 				    -range,range,
 				    DAQmx_Val_Volts,0),
 	   "AnalogIn","Create AI channel");
-    //dbg("analogin: created %i: %i: '%s'\n",n,ain,chname);
   }
-  //  dbg("analogin: voltage channels created\n");
 
   if (nscans) {
     dmabufsize = nscans;
@@ -136,8 +132,6 @@ void AnalogIn::commit() {
                                  dmabufsize),
            "AnalogIn","Cannot configure continuous acquisition");
   }
-  dbg("analogin(%p): sampclktiming set. dmabufsize=%i nscans=%i freqhz=%g\n",
-      this,dmabufsize,nscans,freqhz);
 
   if (dislave) 
     dislave->commit();
@@ -146,7 +140,6 @@ void AnalogIn::commit() {
     aoslave->commit();
 
   postCommit();
-  //dbg("analogin: postcommit ok\n");
 }
 
 void AnalogIn::uncommit() {
@@ -191,14 +184,11 @@ void AnalogIn::callbackDone(int status) {
 }
 
 void AnalogIn::callbackEvery(int nscans) {
-  // dbg("AnalogIn::callbackEvery nscans=%i pollperiod=%i\n",
-  //    nscans,pollPeriod);
   if (pollPeriod>0)
     emit dataAvailable(this,nscans);
 }
 
 void AnalogIn::start() {
-  dbg("AnalogIn(%p)::start",this);
   preStart();
 
   if (dislave)
@@ -289,7 +279,6 @@ int AnalogIn::read(AnalogData *dest, int offset, int maxscans) {
 }
 
 void AnalogIn::stop() {
-  dbg("analogin(%p)::stop (aoslave=%p, dislave=%p)",this,aoslave,dislave);
   daqTask::preStop();
   if (!aborting) {
     if (aoslave)
@@ -302,7 +291,6 @@ void AnalogIn::stop() {
 
 void AnalogIn::abort() {
   aborting = true;
-  dbg("analogin(%p)::abort",this);
   try {
     daqTask::preAbort();
     if (aoslave)
@@ -310,7 +298,6 @@ void AnalogIn::abort() {
     if (dislave)
       dislave->abort();
     daqTask::postAbort();
-    dbg("  analogin(%p)::abort done",this);
     aborting = false;
   } catch (...) {
     aborting = false;

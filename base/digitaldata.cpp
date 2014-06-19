@@ -51,7 +51,6 @@ void DigitalData::write(QString ofn, QDomElement elt) {
   elt.setAttribute("typebytes","4");
   elt.setAttribute("scans", QString::number(nscans));
   foreach (unsigned int n, line2id.keys()) {
-    //Dbg(this) << "write n="<<n<<" id="<<line2id[n];
     QDomElement line = elt.ownerDocument().createElement("line");
     elt.appendChild(line);
     line.setAttribute("idx", QString::number(n));
@@ -81,7 +80,6 @@ void DigitalData::read(QString ifn, QDomElement elt) {
        !e.isNull(); e = e.nextSiblingElement("line")) {
     int idx = e.attribute("idx").toInt();
     QString id = e.attribute("id");
-    //Dbg() << "ddata:read: " << idx << "=" << id;
     defineLine(idx, id);
   }  
 }
@@ -155,7 +153,6 @@ void DigitalData::addLine(unsigned int line) {
 }
 
 void DigitalData::defineLine(unsigned int line, QString id) {
-  //  Dbg(this) << "defineLine: " << line << ":" << id << " mask="<<cmask;
   KeyGuard guard(*this);
   addLine(line);
   id2line.remove(line2id[line]);

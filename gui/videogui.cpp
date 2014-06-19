@@ -49,21 +49,17 @@ bool VideoGUI::reset(guiRoot *gui, ParamTree *ptree) {
 }
 
 bool VideoGUI::changeEnable(guiRoot *gui, ParamTree *ptree) {
-  Dbg() << "VideoGUI::changeEnable";
   if (!vprog.ok()) 
     return false;
   if (!vprog.enabled(ptree))
     return true;
   try {
-    Dbg() << "VG: ensureGui";
     ensureGUI(gui, ptree);
-    Dbg() << "VG: ensureSettings";
     vprog.ensureSettings(ptree);
   } catch (Exception const &e) {
     failure(e, gui, ptree);
     return false;
   }
-  Dbg() << "VG: OK";
   return true;
 }
 
@@ -109,7 +105,6 @@ void VideoGUI::failure(Exception const &e, guiRoot *gui, ParamTree *ptree) {
 }
 
 void VideoGUI::populateProgNames(guiPage *gui) {
-  dbg("VideoGUI::populateProgNames");
   guiPage &pg = dynamic_cast<guiPage&>(gui->findPage(QStringList(QString("prog"))));
   QList<guiButton *> buttons = pg.allButtons();
   QList<guiButton *>::iterator but_i = buttons.begin();
@@ -133,13 +128,11 @@ void VideoGUI::populateProgNames(guiPage *gui) {
     (*but_i)->setVisible((*but_i)->isCustom());
     but_i++;
   }    
-  dbg("  VideoProg::populateProgNames done");
   populatedprognames = true;
 }
 
   
 void VideoGUI::populateParValues(guiPage *gui, int prog, int par) {
-  Dbg() << "VideoGUI::populateParValues: " << prog << " " << par;
   QStringList const &values = vprog.parValues(prog,par);
   guiPage &pg =
     dynamic_cast<guiPage&>(gui->findPage(QStringList(QString("par%1").
@@ -149,7 +142,6 @@ void VideoGUI::populateParValues(guiPage *gui, int prog, int par) {
   for (QStringList::const_iterator i=values.begin();
        i!=values.end(); ++i) {
     QString val = *i;
-    Dbg() << "Listing value " << val << " for prog " << prog << " par " << par;
     if (but_i!=buttons.end()) {
       (*but_i)->setValue(val);
       (*but_i)->setVisible(true);
@@ -163,11 +155,9 @@ void VideoGUI::populateParValues(guiPage *gui, int prog, int par) {
     (*but_i)->setVisible((*but_i)->isCustom());
     but_i++;
   }    
-  dbg("  VideoGUI::populateParValues done");
 }
 
 void VideoGUI::ensureGUI(guiRoot *gui, ParamTree *ptree) {
-  dbg("VideoGUI::ensureGUI");
   guiPage &vidp = gui->findPage("stimVideo");
   if (!populatedprognames)
     populateProgNames(&vidp);
@@ -188,12 +178,9 @@ void VideoGUI::ensureGUI(guiRoot *gui, ParamTree *ptree) {
   populateParNames(&vidp, pno);
   for (int k=1; k<=VideoProg::MAXPAR; k++)
     populateParValues(&vidp, pno, k);
-  dbg("  VideoGUI::ensureGUI done");
 }
 
 void VideoGUI::populateParNames(guiPage *gui, int prog) {
-  dbg("VideoGUI::populateParNames");
-  
   QStringList const &parnames = vprog.parNames(prog);
   QStringList const &parunits = vprog.parUnits(prog);
   for (int k=1; k<=VideoProg::MAXPAR; k++) {
@@ -218,5 +205,4 @@ void VideoGUI::populateParNames(guiPage *gui, int prog) {
 	  k,qPrintable(label));
     }
   }
-  dbg("  VideoGUI::populateParNames done");
 }

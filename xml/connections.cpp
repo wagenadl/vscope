@@ -144,7 +144,6 @@ namespace Connections {
 	}
 	if (e.hasAttribute("unit"))
 	  aic->unit = e.attribute("unit");
-	//Dbg() << "Connections: aimap["<<id<<"] has line="<<aimap[id]->line;
       }
     }
   }
@@ -172,7 +171,6 @@ namespace Connections {
 	if (e.hasAttribute("unit"))
 	  aoc->unit = e.attribute("unit");
       }
-      //Dbg() << "Connections: aimap["<<id<<"] has line="<<aimap[id]->line;
     }
   }
 
@@ -200,7 +198,6 @@ namespace Connections {
       cam->isacceptor = role=="acceptor";
       cam->placement.read(e);
       cam_enum->add(id);
-      Dbg() << "Read info for camera " + id;
     }
     
     // back connect camera pairs
@@ -278,11 +275,9 @@ namespace Connections {
 
     readAIChannels(doc);
     readAOChannels(doc);
-    //Dbg() << "Connections: done reading AI channels. size="<<aimap.size();
     readDIChannels(doc);
     readDOChannels(doc);
     readCameras(doc);
-    //Dbg() << "Connections: done reading xml. aimap.size="<<aimap.size();
   }
 
   
@@ -428,7 +423,6 @@ namespace Connections {
   
   QStringList digiInputLines() {
     QStringList l;
-    //dbg("connections:digiinputlines:");
     foreach (DigiChannel const *ch, digimap.values())
       if (ch->in)
 	l.append(ch->id);
@@ -437,7 +431,6 @@ namespace Connections {
 
   QStringList digiOutputLines() {
     QStringList l;
-    //dbg("connections:digioutputlines:");
     foreach (DigiChannel const *ch, digimap.values())
       if (ch->out)
 	l.append(ch->id);

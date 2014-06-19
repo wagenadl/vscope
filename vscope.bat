@@ -3,4 +3,4 @@
 C:
 chdir C:\cygwin\bin
 
-bash --login -i c:\cygwin\home\User\progs\vscope\indycam\vscope.win.sh
+bash --login -i "%HOMEPATH%\progs\vscope\indycam\vscope.win.sh"

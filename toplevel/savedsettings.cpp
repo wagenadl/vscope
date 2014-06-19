@@ -33,7 +33,6 @@ SavedSettings::~SavedSettings() {
 }
 
 void SavedSettings::showEvent(class QShowEvent *e) {
-  dbg("SavedSettings::showEvent");
   FileChooser::showEvent(e);
 
   QWidget *p1 = Globals::gui->findpButton("savedSettings/_a");
@@ -47,11 +46,6 @@ void SavedSettings::showEvent(class QShowEvent *e) {
   setGeometry(r);
   QPoint tl = r.topLeft();
   QPoint br = r.bottomRight();
-  // QRect r1(p->mapTo(parentWidget(),tl), p->mapTo(parentWidget(),br));
-  dbg("  r.tl=(%i,%i) .br=(%i,%i)", // r1.tl=(%i,%i) .br=(%i,%i)",
-      tl.x(),tl.y(),br.x(),br.y());
-  //     r1.left(),r1.top(), r1.right(),r1.bottom());
-  // setGeometry(r1);
   populateFiles(QDir(Globals::filePath()+"/_settings"),"xml");
 
   p1->hide();
@@ -61,7 +55,6 @@ void SavedSettings::showEvent(class QShowEvent *e) {
 
 void SavedSettings::loadSettings(QString fn) {
   QString bfn = fn;
-  dbg("loadSettings %s",qPrintable(fn));
   if (!fn.startsWith("/"))
     fn = Globals::filePath() + "/_settings/" + fn;
   if (!fn.endsWith(".xml"))
@@ -117,8 +110,6 @@ void SavedSettings::deleteCurrent() {
     fn = Globals::filePath() + "/_settings/" + fn;
   if (!fn.endsWith(".xml"))
     fn += ".xml";
-
-  Dbg() << "SavedSettings::deleteCurrent: " << fn;
 
   QFile f(fn);
   f.remove();

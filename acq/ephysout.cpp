@@ -185,7 +185,6 @@ void EPhysOut::setupDData_addStim(ParamTree const *ptree) {
       }
     }
   }
-  //  dbg("ephysout:setupdstim complete");
 }
 
 
@@ -240,7 +239,6 @@ void EPhysOut::setupAData_stim(ParamTree const *ptree) {
       setupAData_mkStim(ptree, name,
 			QString("stimEphys/channel:%1/").arg(name));
   }
-  dbg("ephysout:setupastim complete nch=%i nsc=%i",nchans,nscans);
 }
 
 void EPhysOut::setupAData_mkStim(ParamTree const *ptree,
@@ -331,18 +329,10 @@ void EPhysOut::commit() {
   if (active)
     throw Exception("EPhysOut","Cannot commit: already active");
   if (aout) {
-    dbg("ephysout:commit");
     if (master!=oldmaster)
       aout->setMaster(master ? master->daq() : 0);
     oldmaster=master;
-    //if (master) {
-    //  dbg("ephysout: aout not committed, we'll let master do it");
-    //} else {
-    if (master)
-      dbg("ephysout: not sure we should be committing aout, since we have a master");
     aout->commit();
-    dbg("ephysout: aout committed");
-    //}
   }
 }
 
@@ -351,15 +341,12 @@ void EPhysOut::setMaster(class EPhysAcq *mstr) {
 }
 
 void EPhysOut::start() {
-  dbg("ephysout::start");
   commit();
   active=true;
   if (aout) {
     if (master) {
-      dbg("ephysout: aout not started, we'll let master do it");
     } else {
       aout->start();
-      dbg("ephysout: aout started");
     }
   } else {
     dbg("ephysout:fakestart");
@@ -383,12 +370,9 @@ void EPhysOut::start() {
       }
       fclose(fakeout);
     } catch (Exception) {
-      //dbg("failure to write fakeout data");
     }
     timer->start();
-    //    dbg("ephysout:fakestarted ival=%g ms",trialtime_ms);
   }
-  dbg("ephysout:started");
 }
 
 void EPhysOut::abort() {
@@ -399,13 +383,10 @@ void EPhysOut::abort() {
 
 void EPhysOut::aoutEnded() {
   active=false;
-  dbg("EPhysOut::aoutEnded");
   if (master) {
-    dbg("ephysout::aoutended: not stopping aout; master will do it");
   } else {
     if (aout) {
       aout->stop(); // is this needed?
-      dbg("ephysout::aoutended: aout stopped");
       aout->uncommit();
     } else {
       dbg("ephysout::aoutended: no aout to stop !!??");

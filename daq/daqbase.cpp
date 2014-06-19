@@ -205,18 +205,13 @@ QString DAQDevice::search(unsigned int prodtype, unsigned int sernoi) {
   QString id = "";
   QStringList devs = deviceList();
   QString serno = sernoi ? QString::number(sernoi,16) : "";
-  Dbg() << "DAQDevice: Looking for product " << prodtype << " with serno '" << serno << "'";
-  Dbg() << "DAQDevice: devicelist: " << devs.join(" ");
   for (QStringList::iterator i=devs.begin(); i!=devs.end(); ++i) {
-    Dbg() << "DAQDevice: dev: " << *i << " code=" << devTypeCode(*i)
-	  << " serno=" << devSerialNo(*i);
     if ((prodtype==0 ||devTypeCode(*i)==prodtype) &&
 	(serno=="" || devSerialNo(*i)==serno)) {
       id = *i;
       break;
     }
   }
-  Dbg() << "DAQDevice: result: " << id;
   return id;
 }
 
@@ -245,7 +240,6 @@ void DAQDevice::initialize() {
   if (!devices.isEmpty())
     return; // already initialized
 
-  dbg("DAQDevice::initializing");
   
   QStringList ids = deviceList();
   if (ids.isEmpty()) {
@@ -263,5 +257,4 @@ void DAQDevice::initialize() {
   }
   aliases[""] = 0;
 
-  dbg("aliases: %i",aliases.contains(""));
 }

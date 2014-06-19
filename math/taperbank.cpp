@@ -26,7 +26,6 @@ bool Taperbank::contains(TaperID const &id) {
   if (data.contains(id)) 
     return true;
   QString fn = buildfn(id);
-  Dbg() << "Taperbank looking for " << fn;
   return QFile::exists(fn);
 }
 
@@ -82,7 +81,6 @@ void Taperbank::instaPrep(TaperID const &id) {
   QDir d(dir);
   if (!d.mkpath(d.absolutePath()))
     throw Exception("Taperbank", "Cannot make taperbank dir");
-  Dbg() << "Taperbank::instaPrep: " << id.name() << ": " << fn;
   QProcess mkdpss(this);
   QStringList args;
   args.append(fn);
@@ -92,7 +90,6 @@ void Taperbank::instaPrep(TaperID const &id) {
   mkdpss.start("mkdpss", args);
   if (!mkdpss.waitForStarted() || !mkdpss.waitForFinished())
     throw Exception("Taperbank", "Cannot run mkdpss");
-  Dbg() << "Taperbank::instaPrep done";
 }
 
 bool Taperbank::couldExist(TaperID const &id) {
@@ -159,8 +156,6 @@ void Taperbank::processDone(QString name) {
   delete p;
   preps.remove(id);
   prepids.remove(name);
-  Dbg() << "Taperbank: emitting prepared " << name
-	<< " (" << rc << ") " << (rc==0);
   emit prepared(id, rc==0);
 }
   

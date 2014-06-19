@@ -34,11 +34,11 @@ void guiButton::setup(QDomElement doc) {
   if (custom)
     editCaption = doc.attribute("editcaption");
 
-  format = doc.hasAttribute("label") 
-    ? doc.attribute("label")
-    : id()=="enable"
-      ? "Enabled"
-      : "%1";
+  setFormat(doc.hasAttribute("label") 
+	    ? doc.attribute("label")
+	    : id()=="enable"
+	    ? "Enabled"
+	    : "%1");
 
   if (doc.hasAttribute("bg"))
     setBackground(QColor(doc.attribute("bg")));
@@ -75,6 +75,7 @@ void guiButton::setEnabled(bool f) {
 
 void guiButton::setFormat(QString f) {
   format=f;
+  //  format.replace("\\n", "\n"); // this doesn't work, anyway
   if (format.indexOf("%1")>=0)
     setText(format.arg(value));
   else

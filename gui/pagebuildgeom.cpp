@@ -34,7 +34,6 @@ PageBuildGeom::PageBuildGeom(PageBuildGeom const &src,
   double h = src.button.dy*(nr-1) + src.button.h;
   double x0 = src.button.x0 + c0*src.button.dx;
   double y0 = src.button.y0 + r0*src.button.dy;
-  Dbg() << "PBG: R=" << QRect(x0, y0, w, h);
   setup(doc, QRect(x0, y0, w, h));
 }  
 

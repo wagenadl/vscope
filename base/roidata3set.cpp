@@ -23,7 +23,6 @@ ROIData3Set::~ROIData3Set() {
 
 void ROIData3Set::setCCDData(QString id, CCDData const *data) {
   AllKeyGuard guard(*this);
-  Dbg()<<"ROIData3Set("<<this<<"): setdata:"<<id<<"="<<data;
   d.ccdData[id] = data;
   foreach (int roiid, d.data.keys()) {
     CamPair const &cp = d.roiset->cam(roiid);
@@ -43,7 +42,6 @@ void ROIData3Set::setCCDData(QString id, CCDData const *data) {
 
 void ROIData3Set::updateCCDData() {
   AllKeyGuard guard(*this);
-  dbg("ROIData3Set(%p)::updateData. roiset=%p. n=%i",this,d.roiset,d.data.keys().size());
   foreach (ROI3Data *rd, d.data.values())
     rd->updateData();
 }
@@ -107,7 +105,6 @@ QList<int> ROIData3Set::allIDs() const {
 
 void ROIData3Set::updateROI(int id) {
   IDKeyGuard guard(*this, id);
-  Dbg() << "ROIData3Set::changeROI("<<id<<")";
   changeROIcore(id);
 }
 
@@ -138,7 +135,6 @@ void ROIData3Set::changeROIcore(int id) {
 
 void ROIData3Set::updateROIs() {
   AllKeyGuard guard(*this);
-  Dbg() << "ROIData3Set("<<this<<")::changeROIs()";
   QSet<int> ids = QSet<int>::fromList(d.data.keys());
   if (d.roiset)
     ids += d.roiset->ids();

@@ -12,15 +12,12 @@ bool CamPool::inited = false;
 void CamPool::initialize() {
   if (inited)
     return;
-  Dbg() << "Initializing camera pool";
   pvpSystem();
   int N = pvpSystem::countCameras();
-  Dbg() << "Counted cameras: " << N;
   for (int n=0; n<N; n++) {
     QString name = pvpSystem::getCamName(n);
     Dbg() << "Camera #" << n << ": " << name;
     Camera *cam = new Camera(name);
-    Dbg() << "  Camera " << n << " initialized";
     Dbg() << "  Serial no: " << cam->getSerialNumber();
     cameras.push_back(cam);
     byId[cam->getSerialNumber()] = cam;
@@ -55,12 +52,7 @@ Camera *CamPool::findp(QString serno) {
 
 bool CamPool::haveAll(QStringList const &cams) {
   try {
-    Dbg() << "CamPool count: " << nCameras();
-    for (int i=0; i<nCameras(); i++)
-      Dbg() << "  Camera #" << i << ": '" << cameras[i]->getID()
-	    << "' (#" << cameras[i]->getSerialNumber() << ")";
     foreach (QString s, cams) {
-      Dbg() << "CamPool looking for '" << s << "'";
       if (!byId.contains(s))
 	return false;
     }

@@ -67,7 +67,6 @@ QStringList VideoCommPlugins::getParValues(int prog, int par) {
   QString values;
   if (progs.contains(prog))
     values = progs[prog]->parsuggest(par);
-  Dbg() << "getParValues: " << prog << " " << par << ": " << values;
   return values.split(":");
 }
 
@@ -97,14 +96,12 @@ void VideoCommPlugins::prepStim(ParamTree const *ptree,
   info.nscans = adata->getNumScans();
   info.fs_hz = samplingrate_hz;
   info.i0 = int(tstart_s*samplingrate_hz);
-  dbg("vcplugin: i0=%i n=%i fs=%g",info.i0,info.nscans, info.fs_hz);
   if (ptree->find("stimVideo/avoidCCD").toBool()) {
     int avoid_i0 = ccdtiming.startScans()
       - int(marginpre_ms*samplingrate_hz/1000);
     int avoid_n = ccdtiming.activeScans()
       + int((marginpre_ms+marginpost_ms)*samplingrate_hz/1000);
     int avoid_di = ccdtiming.periodScans();
-    dbg("  vcp: avoid_i0=%i avoid_n=%i avoid_di=%i",avoid_i0,avoid_n,avoid_di);
     // find the ccd activity that affects our first pulse:
     while (avoid_i0+avoid_n>info.i0)
       avoid_i0-=avoid_di;
@@ -131,12 +128,10 @@ void VideoCommPlugins::prepStim(ParamTree const *ptree,
   } else {
     info.frameival = info.nfill = int(samplingrate_hz/framerate_hz);
   }
-  dbg("  vcp: i0=%i fi=%i nf=%i",info.i0,info.frameival,info.nfill);
   int iend = int(tend_s*samplingrate_hz)+1;
   if (iend>info.nscans)
     iend=info.nscans;
   info.nframes = (iend-info.i0) / info.frameival;
-  dbg("  vcp: iend=%i nf=%i",iend,info.nframes);
 
   // Analog part of rendering: control of x and y position
   info.nchans = adata->getNumChannels();
@@ -149,11 +144,6 @@ void VideoCommPlugins::prepStim(ParamTree const *ptree,
   ddata->defineLine(lightline, "Lamp:Video");
   info.dmask_light = ddata->maskForLine(lightline);
   info.destd = ddata->allData(dguard.key());
-
-  dbg("videocommplugins: i0=%i nfr=%i nfil=%i friv=%i",
-      info.i0,info.nframes,info.nfill,info.frameival);
-  dbg("videocommplugins: destx=%p desty=%p nsc=%i nch=%i fs=%g",
-      info.destx,info.desty,info.nscans,info.nchans,info.fs_hz);
 
   progs[iprog]->setscale(ptree->find("stimVideo/xscale").toDouble()/1e3,
 			 ptree->find("stimVideo/yscale").toDouble()/1e3);

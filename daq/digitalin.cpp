@@ -50,7 +50,7 @@ void DigitalIn::commit() throw(daqException) {
       }
     }
   }
-  dbg("DI(%p): bits: %08x; line names: [%s]. nscans=%i",this,cmask,chnames,nscans);
+
   daqTry(DAQmxCreateDIChan(th,chnames,0,
 			   DAQmx_Val_ChanForAllLines),
 	 "DigitalIn","Create DI channel");
@@ -82,8 +82,6 @@ void DigitalIn::callbackDone(int status) {
 }
 
 void DigitalIn::callbackEvery(int nscans) {
-  // dbg("DigitalIn::callbackEvery nscans=%i pollperiod=%i\n",
-  //     nscans,pollPeriod);
   if (pollPeriod>0)
     emit dataAvailable(this,nscans);
 }

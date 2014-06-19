@@ -43,7 +43,7 @@ void gt_slots::doubleClicked(QString p) {
 void gt_slots::clicked(QString p) {
   try {
     dimple(p);
-    printf("clicked %s\n",qPrintable(p));
+    dbg("clicked %s\n",qPrintable(p));
     if (p=="quit") {
       if (Globals::focus)
 	Globals::focus->deactivate(true);
@@ -78,9 +78,13 @@ void gt_slots::clicked(QString p) {
     } else if (p=="savedSettings/save") {
       Globals::savedSettings->prepareSave();
     } else if (p=="acquisition/exptelapsed") {
-      Globals::exptelapsed->setFormat("Since Click:\n%1");
+      Globals::exptelapsed->setFormat("Since Click: %1");
       Globals::exptelapsed->startCountUp();
       Globals::exptlog->addNote("Timer reset");
+    } else if (p=="acquisition/trialelapsed") {
+      Globals::trialelapsed->setFormat("Since Click: %1");
+      Globals::trialelapsed->startCountUp();
+      Globals::exptlog->addNote("Trial timer reset");
     } else if (p.startsWith("acquisition/camvals")) {
       p = Globals::gui->pathInstantiate(p);
       Dbg() << "path is " << p;

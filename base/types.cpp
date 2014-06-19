@@ -28,6 +28,4 @@ void checkTypes() {
     throw Exception("checkTypes","float has incorrect size.");
   if (sizeof(double)!=8)
     throw Exception("checkTypes","double has incorrect size.");
-
-  dbg("Type sizes checked OK.\n");
 }

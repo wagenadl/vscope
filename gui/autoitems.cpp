@@ -32,9 +32,7 @@ QStringList AutoItems::selectIDs(QStringList inlist) {
     foreach (QString s, exclude) {
       if (s == "*id") {
 	guiPage *p = dynamic_cast<guiPage*>(parent());
-	Dbg() << "AutoItems: excluding *id p = " << p;
 	QString path = p->masterp()->pathInstantiate(p->path());
-	Dbg() << "  path = " << path;
 	int colon = path.lastIndexOf(":");
 	if (colon>=0) {
 	  path = path.mid(colon+1);
@@ -42,7 +40,6 @@ QStringList AutoItems::selectIDs(QStringList inlist) {
 	  if (slash>=0)
 	    path = path.left(slash);
 	}
-	Dbg() << "  -> myid = " << path;
 	s = path;
       }
       if (id==s)
@@ -63,8 +60,7 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
   if (!p)
     throw Exception("AutoItems", "Parent is not a page");
   foreach (QString id, items.keys()) {
-    Dbg() << "AutoItems: deleting " << id;
-    Dbg() << "  result: " << p->deleteButton(id);
+    p->deleteButton(id);
   }
 
   items.clear();
@@ -75,11 +71,7 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
   QDomDocument xml;
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
-  Dbg() << "AutoItems::rebuild " << enumerator->getName();
-  Dbg() << 1;
-  Dbg() << 2;
   foreach (QString id, ids) {
-    Dbg() << " add " << id << "=" << enumerator->lookup(id);
     if (enumerator->lookup(id)>=0) {
       // let's build an item
       xml.setContent(hd1 + "\n" + hd2 + "\n"

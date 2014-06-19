@@ -106,8 +106,6 @@ void AnalogData::write(QString ofn, QDomElement elt) {
 }
 
 AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
-  dbg("adata:writeint16. ofn=%s",qPrintable(ofn));
-  dbg("  nch=%i nsc=%i",nchannels,nscans);
   Q_ASSERT(nchannels*nscans <= data.size());
   
   QVector<double> range(nchannels, 1e-6);
@@ -222,7 +220,6 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps) {
   QVector<int16_t> buffer(nchannels*BUFSIZE);
   int scansleft = newscans;
   double *dp = data.data();
-  dbg("analogdata::readint16 nchannels=%i newscans=%i",nchannels,newscans);
   while (scansleft) {
     int now = scansleft < BUFSIZE ? scansleft : BUFSIZE;
     int nbytes = nchannels*2*now;

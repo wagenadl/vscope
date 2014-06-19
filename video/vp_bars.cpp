@@ -71,7 +71,7 @@ void VP_Bars::render(VPRenderInfo const &info) const {
     // make a frame
     int phasectr = int((starting_phase_1+temp_freq_per_s*t_s)
 		       * lines_per_fullcycle);
-    dbg("frame %i phasectr %i",f,phasectr);
+    //dbg("frame %i phasectr %i",f,phasectr);
     double *ptrx = frmx;
     double *ptry = frmy;
     uint32_t *ptrd = frmd;

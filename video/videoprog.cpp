@@ -40,7 +40,6 @@ void VideoProg::reset(ParamTree *ptree) {
 
 void VideoProg::setProgram(ParamTree *ptree, bool forreal) {
   QString prog = ptree->find("stimVideo/prog").toString();
-  Dbg() <<"VideoProg::setProgram: " << prog;
   int progno = progname2num(prog);
   if (progno<=0)
     throw Exception("VideoProg","Unknown program name");
@@ -48,19 +47,16 @@ void VideoProg::setProgram(ParamTree *ptree, bool forreal) {
     vidcom->setProgram(progno);
   else
     isuptodate = false;
-  dbg("  VideoProg::setProgram done");
 }
 
 void VideoProg::setParam(ParamTree *ptree,
 			 int parno, bool forreal) {
-  dbg("VideoProg::setParam");
   double val = ptree->find(QString("stimVideo/par%1")
 			   .arg(QString('A'+parno-1))).toDouble();
   if (forreal)
     vidcom->setPar(parno, val);
   else
     isuptodate = false;
-  dbg("  VideoProg::setParam done");
 }
 
 void VideoProg::ensureProgNames() {
@@ -74,8 +70,6 @@ void VideoProg::ensureProgNames() {
     int progno = i.key();
     QString progname = i.value();
     prognos[progname] = progno;
-    dbg("Note: I named program #%i '%s'.",
-	progno,qPrintable(progname));
   }
   hasprognames = true;
 }
@@ -97,12 +91,10 @@ void VideoProg::ensureSettings(ParamTree *ptree) {
   if (isuptodate)
     return;
 
-  dbg("VideoProg::ensureSettings");
   ensureProgNames();
   setProgram(ptree,true);
   for (int k=1; k<=MAXPAR; k++)
     setParam(ptree,k,true);
-  dbg("  VideoProg::ensureSettings done");
 
   isuptodate = true;
 }

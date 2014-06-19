@@ -341,10 +341,12 @@
   <!-- ******************** CCD ACQUISITION CONFIG PAGE ******************* -->
   <page id="stimVideo" subdxl="3.1">
     <button id="enable" type="bool" bg="#ffff33"/>
-    <button id="avoidCCD" label="Avoid CCD" type="bool" bg="#cccc99"/>
-    <button id="lightOn" label="[Light On]" type="bool" y="4" bg="#ffff00"
-	    neverdisable="true"/>
-    <group id="a">
+    <group id="b" x="0" y="1">
+      <button id="avoidCCD" label="Avoid CCD" type="bool" bg="#cccc99"/>
+      <button id="lightOn" label="[Light On]" type="bool" y="3" bg="#ffff00"
+	      neverdisable="true"/>
+    </group>
+    <group id="a" x="0" y="0">
       <button id="delay" label="Onset delay" y="2" bg="#dddd66"/>
       <button id="dur" label="Duration" bg="#bbbb44"/>
       <button id="prog" label="Program" x="1" y="0" bg="#bbbb44"/>
@@ -465,8 +467,8 @@
     </group>
 
     <button id="walltime" label="%1" x="1.1" y="1" bg="#99aa99"/>
-    <button id="exptelapsed" label="Since Start" bg="#88bb88"/>
-    <button id="trialelapsed" label="Since Last" bg="#77cc77"/>
+    <button id="exptelapsed" label="Since Start: %1" bg="#88bb88"/>
+    <button id="trialelapsed" label="Since Last: %1" bg="#77cc77"/>
 
     <tabbedpage id="camvals">
       <button id="blackPlus" label="More black"/>

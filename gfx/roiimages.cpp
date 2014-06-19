@@ -52,12 +52,10 @@ void ROIImages::setROIs(ROISet *rs) {
 }
 
 void ROIImages::shareSelection(QString id) {
-  Dbg() << "ROIImages::shareSelection from " << id;
   int sel = get(id)->currentROI();
   foreach (QString id1, imgs.keys()) 
     if (id1!=id) 
       get(id1)->updateSelection(sel);
-  Dbg() << "ROIImages: emitting new selection: " << sel;
   emit newSelection(sel);
 }
 
