@@ -146,11 +146,9 @@ protected:
   //  ParamTree *parent;
   QMap<QString, ParamTree *> children;
   bool savable;
-#if PARAM_DBG
 public:
   QString dbgPath;
   void setDbgPath(QString path);
-#endif
 };
 
 #endif

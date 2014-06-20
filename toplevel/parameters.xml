@@ -22,7 +22,7 @@
   
     <category id="acqEphys">
       <param id="acqTime" type="time" default="1.1 s" min="1 s" max="1 h"/>
-      <param id="aiChannels" type="set" enum="AICHAN" default="ME1_10Vm ME2_Vm"/>
+      <param id="aiChannels" type="set" default="ME1_10Vm ME2_Vm"/>
       <param id="acqFreq" type="freq" default="10 kHz" min="100 Hz" max="100 kHz"/>
   
       <category id="vco">
@@ -141,9 +141,9 @@
       <category id="liveEphys">
         <param id="timeBase" type="time" default="100 ms" 
                min="10 ms" max="1 s" save="false"/>
-        <param id="aiChannels" type="set" enum="AICHAN" 
+        <param id="aiChannels" type="set"
                default="ME1_10Vm ME2_Vm" save="false"/>
-        <param id="diChannels" type="set" enum="DIGILINES"
+        <param id="diChannels" type="set"
                default="" save="false"/>
         <param id="vcoSource" type="enum" enum="AICHAN" 
                default="Silent" save="false"/>

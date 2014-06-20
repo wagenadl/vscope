@@ -257,11 +257,8 @@ void LiveEPhys::activate(ParamTree *p, ContAcq *ca) {
 }
 
 void LiveEPhys::addChannels(MultiGraph *cc, QStringList const &list) {
-  QStringList chmask = ptree->find("maintenance/liveEphys/aiChannels")
-    .toStringList();
-  QSet<QString> chset;
-  foreach (QString c, chmask)
-    chset.insert(c);
+  QSet<QString> chset
+    = ptree->find("maintenance/liveEphys/aiChannels").toStrings();
   dbg("liveephys addchannels to %p n=%i\n",cc,list.size());
   foreach (QString cid, list) {
     Connections::AIChannel const *aic = Connections::findpAI(cid);

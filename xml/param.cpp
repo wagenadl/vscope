@@ -8,11 +8,11 @@
 #include <base/exception.h>
 #include <math.h>
 #include <QRegExp>
-#include <QStringList>
 #include <stdio.h>
+#include <QSet>
 
 Param::Param(QString type, QString enumname) {
-  newType(type,enumname);
+  newType(type, enumname);
   cond=0;
   deflt=value;
 }
@@ -26,15 +26,12 @@ Param::Param(QDomElement defn) {
 void Param::newDefn(QDomElement defn) {
   QString type = xmlAttribute(defn, "type");
   QString enumname="";
-  if (type=="enum" || type=="set")
+  if (type=="enum")
     enumname=xmlAttribute(defn, "enum");
-  newType(type,enumname);
-  if (type=="set") {
-    value=QVariant(QBitArray(enumerator->getLargestValue()+1));
-  }
+  newType(type, enumname);
   if (defn.hasAttribute("default")) {
     try {
-      set(xmlAttribute(defn,"default"));
+      set(xmlAttribute(defn, "default"));
     } catch (Exception const &) {
       Dbg() << "Param caught exception: '" << xmlAttribute(defn,"default")
 	    << "' is not an acceptable value for "<< type  << "." << enumname;
@@ -87,8 +84,10 @@ void Param::newType(QString type, QString enumname) {
 	valueType=="string" ||
 	valueType=="enum" ||
 	valueType=="set"))
-    throw Exception("Param",QString("Unknown value type '") + type +"'","constructor");
-  if (valueType=="enum" || valueType=="set")
+    throw Exception("Param",
+		    QString("Unknown value type '") + type +"'",
+		    "constructor");
+  if (valueType=="enum")
     enumerator = Enumerator::find(enumname);
   else
     enumerator = 0;
@@ -161,11 +160,9 @@ void Param::set(QString s) {
 	val/=1000;
       v = QVariant(val);
     } else {
-#if PARAM_DBG
-      throw Exception("Param","Voltage must be expressed in uV, mV, or V for " + dbgPath);
-#else
-      throw Exception("Param","Voltage must be expressed in uV, mV, or V");
-#endif
+      throw Exception("Param",
+		      "Voltage must be expressed in uV, mV, or V for "
+		      + dbgPath);
     }
   } else if (valueType=="current") {
     QRegExp re("^([0-9-.]+)\\s*(|pA|nA|uA|mA)$");
@@ -204,19 +201,16 @@ void Param::set(QString s) {
     }
   } else if (valueType=="set") {
     if (s.left(1)=="+") {
-      QBitArray ar(value.toBitArray());
-      ar.setBit(enumerator->lookup(s.mid(1)));
-      v=QVariant(ar);
+      QSet<QString> vals = QSet<QString>::fromList(value.toString().split(" "));
+      vals.insert(s.mid(1));
+      v = QVariant(QStringList(vals.toList()).join(" "));
     } else if (s.left(1)=="-") {
-      QBitArray ar(value.toBitArray());
-      ar.clearBit(enumerator->lookup(s.mid(1)));
-      v=QVariant(ar);
+      QSet<QString> vals = QSet<QString>::fromList(value.toString().split(" "));
+      vals.remove(s.mid(1));
+      v = QVariant(QStringList(vals.toList()).join(" "));
     } else {
-      QBitArray ar(enumerator->getLargestValue()+1);
       QStringList l = s.split(QRegExp("\\s+"),QString::SkipEmptyParts);
-      for (QStringList::iterator i=l.begin(); i!=l.end(); ++i) 
-	ar.setBit(enumerator->lookup(*i));
-      v=QVariant(ar);
+      v=QVariant(l.join(" "));
     }
   } else {
     throw Exception("Param", QString("Unknown value type"),"set");
@@ -229,14 +223,12 @@ void Param::set(QString s) {
   rangeCheck(v);
 }
 
-void Param::setStringList(QList<QString> const &ss) {
+void Param::setStrings(QSet<QString> const &ss) {
   if (valueType=="set") {
-    QBitArray ar(enumerator->getLargestValue()+1);
-    foreach (QString s, ss)
-      ar.setBit(enumerator->lookup(s));
-    rangeCheck(QVariant(ar));
+    QVariant v = QVariant(QStringList(ss.toList()).join(" "));
+    rangeCheck(v);
   } else {
-    throw Exception("Param", "Only sets can be defined by lists of strings");
+    throw Exception("Param", "Only sets can be defined by sets of strings");
   }
 }
 
@@ -266,23 +258,6 @@ void Param::rangeCheck(QVariant const &v) {
   }
 }
 
-void Param::setBitArray(QBitArray const &ar) {
-  if (valueType=="set") {
-    if (ar.size() == enumerator->getLargestValue()+1)
-      value = QVariant(ar);
-    else
-      throw Exception("Param","Wrong size bit array");
-  } else
-    throw Exception("Param","Only sets can be represented as bit arrays");
-}
-
-QBitArray Param::toBitArray() const {
-  if (valueType=="set")
-    return value.toBitArray();
-  else
-    throw Exception("Param","Only sets can be represented as bit arrays");
-}
-  
 void Param::setRect(QRect const &r) {
   if (valueType=="geometry")
     value = QVariant(r);
@@ -366,22 +341,18 @@ bool Param::toBool() const {
   return value.toBool();
 }  
 
-QStringList Param::toStringList() const {
+QSet<QString> Param::toStrings() const {
   if (valueType!="set")
     throw Exception("Param","Only sets can be represented as QSet<QString>");
-  QStringList ss;
-  QBitArray ar = value.toBitArray();
-  for (int i=0; i<=enumerator->getLargestValue(); i++) 
-    if (ar.at(i))
-      ss.append(enumerator->reverseLookup(i));
-  return ss;
+  QStringList ss = value.toString().split(" ");
+  return QSet<QString>::fromList(ss);
 }
 
 QString Param::toString() const {
   if (valueType=="enum") {
     return enumerator->reverseLookup(value.toInt());
   } else if (valueType=="set") {
-    return toStringList().join(" ");
+    return value.toString();
   } else if (valueType=="time") {
     double v = value.toDouble();
     if (fabs(v)>=180*1000) 
@@ -418,7 +389,8 @@ QString Param::toString() const {
       return QString("%1 pA").arg(v*1000);      
   } else if (valueType=="geometry") {
     QRect r = value.toRect();
-    return QString("%1x%2+%3+%4").arg(r.width()).arg(r.height()).arg(r.left()).arg(r.top());
+    return QString("%1x%2+%3+%4").
+      arg(r.width()).arg(r.height()).arg(r.left()).arg(r.top());
   } else if (valueType=="percentage") {
     return value.toString() + "%";
   } else {
@@ -437,7 +409,7 @@ Param::Param(Param const &src) {
 Param &Param::operator=(Param const &src) {
   if (src.valueType!=valueType)
     throw Exception("Param","Attempt to assign param with incompatible type");
-  if ((valueType=="enum" || valueType=="set") && src.enumerator!=enumerator)
+  if (valueType=="enum" && src.enumerator!=enumerator)
     throw Exception("Param","Attempt to assign param with incompatible enum");
   value = src.value;
   min=src.min; // note shallow copy
@@ -447,14 +419,12 @@ Param &Param::operator=(Param const &src) {
 
 
 void Param::report() const {
-#if PARAM_DBG
-  printf("Param report: %s. type=%s. ",qPrintable(dbgPath),qPrintable(valueType));
-#else
-  printf("Param report: type=%s. ",qPrintable(valueType));
-#endif
+  printf("Param report: %s. type=%s. ",
+	 qPrintable(dbgPath), qPrintable(valueType));
   if (enumerator)
-    printf("enum=%s. ",qPrintable(enumerator->getName()));
-  printf("value=%s. default=%s. ",qPrintable(toString()),qPrintable(deflt.toString()));
+    printf("enum=%s. ", qPrintable(enumerator->getName()));
+  printf("value=%s. default=%s. ",
+	 qPrintable(toString()), qPrintable(deflt.toString()));
   if (!enable_if.isEmpty())
     printf("enable-if: %s. ",qPrintable(enable_if.join(", ")));
   printf("\n");

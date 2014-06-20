@@ -34,22 +34,11 @@ void guiChecklist::prepForOpening() {
 
   if (autoItems)
     autoItems->rebuild();
-  
-  QBitArray ba = pp->toBitArray();
-  foreach (guiButton *b, buttons) {
-    if (isType<guiItem>(b)) {
-      Enumerator const *e = pp->getEnum();
-      try {
-	int idx = e->lookup(b->getValue());
-	if (idx>=0)
-	  b->setSelected(ba.testBit(idx));
-	else
-	  Dbg() << "guiCheckList: negative idx in " << b->id();
-      } catch (Exception) {
-	fprintf(stderr, "Exception ignored.\n");
-      }	  
-    }
-  }
+
+  QSet<QString> ss = pp->toStrings();
+  foreach (guiButton *b, buttons) 
+    if (isType<guiItem>(b)) 
+      b->setSelected(ss.contains(b->getValue()));
 }
 
 void guiChecklist::connectToParent(QDomElement doc) {

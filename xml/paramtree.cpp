@@ -26,9 +26,7 @@ void ParamTree::construct() {
   if (base.tagName()=="param") {
     // this is a leaf
     leaf_ = new Param(base);
-#if PARAM_DBG
     leaf_->dbgPath = base.attribute("id");
-#endif
   } else if (base.tagName()=="category" || base.tagName()=="params") {
     for (QDomElement e=base.firstChildElement();
 	 !e.isNull(); e=e.nextSiblingElement())
@@ -43,10 +41,8 @@ void ParamTree::construct() {
     throw Exception("ParamTree",QString("Unexpected '" + base.tagName() + "' element."),"constructor");
   }
   buildEnablers();
-#if PARAM_DBG
   if (base.tagName()=="params")
     setDbgPath("");
-#endif
 }
 
 ParamTree::ParamTree(QDomElement doc, QString elt): base(doc) {
@@ -59,12 +55,9 @@ ParamTree::ParamTree(QDomElement doc, QString elt): base(doc) {
     if (e.tagName()=="category" || e.tagName()=="array" || e.tagName()=="param")
       children.insert(xmlAttribute(e,"id"), new ParamTree(e));
   buildEnablers();
-#if PARAM_DBG
   dbgPath = base.attribute("id") + "/" + dbgPath;
-#endif
 }
 
-#if PARAM_DBG
 void ParamTree::setDbgPath(QString p) {
   dbgPath = p;
   if (arrayElement.isEmpty()) 
@@ -75,7 +68,6 @@ void ParamTree::setDbgPath(QString p) {
        i!=children.end(); ++i)
     i.value()->setDbgPath(dbgPath);
 }
-#endif
 
 void ParamTree::buildEnablers() {
   if (leaf_)
@@ -307,12 +299,7 @@ ParamTree const &ParamTree::tree(QString path) const {
     return *t;
   else
     throw Exception("ParamTree", "No subtree named " + path,
-#if PARAM_DBG
-		    dbgPath
-#else
-		    ""
-#endif
-		    );
+		    dbgPath);
 }
 
 ParamTree &ParamTree::tree(QString path) {
@@ -321,12 +308,7 @@ ParamTree &ParamTree::tree(QString path) {
     return *t;
   else
     throw Exception("ParamTree", "No subtree named " + path,
-#if PARAM_DBG
-		    dbgPath
-#else
-		    ""
-#endif
-		    );
+		    dbgPath);
 }
 
 
@@ -362,12 +344,7 @@ Param const &ParamTree::find(QString path) const {
     return *p;
   else
     throw Exception("ParamTree","Cannot find parameter '"+path+"'",
-#if PARAM_DBG
-		    dbgPath
-#else
-		    ""
-#endif
-		    );
+		    dbgPath);
 }
 
 Param &ParamTree::find(QString path) {
@@ -376,12 +353,7 @@ Param &ParamTree::find(QString path) {
     return *p;
   else
     throw Exception("ParamTree","Cannot find parameter '"+path+"'",
-#if PARAM_DBG
-		    dbgPath
-#else
-		    ""
-#endif
-		    );
+		    dbgPath);
 }
 
 int ParamTree::report(int level, int maxelts) const {
@@ -390,11 +362,9 @@ int ParamTree::report(int level, int maxelts) const {
   else
     printf("\n");
   if (leaf_) {
-#if PARAM_DBG
     for (int l=0; l<level; l++)
       printf("  ");
     printf("%s: ", qPrintable(dbgPath));
-#endif
     leaf_->report();
     maxelts--;
   } else {
@@ -407,11 +377,7 @@ int ParamTree::report(int level, int maxelts) const {
   
       for (int l=0; l<level; l++)
         printf("  ");
-#if PARAM_DBG
       printf("%s: ", qPrintable(dbgPath));
-#else
-      printf("%s: ", qPrintable(id));
-#endif
       maxelts = c->report(level+1,maxelts);
       if (maxelts<=0)
 	break;

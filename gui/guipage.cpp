@@ -352,19 +352,15 @@ void guiPage::childTabEnabled(QString path) {
   }
 }
 
-void reportqbit(QBitArray const &ba) {
-  fprintf(stderr,"n=%i [",ba.size());
-  for (int i=0; i<ba.size(); i++)
-    fprintf(stderr,"%i",ba.at(i));
-  fprintf(stderr,"].\n");
-}
-
 void guiPage::booleanButtonToggled(QString path) {
   QString parpath = master->pathInstantiate(path);
   QString subpath = pathToLocal(path);
   guiButton *b = buttonp(subpath);
   if (!b)
-    throw Exception("guiPage", "booleanButtonToggled should not be triggered from nonlocal buttons " + this->path() + " -> " + path);
+    throw Exception("guiPage",
+		    QString("booleanButtonToggled should not be triggered")
+		    +" from nonlocal buttons "
+		    + this->path() + " -> " + path);
   
   bool on = b->getSelected();
   master->setParam(parpath, on ? "yes" : "no");

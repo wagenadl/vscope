@@ -10,9 +10,6 @@
 #include <QVariant>
 #include <QRect>
 #include <QDomElement>
-#include <QBitArray>
-
-#define PARAM_DBG 1
 
 class Param {
   /*:C Param
@@ -60,10 +57,8 @@ class Param {
                 constants). The string representation never includes the
                 name of the enumerator itself.
          set -  A set of enumeration values from the same Enumerator. May
-                be assigned as a QBitVector in which bit #0 represents the
-                number 0, or as a string consisting of space-separated enum
-                constant names. Note that Enumerators that define negative
-                constants can not be represented in sets.
+                be assigned as a string consisting of space-separated enum
+                constant names.
 	 string - A string.
 	 percentage - A percentage stored as a double between 0 and 100.
 	        Percentages can be read and written as floating point
@@ -150,14 +145,9 @@ public:
    *:D Returns a boolean representation of this value. This may not be
        meaningful for some types.
   */
-  QBitArray toBitArray() const;
-  /*:F toBitArray
-   *:D Returns a QBitArray representation of this parameter.
-   *:N Only type "set" can be represented as a QBitArray.
-   */
-  QStringList toStringList() const;
-  /*:F toStringList
-   *:N Only type "set" can be represented as a list of strings.
+  QSet<QString> toStrings() const;
+  /*:F toStrings
+   *:N Only type "set" can be represented as a set of strings.
    */
   void read(QDomElement v);
   /*:F read
@@ -212,15 +202,8 @@ public:
    *:D Sets this parameter based on a QRect representation.
    *:N Only type "geometry" can be represented as a QRect.
    */
-  void setBitArray(QBitArray const &ba);
-  /*:F setBitArray
-   *:D Sets this parameter based on a QBitArray representation.
-   *:N Only type "set" can be represented as a QBitArray. The array must
-       have exactly the right length: the enumerator's largest value
-       plus one.
-   */
-  void setStringList(QList<QString> const &ss);
-  /*:F setStringList
+  void setStrings(QSet<QString> const &ss);
+  /*:F setStrings
    *:N Only type "set" can be set this way.
    */
   void report() const;
@@ -283,10 +266,8 @@ private:
   class Param *cond; // if null, param is always enabled unless enable_if="*never".
   QStringList enable_if;
   QVariant deflt;
-#if PARAM_DBG
 public:
   QString dbgPath; // my full path, for debugging only
-#endif
 };
 
 #endif
