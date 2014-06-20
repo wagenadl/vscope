@@ -126,7 +126,8 @@ void ParamTree::read(QDomElement doc) {
 	} catch(Exception const &) {
 	  QString v = xmlAttribute(e,"value");
 	  QString id = xmlAttribute(e,"id");
-	  fprintf(stderr,"Warning: ParamTree (read): Could not assign %s to '%s'",
+	  fprintf(stderr,
+		  "Warning: ParamTree (read): Could not assign %s to '%s'\n",
 		  qPrintable(v),
 		  qPrintable(id));
 	}

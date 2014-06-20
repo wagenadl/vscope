@@ -35,6 +35,7 @@ Dbg::~Dbg() throw () {
       dbgfile = new DbgFile();
     *dbgfile << txt;
   } catch (...) {
+    printf("dbg destructor!?\n");
     ;
   }
 }
@@ -82,6 +83,7 @@ void DbgFile::setDir(QString const &d) {
 }
 
 DbgFile &DbgFile::operator<<(QString const &str) {
+  return *this;
   if (!ts) {
     if (!dir.isEmpty()) {
       f.setFileName(dir + "/debug.txt");

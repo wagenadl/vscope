@@ -98,6 +98,10 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
   newImage(data, X, Y, t);
 }
 
+void CCDImage::black() {
+  image.fill(0);
+}
+
 void CCDImage::newImage(uint16_t const *data, int X, int Y,
 			Transform const &t) {
 

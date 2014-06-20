@@ -365,17 +365,19 @@ void TrialData::readCCD(XML &myxml, QString base) {
     throw Exception("TrialData",
 		    "Loading of ancient CCD file format not yet implemented");
   // So now we know we are modern or at least not ancient.
+
+  QStringList newcams;
+  QSet<QString> oldset;
+  QSet<QString> newset;
+  foreach (QString id, camids)
+    oldset.insert(id);
+
   QString ccdfn = base + "-ccd.dat";
   QFile ccdf(ccdfn);
   if (!ccdf.open(QIODevice::ReadOnly))
     throw Exception("Trial",
 		    QString("Cannot open '%1' for reading").arg(ccdfn),
 		    "read");
-  QStringList newcams;
-  QSet<QString> oldset;
-  QSet<QString> newset;
-  foreach (QString id, camids)
-    oldset.insert(id);
   for (QDomElement cam = ccd.firstChildElement("camera");
        !cam.isNull(); cam = cam.nextSiblingElement("camera")) {
     QString id = cam.attribute("name");
@@ -392,6 +394,7 @@ void TrialData::readCCD(XML &myxml, QString base) {
     ccddata[id]->read(ccdf, cam);
   }
   ccdf.close();
+
   foreach (QString id, camids) {
     if (!newset.contains(id)) {
       delete ccddata[id];
@@ -399,7 +402,9 @@ void TrialData::readCCD(XML &myxml, QString base) {
       ccdplace.remove(id);
     }
   }
+
   camids = newcams;
+
   foreach (QString id, newcams)
     ccdplace[id] = ccddata[id]->dataToCanvas();
 

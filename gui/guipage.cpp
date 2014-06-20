@@ -272,6 +272,7 @@ void guiPage::openChildren() {
 }
 
 void guiPage::prepForOpening() {
+  Dbg() << "prepforopening: " << myPath;
   foreach (guiRadioGroup *g, groups)
     g->rebuild();
   
@@ -300,6 +301,12 @@ void guiPage::prepForOpening() {
       // This is a button that represents a tab.
       representTabEnabled(id);
     }
+  }
+
+  foreach (QString id, subPages.keys()) {
+    guiPage *subpage = subpagep(id);
+    if (subpage->isVisibleTo(this))
+      subpage->prepForOpening();
   }
 }
 

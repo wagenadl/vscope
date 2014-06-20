@@ -180,6 +180,7 @@ QString AbstractPage::pathInstantiate(QString path) const {
 
 
 void AbstractPage::reTree(ParamTree *neworigtree) {
+  Dbg() << "retree: " << myPath;
   if (neworigtree)
     origptree = neworigtree;
 

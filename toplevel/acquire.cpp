@@ -195,8 +195,13 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
 
   QString brightMsg = "Pixel values:";
   for (int k=0; k<K; k++) {
-    if (!src[k] || src[k]->getNFrames()==0)
+    if (btn[k]->getFormat().indexOf(":")<0)
+      btn[k]->setFormat(btn[k]->text() + ": %1");
+    if (!src[k] || src[k]->getNFrames()==0) {
+      imgs[k]->black();
+      btn[k]->setValue("--");
       continue;
+    }
     uint16_t const *dat = src[k]->frameData();
     int nser = src[k]->getSerPix();
     int npar = src[k]->getParPix();
@@ -223,8 +228,6 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
     }
     double avg = double(sum)/nser/npar;
     QString s = QString("%1/%2/%3").arg(min).arg(int(avg)).arg(max);
-    if (btn[k]->getFormat().indexOf(":")<0)
-      btn[k]->setFormat(btn[k]->text() + ": %1");
     btn[k]->setValue(s);
     if (k)
       brightMsg += ";";

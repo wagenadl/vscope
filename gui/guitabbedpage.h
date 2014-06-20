@@ -19,6 +19,7 @@ public:
   virtual QString getCurrentElement() const;
   virtual void reconnect();
 public slots:
+  virtual void open();
   virtual void open(QString elt);
   /*:F open
    *:D This version opens a specific sub-page.

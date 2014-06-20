@@ -189,7 +189,7 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::exptlog->newExptName();
       if (!dbgfile)
 	dbgfile = new DbgFile();
-      dbgfile->setDir(Globals::filePath() + "/" + val);
+      dbgfile->setDir(QDir::tempPath());
       int lastmax = Acquire::maxTrial();
       Dbg() << "trial for " << val << " is " << lastmax;
       Globals::ptree->find("acquisition/trialno").setInt(lastmax);

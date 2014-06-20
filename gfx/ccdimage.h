@@ -61,6 +61,7 @@ public slots:
        of a 512x512 canvas, you would say:
          placeImage(Transform().scale(1,2).translate(128.128)).
   */
+  void black();
   virtual void setCanvas(QRect canvasExtent);
   virtual void resetCanvas();
   virtual void recolor(QString);

@@ -325,7 +325,6 @@ QPen LineGraph::getTracePen(QString id) const {
 }
 
 bool LineGraph::setTraceLabel(QString id, QString lbl) {
-  Dbg() << "settracelabel " << id << " :" << lbl;
   traceLabels[id] = lbl;
   perhapsRepaint();
   return traces.contains(id);

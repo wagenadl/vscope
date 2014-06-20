@@ -121,7 +121,7 @@ public:
 public:
   guiPage *parentPage();
 public slots:
-  void open();
+  virtual void open();
   /*:F open
    *:D Opens this page, first updating all button texts based on the
        underlying ParamTree.
