@@ -199,5 +199,6 @@ DigitalData::DataType DigitalData::maskForLine(QString id) const {
 }
 
 void DigitalData::zero() {
+  KeyGuard guard(*this);
   data.fill(0);
 }

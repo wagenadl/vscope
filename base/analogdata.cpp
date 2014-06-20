@@ -34,6 +34,7 @@ void AnalogData::setNumScans(int nscans1) {
 }
 
 void AnalogData::zero() {
+  KeyGuard guard(*this);
   data.fill(0);
 }
 
