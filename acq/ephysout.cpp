@@ -63,6 +63,8 @@ bool EPhysOut::prepare(ParamTree const *ptree,
   EPhO_CCD epho_ccd(timing);
   ddata->reshape(timing.neededScans());
   ddata->zero();
+  foreach (QString id, Connections::digiOutputLines())
+    ddata->defineLine(Connections::findDig(id).line, id);
   epho_ccd.prepare(ddata);
   bool enableStim = ptree->find("stimEphys/enable").toBool();
   if (enableStim) {

@@ -651,84 +651,9 @@
   </page>
 </page>
 
-<!-- ********************************************************************** -->
-<!-- ******************* MULTIGRAPHS ************************************** -->
-
-<multigraph id="stim">
-  <graph ch="AO0" typ="ao" if_enabled="stimEphys/channel:AO0"/>
-  <graph ch="AO1" typ="ao" if_enabled="stimEphys/channel:AO1"/>
-  <graph ch="AO2" typ="ao" if_enabled="stimEphys/channel:AO2"/>
-  <graph ch="AO3" typ="ao" if_enabled="stimEphys/channel:AO3"/>
-  <graph ch="DO0" typ="do" tiny="yes" if_enabled="stimEphys/channel:DO0"/>
-  <graph ch="DO1" typ="do" tiny="yes" if_enabled="stimEphys/channel:DO1"/>
-  <graph ch="DO2" typ="do" tiny="yes" if_enabled="stimEphys/channel:DO2"/>
-  <graph ch="DO3" typ="do" tiny="yes" if_enabled="stimEphys/channel:DO3"/>
-  <graph ch="ExcShtr" typ="do" tiny="yes" if_enabled="acqCCD"/>
-  <graph ch="ExcLight" typ="do" tiny="yes" if_enabled="acqCCD"/>
-  <graph ch="VideoTrig" typ="do" tiny="yes" if_enabled="stimVideo"/>
-  <graph ch="VideoLight" typ="do" tiny="yes" if_enabled="stimVideo"/>
-  <graph ch="TrigCc" typ="do" tiny="yes" if_enabled="acqCCD"/>
-  <graph ch="TrigOx" typ="do" tiny="yes" if_enabled="acqCCD"/>
-</multigraph>
-<multigraph id="intra">
-  <graph ch="ME1_10Vm" typ="ai"/>
-  <graph ch="ME2_Vm"   typ="ai"/>
-  <graph ch="ME1_I" typ="ai"/>
-  <graph ch="ME2_I" typ="ai"/>
-  <graph ch="AO0" typ="ao" tiny="yes" if_enabled="stimEphys/channel:AO0"/>
-  <graph ch="DO0" typ="do" tiny="yes" if_enabled="stimEphys/channel:DO0"/>
-  <graph ch="ExcShtrMon" typ="di" tiny="yes" if_enabled="acqCCD"/>
-  <graph ch="VideoFrame" typ="di" tiny="yes" if_enabled="stimVideo"/>
-  <graph ch="VideoLightMon" typ="di" tiny="yes" if_enabled="stimVideo"/>
-  <graph ch="Frame:Cc" typ="di" tiny="yes" if_enabled="acqCCD"/>
-  <graph ch="Frame:Ox" typ="di" tiny="yes" if_enabled="acqCCD"/>
-</multigraph>
-<multigraph id="extra">
-  <graph ch="EC1" typ="ai"/>
-  <graph ch="EC2" typ="ai"/>
-  <graph ch="EC3" typ="ai"/>
-  <graph ch="EC4" typ="ai"/>
-  <graph ch="ExtVA1" typ="ai"/>
-  <graph ch="ExtVA2" typ="ai"/>
-  <graph ch="ExtVA3" typ="ai"/>
-  <graph ch="ExtVA4" typ="ai"/>
-  <graph ch="ExtVB1" typ="ai"/>
-  <graph ch="ExtVB2" typ="ai"/>
-  <graph ch="ExtVB3" typ="ai"/>
-  <graph ch="ExtVB4" typ="ai"/>
-</multigraph>
-<multigraph id="liveEPhysLeft">  <!-- if_enabled needed here? -->
-  <graph ch="ME1_10Vm" typ="ai"/>
-  <graph ch="ME2_Vm"   typ="ai"/>
-  <graph ch="ME1_I" typ="ai"/>
-  <graph ch="ME2_I" typ="ai"/>
-  <graph ch="DO0Mon" typ="di" tiny="yes"/>
-  <graph ch="DO1Mon" typ="di" tiny="yes"/>
-  <graph ch="DO2Mon" typ="di" tiny="yes"/>
-  <graph ch="DO3Mon" typ="di" tiny="yes"/>
-  <graph ch="ExcShtrMon" typ="di" tiny="yes"/>
-  <graph ch="TrigCcMon" typ="di" tiny="yes"/>
-  <graph ch="TrigOxMon" typ="di" tiny="yes"/>
-  <graph ch="Frame:Cc" typ="di" tiny="yes"/>
-  <graph ch="Frame:Ox" typ="di" tiny="yes"/>
-</multigraph>
-<multigraph id="liveEPhysRight">   <!-- if_enabled needed here? -->
-  <graph ch="EC1" typ="ai"/>
-  <graph ch="EC2" typ="ai"/>
-  <graph ch="EC3" typ="ai"/>
-  <graph ch="EC4" typ="ai"/>
-  <graph ch="ExtVA1" typ="ai"/>
-  <graph ch="ExtVA2" typ="ai"/>
-  <graph ch="ExtVA3" typ="ai"/>
-  <graph ch="ExtVA4" typ="ai"/>
-  <graph ch="ExtVB1" typ="ai"/>
-  <graph ch="ExtVB2" typ="ai"/>
-  <graph ch="ExtVB3" typ="ai"/>
-  <graph ch="ExtVB4" typ="ai"/>
-  <graph ch="VideoFrame" typ="di" tiny="yes"/>
-  <graph ch="VideoLightMon" typ="di" tiny="yes"/>
-</multigraph>
-
+<!-- ************************** ALIASES ******************************* -->
+<!-- These are rig-independent aliases. Rig-dependent aliases go into
+     aliases.xml -->
 <aliases>
   <alias id="off" label="Off"/>
   <alias id="self" label="Self"/>

@@ -325,6 +325,7 @@ QPen LineGraph::getTracePen(QString id) const {
 }
 
 bool LineGraph::setTraceLabel(QString id, QString lbl) {
+  Dbg() << "settracelabel " << id << " :" << lbl;
   traceLabels[id] = lbl;
   perhapsRepaint();
   return traces.contains(id);
@@ -612,9 +613,20 @@ void LineGraph::paintEvent(class QPaintEvent *) {
     if (traceVisible[id]) {
       p.setPen(tracePens[id]);
       paintTrace(p, traces[id]);
-      p.drawText(0,0,width()-2,y,
-		 Qt::AlignRight|Qt::AlignBottom|Qt::TextSingleLine,
-		 traceLabels[id]);
+      QStringList txt = traceLabels[id].split("_");
+      if (txt.size()>1) {
+	QRect br;
+	p.drawText(0,0,width()-2,y+6,
+		   Qt::AlignRight|Qt::AlignBottom|Qt::TextSingleLine,
+		   txt[1], &br);
+	p.drawText(0, 0, width()-2-br.width(), y,
+		   Qt::AlignRight|Qt::AlignBottom|Qt::TextSingleLine,
+		   txt[0]);
+      } else {
+	p.drawText(0,0,width()-2,y,
+		   Qt::AlignRight|Qt::AlignBottom|Qt::TextSingleLine,
+		   txt[0]);
+      }
       y += dy_legend;
     }
   }
