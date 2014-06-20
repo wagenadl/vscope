@@ -57,7 +57,7 @@ LiveEPhys::LiveEPhys(QWidget *parent, QDomElement conf): QFrame(parent) {
   }
 
   vcoidx = -1;
-  vcoid = "off"; // this should probably be "" as a default.
+  vcoid = "Silent"; 
   ptree = 0;
 }
 
@@ -213,16 +213,16 @@ void LiveEPhys::activate(ParamTree *p) {
 }
 
 void LiveEPhys::activateVCO() {
-  if (vcoid=="off") {
-    vcoidx = -1;
+  vcoidx = data->whereIsChannel(vcoid);
+  if (vcoidx>=0) {
+    vcoscale = Connections::findAI(vcoid).scale;
+    vco = new VCO();
+    vco->setVoltage(0);
+    vco->activate(ptree);
   } else {
-    vcoidx = data->whereIsChannel(vcoid);
-    if (vcoidx>=0) {
-      vcoscale = Connections::findAI(vcoid).scale;
-      vco = new VCO();
-      vco->setVoltage(0);
-      vco->activate(ptree);
-    }
+    if (vcoid=="" || vcoid.toLower()=="silent")
+      return;
+    Dbg() << "LiveEPhys::activateVCO: Channel not found";
   }
 }
 

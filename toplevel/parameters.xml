@@ -145,7 +145,7 @@
                default="ME1_10Vm ME2_Vm" save="false"/>
         <param id="diChannels" type="set"
                default="" save="false"/>
-        <param id="vcoSource" type="enum" enum="AICHAN" 
+        <param id="vcoSource" type="string" 
                default="Silent" save="false"/>
       </category>
       <category id="checkDaq"/>

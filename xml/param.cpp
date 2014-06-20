@@ -253,7 +253,8 @@ void Param::rangeCheck(QVariant const &v) {
   if (ok) {
     value=v;
   } else {
-    Dbg() << "Param " << dbgPath << " value " << v.toDouble() << " out of bounds";
+    Dbg() << "Param " << dbgPath 
+	  << " value " << v.toDouble() << " out of bounds";
     throw Exception("Param","Value out of bounds");
   }
 }

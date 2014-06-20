@@ -47,8 +47,6 @@
     </enum>
 
     <enum id="AICHAN">
-      <item tag="off" value="-1"/>
-      <item tag="Silent" value="-2"/>
     </enum>
     
     <enum id="AOCHAN">

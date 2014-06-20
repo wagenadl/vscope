@@ -604,16 +604,17 @@
         <item value="Silent" />
 	<auto enum="AICHAN"/>
       </menu>
-      <menu id="timeBase" cols="4.8">
+      <menu id="timeBase" cols="3.8">
         <item value="10 ms"/>
         <item value="20 ms"/>
         <item value="50 ms"/>
+	
         <item value="100 ms"/>
         <item value="200 ms"/>
         <item value="500 ms"/>
         
         <item value="1 s"/>
-        <item value="2 s"/>
+        <!--item value="2 s"/>
         <item value="5 s"/>
         <item value="10 s"/>
         <item value="30 s"/>
@@ -621,7 +622,7 @@
         
         <item value="2 min"/>
         <item value="5 min"/>
-        <item value="10 min"/>
+        <item value="10 min"/-->
       </menu>
     </page>
     <page id="checkDaq">
