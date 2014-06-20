@@ -138,3 +138,6 @@ void CCDData::read(QFile &f, QDomElement src) {
 
 }
 
+void CCDData::zero() {
+  data.fill(0);
+}

@@ -84,6 +84,9 @@ private:
   void readAnalog(XML &myxml, QString base);
   void readDigital(XML &myxml, QString base);
   void readCCD(XML &myxml, QString base);
+  void clearAnalog();
+  void clearDigital();
+  void clearCCD();
   void prepare(class ParamTree const *ptree, bool concams);
   void prepareSnapshot(class ParamTree const *ptree, bool concams);
   void useConnectedCameras(ParamTree const *ptree=0);

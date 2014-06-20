@@ -49,6 +49,7 @@ void read(QFile &f, QDomElement src);
    *:D Data is read from an already open file, from the current read pointer.
        DST must be a "camera" element.
   */
+  void zero();
 public:
   uint16_t const *frameData(int frame=-1) const;
   /*:F frameData

@@ -40,6 +40,10 @@ public:
        will not release any unneeded space unless FREE is set to true.
    *:A True if reallocation occurred.
    */
+  void zero();
+  /*:F zero
+   *:D Set all data to zero.
+   */
   void defineChannel(int index, QString channel,
 		     double scale=1, QString unit="V");
   /*:F void defineChannel(int index, int channel)

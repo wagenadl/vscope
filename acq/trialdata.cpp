@@ -265,14 +265,12 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   QDomElement settings = myxml.find("settings");
 
   bool own_ptree_dest = ptree_dest==0;
-  //Dbg() << "trialdata::read " << exptname << "/" << trialid << "own_ptree_dest=" <<own_ptree_dest;
   
   if (own_ptree_dest)
     ptree_dest = new ParamTree(settings);
   else
     ptree_dest->read(settings);
 
-  //dbg("trialdata: read ptree");
   ptree_dest->find("acquisition/exptname").set(exptname);
   ptree_dest->find("acquisition/trialno").set(trialid);
   
@@ -291,14 +289,19 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   if (xml)
     delete xml;
   xml = new XML(myxml);
-  
-  if (!snap && !contEphys) {
+
+  if (snap || contEphys) {
+    clearAnalog();
+    clearDigital();
+  } else {
     readAnalog(myxml, base);
     readDigital(myxml, base);
   }
 
   if (do_ccd) 
     readCCD(myxml, base);
+  else
+    clearCCD();
 }
 
 void TrialData::writeAnalog(QString base) const {
@@ -326,6 +329,14 @@ void TrialData::writeCCD(QString base) const {
     cam.setAttribute("name", id);
   }
   ccdf.close();
+}
+
+void TrialData::clearAnalog() {
+  adataIn->zero();
+}
+
+void TrialData::clearDigital() {
+  ddataIn->zero();
 }
 
 void TrialData::readAnalog(XML &myxml, QString base) {
@@ -394,6 +405,11 @@ void TrialData::readCCD(XML &myxml, QString base) {
 
   if (newset!=oldset)
     emit newCameras();
+}
+
+void TrialData::clearCCD() {
+  foreach (CCDData *d, ccddata)
+    d->zero();
 }
 
 void TrialData::refineCCDTiming() {

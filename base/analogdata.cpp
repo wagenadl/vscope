@@ -31,7 +31,11 @@ void AnalogData::setNumScans(int nscans1) {
   if (nscans1*nchannels>data.size())
     throw Exception("AnalogData","Noncredible number of scans","setNumScans");
   nscans = nscans1;
-}		   
+}
+
+void AnalogData::zero() {
+  data.fill(0);
+}
 
 bool AnalogData::reshape(int nscans1, int nchannels1, bool free) {
   KeyGuard guard(*this);
