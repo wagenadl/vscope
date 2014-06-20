@@ -44,8 +44,6 @@ void SavedSettings::showEvent(class QShowEvent *e) {
   QRect r(p1->geometry());
   r |= p2->geometry();
   setGeometry(r);
-  QPoint tl = r.topLeft();
-  QPoint br = r.bottomRight();
   populateFiles(QDir(Globals::filePath()+"/_settings"),"xml");
 
   p1->hide();

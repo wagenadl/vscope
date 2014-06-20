@@ -4,10 +4,19 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 
-QMap<QString, QString> Aliases::map;
-QMap<QString, QString> Aliases::wildcarded;
+Aliases &Aliases::a() {
+  static Aliases aa;
+  return aa;
+}
 
-void Aliases::read(QDomElement doc) {
+void Aliases::add(QDomElement doc) {
+  a().readxml(doc);
+}
+
+Aliases::Aliases() {
+}
+
+void Aliases::readxml(QDomElement doc) {
   if (doc.tagName()!="aliases") {
     doc = doc.firstChildElement("aliases");
   }
@@ -26,19 +35,19 @@ void Aliases::read(QDomElement doc) {
 }
 
 bool Aliases::has(QString id) {
-  if (map.contains(id))
+  if (a().map.contains(id))
     return true;
-  foreach (QString k, wildcarded.keys()) 
+  foreach (QString k, a().wildcarded.keys()) 
     if (id.startsWith(k))
       return true;
   return false;
 }
 
 QString Aliases::lookup(QString id) {
-  if (map.contains(id))
-    return map[id];
-  foreach (QString k, wildcarded.keys()) 
+  if (a().map.contains(id))
+    return a().map[id];
+  foreach (QString k, a().wildcarded.keys()) 
     if (id.startsWith(k))
-      return wildcarded[k] + id.mid(k.size());
+      return a().wildcarded[k] + id.mid(k.size());
   return id;
 }

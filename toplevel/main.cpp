@@ -130,7 +130,6 @@ void setupAppStyle(QApplication &app) {
 }  
 
 void setupParsAndConns() {
-
   XML enumsDoc(":/enums.xml");
   XML paramsDoc(":/parameters.xml");
   QDomElement enums = enumsDoc.root();
@@ -150,10 +149,17 @@ void setupParsAndConns() {
     fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
 	    qPrintable(fpath));
   }
-  
-  QString connfn = fpath + "/_settings/_connections.xml";
-  if (!QFile::exists(connfn))
-    connfn = ":/connections.xml";
+
+  QString spath = fpath + "/_settings";
+  QString connfn = spath + "/_connections.xml";
+  if (!QFile::exists(connfn)) {
+    QDir x(QDir::root());
+    if (!x.exists(spath))
+      x.mkpath(spath);
+    QFile f(":/connections.xml");
+    if (!f.copy(connfn))
+      throw Exception("main", "Cannot create connections file");
+  }
   Dbg() << "Reading connections from: " << connfn;
   XML connDoc(connfn);
   QDomElement cons = connDoc.root();
@@ -163,7 +169,6 @@ void setupParsAndConns() {
   Connections::readXML(cons);
   
   Globals::ptree = new ParamTree(pars);
-  Dbg() << "fpath2:"<<fpath;
   Globals::ptree->find("filePath").set(fpath);
 }
 
@@ -207,17 +212,31 @@ void setupDAQ() {
 
 QDomElement setupGUI() {
   QString fpath = Globals::filePath();
-  QString guifn = fpath + "/_settings/_guiconfig.xml";
-  if (!QFile::exists(guifn))
-    guifn = ":/guiconfig.xml";
-  Dbg() << "Reading gui config from: " << guifn;
+  QString guifn = ":/guiconfig.xml";
   XML guiConfigDoc(guifn);
   QDomElement guiConf = guiConfigDoc.root();
-  Aliases::read(guiConf);
-  new Colors(guiConf);
+  Aliases::add(guiConf);
+  Colors::add(guiConf);
   return guiConf;
 }
 
+void setupAliases() {
+  QString spath = Globals::filePath() + "/_settings";
+  QString alifn = spath + "/_aliases";
+  if (!QFile::exists(alifn)) {
+    QDir x(QDir::root());
+    if (!x.exists(spath))
+      x.mkpath(spath);
+    QFile f(":/aliases.xml");
+    if (!f.copy(alifn))
+      throw Exception("main", "Cannot create aliases file");
+  }
+  XML aliDoc(alifn);
+  QDomElement ali = aliDoc.root();
+  Aliases::add(ali);
+  Colors::add(ali);
+}
+  
 void setupCams() {
   CamPool::initialize();
   QStringList sz = Connections::allCams();
@@ -414,6 +433,7 @@ int main(int argc, char **argv) {
     setupExptName();
     setupDAQ();
     QDomElement guiConf = setupGUI();
+    setupAliases();
     setupCams();
 
     setupMainWindow(app);

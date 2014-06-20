@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone='yes'?>
 <!DOCTYPE vscope>
 <vscope version="20120810">
+
+<!-- These are default values. Modify them for your rig. -->
+
   <connections>
     <aichannel id="ME1_10Vm" line="0"
        ground="RSE" range="5V" unit="mV" scale="100"/>

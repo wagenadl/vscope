@@ -10,12 +10,16 @@
 
 class Aliases {
 public:
-  static void read(QDomElement def);
+  static void add(QDomElement def);
   static QString lookup(QString id);
   static bool has(QString id);
 private:
-  static QMap<QString, QString> map;
-  static QMap<QString, QString> wildcarded;
+  QMap<QString, QString> map;
+  QMap<QString, QString> wildcarded;
+  void readxml(QDomElement def);
+private:
+  Aliases();
+  static Aliases &a();
 };
 
 #endif

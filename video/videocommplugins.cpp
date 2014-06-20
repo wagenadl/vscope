@@ -190,7 +190,7 @@ void VideoCommPlugins::extendLight(class VPRenderInfo const &info,
 	lastp = searchp + postScans;
       else if (searchp<lastp)
 	*searchp |= info.dmask_light;
-      *searchp++;
+      searchp++;
     }
   }	  
 }

@@ -4,29 +4,25 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 
-Colors *Colors::colors = 0;
+Colors *Colors::colors() {
+  static Colors *c = new Colors();
+  return c;
+}
 
-Colors::Colors(QDomElement elt) {
-  if (!colors)
-    colors = this;
-  colors->read(elt);
+Colors::Colors() {
 }
 
 Colors::~Colors() {
-  if (colors==this)
-    colors=0;
 }
 
 bool Colors::has(QString name) {
-  if (!colors)
-    return false;
-  return colors->map.contains(name);
+  return colors()->map.contains(name);
 }
 
 QColor Colors::find(QString name) {
   if (!has(name))
     throw Exception("Colors","No color named " + name);;
-  return QColor(colors->map[name]);
+  return QColor(colors()->map[name]);
 }
 
 QColor Colors::find(QString name, QString dflt) {
@@ -36,7 +32,11 @@ QColor Colors::find(QString name, QString dflt) {
     return QColor(dflt);
 }
 
-void Colors::read(QDomElement elt) {
+void Colors::add(QDomElement elt) {
+  colors()->readxml(elt);
+}
+
+void Colors::readxml(QDomElement elt) {
   if (elt.tagName()!="colors") {
     elt = elt.firstChildElement("colors");
     if (elt.isNull()) {

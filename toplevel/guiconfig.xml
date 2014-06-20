@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone='yes'?>
-<!DOCTYPE vsdscopeGUIConfig>
-<vsdscopeGUIConfig>
+<!DOCTYPE vscope>
+<vscope version="20140620">
 
 <geometry x0="0" y0="512" w="1024" h="256" cols="8.2" rows="6.2"
           menucaph="17"
@@ -8,7 +8,8 @@
           intx="5" inty="4"
           fontFamily="Arial Rounded MT" fontSize="13"/>
 
-<!-- *************************** TOP LEVEL ****************************** -->
+<!-- ******************************************************************** -->
+<!-- *************************** MAIN GUI ******************************* -->
 <page id="" subdxl="1.05" subdyt="1.2" subdxr="2.05" subdyb="0">
   <group id="showLeft" x="1" y="0" spanrows="1">
     <button id="panelLeft1" label="*%1" bg="#ddffdd"
@@ -41,10 +42,9 @@
     <button id="savedSettings" label="Saved Settings" x="7.2" y="1.2" bg="#ff99ff"/>
     <button id="scripts" label="Scripts" bg="#eeccff"/>
   </group>
-    <button id="minimize" label="Minimize" x="7.2" y="4.2" bg="#88dddd"/>
-    <button id="quit" label="Quit" x="7.2" y="5.2" bg="#dddd88"/>
+  <button id="minimize" label="Minimize" x="7.2" y="4.2" bg="#88dddd"/>
+  <button id="quit" label="Quit" x="7.2" y="5.2" bg="#dddd88"/>
 
-  <!-- ************************ "SHOW WHAT" CHOICES ************************ -->
   <menu id="panelLeft"  rows="3" >
     <auto enum="SHOWWHAT"/>
   </menu>
@@ -52,36 +52,17 @@
     <auto enum="SHOWWHAT"/>
   </menu>
 
-  <!-- ******************** EPHYS. RECORDING CONFIG PAGE ******************* -->
+  <!-- %%%%%%%%%%%%%%%%%%%% EPHYS. RECORDING CONFIG PAGE %%%%%%%%%%%%%%%%%%% -->
   <page id="acqEphys" subdxl="1.1">
     <group id="a">
       <button id="acqTime" label="Trial dur." bg="#88ffff"/>
       <button id="aiChannels" label="Input channels" bg="#88ffcc"/>
       <button id="acqFreq" label="Sample rate" bg="#88ddff"/>
     </group>
-    <!-- ********************* MENUS FOR EPHYS. RECORDING ******************** -->
+
     <checklist id="aiChannels" cols="5.2">
       <!-- "values" match "tags" in AICHAN enum -->
       <auto enum="AICHAN"/>
-      <!--item value="ME1_10Vm"/>
-      <item value="ME2_Vm"  />
-      <item value="ME1_I"   />
-      <item value="ME2_I"   />
-      
-      <item value="ExtVA1"  />
-      <item value="ExtVA2"  />
-      <item value="ExtVA3"  />
-      <item value="ExtVA4"  />
-      
-      <item value="ExtVB1"  />
-      <item value="ExtVB2"  />
-      <item value="ExtVB3"  />
-      <item value="ExtVB4"  />
-      
-      <item value="Stim0Mon"/>
-      <item value="Stim1Mon"/>
-      <item value="Stim2Mon"/>
-      <item value="Stim3Mon"/-->
     </checklist>
 
     <menu id="acqTime"   cols="5.8">
@@ -100,7 +81,6 @@
       </items>
       <item custom="1"  editcaption="Sample rate"/>
     </menu>
-
   </page>
 
   <!-- ****************** EPHYS. STIMULATION CONFIG PAGE ******************* -->
@@ -121,8 +101,10 @@
         <button id="pulseType" label="Pulse type" y="0" bg="#ff77ff"/>
         <button id="pulseAmp" label="Amplitude" bg="#aa77ff"/>
         <button id="pulseDur" label="Duration" bg="#8855ff"/>
-        <button id="pulseAmp2" label="2nd Ampl." bg="#ff77aa"/> <!-- This is final ampl for ramp, or ampl for second phase for biphasic -->
-        <button id="pulseDur2" label="2nd Dur." bg="#ff5588"/> <!-- This is duration for second phase for biphasic -->
+        <button id="pulseAmp2" label="2nd Ampl." bg="#ff77aa"/>
+	<!-- This is final ampl for ramp, or ampl for second phase for biphasic -->
+        <button id="pulseDur2" label="2nd Dur." bg="#ff5588"/>
+	<!-- This is duration for second phase for biphasic -->
       </group>
   
       <menu id="pulseType" rows="4" cols="1">
@@ -151,7 +133,6 @@
       </menu>
     
       <menu id="delay"  cols="4.1">
-        
 	<items>
 	  0 ms, 10 ms, 15 ms, 20 ms, 30 ms, 50 ms, 70 ms,
 	  100 ms, 150 ms, 200 ms, 300 ms, 500 ms, 700 ms,
@@ -215,7 +196,8 @@
 	  100 mV, 150 mV, 200 mV, 300 mV, 500 mV, 700 mV
 	  1 V, 1.5 V, 2 V, 3 V, 5 V, 7 V
 	</items>
-        <item custom="1" editcaption="Final pulse amplitude (2nd phase or end of ramp)"/>
+        <item custom="1"
+	      editcaption="Final pulse amplitude (2nd phase or end of ramp)"/>
       </menu>
     </tabbedpage>
   </page>
@@ -496,6 +478,7 @@
 
   </page>
 
+  <!-- %%%%%%%%%%%%%%%%%%%%% ANALYSIS PAGE %%%%%%%%%%%%%%%%%% -->
   <page id="analysis" subdxr="3.1">
     <group id="clickmode">
       <button id="zoom" label="Zoom" x="4.1" y="0" bg="#88ffcc"/>
@@ -509,9 +492,12 @@
     <button id="roiDelete" label="Delete ROI" x="4.1" y="3" bg="#ff8833"/>
     <group id="subs" x="0" y="0">
       <button id="refType" label="Ref. Type" x="3.1" y="3" bg="#44ffee"/>
-      <button id="refTrace" label="Ref. Trace" x="3.1" y="4" bg="#55ccdd" hidewhendisabled="yes"/>
-      <button id="refDigi" label="Digi. Ref." x="3.1" y="4" bg="#55ccdd" hidewhendisabled="yes"/>
-      <button id="refFreq" label="Ref. Freq." x="3.1" y="4" bg="#55ccdd" hidewhendisabled="yes"/>
+      <button id="refTrace" label="Ref. Trace" x="3.1" y="4" bg="#55ccdd"
+	      hidewhendisabled="yes"/>
+      <button id="refDigi" label="Digi. Ref." x="3.1" y="4" bg="#55ccdd"
+	      hidewhendisabled="yes"/>
+      <button id="refFreq" label="Ref. Freq." x="3.1" y="4" bg="#55ccdd"
+	      hidewhendisabled="yes"/>
       <button id="showROIs" label="ROIs" x="2.1" y="3" bg="#66eedd"/>
       <button id="debleach" label="Debleach" x="2.1" y="4" bg="#66ddff"/>
     </group>
@@ -560,6 +546,7 @@
     </menu>
   </page>
 
+  <!-- %%%%%%%%%%%%%%%%%%%%% MAINTENANCE PAGE %%%%%%%%%%%%%%%%%% -->
   <page id="maintenance" subdxr="1.1">
     <group id="chk" x="4.1" spancols="1.">
       <button id="focus" label="Focus" bg="#ffcc88"/>
@@ -606,12 +593,11 @@
 	<button id="vcoSource" label="VCO" bg="#ddbb99"/>
       </group>
       <button id="autoRange" label="Auto Range" x="3" y="4" bg="#dddd99"/>
-    <!-- ********************* MENUS FOR LIVE EPHYS. ******************** -->
+
       <checklist id="diChannels" rows="4" cols="4">
 	<auto enum="DIGILINES"/>
       </checklist>
       <checklist id="aiChannels" rows="4" cols="4">
-        <!-- "values" match "tags" in AICHAIN enum -->
 	<auto enum="AICHAN"/>
       </checklist>
       <menu id="vcoSource"  cols="4">
@@ -648,6 +634,7 @@
     <page id="checkVideo"/>
   </page>
 
+  <!-- %%%%%%%%%%%%%%%%%%%%% SAVED SETTINGS PAGE %%%%%%%%%%%%%%%%%%%% -->
   <page id="savedSettings" subdxr="1.1">
     <button id="save" label="Save..." x="4.1" y="0" bg="#ff99cc"/>
     <button id="delete" label="Delete" x="4.1" y="4" bg="#ff4433"/>
@@ -663,6 +650,9 @@
     <button id="_run" label="Run" type="bool"/>
   </page>
 </page>
+
+<!-- ********************************************************************** -->
+<!-- ******************* MULTIGRAPHS ************************************** -->
 
 <multigraph id="stim">
   <graph ch="AO0" typ="ao" if_enabled="stimEphys/channel:AO0"/>
@@ -743,51 +733,6 @@
   <alias id="off" label="Off"/>
   <alias id="self" label="Self"/>
 
-  <!-- Analog inputs -->
-  <alias id="ME1_10Vm" label="V_m"/>
-  <alias id="ME2_Vm" label="V_2"/>
-  <alias id="ME1_I" label="I_m"/>
-  <alias id="ME2_I" label="I_2"/>
-  <alias id="Stim0Mon" label="AO_0 m"/>
-  <alias id="Stim1Mon" label="AO_1 m"/>
-  <alias id="Stim2Mon" label="X_vid m"/>
-  <alias id="Stim3Mon" label="Y_vid m"/>
-  <alias id="60HzRef" label="line"/>
-  <alias id="ExtVA1" label="V_A1"/>
-  <alias id="ExtVA2" label="V_A2"/>
-  <alias id="ExtVA3" label="V_A3"/>
-  <alias id="ExtVA4" label="V_A4"/>
-  <alias id="ExtVB1" label="V_B1"/>
-  <alias id="ExtVB2" label="V_B2"/>
-  <alias id="ExtVB3" label="V_B3"/>
-  <alias id="ExtVB4" label="V_B4"/>
-
-  <!-- Digital inputs -->
-  <alias id="Frame:Ox" label="Frm_Ox"/>
-  <alias id="Frame:Cc" label="Frm_Cc"/>
-  <alias id="TrigOxMon" label="TrgM_Ox"/>
-  <alias id="TrigCcMon" label="TrgM_Cc"/>
-  <alias id="DO0Mon" label="DM_0" />
-  <alias id="DO1Mon" label="DM_1" />
-  <alias id="DO2Mon" label="DM_2" />
-  <alias id="DO3Mon" label="DM_3" />
-  <alias id="ExcShtrMon" label="Shtr_exc" />
-  <alias id="VideoResp" label="Resp_vid" />
-  <alias id="VideoFrame" label="Frm_vid" />
-  <alias id="VideoLightMon" label="Light_vid" />
-
-  <!-- Digital outputs -->
-  <alias id="Lamp:LED" label="LED"/>
-  <alias id="Trigger:Ox"  label="Trig_Ox"/>
-  <alias id="Trigger:Cc"  label="Trig_Cc"/>
-  <alias id="AO0" label="AO_0"/>
-  <alias id="AO1" label="AO_1"/>
-  <alias id="DO0" label="DO_0"/>
-  <alias id="DO1" label="DO_1"/>
-  <alias id="DO2" label="DO_2"/>
-  <alias id="DO3" label="DO_3"/>
-  <alias id="Lamp:Video" label="Light_vid"/>
-
   <!-- For binning -->
   <alias id="1x1+0+0" label="1 x 1"/>
   <alias id="1x2+0+0" label="1 x 2"/>
@@ -822,12 +767,10 @@
 </aliases>
 
 <colors>
-  <color id="CCD:Cc" value="#00ccff"/>
-  <color id="CCD:Ox" value="#ff8800"/>
   <color id="axisPen" value="#888888"/>
   <color id="tracePen" value="black"/>
   <color id="axisText" value="#880000"/>
   <color id="graphBg" value="white"/>
 </colors>
 
-</vsdscopeGUIConfig>
+</vscope>
