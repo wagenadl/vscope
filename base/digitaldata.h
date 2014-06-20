@@ -77,6 +77,7 @@ public:
   bool hasLine(QString id) const;
   bool hasLine(unsigned int line) const;
   unsigned int findLine(QString id) const;
+  QString lineID(unsigned int line) const;
   DataType maskForLine(QString id) const;
   DataType maskForLine(unsigned int line) const;
   void reportLines() const;

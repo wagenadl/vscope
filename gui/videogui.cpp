@@ -20,7 +20,8 @@ bool VideoGUI::openPage(guiRoot *gui, ParamTree *ptree) {
   if (!vprog.ok()) {
     if (ptree->find("stimVideo/enable").toBool())
       failure(Exception("VideoGUI","No video system"),gui,ptree);
-    gui->findButton("stimVideo/enable").setEnabled(false);
+    gui->findButton("stimVideo/enable").setDisabled(true);
+    gui->findButton("stimVideo/lightOn").setDisabled(true);
     return false;
   }
   if (!vprog.enabled(ptree))

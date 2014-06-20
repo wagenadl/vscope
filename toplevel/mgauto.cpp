@@ -19,70 +19,9 @@
 #include <xml/attribute.h>
 #include <xml/outrate.h>
 
-MGAuto::Channel::Channel(QDomElement c) {
-  id = c.attribute("ch");
-  QString ctyp = c.attribute("typ");
-  QString ctiny = c.attribute("tiny");
-  label = id;
-  if (ctyp=="ai") {
-    typ=AI;
-    label = Aliases::lookup(id);
-    isOut = false;
-    isDigi = false;
-  } else if (ctyp=="ao") {
-    typ=AO;
-    isOut = true;
-    isDigi = false;
-  } else if (ctyp=="di") {
-    typ=DI;
-    //chn = Enumerator::find("DIGILINES")->lookup(id);
-    label = Aliases::lookup(id);
-    isOut = false;
-    isDigi = true;
-  } else if (ctyp=="do") {
-    typ=DO;
-    //chn = Enumerator::find("DIGILINES")->lookup(id);
-    label = Aliases::lookup(id);
-    isOut = true;
-    isDigi = true;
-  } else
-    throw Exception("MGAuto::Channel","Unknown type '"+ctyp+"'",
-		    "constructor");
 
-  tiny = ctiny=="yes" || ctiny=="true";
-
-  if_enabled = xmlAttribute(c, "if_enabled", "");
-}
-
-bool MGAuto::Channel::available(QString cid, QString ctyp) {
-  if (ctyp=="ai")
-    return Enumerator::find("AICHAN")->has(cid);
-  else if (ctyp=="ao")
-    return Enumerator::find("AOCHAN")->has(cid);
-  else if (ctyp=="di" || ctyp=="do")
-    return Enumerator::find("DIGILINES")->has(cid);
-  else
-    return false;
-}  
-
-MGAuto::MGAuto(QWidget *parent, QDomElement conf, QString myname):
-  MultiGraph(parent) {
-  bool ok=false;
-  for (QDomElement elt=conf.firstChildElement("multigraph");
-       !elt.isNull(); elt=elt.nextSiblingElement("multigraph")) {
-    QString id = elt.attribute("id");
-    if (id==myname) {
-      for (QDomElement c=elt.firstChildElement("graph");
-	   !c.isNull(); c=c.nextSiblingElement("graph")) 
-	if (Channel::available(c.attribute("ch"), c.attribute("typ"))) 
-	  pool.push_back(Channel(c));
-      ok=true;
-    }
-  }
-  if (!ok)
-    throw Exception("MGAuto",
-		    "No multigraph definition found for '"+myname+"' in xml",
-		    "constructor");
+MGAuto::MGAuto(QWidget *parent, QString myname):
+  MultiGraph(parent), myname(myname) {
   rebuild();
   connectZooms();
 }
@@ -93,40 +32,89 @@ MGAuto::~MGAuto() {
     delete i.value();
 }
 
+bool MGAuto::useInputChannel(QString id) const {
+  if (id=="")
+    return false;
+  if (id.startsWith("E") && id.right(1)>="0" && id.right(1)<="9")
+    return myname == "extra";
+  else if (id.startsWith("Frame:"))
+    return myname == "extra";
+  else
+    return myname == "intra";
+}
+
+bool MGAuto::useOutputChannel(QString id) const {
+  if (id=="")
+    return false;
+  if (myname!="stim")
+    return false;
+  if (id.contains("Vid"))
+    return Globals::ptree->enabled("stimVideo");
+  if (id.startsWith("Lamp:"))
+    return Globals::ptree->enabled("acqCCD");
+  if (id.startsWith("Shutter:") || id.startsWith("Trigger:")) {
+    QStringList bits = id.split(":");
+    QString camid = bits.last();
+    return Globals::ptree->enabled("acqCCD/camera:" + camid);
+  }
+  return Globals::ptree->enabled("stimEphys/channel:" + id);
+}
+
 void MGAuto::rebuild() {
-  QSet<QString> newset;
-  for (QList<Channel>::iterator i=pool.begin(); i!=pool.end(); ++i) {
-    QString id = (*i).id;
-    if (!Globals::ptree->enabled((*i).if_enabled))
-      continue;
-    
-    switch ((*i).typ) {
-    case Channel::AI:
-      if (Globals::trove->trial().analogData() &&
-	  Globals::trove->trial().analogData()->contains(id)) 
-	newset.insert(id);
-      break;
-    case Channel::AO:
-      if (Globals::trove->trial().analogStimuli() &&
-	  Globals::trove->trial().analogStimuli()->contains(id)) 
-	newset.insert(id);
-      break;
-    case Channel::DI:
-      if (Globals::trove->trial().digitalData() &&
-	  Globals::trove->trial().digitalData()->hasLine(id)) 
-	newset.insert(id);
-    case Channel::DO:
-      if (Globals::trove->trial().digitalStimuli() &&
-	  Globals::trove->trial().digitalStimuli()->hasLine(id)) 
-	newset.insert(id);
-      break;
+  QList<QString> newlist;
+  QSet<QString> digi;
+  QSet<QString> outp;
+  AnalogData const *ad = Globals::trove->trial().analogData();
+  if (ad) {
+    for (int i=0; i<ad->getNumChannels(); i++) {
+      QString id = ad->getChannelAtIndex(i);
+      if (useInputChannel(id)) {
+	newlist << id;
+      }
     }
   }
 
-  if (newset!=actual) {
-    actual = newset;
+  DigitalData const *dd = Globals::trove->trial().digitalData();
+  if (dd) {
+    for (int i=0; i<32; i++) {
+      QString id = dd->lineID(i);
+      if (useInputChannel(id)) {
+	newlist << id;
+	digi << id;
+      }
+    }
+  }
+
+  AnalogData const *as = Globals::trove->trial().analogStimuli();
+  if (as) {
+    for (int i=0; i<as->getNumChannels(); i++) {
+      QString id = as->getChannelAtIndex(i);
+      if (useOutputChannel(id)) {
+	newlist << id;
+	outp << id;
+      }
+    }
+  }
+
+  DigitalData const *ds = Globals::trove->trial().digitalStimuli();
+  if (ds) {
+    for (int i=0; i<32; i++) {
+      QString id = ds->lineID(i);
+      if (useOutputChannel(id)) {
+	newlist << id;
+	digi << id;
+	outp << id;
+      }
+    }
+  }
+  
+  if (newlist!=actual) {
+    actual = newlist;
+    digiSet = digi;
+    outputSet = outp;
     newgraphs();
   }
+  
   newtraces();
   update();
 }
@@ -142,27 +130,20 @@ void MGAuto::newgraphs() {
   traces.clear();
 
   // find out if all tiny
-  bool alltiny=true;
-  for (QList<Channel>::iterator i=pool.begin(); i!=pool.end(); ++i)
-    if (actual.contains((*i).id))
-      if (!(*i).tiny)
-	alltiny=false;
+  bool alltiny = digiSet.size() == actual.size();
     
   // Build new graphs
   bool first=true;
-  for (QList<Channel>::iterator i=pool.begin(); i!=pool.end(); ++i) {
-    QString id = (*i).id;
-    if (actual.contains(id)) {
-      LineGraph *g = new LineGraph(this);
-      if (!(*i).tiny || (alltiny && first) )
-	g->setXLabel("(s)");
-      else
-	g->showXTickLabels(false);
-      g->setTraceLabel(id,(*i).label);
-      addGraph(id,g, (*i).tiny);
-      first=false;
-    }
-  }  
+  foreach (QString id, actual) {
+    LineGraph *g = new LineGraph(this);
+    if (!digiSet.contains(id) || (alltiny && first) )
+      g->setXLabel("(s)");
+    else
+      g->showXTickLabels(false);
+    g->setTraceLabel(id, Aliases::lookup(id));
+    addGraph(id, g, digiSet.contains(id));
+    first=false;
+  }
 }
 
 void MGAuto::newtraces() {
@@ -172,63 +153,54 @@ void MGAuto::newtraces() {
   DigitalData const *dstim = Globals::trove->trial().digitalStimuli();
   double outrate_hz = Globals::ptree->find(PAR_OUTRATE).toDouble();
 
-  foreach (Channel c, pool) {
-    if (actual.contains(c.id)) {
-      LineGraph *g = findp(c.id);
-      TraceInfo *tr = traces[c.id];
-      if (!tr)	  
-	traces[c.id] = tr = new TraceInfo();
-      switch (c.typ) {
-      case Channel::AI:
-	if (aacq) {
-	  tr->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
-		      DataPtr(aacq->channelData(c.id)),
-		      aacq->getNumScans(),
-		      aacq->getNumChannels());
-	  tr->setScaleFactor(aacq->getScaleAtIndex(aacq->whereIsChannel(c.id)));
-	  g->setYLabel("("
-		       +aacq->getUnitAtIndex(aacq->whereIsChannel(c.id))
-		       +")");
-	}
-	break;
-      case Channel::AO:
-	if (astim) {
-	  tr->setData(0,1/outrate_hz,
-		      DataPtr(astim->channelData(c.id)),
-		      astim->getNumScans(),
-		      astim->getNumChannels());
-	  tr->setScaleFactor(astim->getScaleAtIndex
-			     (astim->whereIsChannel(c.id)));
-	  g->setYLabel("("
-		       +astim->getUnitAtIndex(astim->whereIsChannel(c.id))
-		       +")");
-	}
-	break;
-      case Channel::DI:
-	if (dacq) {
-	  tr->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
-		      DataPtr(dacq->allData(),dacq->findLine(c.id)),
-		      dacq->getNumScans());
-	}
-	break;
-      case Channel::DO:
-	if (dstim) {
-	  tr->setData(0,1/outrate_hz,
-		      DataPtr(dstim->allData(),dstim->findLine(c.id)),
-		      dstim->getNumScans());
-	}
-	break;
-      }
-      
-      g->addTrace(c.id, tr);
-      g->autoSetXRange();
-      if (c.isDigi) {
-	g->setYRange(Range(-0.1,1.1));
-	g->setYTicks(100,100);
-	g->showYTickLabels(false);
+  foreach (QString id, actual) {
+    LineGraph *g = findp(id);
+    TraceInfo *tr = traces[id];
+    if (!tr)	  
+      traces[id] = tr = new TraceInfo();
+    if (outputSet.contains(id)) {
+      // output
+      if (digiSet.contains(id)) {
+	// digital output
+	tr->setData(0, 1/outrate_hz,
+		    DataPtr(dstim->allData(),dstim->findLine(id)),
+		    dstim->getNumScans());
       } else {
-	g->autoSetYRange(0.001,0.5);
+	// analog output
+	tr->setData(0, 1/outrate_hz,
+		    DataPtr(astim->channelData(id)),
+		    astim->getNumScans(),
+		    astim->getNumChannels());
+	tr->setScaleFactor(astim->getScaleAtIndex
+			   (astim->whereIsChannel(id)));
+	g->setYLabel("("+astim->getUnitAtIndex(astim->whereIsChannel(id))+")");
       }
+    } else {
+      // input
+      if (digiSet.contains(id)) {
+	// digital input
+	tr->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
+		    DataPtr(dacq->allData(),dacq->findLine(id)),
+		    dacq->getNumScans());
+      } else {
+	// analog input
+	tr->setData(0, 1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
+		    DataPtr(aacq->channelData(id)),
+		    aacq->getNumScans(),
+		    aacq->getNumChannels());
+	tr->setScaleFactor(aacq->getScaleAtIndex(aacq->whereIsChannel(id)));
+	g->setYLabel("("+aacq->getUnitAtIndex(aacq->whereIsChannel(id))+")");
+      }
+    }
+
+    g->addTrace(id, tr);
+    g->autoSetXRange();
+    if (digiSet.contains(id)) {
+      g->setYRange(Range(-0.1, 1.1));
+      g->setYTicks(100, 100);
+      g->showYTickLabels(false);
+    } else {
+      g->autoSetYRange(0.001, 0.5);
     }
   }
 }

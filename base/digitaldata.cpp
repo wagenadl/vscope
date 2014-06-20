@@ -172,6 +172,10 @@ bool DigitalData::hasLine(QString id) const {
   return id2line.contains(id);
 }
 
+QString DigitalData::lineID(unsigned int line) const {
+  return hasLine(line) ? line2id[line] : "";
+}
+
 bool DigitalData::hasLine(unsigned int line) const {
   return line2id.contains(line);
 }

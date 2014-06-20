@@ -17,29 +17,9 @@ class MGAuto: public MultiGraph {
    */
   Q_OBJECT;
 public:
-  class Channel {
-  public:
-    Channel(QDomElement elt);
-    static bool available(QString id, QString typ);
-    /*:F available
-     *:D Returns true iff this channel exists in the AICHAN/DIGILINES enums.
-     */
-  public:
-    enum Type { AI, AO, DI, DO };
-    QString id;
-    QString label;
-    //    int chn; // used for digital line, not for analog
-    Type typ;
-    bool tiny;
-    bool isOut;
-    bool isDigi;
-    QString if_enabled;
-  };
-public:
-  MGAuto(QWidget *parent, QDomElement conf, QString myname);
+  MGAuto(QWidget *parent, QString myname);
   /*:F constructor
-   *:D Creates the set. CONF must be an element containing a <multigraph>
-       element that has id=myname.
+   *:D Creates the set. 
   */
   virtual ~MGAuto();
 public slots:
@@ -47,9 +27,13 @@ public slots:
 private:
   void newgraphs();
   void newtraces();
+  bool useInputChannel(QString id) const;
+  bool useOutputChannel(QString id) const;
 private:
-  QList<Channel> pool;
-  QSet<QString> actual;
+  QString myname;
+  QList<QString> actual;
+  QSet<QString> digiSet;
+  QSet<QString> outputSet;
   QMap<QString, class TraceInfo *> traces;
 };
 

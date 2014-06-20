@@ -27,7 +27,7 @@ public:
 		class AnalogData *adata, class DigitalData *ddata) const;
   void reset(class ParamTree /*const*/ *ptree); // ensures our prog and pars match ptree
   bool enabled(class ParamTree *ptree) const;
-  bool ok() const { return vidcom!=0; }
+  bool ok() const;
 public: // only meant for class VideoGUI
   void ensureSettings(class ParamTree *ptree);
   /*:F ensureSettings

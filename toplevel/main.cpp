@@ -84,7 +84,7 @@ QWidget *makeBanner1(QWidget *parent) {
   txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" + vsn.attribute("year");
   txt += "<p>Last commit: " + vsn.attribute("date") + "<br>";
   txt += "Build date: " + vsn.attribute("builddate");
-  txt += "<p>For more info: daw@caltech.edu";
+  txt += "<p>For more info: wagenadl@uc.ed";
 
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();
@@ -222,7 +222,7 @@ QDomElement setupGUI() {
 
 void setupAliases() {
   QString spath = Globals::filePath() + "/_settings";
-  QString alifn = spath + "/_aliases";
+  QString alifn = spath + "/_aliases.xml";
   if (!QFile::exists(alifn)) {
     QDir x(QDir::root());
     if (!x.exists(spath))
@@ -279,16 +279,16 @@ void setupVSDTraces() {
     setDebleach((DEBLEACH)Globals::ptree->find("analysis/debleach").toInt());
 }
 
-void setupMGAuto(QDomElement &guiConf) {
-  Globals::mgintra = new MGAuto(Globals::leftplace,guiConf,"intra");
+void setupMGAuto(QDomElement &) {
+  Globals::mgintra = new MGAuto(Globals::leftplace, "intra");
   Globals::mgintra->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::mgintra->hide();
   
-  Globals::mgextra = new MGAuto(Globals::rightplace,guiConf,"extra");
+  Globals::mgextra = new MGAuto(Globals::rightplace, "extra");
   Globals::mgextra->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::mgextra->hide();
   
-  Globals::mgstim = new MGAuto(Globals::leftplace,guiConf,"stim");
+  Globals::mgstim = new MGAuto(Globals::leftplace, "stim");
   Globals::mgstim->setGeometry(0,0,512,Globals::mainwindow->basey());
   Globals::mgstim->hide();
 }

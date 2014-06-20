@@ -2,6 +2,7 @@
 
 #include "videoprog.h"
 #include <xml/paramtree.h>
+#include <xml/connections.h>
 #include <base/dbg.h>
 #include <base/exception.h>
 #include <video/videocomm.h>
@@ -11,6 +12,11 @@ QStringList emptylist;
 VideoProg::VideoProg() {
   hasprognames = false;
   isuptodate = false;
+  vidcom = 0;
+  if (!Connections::digiOutputLines().contains("Lamp:Video")) {
+    Dbg() << "No Lamp:Video. VideoProg disabled.";
+    return;
+  }
   try {
     vidcom = new VideoComm();
   } catch (Exception &e) {
@@ -18,6 +24,10 @@ VideoProg::VideoProg() {
     e.report();
     vidcom = 0;
   }
+}
+
+bool VideoProg::ok() const {
+  return vidcom!=0;
 }
 
 VideoProg::~VideoProg() {
