@@ -31,6 +31,7 @@ TrialData::TrialData(): KeyAgg(0) {
   adataOut = new AnalogData(1024, 1, 1e4);
   ddataIn = new DigitalData(1024, 1e4);
   ddataOut = new DigitalData(1024, 1e4);
+  partree = 0;
 
   add(adataIn);
   add(ddataIn);
@@ -50,6 +51,9 @@ TrialData::~TrialData() {
   delete adataOut;
   delete ddataIn;
   delete adataIn;
+
+  if (partree)
+    delete partree;
 }
 
 void TrialData::useConnectedCameras(ParamTree const *ptree) {
@@ -125,10 +129,15 @@ void TrialData::generalPrep(ParamTree const *ptree, bool concams) {
   exptname = ptree->find("acquisition/exptname").toString();
   trialid = trialname(ptree);
 
-  xml = new XML(0,"vsdscopeTrial");
+  xml = new XML(0, "vsdscopeTrial");
 
   QDomElement settings = xml->append("settings");
   ptree->write(settings);
+
+  if (partree)
+    *partree = *ptree;
+  else
+    partree = new ParamTree(*ptree);
 
   QDomElement info = xml->append("info");
   info.setAttribute("expt",exptname);

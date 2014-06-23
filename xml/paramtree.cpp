@@ -458,7 +458,14 @@ bool ParamTree::enabled(QString path) const {
   return true;
 }
 
-ParamTree::ParamTree(ParamTree &other): base(other.base) {
+ParamTree &ParamTree::operator=(ParamTree const &other) {
+  XML xml(0,"vsdscopeSettings");
+  other.write(xml.root());
+  read(xml.root());
+  return *this;
+}
+
+ParamTree::ParamTree(ParamTree const &other): base(other.base) {
   construct();
   XML xml(0,"vsdscopeSettings");
   other.write(xml.root());

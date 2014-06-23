@@ -26,6 +26,7 @@ public:
   virtual void read(QString dir, QString exptname, QString trialid,
 		    class ParamTree *ptree_dest);
 public:
+  ParamTree const *paramTree() const { return partree; } // may be 0 if unprep.
   AnalogData const *analogData() const { return adataIn; }
   AnalogData  *analogData()  { return adataIn; }
   DigitalData const *digitalData() const { return ddataIn; }
@@ -97,6 +98,7 @@ private:
   QMap<QString, Transform> ccdplace;
   class AnalogData *adataIn, *adataOut;
   class DigitalData *ddataIn, *ddataOut;
+  class ParamTree *partree;
   // identification
   QString fpath;
   QString exptname;
