@@ -72,7 +72,7 @@ void guiRadioGroup::rebuild() {
 
 bool guiRadioGroup::mayResize() {
   foreach (AutoButtons *a, autoButtons)
-    if (a->isDynamic())
+    if (false) // a->isDynamic())
       return false;
   return true;
 }

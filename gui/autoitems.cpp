@@ -9,7 +9,6 @@
 
 AutoItems::AutoItems(guiPage *parent):
   QObject(parent), initialGeom(parent) {
-  isDyn = false;
 }
 
 void AutoItems::setup(PageBuildGeom &geom,
@@ -19,7 +18,6 @@ void AutoItems::setup(PageBuildGeom &geom,
   enumerator = Enumerator::find(doc.attribute("enum"));
   if (!enumerator)
     throw Exception("AutoItems", "No enumerator");
-  isDyn = attributeTrue(doc, "dynamic");
   rebuild(&geom);
 }
 
@@ -87,7 +85,5 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
     *g_out = g;
 }
  
-bool AutoItems::isDynamic() const {
-  return isDyn;
-}
+
     

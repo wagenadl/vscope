@@ -188,8 +188,11 @@ void AbstractPage::reTree(ParamTree *neworigtree) {
     throw Exception("AbstractPage", "Cannot retree: no original tree", myPath);
   
   ptree = origptree->childp(getCurrentElement());
-  if (!ptree)
+  if (!ptree) {
+    Dbg() << "No ptree for " << getCurrentElement();
     ptree = origptree;
+    close();
+  }
 
   foreach (QString id, subPages.keys())
     subPages[id]->reTree(ptree->childp(id));

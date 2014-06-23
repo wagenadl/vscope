@@ -11,7 +11,6 @@ AutoButtons::AutoButtons(guiPage *page, guiRadioGroup *group):
   initialGeom(page) {
   if (!page)
     throw Exception("AutoButtons", "Missing a page");
-  isDyn = false;
 }
 
 void AutoButtons::setup(PageBuildGeom &geom,
@@ -22,7 +21,6 @@ void AutoButtons::setup(PageBuildGeom &geom,
   enumerator = Enumerator::find(doc.attribute("enum"));
   if (!enumerator)
     throw Exception("AutoButtons", "No enumerator");
-  isDyn = attributeTrue(doc, "dynamic");
   rebuild(&geom);
 }
 
@@ -76,10 +74,6 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
     *g_out = g;
 }
  
-bool AutoButtons::isDynamic() const {
-  return isDyn;
-}
-    
 QList<QString> AutoButtons::childIDs() const {
   return buttons.keys();
 }

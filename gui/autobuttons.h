@@ -19,9 +19,8 @@ public:
   void setup(PageBuildGeom &geom,
 	     QDomElement doc);
   void rebuild(PageBuildGeom *g_out=0);
-  QStringList selectIDs(QStringList inlist);
-  bool isDynamic() const;
-  QList<QString> childIDs() const;
+  QStringList selectIDs(QStringList inlist); // currently simply returns inlist
+  QList<QString> childIDs() const; // keys of our buttons
 private:
   guiPage *page;
   guiRadioGroup *group;

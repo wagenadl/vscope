@@ -6,6 +6,7 @@
 #include <xml/xmlfind.h>
 #include <xml/enumerator.h>
 #include <QStringList>
+#include <QSet>
 #include <stdio.h>
 #include <base/xml.h>
 #include <base/dbg.h>
@@ -28,17 +29,22 @@ void ParamTree::construct() {
     leaf_ = new Param(base);
     leaf_->dbgPath = base.attribute("id");
   } else if (base.tagName()=="category" || base.tagName()=="params") {
+    // this is a category, we will construct named children
     for (QDomElement e=base.firstChildElement();
 	 !e.isNull(); e=e.nextSiblingElement())
-      if (e.tagName()=="category" || e.tagName()=="array" || e.tagName()=="param")
+      if (e.tagName()=="category" || e.tagName()=="array"
+          || e.tagName()=="param")
 	children.insert(xmlAttribute(e,"id"), new ParamTree(e));
   } else if (base.tagName()=="array") {
-    // this is an array, we will construct elements
-    QStringList eltnames = Enumerator::find(xmlAttribute(base,"enum"))->getAllTags();
+    // this is an array, we will construct elements based on enum
+    QStringList eltnames
+      = Enumerator::find(xmlAttribute(base, "enum"))->getAllTags();
     for (QStringList::iterator i=eltnames.begin(); i!=eltnames.end(); ++i) 
-      children.insert(*i, new ParamTree(base,*i));
+      children[*i] = new ParamTree(base, *i);
   } else {
-    throw Exception("ParamTree",QString("Unexpected '" + base.tagName() + "' element."),"constructor");
+    throw Exception("ParamTree",
+                    QString("Unexpected '" + base.tagName() + "' element."),
+                    "constructor");
   }
   buildEnablers();
   if (base.tagName()=="params")
@@ -47,7 +53,7 @@ void ParamTree::construct() {
 
 ParamTree::ParamTree(QDomElement doc, QString elt): base(doc) {
   // this private constructor requires that doc is <array>
-  leaf_=0;
+  leaf_ = 0;
   decideSavable(doc);
   arrayElement = elt;
   for (QDomElement e=base.firstChildElement();
@@ -80,7 +86,9 @@ void ParamTree::buildEnablers() {
     if (e.tagName()=="param" && e.hasAttribute("cond")) {
       ParamTree *pt=children[e.attribute("id")];
       if (!pt)
-	throw Exception("ParamTree", "Param '"+e.attribute("id") + "' not found!?","buildEnablers");
+	throw Exception("ParamTree",
+                        "Param '" + e.attribute("id") + "' not found!?",
+                        "buildEnablers");
       Param *p=pt->leaf_;
       QString cond = e.attribute("cond");
       QString enable_if = e.attribute("enable_if");
@@ -95,7 +103,8 @@ void ParamTree::buildEnablers() {
       } else {
 	ParamTree *ct=children[cond];
 	if (!ct)
-	  throw Exception("ParamTree","Cond '"+cond+"' not found","buildEnablers");
+	  throw Exception("ParamTree", "Cond '"+cond+"' not found",
+                          "buildEnablers");
 	p->setEnabler(ct->leaf_,enable_if);
       }
     }
@@ -108,27 +117,76 @@ void ParamTree::read(QDomElement doc) {
   if (doc.tagName()=="pval") {
     leaf().read(doc);
   } else if (doc.tagName()=="settings" || doc.tagName()=="category"
-	     || doc.tagName()=="array" || doc.tagName()=="elt") {
+             || doc.tagName()=="elt") {
     for (QDomElement e=doc.firstChildElement();
 	 !e.isNull(); e=e.nextSiblingElement()) {
-      ParamTree *c = childp(xmlAttribute(e,"id"));
+      QString id = xmlAttribute(e, "id");
+      ParamTree *c = childp(id);
       if (c) {
 	try {
 	  c->read(e);
 	} catch(Exception const &) {
 	  QString v = xmlAttribute(e,"value");
-	  QString id = xmlAttribute(e,"id");
-	  fprintf(stderr,
-		  "Warning: ParamTree (read): Could not assign %s to '%s'\n",
-		  qPrintable(v),
-		  qPrintable(id));
+          Dbg() << "Warning: ParamTree (read): Could not assign "
+                << v << " to " << id;
 	}
-      } else
-	fprintf(stderr,"Warning: ParamTree (read): Unexpected element '%s' (type=%s). Ignoring.\n",
-		qPrintable(xmlAttribute(e,"id")),qPrintable(e.tagName()));
+      } else {
+        Dbg() << "Warning: ParamTree (read): Unexpected element " << id;
+      }
+    }
+  } else if (doc.tagName()=="array") {
+    QSet<QString> oldChildren = QSet<QString>::fromList(children.keys());
+    QSet<QString> newChildren;
+    for (QDomElement e=doc.firstChildElement();
+         !e.isNull(); e=e.nextSiblingElement()) {
+      if (e.tagName()=="elt") {
+        QString id = xmlAttribute(e, "id");
+        newChildren << id;
+        if (children[id]==0) {
+          Dbg() << "Paramtree: Old was zero " << id
+                << " *" << oldChildren.contains(id)
+                << " in " << dbgPath;
+          children[id] = new ParamTree(base, id);
+        }
+        try {
+          children[id]->read(e);
+	} catch(Exception const &) {
+          Dbg() << "Warning: ParamTree (read): Could not read array elt "
+                << id; 
+	}
+      } else {
+        Dbg() << "Warning: ParamTree (read): Unexpected element "
+              << e.tagName() << " as child of array";
+      }
+    }
+    foreach (QString id, oldChildren) {
+      if (!newChildren.contains(id)) {
+        Dbg() << "paramtree: Dropping " << id
+              << " in " << dbgPath;
+        delete children[id];
+        children.remove(id);
+      }
+    }    
+  } else if (doc.tagName()=="elt") {
+    for (QDomElement e=doc.firstChildElement();
+	 !e.isNull(); e=e.nextSiblingElement()) {
+      QString id = xmlAttribute(e, "id");
+      ParamTree *c = childp(id);
+      if (c) {
+	try {
+	  c->read(e);
+	} catch(Exception const &) {
+	  QString v = xmlAttribute(e,"value");
+          Dbg() << "Warning: ParamTree (read): Could not assign "
+                << v << " to " << id;
+	}
+      } else {
+        Dbg() << "Warning: ParamTree (read): Unexpected element " << id;
+      }
     }
   } else {
-    throw Exception("ParamTree",QString("Cannot read <") + doc.tagName() + "> elements.");
+    throw Exception("ParamTree",QString("Cannot read <") + doc.tagName()
+                    + "> elements.");
   }
 }
 
@@ -236,19 +294,17 @@ Param const &ParamTree::leaf() const {
 }
 
 ParamTree const *ParamTree::childp(QString id) const {
-  QMap<QString,ParamTree *>::const_iterator i = children.find(id);
-  if (i==children.end())
-    return 0;
+  if (children.contains(id))
+    return children[id];
   else
-    return i.value();
+    return 0;
 }
 
 ParamTree *ParamTree::childp(QString id) {
-  QMap<QString,ParamTree *>::iterator i = children.find(id);
-  if (i==children.end())
-    return 0;
+  if (children.contains(id))
+    return children[id];
   else
-    return i.value();
+    return 0;
 }
 
 ParamTree const &ParamTree::child(QString id) const {
