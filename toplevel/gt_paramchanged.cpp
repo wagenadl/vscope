@@ -34,8 +34,7 @@ static QString immediateCCDMaster(QString id) {
   /* Returns the master of camera ID, or "" if self. */
   QString pname = "acqCCD/camera:" + id + "/master";
   QString pval = Globals::ptree->find(pname).toString();
-  Enumerator *cams = Enumerator::find("CAMERAS");
-  if (cams->lookup(pval)>=0)
+  if (Connections::allCams().contains(pval))
     return pval;
   else
     return "";
@@ -70,8 +69,7 @@ static void ensureMasterOK(QString p) {
   QString ultimate = ultimateCCDMaster(myid);
   if (ultimate=="LOOP") {
     QString master = immediateCCDMaster(myid);
-    Globals::ptree->find("acqCCD/camera:" + master + "/master")
-      .setInt(CAM_self);
+    Globals::ptree->find("acqCCD/camera:" + master + "/master").set("Self");
   }
 }
       

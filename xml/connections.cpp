@@ -10,6 +10,7 @@
 
 namespace Connections {
   QMap<QString,AIChannel *> aimap;
+  QStringList aiorder;
   QMap<QString,AOChannel *> aomap;
   QMap<QString,DigiChannel *> digimap;
   QMap<QString,CamCon *> cammap;
@@ -126,6 +127,7 @@ namespace Connections {
          !e.isNull(); e=e.nextSiblingElement("aichannel")) {
       QString id = xmlAttribute(e,"id");
       if (e.hasAttribute("line")) {
+        aiorder << id;
 	AIChannel *aic = new AIChannel(id);
 	aimap[id] = aic;
 	if (e.hasAttribute("ground"))
@@ -446,7 +448,7 @@ namespace Connections {
   }
   
   QStringList analogInputs() {
-    return aimap.keys();
+    return aiorder;
   }
 
   QStringList analogOutputs() {

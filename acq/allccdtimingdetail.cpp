@@ -20,8 +20,9 @@ static ParamTree const *camTree(ParamTree const *ptree, QString id) {
   ParamTree const *camtree = &ptree->tree("acqCCD/camera:"+id);
   QString master = camtree->find("master").toString();
   QSet<ParamTree const *> seen;
+  QSet<QString> cams = QSet<QString>::fromList(Connections::allCams());
   seen.insert(camtree);
-  while (master != "self") {
+  while (cams.contains(master)) {
     camtree = &ptree->tree("acqCCD/camera:"+master);
     master = camtree->find("master").toString();
     if (seen.contains(camtree))

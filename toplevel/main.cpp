@@ -129,6 +129,15 @@ void setupAppStyle(QApplication &app) {
   app.setFont(f);
 }  
 
+void setupAIChannels() {
+  QStringList aich = Connections::analogInputs();
+  while (aich.size()>2)
+    aich.takeLast();
+  QSet<QString> ai = QSet<QString>::fromList(aich);
+  Globals::ptree->find("maintenance/liveEphys/aiChannels").setStrings(ai);
+  Globals::ptree->find("acqEphys/aiChannels").setStrings(ai);
+}
+
 void setupParsAndConns() {
   XML enumsDoc(":/enums.xml");
   XML paramsDoc(":/parameters.xml");
@@ -170,6 +179,8 @@ void setupParsAndConns() {
   
   Globals::ptree = new ParamTree(pars);
   Globals::ptree->find("filePath").set(fpath);
+
+  setupAIChannels();
 }
 
 void setupDefaultSettings() {

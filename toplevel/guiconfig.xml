@@ -224,7 +224,7 @@
       </group>
 
       <menu id="master" rows="5" cols="1.2">
-	<item value="self"/>
+	<item value="Self"/>
 	<auto enum="CAMERAS" exclude="*id"/>
       </menu>
   
@@ -444,7 +444,7 @@
     <group id="camvals" x="1.1" y="0">
       <button id="trialPeriod" label="Trial period" bg="#44ffaa" x="1" y="3"/>
       <group x="0" y="0">
-	<auto id="camvals" enum="CURRENTCAMERAS"/>
+	<auto id="camvals" enum="CAMERAS"/>
       </group>
     </group>
 

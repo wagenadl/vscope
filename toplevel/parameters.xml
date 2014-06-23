@@ -22,7 +22,7 @@
   
     <category id="acqEphys">
       <param id="acqTime" type="time" default="1.1 s" min="1 s" max="1 h"/>
-      <param id="aiChannels" type="set" default="ME1_10Vm ME2_Vm"/>
+      <param id="aiChannels" type="set" default=""/>
       <param id="acqFreq" type="freq" default="10 kHz" min="100 Hz" max="100 kHz"/>
   
       <category id="vco">
@@ -56,37 +56,37 @@
       <param id="enable" type="bool" default="true"/>
       <array id="camera" enum="CAMERAS">
         <param id="enable" type="bool" default="true"/>
-        <param id="master" type="enum" enum="CAMERAS" default="self"/>
+        <param id="master" type="string" default="Self"/>
         <param id="binning" type="geometry" default="1x1+0+0" 
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="region" type="geometry" default="512x512+0+0"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <!-- Despite the fact that regions are now defined on a per-camera
              basis, they are defined in global coordinates. -->
         <param id="delay" type="time" default="100 ms" min="0 ms" max="1 h"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="dur" type="time" default=".8 s" min="100 ms" max="1 h"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="1000 Hz"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="dutyCycle" type="percentage" default="100%"
   	     min="0%" max="100%"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="preIllum" type="time" default="1.5 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="postIllum" type="time" default="0.1 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="preShutter" type="time" default="50 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="postShutter" type="time" default="100 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
         <param id="preHeat" type="time" default="0 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="self"/>
+  	     cond="master" enable_if="Self"/>
       </array>
     </category>
   
@@ -134,17 +134,15 @@
     </category>
     <category id="maintenance">
       <category id="focus">
-        <param id="camA" type="enum" enum="CAMERAS" default="none" save="false"/>
-        <param id="camB" type="enum" enum="CAMERAS" default="none" save="false"/>
+        <param id="camA" type="string" default="" save="false"/>
+        <param id="camB" type="string" default="" save="false"/>
         <param id="mode" type="enum" enum="FOCUSMODE" default="TwoFull" save="false"/>
       </category>
       <category id="liveEphys">
         <param id="timeBase" type="time" default="100 ms" 
                min="10 ms" max="1 s" save="false"/>
-        <param id="aiChannels" type="set"
-               default="ME1_10Vm ME2_Vm" save="false"/>
-        <param id="diChannels" type="set"
-               default="" save="false"/>
+        <param id="aiChannels" type="set" default="" save="false"/>
+        <param id="diChannels" type="set" default="" save="false"/>
         <param id="vcoSource" type="string" 
                default="Silent" save="false"/>
       </category>

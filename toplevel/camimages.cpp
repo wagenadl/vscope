@@ -55,15 +55,11 @@ void CamImages::setCameras(QStringList newids) {
   foreach (QString id, droppool)
     del(id);
 
-  Enumerator *curcams = Enumerator::find("CURRENTCAMERAS");
   Enumerator *showwhat = Enumerator::find("SHOWWHAT");
-  foreach (QString id, curcams->getAllTags())
+  foreach (QString id, oldids)
     showwhat->remove("CCD-"+id);
-  curcams->reset();
-  foreach (QString id, newids) {
-    curcams->add(id);
+  foreach (QString id, newids) 
     showwhat->add("CCD-"+id);
-  }
 
   QStringList pp = QString("Left Right").split(" ");
   foreach (QString p, pp) {

@@ -41,9 +41,7 @@
       <item tag="ArrayCtrl"/>
     </enum>
 
-    <enum id="CAMERAS" prefix="CAM">
-      <item tag="self" value="-1"/>
-      <item tag="none" value="-2"/>
+    <enum id="CAMERAS">
     </enum>
 
     <enum id="AICHAN">
@@ -74,9 +72,6 @@
     </enum>
 
     <enum id="STIMCHS">
-    </enum>
-
-    <enum id="CURRENTCAMERAS">
     </enum>
   </enums>
 </vscope>

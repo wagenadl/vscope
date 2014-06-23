@@ -42,7 +42,7 @@
        ground="RSE" range="5V" unit="V" scale="1"/>
   
     <aochannel id="AO0" line="0" isstim="true" unit="nA" scale="1"/>
-    <!-- Right now, units don't actually work yet. -->
+    <!-- Right now, output units don't actually work yet. -->
     <aochannel id="AO1" line="1" isstim="true"/>
     <aochannel id="VidX" line="2"/>
     <aochannel id="VidY" line="3"/>
