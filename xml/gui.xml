@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone='yes'?>
+<!DOCTYPE vscope>
+<vscope version="20140620">
+
+  <geometry width="1024" height="768"
+	    viewerw="512" viewerh="512"
+	    controlx0="0" controly0="512"/>
+  
+  <controlpanel>
+    <geometry width="1024" height="256"
+	      cols="8.2" rows="6.2"
+	      leftx="5" rightx="5"
+	      topy="4" bottomy="4"
+	      intx="5" inty="4"/>
+    <font family="Arial Rounded MT" size="13"/>
+
+    <page id="" subdxl="1.05" subdyt="1.2" subdxr="2.05" subdyb="0">
+      <radio id="showLeft" x="1" y="0" spanrows="1">
+	<choice id="panelLeft1" label="*%1" bg="#ddffdd"/>
+	<choice id="panelLeft2" label="*%1" bg="#ddffdd"/>
+	<choice id="panelLeft3" label="*%1" bg="#ddffdd"/>
+      </radio>
+      <radio id="showRight" x="4.2" y="0" spanrows="1">
+	<choice id="panelRight1" label="*%1" bg="#ddffdd"/>
+	<choice id="panelRight2" label="*%1" bg="#ddffdd"/>
+	<choice id="panelRight3" label="*%1" bg="#ddffdd"/>
+      </radio>
+      
