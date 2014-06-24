@@ -1,3 +1,4 @@
+
 // guitabbedpage.h
 
 #ifndef GUITABBEDPAGE_H
@@ -24,6 +25,8 @@ public slots:
   /*:F open
    *:D This version opens a specific sub-page.
   */
+protected:
+  void retree();
 private:
   QString currentElement;
   /*:V currentElement

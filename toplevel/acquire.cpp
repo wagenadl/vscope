@@ -290,9 +290,12 @@ void Acquire::loadData(QString xmlfn) {
     setDebleach((DEBLEACH)Globals::ptree->find("analysis/debleach").toInt());
   displayCCD();
   displayEPhys();
-  //  updateVSDTraces();
+
   Globals::panelHistory->relabelAll();
-  Globals::gui->open(); // make sure updated trial number visible.
+
+  Globals::gui->setTree(Globals::trove->trial().paramTree());
+  Globals::gui->makeReadOnly(true);
+    Globals::gui->open(); // make sure updated trial number visible.
   
   if (loadframe)
       loadframe->hide();

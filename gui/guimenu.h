@@ -23,7 +23,7 @@ protected:
   virtual VISUALTYPE visualTypeForParentButton() const;
   virtual void connectToParent(QDomElement doc);
   virtual guiItem *createItem(QString id); // simply constructs a guiMenuItem
-  virtual void prepForOpening();
+  virtual void prepare();
   virtual void addAuto(PageBuildGeom &g, QDomElement doc);
   virtual bool mayResize();
 protected:

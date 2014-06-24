@@ -26,7 +26,7 @@ guiItem *guiChecklist::createItem(QString id) {
   return new guiChecklistItem(this, id, master);
 }
 
-void guiChecklist::prepForOpening() {
+void guiChecklist::prepare() {
   Param *pp = ptree->leafp();
   if (!pp || pp->getType()!="set") 
     throw Exception("guiCheckList",

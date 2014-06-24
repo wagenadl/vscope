@@ -76,6 +76,7 @@ public:
    */
   bool alwaysHidden() const;
 protected:
+  virtual void mousePressEvent(class QMouseEvent *);
   virtual void mouseDoubleClickEvent(class QMouseEvent *);
   /*:F mouseDoubleClickEvent
    *:D This pops up an edit box for custom buttons only.
@@ -88,6 +89,8 @@ protected:
   /*:F changeEvent
    *:D Used to implement the "hideWhenDisabled" behavior.
    */
+public slots:
+  virtual void makeReadOnly(bool ro);
 protected slots:
   virtual void editDone(QString newtext);
   /*:F editDone

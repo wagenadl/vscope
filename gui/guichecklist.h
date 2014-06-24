@@ -17,7 +17,7 @@ public:
   virtual ~guiChecklist();
 protected:
   virtual guiItem *createItem(QString id);
-  virtual void prepForOpening();
+  virtual void prepare();
   virtual void connectToParent(QDomElement doc);
 };
 

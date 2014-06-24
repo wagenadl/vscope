@@ -76,8 +76,12 @@ void guiTabbedPage::open(QString p) {
   QString ar = elt.left(idx);
   elt = elt.mid(idx+1);
   currentElement = elt;
-  reTree(0);
+  retree();
   open();
+}
+
+void guiTabbedPage::retree() {
+  setTree(0);
 }
 
 void guiTabbedPage::open() {

@@ -31,6 +31,7 @@ TrialData::TrialData(): KeyAgg(0) {
   adataOut = new AnalogData(1024, 1, 1e4);
   ddataIn = new DigitalData(1024, 1e4);
   ddataOut = new DigitalData(1024, 1e4);
+  partree = 0;
 
   add(adataIn);
   add(ddataIn);
@@ -50,6 +51,9 @@ TrialData::~TrialData() {
   delete adataOut;
   delete ddataIn;
   delete adataIn;
+
+  if (partree)
+    delete partree;
 }
 
 void TrialData::useConnectedCameras(ParamTree const *ptree) {
@@ -125,10 +129,17 @@ void TrialData::generalPrep(ParamTree const *ptree, bool concams) {
   exptname = ptree->find("acquisition/exptname").toString();
   trialid = trialname(ptree);
 
-  xml = new XML(0,"vsdscopeTrial");
+  xml = new XML(0, "vsdscopeTrial");
 
   QDomElement settings = xml->append("settings");
   ptree->write(settings);
+
+  if (partree) {
+    if (partree != ptree)
+      *partree = *ptree;
+  } else {
+    partree = new ParamTree(*ptree);
+  }
 
   QDomElement info = xml->append("info");
   info.setAttribute("expt",exptname);
@@ -250,8 +261,7 @@ void TrialData::write() const {
   xml->write(base + ".xml");
 }
 
-void TrialData::read(QString dir, QString exptname0, QString trialid0,
-		     ParamTree *ptree_dest) {
+void TrialData::read(QString dir, QString exptname0, QString trialid0) {
   KeyGuard guard(*this);
   prep=false;
 
@@ -264,28 +274,21 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   QDomElement info = myxml.find("info");
   QDomElement settings = myxml.find("settings");
 
-  bool own_ptree_dest = ptree_dest==0;
-  
-  if (own_ptree_dest)
-    ptree_dest = new ParamTree(settings);
-  else
-    ptree_dest->read(settings);
+  partree->read(settings);
 
-  ptree_dest->find("acquisition/exptname").set(exptname);
-  ptree_dest->find("acquisition/trialno").set(trialid);
+  partree->find("acquisition/exptname").set(exptname);
+  partree->find("acquisition/trialno").set(trialid);
   
   contEphys = info.attribute("contephys")=="1";
   
   // the following ensures that we have stimulus data prepared
   // and that the xdataIn have the right sizes
-  VideoProg::find().reset(ptree_dest);
+  VideoProg::find().reset(partree);
   if (info.attribute("type")=="snapshot")
-    prepareSnapshot(ptree_dest, false);
+    prepareSnapshot(partree, false);
   else
-    prepare(ptree_dest, false);
+    prepare(partree, false);
 
-  if (own_ptree_dest)
-    delete ptree_dest;
   if (xml)
     delete xml;
   xml = new XML(myxml);

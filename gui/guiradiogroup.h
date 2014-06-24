@@ -24,6 +24,7 @@ public:
   QString id() const { return myid; }
   guiPage *parentPage() { return page; }
   bool mayResize();
+  void makeReadOnly(bool);
 public slots:
   void selectDefaultButton();
   virtual void add(class Button *b);

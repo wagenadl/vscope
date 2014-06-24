@@ -35,6 +35,8 @@ void DataTrove::constructData() {
   connect(trial_, SIGNAL(newCameras()), SLOT(updateCameras()));
   connect(rois_, SIGNAL(newDatum(int)), SLOT(saveROIs()));
   connect(rois_, SIGNAL(newAll()), SLOT(saveROIs()));
+
+  trial_->prepare(ptree_);
 }
 
 
@@ -67,7 +69,7 @@ void DataTrove::read(QString dir, QString exptname, QString trialid) {
   bool d = dummy;
   dummy = true; // prevent immediate resaving of rois
   rois_->clear();
-  trial_->read(dir, exptname, trialid, ptree_);
+  trial_->read(dir, exptname, trialid);
   rois_->load(QString("%1/%2/%3-rois.xml")
 	      .arg(dir).arg(exptname).arg(trialid));
   //Dbg() << "DataTrove::read: "

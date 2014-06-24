@@ -14,7 +14,7 @@ class ParamTree {
        element.
   */
 public:
-  ParamTree(ParamTree &other);
+  ParamTree(ParamTree const &other); // deep copy
   ParamTree(QDomElement doc);
   /*:F constructor
    *:D This builds the tree.
@@ -23,6 +23,7 @@ public:
    *:N If the tree contains any arrays, this requires that the relevant
        Enumerators have already been setup.
    */
+  ParamTree &operator=(ParamTree const &); // must have matching base
   void read(QDomElement doc);
   /*:F read
    *:D This reads all values in doc, into the tree.
@@ -127,7 +128,8 @@ public:
   void setSavable(bool);
   /*:F setSavable
    *:D Define whether or not this parameter should be saved.
-   */    
+   */
+  bool isArray() const;
 protected:
   ParamTree(QDomElement doc, QString elt);
   /*:F constructor

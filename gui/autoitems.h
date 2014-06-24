@@ -19,14 +19,12 @@ public:
 	     QDomElement doc);
   void rebuild(PageBuildGeom *g_out=0);
   QStringList selectIDs(QStringList inlist);
-  bool isDynamic() const;
 private:
   QStringList ids;
   QMap<QString, guiButton *> items;
   QDomElement doc;
   PageBuildGeom initialGeom;
   Enumerator const *enumerator;
-  bool isDyn;
 };
 
 #endif

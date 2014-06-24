@@ -46,6 +46,7 @@ public:
   /*:F getSelected
    *:D Returns true if the button is currently selected.
    */
+  bool isReadOnly() const { return readonly; }
 signals:
   void activated(QString myID, QString text);
   /*:F activated
@@ -84,6 +85,7 @@ protected:
   void mouseReleaseEvent(class QMouseEvent *);
   void mouseDoubleClickEvent(class QMouseEvent *);
 public slots:
+  virtual void makeReadOnly(bool ro);
   virtual void setText(QString txt, bool noemit=false);
   /*:F setText
    *:D Sets the text on the button, as per QAbstractButton, but additionally
@@ -157,34 +159,24 @@ public slots:
        states. They have no bearing on functionality.
   */
 private: 
-  QString myID;
-  bool isAction,isToggle,isRadio, isItem;
+  bool isAction, isToggle, isRadio, isItem;
   bool isEnabled_;
   bool isSelected;
   VISUALTYPE vtype;
   QTime lastClick;
   QTimer clickTimer;
+protected:
+  QString myID;
+  bool readonly;
 protected slots:
   void restoreActionFrame();
-private:
+public:
   void representState();
   /*:F representState
    *:D This will visually update the button to reflect its selected state.
    */
-  // private slots:
-  //   void receiveClick();
-  //   /*:F receiveClick
-  //    *:D Slot that should be connected to the underlying PushButton's toggled()
-  //        signal. It updates the appearance of this button, and may emit 
-  //        'activated' signals.
-  //   */
-  //   void receiveToggle(bool chk);
-  //   /*:F receiveToggle
-  //    *:D Slot that should be connected to the underlying PushButton's 'toggled'
-  //        signal. It updates the appearance of this button, and may emit
-  //        'selected' or 'deselected' signals.
-  //    *:A chk: new checked state.
-  //    */
+private:
+  void representFlat(class QPalette &);
 protected:
   void changeEvent(class QEvent *);
   void paintEvent(class QPaintEvent *e);

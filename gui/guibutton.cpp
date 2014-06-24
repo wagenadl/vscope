@@ -94,6 +94,8 @@ void guiButton::setValue(QString v) {
 }
 
 void guiButton::mouseDoubleClickEvent(class QMouseEvent *e) {
+  if (readonly && format.contains("%1"))
+    return;
   if (custom>0)
     openEditor();
   else
@@ -104,6 +106,12 @@ void guiButton::mouseReleaseEvent(class QMouseEvent *e) {
   if (custom<0)
     openEditor();
   Button::mouseReleaseEvent(e);
+}
+
+void guiButton::mousePressEvent(class QMouseEvent *e) {
+  if (readonly && format.contains("%1"))
+    return;
+  Button::mousePressEvent(e);
 }
 
 static QWidget *grandParent(QWidget *p) {
@@ -169,11 +177,15 @@ void guiButton::ensureValueInLabel() {
     if (!format.endsWith(":"))
       format += ":";
     format += "<br>%1";
+    Dbg() << "ensureValue" << myId;
+    setValue(value);
+    representState();
   }
 }
 
 void guiButton::dropValueFromLabel() {
   format.replace(":<br>%1", "");
+  representState();
 }
 
 QString guiButton::path() const {
@@ -228,6 +240,10 @@ void guiButton::stylize(QDomElement doc) {
 }
 
 void guiButton::setSelected(bool s) {
+  Dbg() << "guiButton::setSelected: " << myID << " : " << s;
+  if (readonly && (format.contains("%1") || myId.contains("enable"))
+      && !myId.lastIndexOf(":")>myID.lastIndexOf("/"))
+    return; // we just won't
   Button::setSelected(s);
   QString txt = text();
   if (s) {
@@ -243,4 +259,8 @@ void guiButton::setSelected(bool s) {
 
 bool guiButton::alwaysHidden() const {
   return alwayshidden;
+}
+
+void guiButton::makeReadOnly(bool ro) {
+  Button::makeReadOnly(ro);
 }

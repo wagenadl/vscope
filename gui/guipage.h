@@ -57,6 +57,7 @@ public:
   virtual class guiRadioGroup const *groupp(QString id) const;
   virtual class guiRadioGroup *groupp(QString id);
   virtual QList<guiButton *> allButtons();
+  virtual void makeReadOnly(bool ro);
 public:
   class guiButton *addButton(PageBuildGeom &g, QDomElement elt);
   /*:F addButton
@@ -154,8 +155,8 @@ public slots:
   void booleanButtonToggled(QString path);
 protected:
   virtual void paintEvent(class QPaintEvent *event);
-  virtual void prepForOpening();
-  /*:F prepForOpening
+  virtual void prepare();
+  /*:F prepare
    *:D Make us ready for being shown to the user.
    */
   virtual void openChildren();

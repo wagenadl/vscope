@@ -244,6 +244,7 @@ void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
 
 void guiPage::open() {
   emit opening(pathInstantiate(myPath), (QWidget*)(this));
+  prepare();
 
   Param *p = ptree->findp("enable");
   setPageEnabled(p ? p->toBool() : true);
@@ -271,8 +272,11 @@ void guiPage::openChildren() {
   }
 }
 
-void guiPage::prepForOpening() {
-  Dbg() << "prepforopening: " << myPath;
+void guiPage::prepare() {
+  if (prepped)
+    return;
+  Dbg() << "prepare: " << myPath;
+  
   foreach (guiRadioGroup *g, groups)
     g->rebuild();
   
@@ -283,31 +287,34 @@ void guiPage::prepForOpening() {
       // This is a button that directly represents a value.
       bool ena = p->isEnabled();
       if (!ena) {
-	b->setEnabled(false);
-	p->restore();
-	guiPage *subpage = subpagep(id);
-	if (subpage) {
-	  subpage->hide();
-	  b->setSelected(false);
-	}
+        b->setEnabled(false);
+        p->restore();
+        guiPage *subpage = subpagep(id);
+        if (subpage) {
+          subpage->hide();
+          b->setSelected(false);
+        }
       }
       if (p->getType()=="bool") {
-	b->makeToggle();
-	b->setSelected(p->toBool());
+        b->makeToggle();
+        b->setSelected(p->toBool());
       } else {
-	b->setValue(p->toString());
+        b->setValue(p->toString());
       }
     } else if (id.indexOf(ARRAYSEP)>=0) {
       // This is a button that represents a tab.
       representTabEnabled(id);
     }
   }
+  AbstractPage::prepare();
+}
 
-  foreach (QString id, subPages.keys()) {
-    guiPage *subpage = subpagep(id);
-    if (subpage->isVisibleTo(this))
-      subpage->prepForOpening();
-  }
+void guiPage::makeReadOnly(bool readOnly) {
+  AbstractPage::makeReadOnly(readOnly);
+  foreach (guiButton *b, buttons)
+    b->makeReadOnly(readOnly);
+  foreach (guiRadioGroup *g, groups)
+    g->makeReadOnly(readOnly);
 }
 
 void guiPage::representTabEnabled(QString id) {
@@ -395,8 +402,6 @@ void guiPage::setPageEnabled(bool enable) {
     if (p->isVisible())
       p->setPageEnabled(enable);
   }
-  
-  prepForOpening();
 }
 
 void guiPage::childItemSelected(QString path, QString) {
@@ -603,3 +608,6 @@ void guiPage::updateAuto() {
       tp->reconnect();
   }
 }
+
+
+  

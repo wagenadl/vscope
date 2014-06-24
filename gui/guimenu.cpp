@@ -37,7 +37,7 @@ VISUALTYPE guiMenu::visualTypeForParentButton() const {
 void guiMenu::connectToParent(QDomElement doc) {
   guiPage::connectToParent(doc);
   guiButton *b = parentPage()->buttonp(id());
-  if (b)
+  if (b) 
     b->ensureValueInLabel();
 }
 
@@ -77,7 +77,7 @@ guiItem *guiMenu::createItem(QString id) {
   return new guiMenuItem(this, id, master);
 }
 
-void guiMenu::prepForOpening() {
+void guiMenu::prepare() {
   Param *pp = ptree ? ptree->leafp() : 0;
   if (!pp)
     throw Exception("guiMenu", "openSelf failed because paramtree has no leaf");
@@ -135,7 +135,7 @@ void guiMenu::addAuto(PageBuildGeom &g, QDomElement doc) {
 }
 
 bool guiMenu::mayResize() {
-  return autoItems==0 || !autoItems->isDynamic();
+  return autoItems==0 || true; // !autoItems->isDynamic();
 }
 
 void guiMenu::updateAuto() {

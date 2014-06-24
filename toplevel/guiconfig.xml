@@ -460,14 +460,6 @@
       <button id="reset" label="Reset"/>
     </tabbedpage>
 
-    <page id="camvalsOx">
-      <button id="blackPlus" label="More black"/>
-      <button id="blackMin" label="Less black"/>
-      <button id="whitePlus" label="More white"/>
-      <button id="whiteMin" label="Less white"/>
-      <button id="reset" label="Reset"/>
-    </page>
-
     <menu id="trialPeriod"  cols="1">
       <item value="1 min"/>
       <item value="2 min"/>
