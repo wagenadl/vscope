@@ -16,6 +16,19 @@ int BUTTON_Height = 27;
 char const *BUTTON_Foreground = "black";
 char const *BUTTON_Background = "#eeeeee";
 
+static QColor deeper(QColor const &a, double amt=2) {
+  int h, s, v;
+  a.getHsv(&h,&s,&v);
+  s=255; // 2*s;
+  if (s>255)
+    s=255;
+  v=roundi(v/amt);
+  if (v>255)
+    v=255;
+  QColor c;
+  c.setHsv(h,s,v);
+  return c;
+}
 
 //////////////////////////////// Button //////////////////////////////
 
@@ -34,6 +47,7 @@ Button::Button(QWidget *parent, int lx, int ty, QString myID):
   f.setFamily(BUTTON_FontFamily);
   setFont(f);
   setFrameShape(QFrame::Panel);
+  setFrameShadow(QFrame::Raised);
   setLineWidth(1);
   setMidLineWidth(2);
   setBackground(QColor("#eeeeee"));
@@ -44,15 +58,9 @@ Button::Button(QWidget *parent, int lx, int ty, QString myID):
   setWordWrap(true);
   setTextFormat(Qt::RichText);
   setMargin(1);
-  makeReadOnly(false);
 }
 
 Button::~Button() {
-}
-
-void Button::makeReadOnly(bool ro) {
-  readonly = ro;
-  representState();
 }
 
 void Button::changeEvent(QEvent *e) {
@@ -128,51 +136,52 @@ void Button::toggleSelected() {
 }
 
 void Button::mousePressEvent(class QMouseEvent *) {
-  setPressed();
+  lastClick.start();
+  if (true) { // vtype==VT_Action) {
+    setFrameShadow(QFrame::Sunken);
+  }
   if (isAction) 
-    emit activated(myID, text());
+    emit activated(myID,text());
   else
     toggleSelected();
 }
 
-void Button::setPressed() {
-  lastClick.start();
-  setFrameShadow(QFrame::Sunken);
-}
-
 void Button::mouseReleaseEvent(class QMouseEvent *) {
-  unsetPressed();
+  if (true) { // vtype==VT_Action) {
+    int dt = lastClick.elapsed();
+    if (dt>=100)
+      restoreActionFrame();
+    else 
+      QTimer::singleShot(100-dt, this, SLOT(restoreActionFrame()));
+  }
 }
 
-void Button::unsetPressed() {
-  int dt = lastClick.elapsed();
-  if (dt>=100)
-    unsetPressedNow();
-  else 
-    QTimer::singleShot(100-dt, this, SLOT(unsetPressedNow()));
-}
-
-void Button::unsetPressedNow() {
-  representState(); 
+void Button::restoreActionFrame() {
+  representState(); // setFrameShadow(QFrame::Raised);
 }  
 
 void Button::mouseDoubleClickEvent(class QMouseEvent *) {
-  setPressed();
+  lastClick.start();
   if (vtype==VT_Action) {
     setFrameShadow(QFrame::Sunken);
   }
   Dbg() << "Button::mouseDoubleClickEvent";
-  emit doubleClicked(myID,text());
+  if (false && isAction) {
+    Dbg() << "  Emitting activated()";
+    emit activated(myID,text());
+  } else {
+    Dbg() << "  Emitting doubleClicked()";
+    emit doubleClicked(myID,text());
+  }
 }
 
 void Button::representState() {
-  Dbg() << "representstate: " << myID << "=" << text() << ": " << vtype;
   QFont f = font();
   f.setBold(isSelected);
   setFont(f);
   QPalette p = palette();
   QColor bg = p.color(QPalette::Button);
-  p.setColor(QPalette::Window, bg);
+  QColor alt;
   //  QWidget *pw=0;
   setAutoFillBackground(true);
   switch (vtype) {
@@ -188,51 +197,41 @@ void Button::representState() {
     break;
   case VT_VarOpen:
     setFrameShape(QFrame::Panel);
-    if (readonly && text().contains(":")) {
-      representFlat(p);
-    } else {
-      setLineWidth(isSelected ? 0 : 1);
-      setFrameShadow(QFrame::Raised);
-    }
+    setLineWidth(isSelected ? 0 : 1);
+    setFrameShadow(QFrame::Raised);
     break;
   case VT_VarValue:
+    //pw = parentWidget();
+    //if (pw)
+    //  alt = pw->palette().color(QPalette::Window);
+    alt = QColor(roundi(bg.red()*.5+255*.5),
+		 roundi(bg.green()*.5+255*.5),
+		 roundi(bg.blue()*.5));
     setFrameShape(QFrame::Panel);
-    if (readonly) {
-      representFlat(p);
-      setDisabled(!isSelected);
-    } else {
-      setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
-      setLineWidth(isSelected ? 2 : 1);
-      if (isSelected)
-        p.setColor(QPalette::Window,   QColor(roundi(bg.red()*.5+255*.5),
-                                              roundi(bg.green()*.5+255*.5),
-                                              roundi(bg.blue()*.5)));
-    }
+    setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
+    setLineWidth(isSelected ? 2 : 1);
+    p.setColor(QPalette::Window,  isSelected ? alt : bg);
+    setPalette(p);
     break;
   case VT_BooleanVar:
     setFrameShape(QFrame::Box);
-    if (readonly) {
-      representFlat(p);
-      setFrameShadow(QFrame::Sunken);
-    } else {
-      setFrameShadow(QFrame::Sunken);
-      setLineWidth(1);
-      setMidLineWidth(3);
-      p.setColor(QPalette::Mid,
-                 isEnabled_
-                 ? (isSelected ? QColor("#ff2200") : QColor("#884444"))
-                 : QColor("#bbbbbb"));
-    }
+    setFrameShadow(QFrame::Sunken);
+    setLineWidth(1);
+    setMidLineWidth(3);
+    p.setColor(QPalette::Mid,
+	       isEnabled_
+	       ? (isSelected ? QColor("#ff2200") : QColor("#884444"))
+	       : QColor("#bbbbbb"));
+    setPalette(p);
     break;
   case VT_PanelOpen:
     setFrameShape(QFrame::Panel);
     setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
     setLineWidth(isSelected ? 3 : 1);
-    if (isSelected)
-      p.setColor(QPalette::Window, deeperColor(bg,2));
-    p.setColor(QPalette::WindowText, isSelected
-               ? QColor("#ffff00")
-               : p.color(QPalette::ButtonText));
+    p.setColor(QPalette::Window, isSelected ? deeper(bg,2) : bg);
+    p.setColor(QPalette::WindowText,isSelected
+	       ? QColor("#ffff00")
+	       : p.color(QPalette::ButtonText));
     setPalette(p);
     break;
   case VT_Action:
@@ -242,31 +241,22 @@ void Button::representState() {
     break;
   case VT_Grouped:
     setFrameShape(QFrame::Panel);
-    if (readonly) {
-      representFlat(p);
-      setDisabled(!isSelected);
-    } else {
-      setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
-      setLineWidth(isSelected ? 2 : 1);
-      p.setColor(QPalette::WindowText,//isSelected
-                 //? QColor("#ffff00") :
+    setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
+    setLineWidth(isSelected ? 2 : 1);
+    p.setColor(QPalette::Window, bg); // isSelected ? deeper(bg,2) : bg);
+    p.setColor(QPalette::WindowText,//isSelected
+	       //? QColor("#ffff00") :
 	       p.color(QPalette::ButtonText));
-    }
+    setPalette(p);
     break;
   case VT_ArrayCtrl:
-    if (readonly) {
-      representFlat(p);
-      setFrameShadow(QFrame::Sunken);
-    } else {
-      setFrameShape(QFrame::Box);
-      setFrameShadow(QFrame::Sunken);
-      setLineWidth(isSelected ? 0 : 1);
-      setMidLineWidth(isSelected ? 4 : 3);
-    }
+    setFrameShape(QFrame::Box);
+    setFrameShadow(QFrame::Sunken);
+    setLineWidth(isSelected ? 0 : 1);
+    setMidLineWidth(isSelected ? 4 : 3);
     break; // Note: Color is handled by xmlPage
   }
 
-  setPalette(p);
   //  if (isEnabled_)
   //    show();
   //  else
@@ -344,31 +334,3 @@ void Button::paintEvent(class QPaintEvent *e) {
   }
   QLabel::paintEvent(e);
 }
-
-void Button::representFlat(QPalette &p) {
-  setFrameShadow(QFrame::Plain);
-  setLineWidth(0);
-  QPalette p0(parentWidget()->palette());
-  p.setColor(QPalette::Window, p0.color(QPalette::Window));
-}
-
-QColor Button::mixColor(QColor const &a, QColor const &b, double afrac) {
-  return QColor(int(a.red()*afrac + b.red()*(1-afrac)),
-		int(a.green()*afrac + b.green()*(1-afrac)),
-		int(a.blue()*afrac + b.blue()*(1-afrac)));
-}
-
-QColor Button::deeperColor(QColor const &a, double amount) {
-  int h, s, v;
-  a.getHsv(&h,&s,&v);
-  s=255; // 2*s;
-  if (s>255)
-    s=255;
-  v=int(v/amount);
-  if (v>255)
-    v=255;
-  QColor c;
-  c.setHsv(h,s,v);
-  return c;
-}
-

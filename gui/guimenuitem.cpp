@@ -4,7 +4,7 @@
 #include "guipage.h"
 #include <base/exception.h>
 
-guiMenuItem::guiMenuItem(guiPage *parnt, QString id, guiRoot *mastr):
+guiMenuItem::guiMenuItem(QWidget *parnt, QString id, guiRoot *mastr):
   guiItem(parnt, id, mastr) {
   makeRadio();
 }

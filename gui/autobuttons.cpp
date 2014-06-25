@@ -77,8 +77,3 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
 QList<QString> AutoButtons::childIDs() const {
   return buttons.keys();
 }
-
-void AutoButtons::makeReadOnly(bool ro) {
-  foreach (guiButton *b, buttons)
-    b->makeReadOnly(ro);
-}

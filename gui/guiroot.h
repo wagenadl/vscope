@@ -165,8 +165,8 @@ public:
   /*:F pathDeinstantiate
    *:D Given a global path, removes any ":elt" array indexing.
    */
-  void setTree(class ParamTree *ptree) { root->setTree(ptree); }
-  void makeReadOnly(bool ro) { root->makeReadOnly(ro); }
+  void setTree(ParamTree*);
+  void setReadOnly(bool);
 public slots:
   void open();
   /*:F open

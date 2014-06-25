@@ -9,10 +9,10 @@
 class guiChecklistItem: public guiItem {
   Q_OBJECT;
 public:
-  guiChecklistItem(class guiPage *parent, QString id, class guiRoot *master=0);
+  guiChecklistItem(QWidget *parent, QString id, class guiRoot *master=0);
   virtual ~guiChecklistItem();
 protected:
-  virtual void connectUp(EasyXML);
+  virtual void connectUp(QDomElement);
 };
 
 #endif

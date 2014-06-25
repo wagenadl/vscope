@@ -15,17 +15,16 @@ public:
 	  class guiRoot *master,
 	  class QRect const &geom);
   virtual ~guiMenu();
-  virtual class guiButton *addValueItem(PageBuildGeom &g, EasyXML elt);
-  virtual class guiButton *addValueItems(PageBuildGeom &g, EasyXML elt);
+  virtual class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
 public slots:
   virtual void updateAuto();
   void setNonExclusive();
 protected:
   virtual VISUALTYPE visualTypeForParentButton() const;
-  virtual void connectToParent(EasyXML doc);
+  virtual void connectToParent(QDomElement doc);
   virtual guiItem *createItem(QString id); // simply constructs a guiMenuItem
-  virtual void prepare();
-  virtual void addAuto(PageBuildGeom &g, EasyXML doc);
+  virtual void prepForOpening();
+  virtual void addAuto(PageBuildGeom &g, QDomElement doc);
   virtual bool mayResize();
 protected:
   class AutoItems *autoItems;

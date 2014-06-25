@@ -44,7 +44,7 @@ guiPage::guiPage(class QWidget *parent,
   hide();
 }
 
-void guiPage::setup(EasyXML doc) {
+void guiPage::setup(QDomElement doc) {
   setDefaultColors(doc);
   buildGeom.setup(doc);
   addChildren(buildGeom, doc);
@@ -76,7 +76,7 @@ void guiPage::sizeToFit() {
   move(origGeom.left() + dx/3, origGeom.top() + dy/3);
 }
 
-void guiPage::connectToMaster(EasyXML) {
+void guiPage::connectToMaster(QDomElement) {
   connect(this, SIGNAL(opening(QString,QWidget*)),
 	  master, SIGNAL(pageOpening(QString,QWidget*)));
   connect(this, SIGNAL(opened(QString,QWidget*)),
@@ -85,7 +85,7 @@ void guiPage::connectToMaster(EasyXML) {
 	  master, SIGNAL(pageClosed(QString,QWidget*)));
 }
 
-void guiPage::connectToParent(EasyXML) {
+void guiPage::connectToParent(QDomElement) {
   guiPage *par = parentPage();
   if (!par)
     return;
@@ -107,7 +107,7 @@ void guiPage::connectToParent(EasyXML) {
 	     master, SIGNAL(buttonClicked(QString,QString)));
 }
 
-void guiPage::stylize(EasyXML doc) {
+void guiPage::stylize(QDomElement doc) {
   guiPage *par = parentPage();
   if (!par)
     return;
@@ -138,7 +138,7 @@ guiPage::~guiPage() {
   // buttons and other descendents will be deleted by qt
 }
 
-void guiPage::addRadioGroup(PageBuildGeom &g, EasyXML doc) {
+void guiPage::addRadioGroup(PageBuildGeom &g, QDomElement doc) {
   guiRadioGroup *bg = new guiRadioGroup(this);
   bg->build(g, doc);
   groups[doc.attribute("id")] = bg;
@@ -149,15 +149,11 @@ guiItem *guiPage::createItem(QString) {
   throw Exception("guiPage", "Cannot create items");
 }
 
-guiButton *guiPage::addValueItem(PageBuildGeom &, EasyXML) {
-  throw Exception("guiPage", "Cannot add items to regular pages");
+guiButton *guiPage::addItem(PageBuildGeom &, QDomElement) {
+  throw Exception("guiPage", "Cannot add items to pages, only to menus and checklists");
 }
 
-guiButton *guiPage::addValueItems(PageBuildGeom &, EasyXML) {
-  throw Exception("guiPage", "Cannot add items to regular pages");
-}
-
-void guiPage::addValueItems(PageBuildGeom &g, EasyXML doc) {
+void guiPage::addItems(PageBuildGeom &g, QDomElement doc) {
   QDomDocument xml;
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
@@ -165,53 +161,37 @@ void guiPage::addValueItems(PageBuildGeom &g, EasyXML doc) {
     if (v=="")
       continue;
     xml.setContent(hd1 + "\n" + hd2 + "\n"
-		   + "<value value=\""
+		   + "<item value=\""
 		   + v.simplified()
 		   + "\"/>\n");
-    EasyXML e(xml.documentElement());
-    addValueItem(g, e);
+    QDomElement e = xml.documentElement();
+    addItem(g, e);
   }
 }
 
-guiButton *guiPage::addButton(PageBuildGeom &g, EasyXML doc) {
-  QString id = doc.demandString("id", "guiPage: Cannot read button ID");
-  QString tag = doc.tagName();
-  guiButton *b = 0;
-  if (tag=="radio")
-    b = new guiRadioButton(this, id, master);
-  else if (tag=="action")
-    b = new guiActionButton(this, id, master);
-  else if (tag=="param")
-    b = new guiParamButton(this, id, master);
-  else if (tag=="pageopen")
-    b = new guiPageOpenButton(this, id, master);
-  else
-    throw Exception("guiPage: unknown button tag " + tag);
+guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
+  QString id=xmlAttribute(doc, "id",
+			  "guiPage (addButton)", "Cannot read button ID");
+  guiButton *b = new guiButton(this, id, master);
   topgroup->add(b);
   b->setup(doc);
   buttons[id] = b;
   g.go(doc);
   b->setGeometry(g.bbox());
-  g.down();
+  if (!b->alwaysHidden())
+    g.down();
+
   return b;
 }
 
+void guiPage::addPage(PageBuildGeom &g, QDomElement doc,
+		      VISUALTYPE) {
+  QString id=xmlAttribute(doc,"id",
+			  "guiPage (addPage)","Cannot read subpage ID");
+  ParamTree *subtree = ptree->childp(id);
+  // note that this will be NULL if we are a tabbed page
 
-void guiPage::addPage(PageBuildGeom &g, EasyXML doc) {
-  QString id = doc.demandString("id", "guiPage: Cannot read subpage ID");
-  QString tag = doc.string("tag");
-  ParamTree *subtree = ptree ? ptree->childp(id) : 0;
-  guiPage *p = 0;
-  if (tag=="page")
-    p = new guiPage(this, subtree, id, master, g.pbox());
-  else if (tag=="arraypage")
-    p = new guiArrayPage(this, subtree, id, master, g.pbox());
-  else if (tag=="valuepage") 
-    p = new guiMenu(this, subtree, id, master, g.pbox());
-  else if (tag=="valuesetpage")
-   p = new guiChecklist(this, subtree, id, master, g.pbox()); 
-  else
-    throw Exception("guiPage", "Unexpected page tag: " + tag);
+  guiPage *p = new guiPage(this, subtree, id, master, g.pbox());
   subPages[id] = p;
   p->setup(doc);
 }
@@ -229,10 +209,41 @@ void guiPage::paintEvent(class QPaintEvent *e) {
   triangle->render();
 }
 
+void guiPage::addTabbedPage(PageBuildGeom &g, QDomElement doc) {
+  QString id=xmlAttribute(doc,"id",
+			  "guiPage (addTabbedPage)","Cannot read subpage ID");
+  ParamTree *subtree = ptree ? ptree->childp(id) : 0;
+  // note that this will be NULL if we are a tabbed page
+
+  guiPage *p = new guiTabbedPage(this, subtree, id, master, g.pbox());
+  subPages[id] = p;
+  p->setup(doc);
+}
+
+void guiPage::addMenu(PageBuildGeom &g, QDomElement doc) {
+  QString id=xmlAttribute(doc,"id",
+			  "guiPage (addMenu)","Cannot read subpage ID");
+  ParamTree *subtree = ptree ? ptree->childp(id) : 0;
+  // note that this will be NULL if we are a tabbed page
+
+  guiPage *p = new guiMenu(this, subtree, id, master, g.pbox());
+  subPages[id] = p;
+  p->setup(doc);
+}
+
+void guiPage::addChecklist(PageBuildGeom &g, QDomElement doc) {
+  QString id=xmlAttribute(doc,"id",
+			  "guiPage (addChecklist)","Cannot read subpage ID");
+  ParamTree *subtree = ptree ? ptree->childp(id) : 0;
+  // note that this will be NULL if we are a tabbed page
+
+  guiPage *p = new guiChecklist(this, subtree, id, master, g.pbox());
+  subPages[id] = p;
+  p->setup(doc);
+}
 
 void guiPage::open() {
   emit opening(pathInstantiate(myPath), (QWidget*)(this));
-  prepare();
 
   Param *p = ptree->findp("enable");
   setPageEnabled(p ? p->toBool() : true);
@@ -260,11 +271,8 @@ void guiPage::openChildren() {
   }
 }
 
-void guiPage::prepare() {
-  if (prepped)
-    return;
-  Dbg() << "prepare: " << myPath;
-  
+void guiPage::prepForOpening() {
+  Dbg() << "prepforopening: " << myPath;
   foreach (guiRadioGroup *g, groups)
     g->rebuild();
   
@@ -275,39 +283,36 @@ void guiPage::prepare() {
       // This is a button that directly represents a value.
       bool ena = p->isEnabled();
       if (!ena) {
-        b->setEnabled(false);
-        p->restore();
-        guiPage *subpage = subpagep(id);
-        if (subpage) {
-          subpage->hide();
-          b->setSelected(false);
-        }
+	b->setEnabled(false);
+	p->restore();
+	guiPage *subpage = subpagep(id);
+	if (subpage) {
+	  subpage->hide();
+	  b->setSelected(false);
+	}
       }
       if (p->getType()=="bool") {
-        b->makeToggle();
-        b->setSelected(p->toBool());
+	b->makeToggle();
+	b->setSelected(p->toBool());
       } else {
-        b->setValue(p->toString());
+	b->setValue(p->toString());
       }
-    } else if (id.indexOf(":")>=0) {
+    } else if (id.indexOf(ARRAYSEP)>=0) {
       // This is a button that represents a tab.
       representTabEnabled(id);
     }
   }
-  AbstractPage::prepare();
-}
 
-void guiPage::makeReadOnly(bool readOnly) {
-  AbstractPage::makeReadOnly(readOnly);
-  foreach (guiButton *b, buttons)
-    b->makeReadOnly(readOnly);
-  foreach (guiRadioGroup *g, groups)
-    g->makeReadOnly(readOnly);
+  foreach (QString id, subPages.keys()) {
+    guiPage *subpage = subpagep(id);
+    if (subpage->isVisibleTo(this))
+      subpage->prepForOpening();
+  }
 }
 
 void guiPage::representTabEnabled(QString id) {
   guiButton *b = buttons[id];
-  int idx = id.indexOf(":");
+  int idx = id.indexOf(ARRAYSEP);
   if (idx<0)
     throw Exception("guiPage", "representTabEnabled: not a tab " + id);
   QString ar = id.left(idx);
@@ -340,7 +345,7 @@ void guiPage::childTabEnabled(QString path) {
   child = child.left(child.indexOf('/'));
   guiPage *p = subpagep(child);
   if (p) {
-    QString but = child + ":" + p->getCurrentElement();
+    QString but = child + ARRAYSEP + p->getCurrentElement();
     representTabEnabled(but);
   } else {
     throw Exception("guiPage", "childTabEnabled can't find child " + path);
@@ -390,6 +395,8 @@ void guiPage::setPageEnabled(bool enable) {
     if (p->isVisible())
       p->setPageEnabled(enable);
   }
+  
+  prepForOpening();
 }
 
 void guiPage::childItemSelected(QString path, QString) {
@@ -466,11 +473,11 @@ void guiPage::childItemCustomized(QString path, int cno, QString text) {
   }
 }
 
-void guiPage::addAuto(PageBuildGeom &, EasyXML) {
+void guiPage::addAuto(PageBuildGeom &, QDomElement) {
   throw Exception("guiPage", "Don't know how to addAuto. " + path());
 }
 
-void guiPage::setDefaultColors(EasyXML doc) {
+void guiPage::setDefaultColors(QDomElement doc) {
   /* Set color and default button color */
   setAutoFillBackground(true);
   setFrameStyle(QFrame::Panel | QFrame::Raised);
@@ -488,22 +495,27 @@ void guiPage::setDefaultColors(EasyXML doc) {
   }
 }
 
-void guiPage::addChildren(PageBuildGeom &g, EasyXML doc) {
+void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
   /* Build children */
-  foreach (EasyXML e, doc.children()) {
+  for (QDomElement e=doc.firstChildElement(); !e.isNull();
+       e=e.nextSiblingElement()) {
     QString tag = e.tagName();
     if (tag=="group")
       addRadioGroup(g,e);
-    else if (tag=="radio" || tag=="action"
-	     || tag=="param" || tag=="pageopen")
+    else if (tag=="button")
       addButton(g,e);
-    else if (tag=="value" || tag=="customvalue")
-      addValueItem(g,e);
-    else if (tag=="values")
-      addValueItems(g,e);
-    else if (tag=="arraypage" || tag=="page"
-	     || tag=="valuepage" || tag=="valuesetpage")
+    else if (tag=="item")
+      addItem(g,e);
+    else if (tag=="items")
+      addItems(g,e);
+    else if (tag=="tabbedpage")
+      addTabbedPage(g,e);
+    else if (tag=="page")
       addPage(g,e);
+    else if (tag=="menu")
+      addMenu(g,e);
+    else if (tag=="checklist")
+      addChecklist(g,e);
     else if (tag=="auto")
       addAuto(g, e);
     else
@@ -591,6 +603,3 @@ void guiPage::updateAuto() {
       tp->reconnect();
   }
 }
-
-
-  

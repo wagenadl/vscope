@@ -4,7 +4,7 @@
 #include "guipage.h"
 #include <base/exception.h>
 
-guiChecklistItem::guiChecklistItem(guiPage *parnt, QString id, guiRoot *mastr):
+guiChecklistItem::guiChecklistItem(QWidget *parnt, QString id, guiRoot *mastr):
   guiItem(parnt, id, mastr) {
   makeToggle();
 }

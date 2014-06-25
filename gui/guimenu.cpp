@@ -30,30 +30,42 @@ void guiMenu::setNonExclusive() {
   itemgroup = 0;
 }
 
-void guiMenu::connectToParent(EasyXML doc) {
+VISUALTYPE guiMenu::visualTypeForParentButton() const {
+  return VT_VarOpen;
+}
+
+void guiMenu::connectToParent(QDomElement doc) {
   guiPage::connectToParent(doc);
   guiButton *b = parentPage()->buttonp(id());
-  if (b) 
+  if (b)
     b->ensureValueInLabel();
 }
 
-guiButton *guiMenu::addValueItem(PageBuildGeom &g, EasyXML doc) {
-  QString tag = doc.string("tag");
-  bool isCustom = tag.contains("custom");
-
-  QString v = isCustom ? "custom-1"
-    : doc.demandString("value", "guiMenu: Empty value in " + path());
+static QString itemID(QDomElement doc) {
+  if (doc.hasAttribute("id"))
+    return doc.attribute("id");
+  else if (doc.hasAttribute("custom"))
+    return "custom-"+doc.attribute("custom");
+  else if (doc.hasAttribute("value"))
+    return doc.attribute("value");
+  else
+    return "";
+}
   
-  guiButton *b = isCustom ? new guiCustomValueItem(this, master)
-    : new guiValueItem(this, v, master);
 
-  buttons[v] = b;
-  buttons[v]->setup(doc);
+guiButton *guiMenu::addItem(PageBuildGeom &g, QDomElement doc) {
+  QString id = itemID(doc);
+  if (id.isEmpty()) 
+    throw Exception("guiPage", "Empty item ID in page " + path());
+  
+  guiButton *b = createItem(id);
+  buttons[id] = b;
+  buttons[id]->setup(doc);
   if (itemgroup)
     itemgroup->add(b);
 
-  if (isCustom)
-    g.last(1);
+  if (doc.hasAttribute("custom"))
+    g.last(doc.attribute("custom").toInt());
   b->setGeometry(g.bbox());
   g.right();
   b->show();
@@ -65,7 +77,7 @@ guiItem *guiMenu::createItem(QString id) {
   return new guiMenuItem(this, id, master);
 }
 
-void guiMenu::prepare() {
+void guiMenu::prepForOpening() {
   Param *pp = ptree ? ptree->leafp() : 0;
   if (!pp)
     throw Exception("guiMenu", "openSelf failed because paramtree has no leaf");
@@ -114,7 +126,7 @@ void guiMenu::prepare() {
   }
 }
 
-void guiMenu::addAuto(PageBuildGeom &g, EasyXML doc) {
+void guiMenu::addAuto(PageBuildGeom &g, QDomElement doc) {
   if (autoItems)
     throw Exception("guiMenu", "Can have only one <auto> item: " + path());
 

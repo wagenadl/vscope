@@ -1,22 +1,22 @@
 
-// guiarraypage.h
+// guitabbedpage.h
 
-#ifndef GUIARRAYPAGE_H
+#ifndef GUITABBEDPAGE_H
 
-#define GUIARRAYPAGE_H
+#define GUITABBEDPAGE_H
 
 #include <gui/guipage.h>
 
-class guiArrayPage: public guiPage {
+class guiTabbedPage: public guiPage {
   Q_OBJECT;
 public:
-  guiArrayPage(class QWidget *parent,
+  guiTabbedPage(class QWidget *parent,
 	  class ParamTree *ptree,
 	  QString id,
 	  class guiRoot *master,
 	  class QRect const &geom);
-  virtual void connectToParent(EasyXML doc);
-  virtual ~guiArrayPage();
+  virtual void connectToParent(QDomElement doc);
+  virtual ~guiTabbedPage();
   virtual QString getCurrentElement() const;
   virtual void reconnect();
 public slots:
@@ -25,8 +25,6 @@ public slots:
   /*:F open
    *:D This version opens a specific sub-page.
   */
-protected:
-  void retree();
 private:
   QString currentElement;
   /*:V currentElement

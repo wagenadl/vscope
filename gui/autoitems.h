@@ -16,13 +16,13 @@ class AutoItems: public QObject {
 public:
   AutoItems(guiPage *parent);
   void setup(PageBuildGeom &geom,
-	     EasyXML doc);
+	     QDomElement doc);
   void rebuild(PageBuildGeom *g_out=0);
   QStringList selectIDs(QStringList inlist);
 private:
   QStringList ids;
   QMap<QString, guiButton *> items;
-  EasyXML doc;
+  QDomElement doc;
   PageBuildGeom initialGeom;
   Enumerator const *enumerator;
 };

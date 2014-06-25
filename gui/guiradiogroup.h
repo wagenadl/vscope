@@ -5,7 +5,7 @@
 #define GUIRADIOGROUP_H
 
 #include <QObject>
-#include <xml/easyxml.h>
+#include <QDomElement>
 #include <QString>
 #include <QStringList>
 #include <QSet>
@@ -19,12 +19,11 @@ class guiRadioGroup: public QObject {
 public:
   guiRadioGroup(guiPage *parent);
   virtual ~guiRadioGroup();
-  void build(PageBuildGeom &g, EasyXML doc);
+  void build(PageBuildGeom &g, QDomElement doc);
   QStringList childIDs() const;
   QString id() const { return myid; }
   guiPage *parentPage() { return page; }
   bool mayResize();
-  void makeReadOnly(bool);
 public slots:
   void selectDefaultButton();
   virtual void add(class Button *b);

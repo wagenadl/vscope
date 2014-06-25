@@ -17,17 +17,16 @@ class AutoButtons: public QObject {
 public:
   AutoButtons(guiPage *page, guiRadioGroup *group=0);
   void setup(PageBuildGeom &geom,
-	     EasyXML doc);
+	     QDomElement doc);
   void rebuild(PageBuildGeom *g_out=0);
   QStringList selectIDs(QStringList inlist); // currently simply returns inlist
   QList<QString> childIDs() const; // keys of our buttons
-  void makeReadOnly(bool ro);
 private:
   guiPage *page;
   guiRadioGroup *group;
   QStringList ids;
   QMap<QString, guiButton *> buttons;
-  EasyXML doc;
+  QDomElement doc;
   PageBuildGeom initialGeom;
   Enumerator const *enumerator;
   bool isDyn;

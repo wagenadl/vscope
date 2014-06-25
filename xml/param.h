@@ -215,7 +215,6 @@ public:
    *:D Returns the type of this parameter.
    *:N See class comments for type names.
    */
-  bool isSet() const { return valueType=="set"; }
   class Enumerator const *getEnum() const { return enumerator; }
   /*:F getEnum
    *:D Returns a pointer to the enumerator for this parameter.

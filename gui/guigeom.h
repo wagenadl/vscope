@@ -4,12 +4,12 @@
 
 #define GUIGEOM_H
 
-#include <xml/easyxml.h>
+#include <QDomElement>
 #include <QFont>
 
 class guiGeom {
 public:
-  guiGeom(EasyXML elt);
+  guiGeom(QDomElement elt);
 public:
   int x0, y0, w, h; // position of root page relative to main window
   double cols, rows; // nominal size of button grid

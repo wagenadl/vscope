@@ -294,8 +294,8 @@ void Acquire::loadData(QString xmlfn) {
   Globals::panelHistory->relabelAll();
 
   Globals::gui->setTree(Globals::trove->trial().paramTree());
-  Globals::gui->makeReadOnly(true);
-    Globals::gui->open(); // make sure updated trial number visible.
+  Globals::gui->setReadOnly(true);
+  Globals::gui->open(); // make sure updated trial number visible.
   
   if (loadframe)
       loadframe->hide();

@@ -84,7 +84,7 @@ QWidget *makeBanner1(QWidget *parent) {
   txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" + vsn.attribute("year");
   txt += "<p>Last commit: " + vsn.attribute("date") + "<br>";
   txt += "Build date: " + vsn.attribute("builddate");
-  txt += "<p>For more info: wagenadl@uc.ed";
+  txt += "<p>For more info: wagenadl@uc.edu";
 
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();
@@ -223,7 +223,7 @@ void setupDAQ() {
 
 QDomElement setupGUI() {
   QString fpath = Globals::filePath();
-  QString guifn = ":/gui.xml";
+  QString guifn = ":/guiconfig.xml";
   XML guiConfigDoc(guifn);
   QDomElement guiConf = guiConfigDoc.root();
   Aliases::add(guiConf);

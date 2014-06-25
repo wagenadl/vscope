@@ -18,7 +18,6 @@ AbstractPage::AbstractPage(class QWidget *parent,
 			   QString id,
 			   class guiRoot *master_,
 			   class QRect const &geom): QFrame(parent) {
-  prepped = false;
   setGeometry(geom);
 
   master = master_;
@@ -180,46 +179,24 @@ QString AbstractPage::pathInstantiate(QString path) const {
 }
 
 
-void AbstractPage::setTree(ParamTree *neworigtree) {
-  Dbg() << "retree: " << myPath << ": " << neworigtree;
-  unprepare();
+void AbstractPage::reTree(ParamTree *neworigtree) {
+  Dbg() << "retree: " << myPath;
   if (neworigtree)
     origptree = neworigtree;
 
   if (!origptree)
     throw Exception("AbstractPage", "Cannot retree: no original tree", myPath);
-
-  if (origptree->isArray()) {
-    QString sub = getCurrentElement();
-    ptree = sub=="" ? 0 : origptree->childp(sub);
-    if (!ptree) {
-      if (sub!="")
-        Dbg() << "No ptree for " << getCurrentElement();
-      else
-        Dbg() << "No sub element";
-      ptree = origptree;
-      close();
-      return;
-    }
-  } else {
+  
+  ptree = origptree->childp(getCurrentElement());
+  if (!ptree) {
+    Dbg() << "No ptree for " << getCurrentElement();
     ptree = origptree;
+    close();
   }
 
   foreach (QString id, subPages.keys())
-    subPages[id]->setTree(ptree->childp(id));
+    subPages[id]->reTree(ptree->childp(id));
 
   if (isVisible() && neworigtree!=0)
     open();
 }
-
-void AbstractPage::makeReadOnly(bool ro) {
-  foreach (AbstractPage *pg, subPages)
-    pg->makeReadOnly(ro);
-}
-
-void AbstractPage::unprepare() {
-  prepped = false;
-  foreach (AbstractPage *pg, subPages)
-    pg->unprepare();
-}
-  

@@ -2,7 +2,7 @@
 
 #include "guiitem.h"
 
-guiItem::guiItem(guiPage *parnt, QString id, guiRoot *mastr):
+guiItem::guiItem(QWidget *parnt, QString id, guiRoot *mastr):
   guiButton(parnt, id, mastr) {
   makeItem();
   setVisualType(VT_VarValue);
@@ -11,9 +11,5 @@ guiItem::guiItem(guiPage *parnt, QString id, guiRoot *mastr):
 guiItem::~guiItem() {
 }
 
-void guiItem::stylize(EasyXML) {
-}
-
-void guiItem::setup(EasyXML doc) {
-
+void guiItem::stylize(QDomElement) {
 }

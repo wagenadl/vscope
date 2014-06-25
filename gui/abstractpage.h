@@ -9,7 +9,7 @@
 #include <QStringList>
 #include <QList>
 #include <QMap>
-#include <xml/easyxml.h>
+#include <QDomElement>
 #include <gfx/button.h>
 
 class AbstractPage: public QFrame {
@@ -44,15 +44,7 @@ public:
 	       class guiRoot *master,
 	       class QRect const &geom);
   virtual ~AbstractPage();
-  virtual void makeReadOnly(bool ro=false);
-  virtual void setTree(class ParamTree *neworigtree=0);
-  /*:F setTree
-   *:D When a page tree with tabbed pages changes tabs, this makes the ParamTree
-       of all pages below the changed tab point to the right data.
-   *:A neworigtree: the ParamTree for this level, with arrays dereferenced at
-       all higher levels, but not at this level.
-   *:N Also used to switch to an entirely different tree.
-  */
+
   AbstractPage *findpPage(QStringList path);
   /*:F findpPage
    *:D Returns a pointer to a page given a path, or null if that button
@@ -118,12 +110,9 @@ public:
   guiRoot const *masterp() const { return master; }
   QString id() const { return myId; }
   QString path() const { return myPath; }
-protected:
-  virtual void prepare() { prepped = true; }
 public slots:
   virtual void open()=0;
   virtual void close()=0;
-  void unprepare();
 protected:
   class guiRoot *master;
   /*:V master
@@ -153,12 +142,18 @@ protected:
   /*:V myId
    *:D My leaf ID
    */
-  bool prepped;
 public:
   virtual QString getCurrentElement() const=0;
 protected:
-  virtual void connectToMaster(EasyXML)=0;
-  virtual void connectToParent(EasyXML)=0;
+  void reTree(class ParamTree *neworigtree=0);
+  /*:F reTree
+   *:D When a page tree with tabbed pages changes tabs, this makes the ParamTree
+       of all pages below the changed tab point to the right data.
+   *:A neworigtree: the ParamTree for this level, with arrays dereferenced at
+       all higher levels, but not at this level.
+  */
+  virtual void connectToMaster(QDomElement)=0;
+  virtual void connectToParent(QDomElement)=0;
 };  
   
 #endif

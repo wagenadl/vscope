@@ -76,9 +76,3 @@ bool guiRadioGroup::mayResize() {
       return false;
   return true;
 }
-
-
-void guiRadioGroup::makeReadOnly(bool ro) {
-  foreach (AutoButtons *a, autoButtons)
-    a->makeReadOnly(ro);
-}

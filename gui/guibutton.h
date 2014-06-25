@@ -5,7 +5,7 @@
 #define GUIBUTTON_H
 
 #include <gfx/button.h>
-#include <xml/easyxml.h>
+#include <QDomElement>
 #include <QString>
 
 class guiButton: public Button {
@@ -14,14 +14,14 @@ class guiButton: public Button {
    */
   Q_OBJECT;
 public:  
-  guiButton(class guiPage *parent, QString id, class guiRoot *master=0);
+  guiButton(QWidget *parent, QString id, class guiRoot *master=0);
   /*:F constructor
    *:A parent: the parent widget. This may be an guiPage, but it
                doesn't need to be.
        id: name of this button relative to parent
    *:N Caller should position us afterwards.
    */
-  virtual void setup(EasyXML doc);
+  virtual void setup(QDomElement doc);
   virtual ~guiButton();
   /*:F destructor
    */
@@ -76,7 +76,6 @@ public:
    */
   bool alwaysHidden() const;
 protected:
-  virtual void mousePressEvent(class QMouseEvent *);
   virtual void mouseDoubleClickEvent(class QMouseEvent *);
   /*:F mouseDoubleClickEvent
    *:D This pops up an edit box for custom buttons only.
@@ -89,8 +88,6 @@ protected:
   /*:F changeEvent
    *:D Used to implement the "hideWhenDisabled" behavior.
    */
-public slots:
-  virtual void makeReadOnly(bool ro);
 protected slots:
   virtual void editDone(QString newtext);
   /*:F editDone
@@ -137,8 +134,8 @@ protected:
   bool alwayshidden;
   bool neverdisable;
 protected:
-  virtual void connectUp(EasyXML doc);
-  virtual void stylize(EasyXML doc);
+  virtual void connectUp(QDomElement doc);
+  virtual void stylize(QDomElement doc);
   /*:F connectUp, stylize
    *:N Descendents should *not* call these in their implementation.
    */

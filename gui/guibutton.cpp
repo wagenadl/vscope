@@ -10,9 +10,10 @@
 #include <xml/aliases.h>
 #include <base/exception.h>
 
-guiButton::guiButton(guiPage *parnt, QString id, guiRoot *mastr):
-  Button(parnt), parent(parnt) {
+guiButton::guiButton(QWidget *parnt, QString id, guiRoot *mastr):
+  Button(parnt) {
   master = mastr;
+  parent = dynamic_cast<guiPage *>(parnt); // this could be zero
   myId = id;
   setID(path());
 
@@ -23,7 +24,7 @@ guiButton::guiButton(guiPage *parnt, QString id, guiRoot *mastr):
   neverdisable = id=="enable";
 }
 
-void guiButton::setup(EasyXML doc) {
+void guiButton::setup(QDomElement doc) {
   custom = doc.hasAttribute("custom")
     ? doc.attribute("custom").toInt(0)
     : doc.hasAttribute("editcaption")
@@ -93,8 +94,6 @@ void guiButton::setValue(QString v) {
 }
 
 void guiButton::mouseDoubleClickEvent(class QMouseEvent *e) {
-  if (readonly && format.contains("%1"))
-    return;
   if (custom>0)
     openEditor();
   else
@@ -105,12 +104,6 @@ void guiButton::mouseReleaseEvent(class QMouseEvent *e) {
   if (custom<0)
     openEditor();
   Button::mouseReleaseEvent(e);
-}
-
-void guiButton::mousePressEvent(class QMouseEvent *e) {
-  if (readonly && format.contains("%1"))
-    return;
-  Button::mousePressEvent(e);
 }
 
 static QWidget *grandParent(QWidget *p) {
@@ -176,15 +169,11 @@ void guiButton::ensureValueInLabel() {
     if (!format.endsWith(":"))
       format += ":";
     format += "<br>%1";
-    Dbg() << "ensureValue" << myId;
-    setValue(value);
-    representState();
   }
 }
 
 void guiButton::dropValueFromLabel() {
   format.replace(":<br>%1", "");
-  representState();
 }
 
 QString guiButton::path() const {
@@ -197,7 +186,7 @@ QString guiButton::path() const {
   return p;
 }
 
-void guiButton::connectUp(EasyXML doc) {
+void guiButton::connectUp(QDomElement doc) {
   if (doc.attribute("type") == "bool") {
     connect(this, SIGNAL(selected(QString,QString)),
 	    parent, SLOT(booleanButtonToggled(QString)));
@@ -218,7 +207,7 @@ void guiButton::connectUp(EasyXML doc) {
   }
 }
 
-void guiButton::stylize(EasyXML doc) {
+void guiButton::stylize(QDomElement doc) {
   if (custom) {
     makeRadio();
     setVisualType(VT_VarValue);
@@ -239,10 +228,6 @@ void guiButton::stylize(EasyXML doc) {
 }
 
 void guiButton::setSelected(bool s) {
-  Dbg() << "guiButton::setSelected: " << myID << " : " << s;
-  if (readonly && (format.contains("%1") || myId.contains("enable"))
-      && !myId.lastIndexOf(":")>myID.lastIndexOf("/"))
-    return; // we just won't
   Button::setSelected(s);
   QString txt = text();
   if (s) {
@@ -258,8 +243,4 @@ void guiButton::setSelected(bool s) {
 
 bool guiButton::alwaysHidden() const {
   return alwayshidden;
-}
-
-void guiButton::makeReadOnly(bool ro) {
-  Button::makeReadOnly(ro);
 }
