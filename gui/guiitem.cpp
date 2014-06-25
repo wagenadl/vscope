@@ -2,7 +2,7 @@
 
 #include "guiitem.h"
 
-guiItem::guiItem(QWidget *parnt, QString id, guiRoot *mastr):
+guiItem::guiItem(guiPage *parnt, QString id, guiRoot *mastr):
   guiButton(parnt, id, mastr) {
   makeItem();
   setVisualType(VT_VarValue);

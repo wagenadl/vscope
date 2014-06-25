@@ -9,7 +9,7 @@
 class guiMenuItem: public guiItem {
   Q_OBJECT;
 public:
-  guiMenuItem(QWidget *parent, QString id, class guiRoot *master=0);
+  guiMenuItem(class guiPage *parent, QString id, class guiRoot *master=0);
   virtual ~guiMenuItem();
 protected:
   virtual void connectUp(QDomElement);

@@ -85,6 +85,8 @@ protected:
   void mouseReleaseEvent(class QMouseEvent *);
   void mouseDoubleClickEvent(class QMouseEvent *);
 public slots:
+  virtual void setPressed();
+  virtual void unsetPressed();
   virtual void makeReadOnly(bool ro);
   virtual void setText(QString txt, bool noemit=false);
   /*:F setText
@@ -169,9 +171,9 @@ protected:
   QString myID;
   bool readonly;
 protected slots:
-  void restoreActionFrame();
+  void unsetPressedNow();
 public:
-  void representState();
+  virtual void representState();
   /*:F representState
    *:D This will visually update the button to reflect its selected state.
    */

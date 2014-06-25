@@ -3,10 +3,10 @@
 #include "gui.h"
 
 GUI::GUI(ParamTree *ptree, EasyXML guidef) {
-  geom = EasyXML(guidef, "geom");
+  geom = guidef.firstChild("geometry");
   resize(geom.size("width", "height"));
   
-  cp = new ControlPanel(ptree, guidef, this);
+  cp = new ControlPanel(ptree, guidef.firstChild("controlpanel"), this);
   cp->move(geom.point("controlx0", "controly0"));
 
   lv = new Viewer(this);

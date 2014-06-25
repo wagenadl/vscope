@@ -1,6 +1,7 @@
 // easyxml.cpp
 
 #include "easyxml.h"
+#include "base/dbg.h"
 
 EasyXML::EasyXML() {
 }
@@ -9,11 +10,6 @@ EasyXML::EasyXML(QDomElement elt): elt(elt) {
 }
 
 EasyXML::EasyXML(QDomElement elt, QString tag): elt(elt) {
-  if (elt.tagName!=tag)
-    elt = elt.firstChildElement(tag);
-}
-
-EasyXML::EasyXML(EasyXML const &easy, QString tag): elt(easy.elt) {
   if (elt.tagName!=tag)
     elt = elt.firstChildElement(tag);
 }
@@ -78,3 +74,13 @@ QList<EasyXML> EasyXML::children(QString tag) {
     lst << EasyXML(e);
   return lst;
 }
+
+EasyXML EasyXML::firstChild(QString tag) {
+  EasyXML e(elt.firstChildElement(tag));
+  if (!e.isValid())
+    Dbg() << "EasyXML: Warning: no child of type " << tag;
+  return e;
+}
+
+QString EasyXML::text() const {
+  

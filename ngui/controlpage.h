@@ -7,10 +7,12 @@
 class ControlPage: public AbstractPage {
   Q_OBJECT;
 public:
-  ControlPage();
+  ControlPage(ParamTree *tree, QDomElement visualdef, AbstractPage *parent);
   virtual ~ControlPage();
-  virtual void setup(ParamTree *tree, QDomElement visualdef);
+  virtual void setup
   virtual void retree(ParamTree *tree);
+private:
+  QList<ButtonLayout> lays;
 };
 
 #endif

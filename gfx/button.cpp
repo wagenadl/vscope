@@ -141,28 +141,36 @@ void Button::toggleSelected() {
 }
 
 void Button::mousePressEvent(class QMouseEvent *) {
-  lastClick.start();
-  setFrameShadow(QFrame::Sunken);
+  setPressed();
   if (isAction) 
     emit activated(myID, text());
   else
     toggleSelected();
 }
 
-void Button::mouseReleaseEvent(class QMouseEvent *) {
-  int dt = lastClick.elapsed();
-  if (dt>=100)
-    restoreActionFrame();
-  else 
-    QTimer::singleShot(100-dt, this, SLOT(restoreActionFrame()));
+void Button::setPressed() {
+  lastClick.start();
+  setFrameShadow(QFrame::Sunken);
 }
 
-void Button::restoreActionFrame() {
-  representState(); // setFrameShadow(QFrame::Raised);
+void Button::mouseReleaseEvent(class QMouseEvent *) {
+  unsetPressed();
+}
+
+void Button::unsetPressed() {
+  int dt = lastClick.elapsed();
+  if (dt>=100)
+    unsetPressedNow();
+  else 
+    QTimer::singleShot(100-dt, this, SLOT(unsetPressedNow()));
+}
+
+void Button::unsetPressedNow() {
+  representState(); 
 }  
 
 void Button::mouseDoubleClickEvent(class QMouseEvent *) {
-  lastClick.start();
+  setPressed();
   if (vtype==VT_Action) {
     setFrameShadow(QFrame::Sunken);
   }

@@ -14,7 +14,6 @@ public:
   EasyXML();
   EasyXML(QDomElement elt);
   EasyXML(QDomElement elt, QString tag); // elt, or first child matching tag
-  EasyXML(EasyXML const &easy, QString tag); // ditto
   bool isValid() const { return !elt.isNull(); }
   QString tagName() const { return elt.tagName(); }
   QStringList attributes();
@@ -27,6 +26,8 @@ public:
   bool contains(QString) const;
   QList<EasyXML> children(); // all children
   QList<EasyXML> children(QString); // children with given tag
+  EasyXML firstChild(QString);
+  QString text() const;
 private:
   QDomElement elt;
 };

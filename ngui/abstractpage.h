@@ -10,8 +10,8 @@ public:
   AbstractPage(AbstractPage *parent);
   AbstractPage(QWidget *parent);
   virtual ~AbstractPage();
-  virtual void setup(ParamTree *tree, QDomElement visualdef);
   virtual void retree(ParamTree *tree);
+  virtual QRect childPageRect() const;
 };
 
 #endif

@@ -14,7 +14,7 @@ class guiButton: public Button {
    */
   Q_OBJECT;
 public:  
-  guiButton(QWidget *parent, QString id, class guiRoot *master=0);
+  guiButton(class guiPage *parent, QString id, class guiRoot *master=0);
   /*:F constructor
    *:A parent: the parent widget. This may be an guiPage, but it
                doesn't need to be.

@@ -9,7 +9,7 @@
 class guiItem: public guiButton {
   Q_OBJECT;
 public:
-  guiItem(QWidget *parent, QString id, class guiRoot *master=0);
+  guiItem(class guiPage *parent, QString id, class guiRoot *master=0);
   virtual ~guiItem();
 protected:
   virtual void connectUp(QDomElement)=0;

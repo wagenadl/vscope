@@ -10,10 +10,9 @@
 #include <xml/aliases.h>
 #include <base/exception.h>
 
-guiButton::guiButton(QWidget *parnt, QString id, guiRoot *mastr):
-  Button(parnt) {
+guiButton::guiButton(guiPage *parnt, QString id, guiRoot *mastr):
+  Button(parnt), parent(parnt) {
   master = mastr;
-  parent = dynamic_cast<guiPage *>(parnt); // this could be zero
   myId = id;
   setID(path());
 
