@@ -244,3 +244,12 @@ void guiButton::setSelected(bool s) {
 bool guiButton::alwaysHidden() const {
   return alwayshidden;
 }
+
+void guiButton::setReadOnly(bool ro) {
+  QPalette p = palette();
+  if (ro)
+    p.setColor(QPalette::Window, QColor("#aaaaaa"));
+  else
+    p.setColor(QPalette::Window, p.color(QPalette::Button));
+  setPalette(p);
+}

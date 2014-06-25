@@ -108,6 +108,7 @@ public slots:
    */
   virtual void setEnabled(bool);
   virtual void setSelected(bool);
+  virtual void setReadOnly(bool);
 signals:
   void customize(QString mypath, int cno, QString newtext);
   /*:S customize

@@ -152,6 +152,7 @@ public slots:
   void childItemCustomized(QString path, int customid, QString text);
   void childTabEnabled(QString path);
   void booleanButtonToggled(QString path);
+  virtual void setReadOnly(bool);
 protected:
   virtual void paintEvent(class QPaintEvent *event);
   virtual void prepForOpening();
@@ -203,6 +204,7 @@ private:
   class guiTriangle *triangle;
   QRect origGeom;
   class RadioGroup *topgroup;
+  QPalette pagepal;
 protected:
   virtual void connectToMaster(QDomElement doc);
   virtual void connectToParent(QDomElement doc);

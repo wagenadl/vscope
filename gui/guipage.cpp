@@ -34,6 +34,7 @@ guiPage::guiPage(class QWidget *parent,
 		 class QRect const &geom):
   AbstractPage(parent, ptree_, id, master_, geom),
   buildGeom(this) {
+  pagepal = palette();
   triangle = new guiTriangle(this);
   topgroup = new RadioGroup(this);
 
@@ -118,16 +119,13 @@ void guiPage::stylize(QDomElement doc) {
   b->makeRadio();
   b->setVisualType(visualTypeForParentButton());
   
-  if (!doc.hasAttribute("bg")) {
-    // Take background color from parent button
-    QPalette butpal = b->palette();
-    QPalette pagepal = this->palette();
-    QColor bg = butpal.color(QPalette::Normal,QPalette::Button);
-    pagepal.setColor(QPalette::Window,bg);
-    setPalette(pagepal);
-    setAutoFillBackground(true);
-    setFrameStyle(QFrame::Panel | QFrame::Raised);
-  }
+  // Take background color from parent button
+  QPalette butpal = b->palette();
+  QColor bg = butpal.color(QPalette::Normal,QPalette::Button);
+  pagepal.setColor(QPalette::Window,bg);
+  setPalette(pagepal);
+  setAutoFillBackground(true);
+  setFrameStyle(QFrame::Panel | QFrame::Raised);
   
   QString t = b->text();
   if (t.indexOf(":")<0 && t.indexOf("...")<0)
@@ -602,4 +600,15 @@ void guiPage::updateAuto() {
     if (tp)
       tp->reconnect();
   }
+}
+
+void guiPage::setReadOnly(bool ro) {
+  AbstractPage::setReadOnly(ro);
+  foreach (guiButton *b, buttons)
+    b->setReadOnly(ro);
+
+  QPalette p = pagepal;
+  if (ro)
+    p.setColor(QPalette::Window, QColor("#cccccc"));
+  setPalette(p);
 }
