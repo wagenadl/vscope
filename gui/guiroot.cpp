@@ -8,6 +8,7 @@
 #include <xml/paramtree.h>
 #include <QRect>
 #include <base/exception.h>
+#include <base/dbg.h>
 
 guiRoot::guiRoot(QWidget *parent,
 	       ParamTree *ptree_, QDomElement doc) {
@@ -98,10 +99,11 @@ guiPage &guiRoot::findPage(QString path) {
   return root->findPage(path.split(QChar('/')));
 }
 
-void guiRoot::setTree(ParamTree*) {
-  throw Exception("guiRoot:setTree");
+void guiRoot::setTree(ParamTree *pt) {
+  Dbg() << "guiRoot::setTree " << pt;
+  root->reTree(pt);
 }
 
-void guiRoot::setReadOnly(bool) {
-  throw Exception("guiRoot:setReadOnly");
+void guiRoot::setReadOnly(bool ro) {
+  root->setReadOnly(ro);
 }

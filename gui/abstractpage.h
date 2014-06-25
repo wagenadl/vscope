@@ -113,6 +113,14 @@ public:
 public slots:
   virtual void open()=0;
   virtual void close()=0;
+  virtual void setReadOnly(bool);
+  virtual void reTree(class ParamTree *neworigtree=0);
+  /*:F reTree
+   *:D When a page tree with tabbed pages changes tabs, this makes the ParamTree
+       of all pages below the changed tab point to the right data.
+   *:A neworigtree: the ParamTree for this level, with arrays dereferenced at
+       all higher levels, but not at this level.
+  */
 protected:
   class guiRoot *master;
   /*:V master
@@ -145,13 +153,6 @@ protected:
 public:
   virtual QString getCurrentElement() const=0;
 protected:
-  void reTree(class ParamTree *neworigtree=0);
-  /*:F reTree
-   *:D When a page tree with tabbed pages changes tabs, this makes the ParamTree
-       of all pages below the changed tab point to the right data.
-   *:A neworigtree: the ParamTree for this level, with arrays dereferenced at
-       all higher levels, but not at this level.
-  */
   virtual void connectToMaster(QDomElement)=0;
   virtual void connectToParent(QDomElement)=0;
 };  

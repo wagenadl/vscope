@@ -178,6 +178,12 @@ QString AbstractPage::pathInstantiate(QString path) const {
 		    "pathInstantiate");
 }
 
+void AbstractPage::setReadOnly(bool ro) {
+  foreach (QString id, subPages.keys())
+    subPages[id]->setReadOnly(ro);
+  if (isVisible())
+    open();
+}
 
 void AbstractPage::reTree(ParamTree *neworigtree) {
   Dbg() << "retree: " << myPath;
