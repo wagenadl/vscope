@@ -11,5 +11,9 @@ guiItem::guiItem(guiPage *parnt, QString id, guiRoot *mastr):
 guiItem::~guiItem() {
 }
 
-void guiItem::stylize(QDomElement) {
+void guiItem::stylize(EasyXML) {
+}
+
+void guiItem::setup(EasyXML doc) {
+
 }

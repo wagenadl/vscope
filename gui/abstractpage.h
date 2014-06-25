@@ -9,7 +9,7 @@
 #include <QStringList>
 #include <QList>
 #include <QMap>
-#include <QDomElement>
+#include <xml/easyxml.h>
 #include <gfx/button.h>
 
 class AbstractPage: public QFrame {
@@ -157,8 +157,8 @@ protected:
 public:
   virtual QString getCurrentElement() const=0;
 protected:
-  virtual void connectToMaster(QDomElement)=0;
-  virtual void connectToParent(QDomElement)=0;
+  virtual void connectToMaster(EasyXML)=0;
+  virtual void connectToParent(EasyXML)=0;
 };  
   
 #endif

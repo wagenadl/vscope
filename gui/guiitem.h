@@ -11,9 +11,10 @@ class guiItem: public guiButton {
 public:
   guiItem(class guiPage *parent, QString id, class guiRoot *master=0);
   virtual ~guiItem();
+  virtual void setup(EasyXML doc);
 protected:
-  virtual void connectUp(QDomElement)=0;
-  virtual void stylize(QDomElement);
+  virtual void connectUp(EasyXML)=0;
+  virtual void stylize(EasyXML);
 };
 
 #endif

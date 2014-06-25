@@ -11,15 +11,14 @@
 
 guiRoot::guiRoot(QWidget *parent,
 	       ParamTree *ptree_, QDomElement doc) {
-  geom_ = new guiGeom(doc.firstChildElement("geometry"));
+  geom_ = new guiGeom(EasyXML(doc, "geometry"));
   ptree = ptree_;
   root = 0; // let guiPages know that Master doesn't have a root yet
-  QDomElement elt = doc.firstChildElement("page");
   root = new guiPage(parent, ptree,
 		     "",
 		     this,
 		     QRect(geom_->x0,geom_->y0,geom_->w,geom_->h));
-  root->setup(elt);
+  root->setup(EasyXML(doc, "page"));
   root->show();
 }
 

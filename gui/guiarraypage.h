@@ -1,22 +1,22 @@
 
-// guitabbedpage.h
+// guiarraypage.h
 
-#ifndef GUITABBEDPAGE_H
+#ifndef GUIARRAYPAGE_H
 
-#define GUITABBEDPAGE_H
+#define GUIARRAYPAGE_H
 
 #include <gui/guipage.h>
 
-class guiTabbedPage: public guiPage {
+class guiArrayPage: public guiPage {
   Q_OBJECT;
 public:
-  guiTabbedPage(class QWidget *parent,
+  guiArrayPage(class QWidget *parent,
 	  class ParamTree *ptree,
 	  QString id,
 	  class guiRoot *master,
 	  class QRect const &geom);
-  virtual void connectToParent(QDomElement doc);
-  virtual ~guiTabbedPage();
+  virtual void connectToParent(EasyXML doc);
+  virtual ~guiArrayPage();
   virtual QString getCurrentElement() const;
   virtual void reconnect();
 public slots:

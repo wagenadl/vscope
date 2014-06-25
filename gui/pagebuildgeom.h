@@ -4,7 +4,7 @@
 
 #define PAGEBUILDGEOM_H
 
-#include <QDomElement>
+#include <xml/easyxml.h>
 #include <QRect>
 
 #include <gui/guigeom.h>
@@ -17,11 +17,11 @@ class PageBuildGeom {
    */
 public:
   PageBuildGeom(guiPage const *parent);
-  PageBuildGeom(PageBuildGeom const &src, QDomElement doc);
-  void setup(QDomElement doc);
+  PageBuildGeom(PageBuildGeom const &src, EasyXML doc);
+  void setup(EasyXML doc);
   QRect bbox(); // box for next button
   QRect pbox(); // box for subpage
-  void go(QDomElement doc);
+  void go(EasyXML doc);
   void right();
   void down();
   void left();
@@ -51,7 +51,7 @@ private:
 
   QRect boundingbox;
 private:
-  void setup(QDomElement doc, QRect space);
+  void setup(EasyXML doc, QRect space);
 };
 
 

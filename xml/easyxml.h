@@ -23,6 +23,9 @@ public:
   double real(QString, bool *ok=0) const; // reads an attribute as a number
   QSize size(QString, QString, bool *ok=0) const; // reads 2 attributes as size
   QPoint point(QString, QString, bool *ok=0) const; // reads 2 attributes as pt
+  QString demandString(QString key, QString errmsg) const; // exc. if not found
+  int demandInt(QString key, QString errmsg) const; // exc. if not found
+  double demandReal(QString key, QString errmsg) const; // exc. if not found
   bool contains(QString) const;
   QList<EasyXML> children(); // all children
   QList<EasyXML> children(QString); // children with given tag

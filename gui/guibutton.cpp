@@ -23,7 +23,7 @@ guiButton::guiButton(guiPage *parnt, QString id, guiRoot *mastr):
   neverdisable = id=="enable";
 }
 
-void guiButton::setup(QDomElement doc) {
+void guiButton::setup(EasyXML doc) {
   custom = doc.hasAttribute("custom")
     ? doc.attribute("custom").toInt(0)
     : doc.hasAttribute("editcaption")
@@ -197,7 +197,7 @@ QString guiButton::path() const {
   return p;
 }
 
-void guiButton::connectUp(QDomElement doc) {
+void guiButton::connectUp(EasyXML doc) {
   if (doc.attribute("type") == "bool") {
     connect(this, SIGNAL(selected(QString,QString)),
 	    parent, SLOT(booleanButtonToggled(QString)));
@@ -218,7 +218,7 @@ void guiButton::connectUp(QDomElement doc) {
   }
 }
 
-void guiButton::stylize(QDomElement doc) {
+void guiButton::stylize(EasyXML doc) {
   if (custom) {
     makeRadio();
     setVisualType(VT_VarValue);

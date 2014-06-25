@@ -5,7 +5,7 @@
 #define GUIBUTTON_H
 
 #include <gfx/button.h>
-#include <QDomElement>
+#include <xml/easyxml.h>
 #include <QString>
 
 class guiButton: public Button {
@@ -21,7 +21,7 @@ public:
        id: name of this button relative to parent
    *:N Caller should position us afterwards.
    */
-  virtual void setup(QDomElement doc);
+  virtual void setup(EasyXML doc);
   virtual ~guiButton();
   /*:F destructor
    */
@@ -137,8 +137,8 @@ protected:
   bool alwayshidden;
   bool neverdisable;
 protected:
-  virtual void connectUp(QDomElement doc);
-  virtual void stylize(QDomElement doc);
+  virtual void connectUp(EasyXML doc);
+  virtual void stylize(EasyXML doc);
   /*:F connectUp, stylize
    *:N Descendents should *not* call these in their implementation.
    */

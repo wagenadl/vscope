@@ -182,6 +182,9 @@ private:
 protected:
   void changeEvent(class QEvent *);
   void paintEvent(class QPaintEvent *e);
+protected:
+  static QColor mixColor(QColor const &a, QColor const &b, double afrac=.5);
+  static QColor deeperColor(QColor const &a, double amount=2);
 };
 
 #endif

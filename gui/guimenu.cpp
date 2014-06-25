@@ -30,42 +30,30 @@ void guiMenu::setNonExclusive() {
   itemgroup = 0;
 }
 
-VISUALTYPE guiMenu::visualTypeForParentButton() const {
-  return VT_VarOpen;
-}
-
-void guiMenu::connectToParent(QDomElement doc) {
+void guiMenu::connectToParent(EasyXML doc) {
   guiPage::connectToParent(doc);
   guiButton *b = parentPage()->buttonp(id());
   if (b) 
     b->ensureValueInLabel();
 }
 
-static QString itemID(QDomElement doc) {
-  if (doc.hasAttribute("id"))
-    return doc.attribute("id");
-  else if (doc.hasAttribute("custom"))
-    return "custom-"+doc.attribute("custom");
-  else if (doc.hasAttribute("value"))
-    return doc.attribute("value");
-  else
-    return "";
-}
-  
+guiButton *guiMenu::addValueItem(PageBuildGeom &g, EasyXML doc) {
+  QString tag = doc.string("tag");
+  bool isCustom = tag.contains("custom");
 
-guiButton *guiMenu::addItem(PageBuildGeom &g, QDomElement doc) {
-  QString id = itemID(doc);
-  if (id.isEmpty()) 
-    throw Exception("guiPage", "Empty item ID in page " + path());
+  QString v = isCustom ? "custom-1"
+    : doc.demandString("value", "guiMenu: Empty value in " + path());
   
-  guiButton *b = createItem(id);
-  buttons[id] = b;
-  buttons[id]->setup(doc);
+  guiButton *b = isCustom ? new guiCustomValueItem(this, master)
+    : new guiValueItem(this, v, master);
+
+  buttons[v] = b;
+  buttons[v]->setup(doc);
   if (itemgroup)
     itemgroup->add(b);
 
-  if (doc.hasAttribute("custom"))
-    g.last(doc.attribute("custom").toInt());
+  if (isCustom)
+    g.last(1);
   b->setGeometry(g.bbox());
   g.right();
   b->show();
@@ -126,7 +114,7 @@ void guiMenu::prepare() {
   }
 }
 
-void guiMenu::addAuto(PageBuildGeom &g, QDomElement doc) {
+void guiMenu::addAuto(PageBuildGeom &g, EasyXML doc) {
   if (autoItems)
     throw Exception("guiMenu", "Can have only one <auto> item: " + path());
 

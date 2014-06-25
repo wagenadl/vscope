@@ -18,7 +18,7 @@ public:
 protected:
   virtual guiItem *createItem(QString id);
   virtual void prepare();
-  virtual void connectToParent(QDomElement doc);
+  virtual void connectToParent(EasyXML doc);
 };
 
 #endif

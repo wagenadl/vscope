@@ -1,7 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
  <qresource>
      <file>parameters.xml</file>
-     <file>guiconfig.xml</file>
+     <file>gui.xml</file>
      <file>connections.xml</file>
      <file>aliases.xml</file>
      <file>version.xml</file>

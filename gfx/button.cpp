@@ -16,19 +16,6 @@ int BUTTON_Height = 27;
 char const *BUTTON_Foreground = "black";
 char const *BUTTON_Background = "#eeeeee";
 
-static QColor deeper(QColor const &a, double amt=2) {
-  int h, s, v;
-  a.getHsv(&h,&s,&v);
-  s=255; // 2*s;
-  if (s>255)
-    s=255;
-  v=roundi(v/amt);
-  if (v>255)
-    v=255;
-  QColor c;
-  c.setHsv(h,s,v);
-  return c;
-}
 
 //////////////////////////////// Button //////////////////////////////
 
@@ -242,7 +229,7 @@ void Button::representState() {
     setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
     setLineWidth(isSelected ? 3 : 1);
     if (isSelected)
-      p.setColor(QPalette::Window, deeper(bg,2));
+      p.setColor(QPalette::Window, deeperColor(bg,2));
     p.setColor(QPalette::WindowText, isSelected
                ? QColor("#ffff00")
                : p.color(QPalette::ButtonText));
@@ -364,3 +351,24 @@ void Button::representFlat(QPalette &p) {
   QPalette p0(parentWidget()->palette());
   p.setColor(QPalette::Window, p0.color(QPalette::Window));
 }
+
+QColor Button::mixColor(QColor const &a, QColor const &b, double afrac) {
+  return QColor(int(a.red()*afrac + b.red()*(1-afrac)),
+		int(a.green()*afrac + b.green()*(1-afrac)),
+		int(a.blue()*afrac + b.blue()*(1-afrac)));
+}
+
+QColor Button::deeperColor(QColor const &a, double amount) {
+  int h, s, v;
+  a.getHsv(&h,&s,&v);
+  s=255; // 2*s;
+  if (s>255)
+    s=255;
+  v=int(v/amount);
+  if (v>255)
+    v=255;
+  QColor c;
+  c.setHsv(h,s,v);
+  return c;
+}
+

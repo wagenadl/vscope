@@ -2,6 +2,7 @@
 
 #include "easyxml.h"
 #include "base/dbg.h"
+#include "base/exception.h"
 
 EasyXML::EasyXML() {
 }
@@ -31,8 +32,24 @@ QString EasyXML::string(QString id) const {
   return elt.attribute(id);
 }
 
+QString EasyXML::demandString(QString id, QString exc) const {
+  if (contains(id))
+    return elt.attribute(id);
+  else
+    throw Exception("XML", exc);
+}
+
 int EasyXML::integer(QString id, bool *ok) const {
   return string(id).toInt(ok);
+}
+
+int EasyXML::demandInt(QString id, QString exc) const {
+  bool ok;
+  int r = integer(id, &ok);
+  if (ok)
+    return r;
+  else 
+    throw Exception("XML", exc);
 }
 
 QPoint EasyXML::point(QString idx, QString idy, bool *ok=0) {
@@ -55,6 +72,14 @@ double EasyXML::real(QString id, bool *ok) const {
   return string(id).toDouble(ok);
 }
 
+double EasyXML::demandReal(QString id, QString exc) const {
+  bool ok;
+  double r = real(id, &ok);
+  if (ok)
+    return r;
+  else
+    throw Exception("XML", exc);
+}
 bool EasyXML::contains(QString id) const {
   return elt.hasAttribute(id);
 }
@@ -83,4 +108,6 @@ EasyXML EasyXML::firstChild(QString tag) {
 }
 
 QString EasyXML::text() const {
+  return elt.text();
+}
   

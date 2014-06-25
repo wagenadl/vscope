@@ -1,12 +1,12 @@
-// guitabbedpage.cpp
+// guiarraypage.cpp
 
-#include "guitabbedpage.h"
+#include "guiarraypage.h"
 #include "guiradiogroup.h"
 #include <base/exception.h>
 #include "guiroot.h"
 #include <base/dbg.h>
 
-guiTabbedPage::guiTabbedPage(class QWidget *parent,
+guiArrayPage::guiArrayPage(class QWidget *parent,
 		 class ParamTree *ptree,
 		 QString id,
 		 class guiRoot *master,
@@ -15,12 +15,12 @@ guiTabbedPage::guiTabbedPage(class QWidget *parent,
   currentElement = "";
 }
 
-void guiTabbedPage::connectToParent(QDomElement doc) {
+void guiArrayPage::connectToParent(QDomElement doc) {
   guiPage::connectToParent(doc);
   reconnect();
 }
 
-void guiTabbedPage::reconnect() {
+void guiArrayPage::reconnect() {
   guiPage *par = parentPage();
   if (!par)
     return;
@@ -31,9 +31,9 @@ void guiTabbedPage::reconnect() {
 
   if (pctrl) {
     foreach (QString i, pctrl->childIDs()) {
-      guiButton *b = par->buttonp(id() + ARRAYSEP + i);
+      guiButton *b = par->buttonp(id() + ":" + i);
       if (!b) 
-	continue; //throw Exception("guiTabbedPage", "Button " + i + " not found in parent", path());
+	continue; //throw Exception("guiArrayPage", "Button " + i + " not found in parent", path());
 
       connect(b, SIGNAL(selected(QString,QString)),this, SLOT(open(QString)));
       disconnect(b, SIGNAL(selected(QString,QString)),
@@ -64,15 +64,15 @@ void guiTabbedPage::reconnect() {
   }
 }
 
-guiTabbedPage::~guiTabbedPage() {
+guiArrayPage::~guiArrayPage() {
 }
 
-void guiTabbedPage::open(QString p) {
+void guiArrayPage::open(QString p) {
   int idx = p.lastIndexOf('/');
   QString elt = p.mid(idx+1);
-  idx = elt.indexOf(ARRAYSEP);
+  idx = elt.indexOf(":");
   if (idx<0)
-    throw Exception("guiTabbedPage", "Path does not specify element: " + p);
+    throw Exception("guiArrayPage", "Path does not specify element: " + p);
   QString ar = elt.left(idx);
   elt = elt.mid(idx+1);
   currentElement = elt;
@@ -80,14 +80,14 @@ void guiTabbedPage::open(QString p) {
   open();
 }
 
-void guiTabbedPage::retree() {
+void guiArrayPage::retree() {
   setTree(0);
 }
 
-void guiTabbedPage::open() {
+void guiArrayPage::open() {
   guiPage::open();
 }
 
-QString guiTabbedPage::getCurrentElement() const {
+QString guiArrayPage::getCurrentElement() const {
   return currentElement;
 }

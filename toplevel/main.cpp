@@ -223,7 +223,7 @@ void setupDAQ() {
 
 QDomElement setupGUI() {
   QString fpath = Globals::filePath();
-  QString guifn = ":/guiconfig.xml";
+  QString guifn = ":/gui.xml";
   XML guiConfigDoc(guifn);
   QDomElement guiConf = guiConfigDoc.root();
   Aliases::add(guiConf);

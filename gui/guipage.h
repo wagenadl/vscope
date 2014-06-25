@@ -9,13 +9,11 @@
 #include <QStringList>
 #include <QList>
 #include <QMap>
-#include <QDomElement>
+#include <xml/easyxml.h>
 #include <gfx/button.h>
 #include <gui/abstractpage.h>
 #include <gui/pagebuildgeom.h>
 #include <gui/guibutton.h>
-
-#define ARRAYSEP ":"
 
 class guiPage: public AbstractPage {
   Q_OBJECT;
@@ -40,7 +38,7 @@ public:
     :  mypath: the full path to this page ("" for root").
     :  geom:   position and size of this page relative to parent.
    */
-  void setup(QDomElement doc);
+  void setup(EasyXML doc);
   virtual ~guiPage();
   /*:F destructor
    *:D Destructs this page and all of its children.
@@ -59,13 +57,13 @@ public:
   virtual QList<guiButton *> allButtons();
   virtual void makeReadOnly(bool ro);
 public:
-  class guiButton *addButton(PageBuildGeom &g, QDomElement elt);
+  class guiButton *addButton(PageBuildGeom &g, EasyXML elt);
   /*:F addButton
    *:D Adds a new button to this page.
    *:N This function also connects the button's selected/deselected/activated
        signals to the corresponding guiRoot's signals.
    */
-  virtual class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
+  virtual class guiButton *addValueItem(PageBuildGeom &g, EasyXML elt);
   /*:F addItem
    *:D Adds a new item button to this page.
    *:N Items are automatically placed in a button group with radio-style
@@ -76,39 +74,38 @@ public:
        attribute, or else the value attribute of the <item>.
    *:N By "tail ID" I mean the part of the path after the last "/".
    */
-  void addItems(PageBuildGeom &g, QDomElement elt);
-  void addRadioGroup(PageBuildGeom &g, QDomElement elt);
+  void addItems(PageBuildGeom &g, EasyXML elt);
+  void addRadioGroup(PageBuildGeom &g, EasyXML elt);
   /*:F addRadioGroup
    *:D Adds a new group and any contained buttons to this page.
    */
-  void addTabCtrl(PageBuildGeom &g, QDomElement elt);
+  void addTabCtrl(PageBuildGeom &g, EasyXML elt);
   /*:F addTabCtrl
    *:D Adds a new group and any contained buttons to this page.
    */
-  void addPage(PageBuildGeom &g, QDomElement elt,
-	       VISUALTYPE vt=VT_PageOpen);
+  void addPage(PageBuildGeom &g, EasyXML elt);
   /*:F addPage
    *:D Adds a new sub-page to this page.
    *:N This connects the selected/deselected signals from any button with the
        same name as this page to its open/close slots.
    */
-  void addTabbedPage(PageBuildGeom &g, QDomElement elt);
+  void addArrayPage(PageBuildGeom &g, EasyXML elt);
   /*:F addTabbedPage
    *:D As addPage, but with added functionality for tabbed pages.
    */
-  void addMenu(PageBuildGeom &g, QDomElement elt);
+  void addMenu(PageBuildGeom &g, EasyXML elt);
   /*:F addMenu
    *:D As addPage, but with added functionality for menus.
    *:N This connects the selected signal from menu items in that
        page to our childItemXXX slots.
    */
-  void addChecklist(PageBuildGeom &g, QDomElement elt);
+  void addChecklist(PageBuildGeom &g, EasyXML elt);
   /*:F addChecklist
    *:D As addPage, but with added functionality for checklists.
    *:N This connects the selected/deselected signals from items in that
        page to our childItemXXX slots.
    */
-  virtual void addAuto(PageBuildGeom &g, QDomElement elt);
+  virtual void addAuto(PageBuildGeom &g, EasyXML elt);
   /*:F addAuto
    *:D Automatically adds a number of <item> buttons according to an enum.
    */
@@ -198,16 +195,16 @@ private slots:
   void addTriangle(QString id);
   void removeTriangle(QString id);
 private:
-  void setDefaultColors(QDomElement);
-  void addChildren(PageBuildGeom &, QDomElement);
+  void setDefaultColors(EasyXML);
+  void addChildren(PageBuildGeom &, EasyXML);
   PageBuildGeom buildGeom;
   class guiTriangle *triangle;
   QRect origGeom;
   class RadioGroup *topgroup;
 protected:
-  virtual void connectToMaster(QDomElement doc);
-  virtual void connectToParent(QDomElement doc);
-  virtual void stylize(QDomElement doc);
+  virtual void connectToMaster(EasyXML doc);
+  virtual void connectToParent(EasyXML doc);
+  virtual void stylize(EasyXML doc);
   /*:F connectToMast, connectToParent, stylize
    *:N Implementers of the following should typically call base class's
        version first.

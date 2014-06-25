@@ -12,7 +12,7 @@ public:
   guiChecklistItem(class guiPage *parent, QString id, class guiRoot *master=0);
   virtual ~guiChecklistItem();
 protected:
-  virtual void connectUp(QDomElement);
+  virtual void connectUp(EasyXML);
 };
 
 #endif

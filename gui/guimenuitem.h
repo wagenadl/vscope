@@ -12,7 +12,7 @@ public:
   guiMenuItem(class guiPage *parent, QString id, class guiRoot *master=0);
   virtual ~guiMenuItem();
 protected:
-  virtual void connectUp(QDomElement);
+  virtual void connectUp(EasyXML);
 };
 
 #endif
