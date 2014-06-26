@@ -186,9 +186,10 @@ void Button::representState() {
   f.setBold(isSelected);
   setFont(f);
   QPalette p = palette();
-  QColor bg = p.color(QPalette::Button);
-  QColor alt;
-  //  QWidget *pw=0;
+  QColor bg = (readonly&&!immune) ? QColor("#aaaaaa")
+    : p.color(QPalette::Button);
+  p.setColor(QPalette::Window, bg);
+
   setAutoFillBackground(true);
   switch (vtype) {
   case VT_Label:
@@ -207,17 +208,14 @@ void Button::representState() {
     setFrameShadow(QFrame::Raised);
     break;
   case VT_VarValue:
-    //pw = parentWidget();
-    //if (pw)
-    //  alt = pw->palette().color(QPalette::Window);
-    alt = QColor(roundi(bg.red()*.5+255*.5),
-		 roundi(bg.green()*.5+255*.5),
-		 roundi(bg.blue()*.5));
     setFrameShape(QFrame::Panel);
     setFrameShadow(isSelected ? QFrame::Sunken : QFrame::Raised);
     setLineWidth(isSelected ? 2 : 1);
-    p.setColor(QPalette::Window,  isSelected ? alt : bg);
-    setPalette(p);
+    p.setColor(QPalette::Window,
+	       isSelected ? QColor(roundi(bg.red()*.5+255*.5),
+				   roundi(bg.green()*.5+255*.5),
+				   roundi(bg.blue()*.5))
+	       : bg);
     break;
   case VT_BooleanVar:
     setFrameShape(QFrame::Box);
@@ -228,7 +226,6 @@ void Button::representState() {
 	       isEnabled_
 	       ? (isSelected ? QColor("#ff2200") : QColor("#884444"))
 	       : QColor("#bbbbbb"));
-    setPalette(p);
     break;
   case VT_PanelOpen:
     setFrameShape(QFrame::Panel);
@@ -238,7 +235,6 @@ void Button::representState() {
     p.setColor(QPalette::WindowText,isSelected
 	       ? QColor("#ffff00")
 	       : p.color(QPalette::ButtonText));
-    setPalette(p);
     break;
   case VT_Action:
     setAutoFillBackground(false);
@@ -253,7 +249,6 @@ void Button::representState() {
     p.setColor(QPalette::WindowText,//isSelected
 	       //? QColor("#ffff00") :
 	       p.color(QPalette::ButtonText));
-    setPalette(p);
     break;
   case VT_ArrayCtrl:
     setFrameShape(QFrame::Box);
@@ -263,6 +258,7 @@ void Button::representState() {
     break; // Note: Color is handled by xmlPage
   }
 
+  setPalette(p);
   //  if (isEnabled_)
   //    show();
   //  else
@@ -343,15 +339,6 @@ void Button::paintEvent(class QPaintEvent *e) {
 
 void Button::setReadOnly(bool ro) {
   readonly = ro;
-
- QPalette p = palette();
-
- if (ro && !immune)
-    p.setColor(QPalette::Window, QColor("#aaaaaa"));
-  else
-    p.setColor(QPalette::Window, p.color(QPalette::Button));
-  setPalette(p);
-
   representState();
 }
 

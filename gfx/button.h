@@ -113,7 +113,19 @@ public slots:
        channel-style decoration if active.
   */
   virtual void setReadOnly(bool ro);
-  void makeROImmune(); // read only immune
+  /*:F setReadOnly
+   *:D Makes this button read-only.
+       A read-only button is rendered in gray and does not respond to mouse
+       events.
+   *:N But see makeROImmune!
+   */
+  void makeROImmune();
+  /*:F makeROImmune
+   *:D Makes this button immune to read-only status. An immune button is
+       always rendered in its normal colors and does respond to mouse clicks.
+       However, even immune buttons ignore double clicks when they are made
+       read-only.
+  */
   void setBackground(QColor const &bg);
   /*:F setBackground
    *:D Sets the background color of this button.
