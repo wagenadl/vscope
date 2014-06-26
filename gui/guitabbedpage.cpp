@@ -48,6 +48,7 @@ void guiTabbedPage::reconnect() {
 	      par, SLOT(removeTriangle(QString)));
       if (penable) {
 	b->setVisualType(VT_ArrayCtrl);
+        b->makeROImmune();
 	connect(b, SIGNAL(doubleClicked(QString,QString)),
 		penable, SLOT(toggleSelected()));
       }

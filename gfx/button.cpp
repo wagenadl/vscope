@@ -39,6 +39,8 @@ Button::Button(QWidget *parent, int lx, int ty, QString myID):
   isAction=true;
   isSelected=false;
   isEnabled_=true;
+  readonly = false;
+  immune = false;
   vtype = VT_Label;
   setGeometry(lx,ty,BUTTON_Width,BUTTON_Height);
   setFocusPolicy(Qt::NoFocus);
@@ -136,6 +138,8 @@ void Button::toggleSelected() {
 }
 
 void Button::mousePressEvent(class QMouseEvent *) {
+  if (readonly && !immune)
+    return;
   lastClick.start();
   if (true) { // vtype==VT_Action) {
     setFrameShadow(QFrame::Sunken);
@@ -161,6 +165,8 @@ void Button::restoreActionFrame() {
 }  
 
 void Button::mouseDoubleClickEvent(class QMouseEvent *) {
+  if (readonly)
+    return;
   lastClick.start();
   if (vtype==VT_Action) {
     setFrameShadow(QFrame::Sunken);
@@ -333,4 +339,22 @@ void Button::paintEvent(class QPaintEvent *e) {
     
   }
   QLabel::paintEvent(e);
+}
+
+void Button::setReadOnly(bool ro) {
+  readonly = ro;
+
+ QPalette p = palette();
+
+ if (ro && !immune)
+    p.setColor(QPalette::Window, QColor("#aaaaaa"));
+  else
+    p.setColor(QPalette::Window, p.color(QPalette::Button));
+  setPalette(p);
+
+  representState();
+}
+
+void Button::makeROImmune() {
+  immune = true;
 }

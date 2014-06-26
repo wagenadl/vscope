@@ -27,7 +27,7 @@ void guiRadioGroup::build(PageBuildGeom &g0, QDomElement doc) {
   for (QDomElement e=doc.firstChildElement(); !e.isNull();
        e=e.nextSiblingElement()) {
     QString tag = e.tagName();
-    if (tag=="button") {
+    if (tag=="button" || tag=="immune") {
       guiButton *b = page->addButton(g, e);
       rg->add(b); // this overrides visual type...
       fixedids.insert(b->id());

@@ -246,10 +246,5 @@ bool guiButton::alwaysHidden() const {
 }
 
 void guiButton::setReadOnly(bool ro) {
-  QPalette p = palette();
-  if (ro)
-    p.setColor(QPalette::Window, QColor("#aaaaaa"));
-  else
-    p.setColor(QPalette::Window, p.color(QPalette::Button));
-  setPalette(p);
+  Button::setReadOnly(ro);
 }

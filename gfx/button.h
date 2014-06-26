@@ -112,6 +112,8 @@ public slots:
    *:D A Radio or Toggle button can be an item, which means it will receive
        channel-style decoration if active.
   */
+  virtual void setReadOnly(bool ro);
+  void makeROImmune(); // read only immune
   void setBackground(QColor const &bg);
   /*:F setBackground
    *:D Sets the background color of this button.
@@ -164,6 +166,7 @@ private:
   VISUALTYPE vtype;
   QTime lastClick;
   QTimer clickTimer;
+  bool readonly, immune;
 protected slots:
   void restoreActionFrame();
 private:

@@ -171,6 +171,8 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc, "id",
 			  "guiPage (addButton)", "Cannot read button ID");
   guiButton *b = new guiButton(this, id, master);
+  if (doc.tagName()=="immune")
+    b->makeROImmune();
   topgroup->add(b);
   b->setup(doc);
   buttons[id] = b;
@@ -489,7 +491,7 @@ void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
     QString tag = e.tagName();
     if (tag=="group")
       addRadioGroup(g,e);
-    else if (tag=="button")
+    else if (tag=="button" || tag=="immune")
       addButton(g,e);
     else if (tag=="item")
       addItem(g,e);
