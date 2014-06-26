@@ -56,37 +56,37 @@
       <param id="enable" type="bool" default="true"/>
       <array id="camera" enum="CAMERAS">
         <param id="enable" type="bool" default="true"/>
-        <param id="master" type="string" default="Self"/>
+        <param id="master" type="string" default="self"/>
         <param id="binning" type="geometry" default="1x1+0+0" 
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="region" type="geometry" default="512x512+0+0"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <!-- Despite the fact that regions are now defined on a per-camera
              basis, they are defined in global coordinates. -->
         <param id="delay" type="time" default="100 ms" min="0 ms" max="1 h"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="dur" type="time" default=".8 s" min="100 ms" max="1 h"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="rate" type="freq" default="10 Hz" min="1 Hz" max="1000 Hz"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="dutyCycle" type="percentage" default="100%"
   	     min="0%" max="100%"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="preIllum" type="time" default="1.5 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="postIllum" type="time" default="0.1 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="preShutter" type="time" default="50 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="postShutter" type="time" default="100 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
         <param id="preHeat" type="time" default="0 ms"
   	     min="0 ms" max="1 h"
-  	     cond="master" enable_if="Self"/>
+  	     cond="master" enable_if="self"/>
       </array>
     </category>
   
@@ -144,7 +144,7 @@
         <param id="aiChannels" type="set" default="" save="false"/>
         <param id="diChannels" type="set" default="" save="false"/>
         <param id="vcoSource" type="string" 
-               default="Silent" save="false"/>
+               default="silent" save="false"/>
       </category>
       <category id="checkDaq"/>
       <category id="checkCam"/>

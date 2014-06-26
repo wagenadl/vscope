@@ -69,7 +69,7 @@ static void ensureMasterOK(QString p) {
   QString ultimate = ultimateCCDMaster(myid);
   if (ultimate=="LOOP") {
     QString master = immediateCCDMaster(myid);
-    Globals::ptree->find("acqCCD/camera:" + master + "/master").set("Self");
+    Globals::ptree->find("acqCCD/camera:" + master + "/master").set("self");
   }
 }
       

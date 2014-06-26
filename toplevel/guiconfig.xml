@@ -224,7 +224,7 @@
       </group>
 
       <menu id="master" rows="5" cols="1.2">
-	<item value="Self"/>
+	<item value="self"/>
 	<auto enum="CAMERAS" exclude="*id"/>
       </menu>
   
@@ -594,7 +594,7 @@
 	<auto enum="AICHAN"/>
       </checklist>
       <menu id="vcoSource"  cols="4">
-        <item value="Silent" />
+        <item value="silent" />
 	<auto enum="AICHAN"/>
       </menu>
       <menu id="timeBase" cols="3.8">
@@ -651,6 +651,7 @@
 <aliases>
   <alias id="off" label="Off"/>
   <alias id="self" label="Self"/>
+  <alias id="silent" label="Silent"/>
 
   <!-- For binning -->
   <alias id="1x1+0+0" label="1 x 1"/>
