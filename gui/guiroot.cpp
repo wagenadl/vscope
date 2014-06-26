@@ -14,6 +14,7 @@ guiRoot::guiRoot(QWidget *parent,
 	       ParamTree *ptree_, QDomElement doc) {
   geom_ = new guiGeom(doc.firstChildElement("geometry"));
   ptree = ptree_;
+  readOnly = false;
   root = 0; // let guiPages know that Master doesn't have a root yet
   QDomElement elt = doc.firstChildElement("page");
   root = new guiPage(parent, ptree,
@@ -22,6 +23,7 @@ guiRoot::guiRoot(QWidget *parent,
 		     QRect(geom_->x0,geom_->y0,geom_->w,geom_->h));
   root->setup(elt);
   root->show();
+  findButton("acquisition/unlock").hide();
 }
 
 guiRoot::~guiRoot() {
@@ -57,8 +59,8 @@ void guiRoot::setCustom(QString path, int cno, QString newval) {
   QString olds = par.toString();
   par.set(newval);
   QString news = par.toString();
-  if (news!=olds)
-    emit customValueChanged(path,cno, news);
+  if (news!=olds && !readOnly)
+    emit customValueChanged(path, cno, news);
 }
 
 void guiRoot::setParam(QString path, QString newval) {
@@ -68,8 +70,8 @@ void guiRoot::setParam(QString path, QString newval) {
   QString olds = par.toString();
   par.set(newval);
   QString news = par.toString();
-  if (olds!=news)
-    emit paramChanged(path,news);
+  if (olds!=news && !readOnly)
+    emit paramChanged(path, news);
 }
 
 bool guiRoot::canSetParam(QString path, QString newval) {
@@ -101,9 +103,15 @@ guiPage &guiRoot::findPage(QString path) {
 
 void guiRoot::setTree(ParamTree *pt) {
   Dbg() << "guiRoot::setTree " << pt;
+  ptree = pt;
   root->reTree(pt);
 }
 
 void guiRoot::setReadOnly(bool ro) {
+  readOnly = ro;
   root->setReadOnly(ro);
+  if (ro)
+    findButton("acquisition/unlock").show();
+  else
+    findButton("acquisition/unlock").hide();    
 }

@@ -56,7 +56,7 @@ TrialData::~TrialData() {
     delete partree;
 }
 
-void TrialData::useConnectedCameras(ParamTree const *ptree) {
+void TrialData::useConnectedCameras() {
   QStringList newcams = Connections::allCams();
   
   QSet<QString> newset;
@@ -84,7 +84,7 @@ void TrialData::useConnectedCameras(ParamTree const *ptree) {
 
   // place all cameras
   foreach (QString id, camids) {
-    ccdplace[id] = camPlace(id, ptree);
+    ccdplace[id] = camPlace(id);
     ccddata[id]->setDataToCanvas(ccdplace[id]);
   }
   
@@ -121,32 +121,37 @@ Transform const &TrialData::ccdPlacement(QString camid) const {
     throw Exception("TrialData", "No CCD Data for camera " + camid);
 }
 
-void TrialData::generalPrep(ParamTree const *ptree, bool concams) {
-  if (xml)
-    delete xml;
-
-  fpath = ptree->find("filePath").toString();
-  exptname = ptree->find("acquisition/exptname").toString();
-  trialid = trialname(ptree);
-
-  xml = new XML(0, "vsdscopeTrial");
-
-  QDomElement settings = xml->append("settings");
-  ptree->write(settings);
-
+void TrialData::cloneTree(ParamTree const *ptree) {
   if (partree) {
     if (partree != ptree)
       *partree = *ptree;
   } else {
     partree = new ParamTree(*ptree);
   }
+}
+
+void TrialData::generalPrep(bool concams) {
+  clearCCD();
+  clearAnalog();
+  clearDigital();
+
+  if (xml)
+    delete xml;
+
+  fpath = partree->find("filePath").toString();
+  exptname = partree->find("acquisition/exptname").toString();
+  trialid = trialname();
+
+  xml = new XML(0, "vsdscopeTrial");
+  QDomElement settings = xml->append("settings");
+  partree->write(settings);
 
   QDomElement info = xml->append("info");
   info.setAttribute("expt",exptname);
   info.setAttribute("trial",trialid);
   if (snap)
     info.setAttribute("type","snapshot");
-  else if (ptree->find("acqCCD/enable").toBool())
+  else if (partree->find("acqCCD/enable").toBool())
     info.setAttribute("type","ephys+vsd");
   else
     info.setAttribute("type","ephys");
@@ -154,18 +159,18 @@ void TrialData::generalPrep(ParamTree const *ptree, bool concams) {
     info.setAttribute("stim","0");
     info.setAttribute("duration","0 s");
   } else {
-    info.setAttribute("stim",ptree->find("stimEphys/enable").toString());
-    info.setAttribute("duration",ptree->find("acqEphys/acqTime").toString());
+    info.setAttribute("stim",partree->find("stimEphys/enable").toString());
+    info.setAttribute("duration",partree->find("acqEphys/acqTime").toString());
   }
   if (contEphys) {
     QString conttri = QString("%1")
-      .arg(ptree->find("acquisition/contephys_trialno").toInt(),
+      .arg(partree->find("acquisition/contephys_trialno").toInt(),
 	   int(3),int(10),QChar('0'));
     info.setAttribute("contephys", conttri);
   } else {
     info.setAttribute("contephys", "0");
     if (!snap) {
-      QString acqfreq = ptree->find("acqEphys/acqFreq").toString();
+      QString acqfreq = partree->find("acqEphys/acqFreq").toString();
       QDomElement analog = xml->append("analog");
       analog.setAttribute("rate",acqfreq);
       QDomElement digital = xml->append("digital");
@@ -175,21 +180,21 @@ void TrialData::generalPrep(ParamTree const *ptree, bool concams) {
   if (do_ccd) {
     QDomElement ccd = xml->append("ccd");
     if (concams)
-      useConnectedCameras(ptree);
+      useConnectedCameras();
   }
   prep = true;
 }
 
-Transform TrialData::camPlace(QString camid, ParamTree const *ptree) {
+Transform TrialData::camPlace(QString camid) const {
   Connections::CamCon const *cam = Connections::findpCam(camid);
   if (!cam) {
     Dbg() << "TrialData::CamPlace: no data for camera " << camid;
     return Transform();
   }
   Transform t0 = cam->placement;
-  if (ptree) {
-    QRect reg(ptree->find("acqCCD/camera:"+camid+"/region").toRect());
-    QRect bin(ptree->find("acqCCD/camera:"+camid+"/binning").toRect());
+  if (partree) {
+    QRect reg(partree->find("acqCCD/camera:"+camid+"/region").toRect());
+    QRect bin(partree->find("acqCCD/camera:"+camid+"/binning").toRect());
     /* This is actually hard to figure out for flipped cameras.
        Let's try some examples.
        A camera that y-flips, so that t0=1x-1+0+512.
@@ -214,32 +219,36 @@ Transform TrialData::camPlace(QString camid, ParamTree const *ptree) {
 }
 
 void TrialData::prepare(ParamTree const *ptree) {
-  prepare(ptree, true);
+  KeyGuard guard(*this);
+  cloneTree(ptree);
+  prepare(true);
 }
 
-void TrialData::prepare(ParamTree const *ptree, bool concams) {
+void TrialData::prepare(bool concams) {
   snap=false;
-  timing_.prepTrial(ptree);
-  contEphys = ptree->find("acquisition/contEphys").toBool();
+  timing_.prepTrial(partree);
+  contEphys = partree->find("acquisition/contEphys").toBool();
   /* contEphys tracks whether continuous e'phys acq is simultaneously
      happening (in "ContAcq"). We are *not* doing that ourselves here. */
-  do_ccd = ptree->find("acqCCD/enable").toBool();
-  generalPrep(ptree, concams);
+  do_ccd = partree->find("acqCCD/enable").toBool();
+  generalPrep(concams);
 }
 
 void TrialData::prepareSnapshot(ParamTree const *ptree) {
-  prepareSnapshot(ptree, true);
+  KeyGuard guard(*this);
+  cloneTree(ptree);
+  prepareSnapshot(true);
 }
 
- void TrialData::prepareSnapshot(ParamTree const *ptree, bool concams) {
+ void TrialData::prepareSnapshot(bool concams) {
   snap=true;
-  timing_.prepSnap(ptree);
+  timing_.prepSnap(partree);
   do_ccd = true;
-  generalPrep(ptree, concams);
+  generalPrep(concams);
 }
 
-QString TrialData::trialname(ParamTree const *ptree) {
-  int t = ptree->find("acquisition/trialno").toInt();
+QString TrialData::trialname() const {
+  int t = partree->find("acquisition/trialno").toInt();
   return QString("%1").arg(t,int(3),int(10),QChar('0'));
 }
 
@@ -285,9 +294,9 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0) {
   // and that the xdataIn have the right sizes
   VideoProg::find().reset(partree);
   if (info.attribute("type")=="snapshot")
-    prepareSnapshot(partree, false);
+    prepareSnapshot(false);
   else
-    prepare(partree, false);
+    prepare(false);
 
   if (xml)
     delete xml;

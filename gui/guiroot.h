@@ -189,6 +189,7 @@ private:
   class guiPage *root;
   class ParamTree *ptree;
   class guiGeom *geom_;
+  bool readOnly;
 };
 
 #endif

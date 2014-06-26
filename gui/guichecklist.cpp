@@ -36,6 +36,10 @@ void guiChecklist::prepForOpening() {
     autoItems->rebuild();
 
   QSet<QString> ss = pp->toStrings();
+
+  Dbg() << "prepforopening:" << path() << ":" << ptree << ":" << pp
+        << ": " << QStringList(ss.toList()).join(", ");
+  
   foreach (guiButton *b, buttons) 
     if (isType<guiItem>(b)) 
       b->setSelected(ss.contains(b->getValue()));

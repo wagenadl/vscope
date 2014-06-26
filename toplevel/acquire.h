@@ -16,6 +16,7 @@ public:
   void acqFrame();
   void acqTrial();
   void prepareLoad();
+  void unlock();
   void setContEphys(); // reads from ptree whether or not to enable cont ephys
   void setAutoRun(); // reads from ptree whether or not to enable auto run
   void newTrialPeriod();

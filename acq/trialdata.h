@@ -77,8 +77,8 @@ public:
        on actual frame times.
   */
 private:
-  static QString trialname(class ParamTree const *tree);
-  void generalPrep(class ParamTree const *ptree, bool newccds);
+  QString trialname() const;
+  void generalPrep(bool newccds);
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;
@@ -88,9 +88,10 @@ private:
   void clearAnalog();
   void clearDigital();
   void clearCCD();
-  void prepare(class ParamTree const *ptree, bool concams);
-  void prepareSnapshot(class ParamTree const *ptree, bool concams);
-  void useConnectedCameras(ParamTree const *ptree=0);
+  void prepare(bool concams);
+  void prepareSnapshot(bool concams);
+  void useConnectedCameras();
+  void cloneTree(class ParamTree const *ptree);
 private:
   // data
   QStringList camids;
@@ -113,7 +114,7 @@ private:
   class XML *xml;
   AllCCDTimingDetail timing_;
 private:
-  static Transform camPlace(QString camid, ParamTree const *ptree=0);
+  Transform camPlace(QString camid) const;
   /*:F camPlace
    *:D Calculates camera placement on a canvas from scratch.
    *:N If ptree is non-zero, acqCCD/region and /binning are used.

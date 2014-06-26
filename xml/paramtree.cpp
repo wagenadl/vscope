@@ -459,6 +459,13 @@ bool ParamTree::enabled(QString path) const {
 }
 
 ParamTree &ParamTree::operator=(ParamTree const &other) {
+  foreach (ParamTree *c, children)
+    delete c;
+  children.clear();
+  if (leaf_)
+    delete leaf_;
+  leaf_ = 0;
+  construct();
   XML xml(0,"vsdscopeSettings");
   other.write(xml.root());
   read(xml.root());

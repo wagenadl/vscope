@@ -432,6 +432,7 @@
 	    editcaption="Experiment Name" bg="#88aaff"/>
     <button id="trialno" label="Trial No.: %1" editcaption="Trial Number"
 	    bg="#77bbff"/>
+    <button id="unlock" label="Unlock" y="2" bg="#88ff88"/>
     <button id="load"  label="Load Old Data..." y="3" bg="#88ffff"/>
     
     <button id="singleframe" label="Single Frame" x="4.1" y="0" bg="#ddbbff"/>

@@ -275,31 +275,52 @@ void Acquire::loadData(QString xmlfn) {
   trialbit.replace("-ccd.dat","");
   
   try {
-    Globals::trove->read(dirbit,exptbit,trialbit);
+    Globals::trove->read(dirbit, exptbit, trialbit);
   } catch (Exception const &e) {
     GUIExc::report(e,"load data");
+    unlock();
+    return;
   }
-  Globals::trial->reconstructStim(Globals::ptree);
+
+  ParamTree *ptree = Globals::trove->trial().paramTree();
+
+  Globals::gui->setTree(ptree);
+  Globals::gui->setReadOnly(true);
+  
+  Globals::trial->reconstructStim(ptree);
   Globals::trove->trial().refineCCDTiming();
 
-  Globals::ptree->find("acquisition/exptname").set(exptbit);
-  Globals::ptree->find("acquisition/trialno").set(trialbit);
-  Globals::ptree->find("acquisition/dummy").set("true");
+  ptree->find("acquisition/exptname").set(exptbit);
+  ptree->find("acquisition/trialno").set(trialbit);
+  ptree->find("acquisition/dummy").set("true");
   
   Globals::trove->roidata().
-    setDebleach((DEBLEACH)Globals::ptree->find("analysis/debleach").toInt());
+    setDebleach((DEBLEACH)ptree->find("analysis/debleach").toInt());
   displayCCD();
   displayEPhys();
 
   Globals::panelHistory->relabelAll();
 
-  Globals::gui->setTree(Globals::trove->trial().paramTree());
-  Globals::gui->setReadOnly(true);
   Globals::gui->open(); // make sure updated trial number visible.
   
   if (loadframe)
       loadframe->hide();
 
+  Dbg() << "loaded: aich = " << ptree->find("acqEphys/aiChannels").toString();
+  Dbg() << "  mytree: " << Globals::ptree->find("acqEphys/aiChannels").toString();
+}
+
+void Acquire::unlock() {
+  Dbg() << "unlock: aich = " << Globals::trove->trial().paramTree()->find("acqEphys/aiChannels").toString();
+  Dbg() << "  mytree: " << Globals::ptree->find("acqEphys/aiChannels").toString();
+  Globals::trial->prepare(Globals::ptree);
+  displayCCD();
+  displayEPhys();
+  Globals::gui->setTree(Globals::ptree);
+  Globals::gui->setReadOnly(false);
+  Globals::gui->open();
+  Dbg() << "after unlock: aich = " << Globals::trove->trial().paramTree()->find("acqEphys/aiChannels").toString();
+  Dbg() << "  mytree: " << Globals::ptree->find("acqEphys/aiChannels").toString();
 }
 
 void Acquire::prepareLoad() {

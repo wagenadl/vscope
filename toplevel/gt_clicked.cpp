@@ -71,6 +71,8 @@ void gt_slots::clicked(QString p) {
       Globals::acquire->acqFrame();
     } else if (p=="acquisition/singletrial") {
       Globals::acquire->acqTrial();
+    } else if (p=="acquisition/unlock") {
+      Globals::acquire->unlock();
     } else if (p=="acquisition/load") {
       Globals::acquire->prepareLoad();
     } else if (p=="acquisition/log") {

@@ -245,6 +245,7 @@ void guiPage::open() {
 
   Param *p = ptree->findp("enable");
   setPageEnabled(p ? p->toBool() : true);
+  prepForOpening();
 
   if (neverOpened) {
     foreach (guiRadioGroup *bg, groups) 
@@ -265,12 +266,14 @@ void guiPage::openChildren() {
       guiButton *b = buttons[id];
       if (b->getSelected())
 	subPages[id]->open();
+      else
+        subPages[id]->close();
     }
   }
 }
 
 void guiPage::prepForOpening() {
-  Dbg() << "prepforopening: " << myPath;
+  Dbg() << "prepforopening: " << myPath << ":" << ptree;
   foreach (guiRadioGroup *g, groups)
     g->rebuild();
   
@@ -299,12 +302,6 @@ void guiPage::prepForOpening() {
       // This is a button that represents a tab.
       representTabEnabled(id);
     }
-  }
-
-  foreach (QString id, subPages.keys()) {
-    guiPage *subpage = subpagep(id);
-    if (subpage->isVisibleTo(this))
-      subpage->prepForOpening();
   }
 }
 
@@ -363,7 +360,7 @@ void guiPage::booleanButtonToggled(QString path) {
   bool on = b->getSelected();
   master->setParam(parpath, on ? "yes" : "no");
   if (subpath=="enable") 
-    setPageEnabled(on);
+    open();
   else 
     updateEnableIfs();
 
@@ -387,14 +384,6 @@ void guiPage::setPageEnabled(bool enable) {
     b->setEnabled(enable);
 
   updateEnableIfs();
-
-  foreach (AbstractPage *p0, subPages) {
-    guiPage *p = dynamic_cast<guiPage *>(p0);
-    if (p->isVisible())
-      p->setPageEnabled(enable);
-  }
-  
-  prepForOpening();
 }
 
 void guiPage::childItemSelected(QString path, QString) {
