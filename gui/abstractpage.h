@@ -110,6 +110,7 @@ public:
   guiRoot const *masterp() const { return master; }
   QString id() const { return myId; }
   QString path() const { return myPath; }
+  bool isReadOnly() const { return readonly; }
 public slots:
   virtual void open()=0;
   virtual void close()=0;
@@ -150,6 +151,7 @@ protected:
   /*:V myId
    *:D My leaf ID
    */
+  bool readonly;
 public:
   virtual QString getCurrentElement() const=0;
 protected:

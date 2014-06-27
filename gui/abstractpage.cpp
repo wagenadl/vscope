@@ -19,6 +19,7 @@ AbstractPage::AbstractPage(class QWidget *parent,
 			   class guiRoot *master_,
 			   class QRect const &geom): QFrame(parent) {
   setGeometry(geom);
+  readonly = false;
 
   master = master_;
   ptree = origptree = ptree_;
@@ -179,6 +180,7 @@ QString AbstractPage::pathInstantiate(QString path) const {
 }
 
 void AbstractPage::setReadOnly(bool ro) {
+  readonly = ro;
   foreach (QString id, subPages.keys())
     subPages[id]->setReadOnly(ro);
   if (isVisible())
