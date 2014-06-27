@@ -1,8 +1,8 @@
 // panelhistory.cpp
 
 #include "panelhistory.h"
-#include "globals.h"
 #include "vscopegui.h"
+#include "globals.h"
 #include <xml/paramtree.h>
 #include <gui/guibutton.h>
 #include <base/dbg.h>
@@ -15,7 +15,7 @@
 #include <gfx/roiimages.h>
 #include <xml/enumerator.h>
 
-PanelHistory::PanelHistory() {
+PanelHistory::PanelHistory(ParamTree *pt, guiRoot *gui): ptree(pt), gui(gui) {
   busy = false;
   nButtons = countButtons();
   oldLeft = 0;
@@ -27,39 +27,43 @@ PanelHistory::PanelHistory() {
 PanelHistory::~PanelHistory() {
 }
 
+void PanelHistory::setTree(ParamTree *pt) {
+  ptree = pt;
+}
+
 Param const &PanelHistory::whatPar(QString where, int n) const {
   QString name = QString("panelHistory/what%1%2").arg(where).arg(n);
-  return Globals::ptree->find(name);
+  return ptree->find(name);
 }
 
 Param &PanelHistory::whatPar(QString where, int n) {
   QString name = QString("panelHistory/what%1%2").arg(where).arg(n);
-  return Globals::ptree->find(name);
+  return ptree->find(name);
 }
 
 Param const &PanelHistory::prioPar(QString where, int n) const {
   QString name = QString("panelHistory/prio%1%2").arg(where).arg(n);
-  return Globals::ptree->find(name);
+  return ptree->find(name);
 }
 
 Param &PanelHistory::prioPar(QString where, int n) {
   QString name = QString("panelHistory/prio%1%2").arg(where).arg(n);
-  return Globals::ptree->find(name);
+  return ptree->find(name);
 }
 
 guiButton &PanelHistory::barButton(QString where, int n) {
   QString name = QString("panel%1%2").arg(where).arg(n);
-  return Globals::gui->findButton(name);
+  return gui->findButton(name);
 }
 
 guiButton &PanelHistory::menuButton(QString where, QString what) {
   QString name = QString("panel%1/%2").arg(where).arg(what);
-  return Globals::gui->findButton(name);
+  return gui->findButton(name);
 }
 
 int PanelHistory::countButtons() const {
   int n = 0;
-  while (Globals::ptree->findp(QString("panelHistory/what%1%2")
+  while (ptree->findp(QString("panelHistory/what%1%2")
 			       .arg("Left").arg(n+1)))
     n++;
   return n;
@@ -76,7 +80,7 @@ void PanelHistory::relabelAll() {
 }
 
 void PanelHistory::relabel(QString where) {
-  QString what = Globals::ptree->find("panel" + where).toString();
+  QString what = ptree->find("panel" + where).toString();
   for (int k=1; k<=nButtons; k++) {
     Button &b = barButton(where,k);
     setItemAt(where,k,"");
@@ -88,7 +92,7 @@ void PanelHistory::relabel(QString where) {
 }
 
 void PanelHistory::makeButtons(QString where) {
-  QString what = Globals::ptree->find("panel" + where).toString();
+  QString what = ptree->find("panel" + where).toString();
   for (int k=1; k<=nButtons; k++) {
     Button &b = barButton(where,k);
     setItemAt(where,k,"");
@@ -105,7 +109,7 @@ void PanelHistory::newSelection(QString const &where) {
     return;
   }
   busy = true;
-  QString what = Globals::ptree->find("panel" + where).toString();
+  QString what = ptree->find("panel" + where).toString();
   QString label = niceLabel(where,what);
   int n = find(where,what);
   if (n==0) {
@@ -295,8 +299,8 @@ void PanelHistory::doubleClicked(QString id, QString) {
     img.invertPixels();
   
   QString filePath = Globals::filePath();
-  QString exptname = Globals::ptree->find("acquisition/exptname").toString();
-  int trialno = Globals::ptree->find("acquisition/trialno").toInt();
+  QString exptname = ptree->find("acquisition/exptname").toString();
+  int trialno = ptree->find("acquisition/trialno").toInt();
   QString trialid = QString("%1").arg(trialno,int(3),int(10),QChar('0'));
   QString newtrial = filePath + "/" + exptname + "/" + trialid;
   if (newtrial==lasttrial)

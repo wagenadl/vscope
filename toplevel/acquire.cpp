@@ -285,6 +285,7 @@ void Acquire::loadData(QString xmlfn) {
 
   ParamTree *ptree = Globals::trove->trial().myParamTree();
 
+  Globals::panelHistory->setTree(ptree);
   Globals::gui->setTree(ptree);
   Globals::gui->setReadOnly(true);
   
@@ -317,6 +318,7 @@ void Acquire::unlock() {
   Globals::trial->prepare(Globals::ptree);
   displayCCD();
   displayEPhys();
+  Globals::panelHistory->setTree(Globals::ptree);
   Globals::gui->setTree(Globals::ptree);
   Globals::gui->setReadOnly(false);
   Globals::gui->open();

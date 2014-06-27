@@ -122,7 +122,7 @@ void ParamTree::read(QDomElement doc) {
 	 !e.isNull(); e=e.nextSiblingElement()) {
       QString id = xmlAttribute(e, "id");
       ParamTree *c = childp(id);
-      if (c) {
+      if (c && c->savable) { // don't load non-savable children either
 	try {
 	  c->read(e);
 	} catch(Exception const &) {
@@ -458,25 +458,19 @@ bool ParamTree::enabled(QString path) const {
   return true;
 }
 
-ParamTree &ParamTree::operator=(ParamTree const &other) {
-  foreach (ParamTree *c, children)
-    delete c;
-  children.clear();
-  if (leaf_)
-    delete leaf_;
-  leaf_ = 0;
-  construct();
-  XML xml(0,"vsdscopeSettings");
-  other.write(xml.root());
-  read(xml.root());
-  return *this;
-}
-
 ParamTree::ParamTree(ParamTree const &other): base(other.base) {
-  construct();
-  XML xml(0,"vsdscopeSettings");
-  other.write(xml.root());
-  read(xml.root());
+  arrayElement = other.arrayElement;
+  if (other.leaf_)
+    leaf_ = new Param(*other.leaf_);
+  else
+    leaf_ = 0;
+  savable = other.savable;
+  dbgPath = other.savable;
+  foreach (QString c, other.children.keys())
+    if (other.children[c])
+      children[c] = new ParamTree(*other.children[c]);
+    else
+      children[c] = 0;
 }
 
 bool ParamTree::isSavable() const {

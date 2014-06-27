@@ -487,7 +487,8 @@ int main(int argc, char **argv) {
 
     Globals::exptlog = new ExptLog(Globals::mainwindow);
 
-    Globals::panelHistory = new PanelHistory();
+    Globals::panelHistory = new PanelHistory(Globals::ptree,
+                                             Globals::gui);
     Globals::panelHistory->makeButtons();
 
     Globals::scripts = new Scripts(&Globals::gui->findPage("scripts"));

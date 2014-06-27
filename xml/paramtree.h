@@ -23,7 +23,6 @@ public:
    *:N If the tree contains any arrays, this requires that the relevant
        Enumerators have already been setup.
    */
-  ParamTree &operator=(ParamTree const &); // must have matching base
   void read(QDomElement doc);
   /*:F read
    *:D This reads all values in doc, into the tree.
@@ -151,6 +150,8 @@ protected:
 public:
   QString dbgPath;
   void setDbgPath(QString path);
+private:
+  ParamTree &operator=(ParamTree const &); // not defined
 };
 
 #endif

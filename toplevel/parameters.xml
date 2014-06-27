@@ -4,9 +4,9 @@
   <params>
     <param id="filePath" type="string" save="false"/>
     <param id="panelLeft" type="enum" enum="SHOWWHAT" default="Welcome"
-           immune="1"/>
+           immune="1" save="false"/>
     <param id="panelRight" type="enum" enum="SHOWWHAT" default="Welcome"
-           immune="1"/>
+           immune="1" save="false"/>
     <category id="panelHistory">
       <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="EphysInt"/>
       <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysExt"/>

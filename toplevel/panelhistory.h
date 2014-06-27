@@ -11,8 +11,9 @@
 class PanelHistory: public QObject {
   Q_OBJECT;
 public:
-  PanelHistory();
-  virtual ~PanelHistory(); 
+  PanelHistory(class ParamTree *ptree, class guiRoot *gui);
+  virtual ~PanelHistory();
+  void setTree(ParamTree *);
   void makeButtons();
   void relabelAll();
   void newSelection(QString const &where);
@@ -101,6 +102,8 @@ private:
 private:
   QString lasttrial;
   int figno;
+  ParamTree *ptree;
+  guiRoot *gui;
 };
 
 #endif
