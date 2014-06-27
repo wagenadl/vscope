@@ -61,12 +61,8 @@ Param::Param(QDomElement doc, QString path) {
 
 Param::~Param() {
   /*
-    // We do not delete the min and max, because we may have shallow copies
-    // doubleing around.
-  if (min)
-    delete min;
-  if (max)
-    delete max;
+    We do not delete the min, max, and cond, because we may have shallow
+    copies doubling around. A QSharedPointer could fix this memory leak.
   */
 }
 
@@ -407,6 +403,7 @@ Param::Param(Param const &src) {
   enumerator=src.enumerator;
   min=src.min; // note shallow copy
   max=src.max; // note shallow copy
+  cond = src.cond; // note shallow copy
   immune = src.immune;
 }
 
@@ -418,6 +415,7 @@ Param &Param::operator=(Param const &src) {
   value = src.value;
   min=src.min; // note shallow copy
   max=src.max; // note shallow copy
+  cond = src.cond; // note shallow copy
   immune = src.immune;
   return *this;
 }
