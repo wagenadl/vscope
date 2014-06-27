@@ -36,15 +36,16 @@ void DataTrove::constructData() {
   connect(rois_, SIGNAL(newDatum(int)), SLOT(saveROIs()));
   connect(rois_, SIGNAL(newAll()), SLOT(saveROIs()));
 
-  trial_->prepare(ptree_);
+  trial_->useThisPTree(ptree_);
+  trial_->prepare();
 }
 
 
-DataTrove::DataTrove(QDomElement elt): KeyAgg(0) {
-  ptree_ = new ParamTree(elt);
-  ownptree = true;
-  constructData();
-}
+//DataTrove::DataTrove(QDomElement elt): KeyAgg(0) {
+//  ptree_ = new ParamTree(elt);
+//  ownptree = true;
+//  constructData();
+//}
 
 DataTrove::~DataTrove() {
   if (ownptree)

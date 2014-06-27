@@ -275,6 +275,7 @@ void Acquire::loadData(QString xmlfn) {
   trialbit.replace("-ccd.dat","");
   
   try {
+    Globals::trove->trial().cloneThisPTree(Globals::ptree);
     Globals::trove->read(dirbit, exptbit, trialbit);
   } catch (Exception const &e) {
     GUIExc::report(e,"load data");
@@ -282,7 +283,7 @@ void Acquire::loadData(QString xmlfn) {
     return;
   }
 
-  ParamTree *ptree = Globals::trove->trial().paramTree();
+  ParamTree *ptree = Globals::trove->trial().myParamTree();
 
   Globals::gui->setTree(ptree);
   Globals::gui->setReadOnly(true);

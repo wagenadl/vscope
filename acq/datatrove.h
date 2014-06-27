@@ -11,7 +11,7 @@ class DataTrove: public KeyAgg {
   Q_OBJECT;
 public:
   DataTrove(class ParamTree *ptree);
-  DataTrove(QDomElement elt);
+  //  DataTrove(QDomElement elt);
   virtual ~DataTrove();
 public slots:
   void read(QString dir, QString exptname, QString trialid);

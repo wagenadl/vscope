@@ -1,4 +1,3 @@
-
 // trial.cpp
 
 #include "trial.h"
@@ -78,7 +77,7 @@ void Trial::prepare(ParamTree const *ptree) {
   if (active)
     throw Exception("Trial","Cannot prepare for new trial while active");
 
-  dat->prepare(ptree);
+  dat->useThisPTree(ptree);
   
   if (dat->isCCD()) {
     bool ccdok = ccdacq->prepare(ptree, dat->allTiming());
@@ -111,7 +110,8 @@ void Trial::prepareSnapshot(ParamTree const *ptree) {
   if (active)
     throw Exception("Trial","Cannot prepare for new trial while active");
 
-  dat->prepareSnapshot(ptree);
+  dat->useThisPTree(ptree);
+  dat->prepareSnapshot();
   //bool ccdok =
   ccdacq->prepare(ptree, dat->allTiming());
   ephysout->setMaster(0);

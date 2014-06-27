@@ -138,7 +138,7 @@ void gt_slots::paramchanged(QString p, QString val) {
     } else if (p=="maintenance/liveEphys/vcoSource") {
       if (Globals::liveephys)
         Globals::liveephys->setVCOChannel(val);
-    } else if (p=="acqEphys/aiChannels") {
+    } else if (p.startsWith("acqEphys/")) {
       Globals::trial->prepare(Globals::ptree);
       Globals::mgstim->rebuild();
       Globals::mgintra->rebuild();

@@ -20,12 +20,15 @@ class TrialData: public KeyAgg {
 public:
   TrialData();
   virtual ~TrialData();
-  void prepare(class ParamTree const *ptree);
-  void prepareSnapshot(class ParamTree const *ptree);
+  void useThisPTree(class ParamTree const *ptree);
+  void cloneThisPTree(class ParamTree const *ptree);
+  void prepare();
+  void prepareSnapshot();
   virtual void write() const;
   virtual void read(QString dir, QString exptname, QString trialid);
 public:
-  ParamTree *paramTree() const { return partree; } // may be 0 if unprep.
+  ParamTree const *paramTree() const { return partree; } // may be 0 if unprep.
+  ParamTree *myParamTree() const { return mypartree; } // may be 0 if unprep.
   // Do NOT change it!
   AnalogData const *analogData() const { return adataIn; }
   AnalogData  *analogData()  { return adataIn; }
@@ -91,7 +94,6 @@ private:
   void prepare(bool concams);
   void prepareSnapshot(bool concams);
   void useConnectedCameras();
-  void cloneTree(class ParamTree const *ptree);
 private:
   // data
   QStringList camids;
@@ -99,7 +101,8 @@ private:
   QMap<QString, Transform> ccdplace;
   class AnalogData *adataIn, *adataOut;
   class DigitalData *ddataIn, *ddataOut;
-  class ParamTree *partree;
+  class ParamTree const *partree;
+  class ParamTree *mypartree;
   // identification
   QString fpath;
   QString exptname;

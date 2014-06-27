@@ -32,6 +32,7 @@ TrialData::TrialData(): KeyAgg(0) {
   ddataIn = new DigitalData(1024, 1e4);
   ddataOut = new DigitalData(1024, 1e4);
   partree = 0;
+  mypartree = 0;
 
   add(adataIn);
   add(ddataIn);
@@ -52,8 +53,8 @@ TrialData::~TrialData() {
   delete ddataIn;
   delete adataIn;
 
-  if (partree)
-    delete partree;
+  if (mypartree)
+    delete mypartree;
 }
 
 void TrialData::useConnectedCameras() {
@@ -119,15 +120,6 @@ Transform const &TrialData::ccdPlacement(QString camid) const {
     return ccdplace.find(camid).value();
   else
     throw Exception("TrialData", "No CCD Data for camera " + camid);
-}
-
-void TrialData::cloneTree(ParamTree const *ptree) {
-  if (partree) {
-    if (partree != ptree)
-      *partree = *ptree;
-  } else {
-    partree = new ParamTree(*ptree);
-  }
 }
 
 void TrialData::generalPrep(bool concams) {
@@ -218,9 +210,25 @@ Transform TrialData::camPlace(QString camid) const {
   }
 }
 
-void TrialData::prepare(ParamTree const *ptree) {
+void TrialData::useThisPTree(ParamTree const *ptree) {
+  if (mypartree)
+    delete mypartree;
+  partree = mypartree = 0;
+  partree = ptree;
+  prepare();
+}
+
+void TrialData::cloneThisPTree(ParamTree const *ptree) {
+  if (mypartree)
+    delete mypartree;
+  mypartree = 0;
+  mypartree = new ParamTree(*ptree);
+  partree = mypartree;
+  prepare();
+}
+
+void TrialData::prepare() {
   KeyGuard guard(*this);
-  cloneTree(ptree);
   prepare(true);
 }
 
@@ -234,13 +242,12 @@ void TrialData::prepare(bool concams) {
   generalPrep(concams);
 }
 
-void TrialData::prepareSnapshot(ParamTree const *ptree) {
+void TrialData::prepareSnapshot() {
   KeyGuard guard(*this);
-  cloneTree(ptree);
   prepareSnapshot(true);
 }
 
- void TrialData::prepareSnapshot(bool concams) {
+void TrialData::prepareSnapshot(bool concams) {
   snap=true;
   timing_.prepSnap(partree);
   do_ccd = true;
@@ -283,16 +290,19 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0) {
   QDomElement info = myxml.find("info");
   QDomElement settings = myxml.find("settings");
 
-  partree->read(settings);
+  if (!mypartree)
+    mypartree = new ParamTree(*partree);
+  
+  mypartree->read(settings);
 
-  partree->find("acquisition/exptname").set(exptname);
-  partree->find("acquisition/trialno").set(trialid);
+  mypartree->find("acquisition/exptname").set(exptname);
+  mypartree->find("acquisition/trialno").set(trialid);
   
   contEphys = info.attribute("contephys")=="1";
   
   // the following ensures that we have stimulus data prepared
   // and that the xdataIn have the right sizes
-  VideoProg::find().reset(partree);
+  VideoProg::find().reset(mypartree);
   if (info.attribute("type")=="snapshot")
     prepareSnapshot(false);
   else
