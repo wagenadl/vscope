@@ -46,10 +46,10 @@
   <immune id="quit" label="Quit" x="7.2" y="5.2" bg="#dddd88"/>
 
   <menu id="panelLeft"  rows="3" >
-    <auto enum="SHOWWHAT"/>
+    <auto enum="SHOWWHAT" immune="1"/>
   </menu>
   <menu id="panelRight"  rows="3">
-    <auto enum="SHOWWHAT"/>
+    <auto enum="SHOWWHAT" immune="1"/>
   </menu>
 
   <!-- %%%%%%%%%%%%%%%%%%%% EPHYS. RECORDING CONFIG PAGE %%%%%%%%%%%%%%%%%%% -->

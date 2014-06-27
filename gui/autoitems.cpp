@@ -9,6 +9,7 @@
 
 AutoItems::AutoItems(guiPage *parent):
   QObject(parent), initialGeom(parent) {
+  immune = false;
 }
 
 void AutoItems::setup(PageBuildGeom &geom,
@@ -16,6 +17,7 @@ void AutoItems::setup(PageBuildGeom &geom,
   initialGeom = geom;
   doc = doc_;
   enumerator = Enumerator::find(doc.attribute("enum"));
+  immune = doc.attribute("enum").toInt() > 0;
   if (!enumerator)
     throw Exception("AutoItems", "No enumerator");
   rebuild(&geom);
@@ -78,6 +80,8 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
 		     + "\"/>\n");
       QDomElement e = xml.documentElement();
       items[id] = p->addItem(g, e);
+      if (immune)
+        items[id]->makeROImmune();
     }
   }
   

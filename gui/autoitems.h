@@ -25,6 +25,7 @@ private:
   QDomElement doc;
   PageBuildGeom initialGeom;
   Enumerator const *enumerator;
+  bool immune;
 };
 
 #endif
