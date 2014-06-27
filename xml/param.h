@@ -226,6 +226,9 @@ public:
        had a "cond" attribute when it was first read. In that case, 
        it returns true iff the condition is met.
   */
+  bool isImmune() const;
+  /*:F isImmune
+   *:D True if this param can be set even on a nominally read-only tree */
   void restore();
   /*:F restore
    *:D Restore default value. That is: the value of the "default"
@@ -266,6 +269,7 @@ private:
   class Param *cond; // if null, param is always enabled unless enable_if="*never".
   QStringList enable_if;
   QVariant deflt;
+  bool immune;
 public:
   QString dbgPath; // my full path, for debugging only
 };

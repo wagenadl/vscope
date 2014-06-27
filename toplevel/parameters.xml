@@ -3,8 +3,10 @@
 <vscope version="20120810">
   <params>
     <param id="filePath" type="string" save="false"/>
-    <param id="panelLeft" type="enum" enum="SHOWWHAT" default="Welcome"/>
-    <param id="panelRight" type="enum" enum="SHOWWHAT" default="Welcome"/>
+    <param id="panelLeft" type="enum" enum="SHOWWHAT" default="Welcome"
+           immune="1"/>
+    <param id="panelRight" type="enum" enum="SHOWWHAT" default="Welcome"
+           immune="1"/>
     <category id="panelHistory">
       <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="EphysInt"/>
       <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysExt"/>

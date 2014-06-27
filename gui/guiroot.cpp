@@ -59,7 +59,7 @@ void guiRoot::setCustom(QString path, int cno, QString newval) {
   QString olds = par.toString();
   par.set(newval);
   QString news = par.toString();
-  if (news!=olds && !readOnly)
+  if (news!=olds && (!readOnly || par.isImmune()))
     emit customValueChanged(path, cno, news);
 }
 
@@ -70,7 +70,7 @@ void guiRoot::setParam(QString path, QString newval) {
   QString olds = par.toString();
   par.set(newval);
   QString news = par.toString();
-  if (olds!=news && !readOnly)
+  if (olds!=news && (!readOnly || par.isImmune()))
     emit paramChanged(path, news);
 }
 

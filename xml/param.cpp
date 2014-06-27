@@ -15,6 +15,7 @@ Param::Param(QString type, QString enumname) {
   newType(type, enumname);
   cond=0;
   deflt=value;
+  immune = false;
 }
 
 Param::Param(QDomElement defn) {
@@ -49,6 +50,7 @@ void Param::newDefn(QDomElement defn) {
   } else {
     max = 0;
   }
+  immune = defn.hasAttribute("immune") && defn.attribute("immune").toInt();
 }
 
 Param::Param(QDomElement doc, QString path) {
@@ -405,6 +407,7 @@ Param::Param(Param const &src) {
   enumerator=src.enumerator;
   min=src.min; // note shallow copy
   max=src.max; // note shallow copy
+  immune = src.immune;
 }
 
 Param &Param::operator=(Param const &src) {
@@ -415,6 +418,7 @@ Param &Param::operator=(Param const &src) {
   value = src.value;
   min=src.min; // note shallow copy
   max=src.max; // note shallow copy
+  immune = src.immune;
   return *this;
 }
 
@@ -500,4 +504,8 @@ void Param::restore() {
 void Param::setEnabler(Param *cond_, QString enable_if_) {
   cond = cond_;
   enable_if = enable_if_.split(" ");
+}
+
+bool Param::isImmune() const {
+  return immune;
 }
