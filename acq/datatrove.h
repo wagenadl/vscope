@@ -15,7 +15,7 @@ public:
   virtual ~DataTrove();
 public slots:
   void read(QString dir, QString exptname, QString trialid);
-  void write(); // does nothing if dummy is set
+  void write(); // implies saveROIs. does nothing if dummy is set
   void saveROIs(); // only works after write().
   void setDummy(bool dummy);
   /*:F setDummy

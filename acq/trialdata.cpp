@@ -295,6 +295,7 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0) {
   
   mypartree->read(settings);
 
+  mypartree->find("filePath").set(fpath);
   mypartree->find("acquisition/exptname").set(exptname);
   mypartree->find("acquisition/trialno").set(trialid);
   
