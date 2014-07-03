@@ -29,7 +29,7 @@ end
 % generate the image figure
 prepfig(4.5,4,1);
 set(gcf,'color','w');
-set(gca,'ydir','rev');
+set(gca,'ydir','reverse');
 colormap(1-gray(256));
 h=imagesc(unsharpmask(im,5,.5));
 [Y X]=size(im);
@@ -75,5 +75,5 @@ for k = idx(:)'
 end
 
 if ~isempty(title_string)
-  text(X*.95,Y*.05,title_string,'verticala','middle','horizontala','right');
+  text(X*.95,Y*.05,title_string,'verticalalignment','middle','horizontalalignment','right');
 end

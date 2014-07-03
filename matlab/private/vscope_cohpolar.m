@@ -57,10 +57,10 @@ line(r_thresh*cos(th),...
 
 % annotate spokes in degrees
 rt = 1.01;
-text(rt, 0, '0^\circ', 'horizontala', 'left', 'verticala', 'middle');
-text(-rt, 0, '180^\circ', 'horizontala', 'right', 'verticala', 'middle');
-text(0, rt, '90^\circ', 'horizontala', 'center', 'verticala', 'bottom');
-text(0, -rt, '270^\circ', 'horizontala', 'center', 'verticala', 'top');
+text(rt, 0, '0^\circ', 'horizontalalignment', 'left', 'verticalalignment', 'middle');
+text(-rt, 0, '180^\circ', 'horizontalalignment', 'right', 'verticalalignment', 'middle');
+text(0, rt, '90^\circ', 'horizontalalignment', 'center', 'verticalalignment', 'bottom');
+text(0, -rt, '270^\circ', 'horizontalalignment', 'center', 'verticalalignment', 'top');
 
 % set axis limits
 axis([-1 1 -1 1]*1.12);
@@ -121,5 +121,5 @@ for k=ord(:)'
   end
   va = 'middle';
   h=text(x, y, [ ' ' labels{k} ' ' ], ...
-      'horizontala', ha, 'verticala', va);
+      'horizontalalignment', ha, 'verticalalignment', va);
 end 

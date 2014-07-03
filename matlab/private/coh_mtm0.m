@@ -41,7 +41,7 @@ function varargout = coh_mtm0(t,x,y,f_res,alpha_ci,f_star,N_fft,tapers)
 
 t=t(:);
 [T N]=size(x);
-if T==1 & N>1
+if T==1 && N>1
   if prod(size(y))==length(y)
     x=x(:);
     y=y(:);
@@ -183,7 +183,7 @@ if alpha_ci<1
   Cxy_phase_sigma=sqrt(2*(K-1)*(1-abs(Cxy_tao_hat_mean)));
 
   % calculate the confidence interval bounds
-  ci_factor=norminv52(1-alpha_ci/2);
+  ci_factor=norminv(1-alpha_ci/2);
   Cxy_mag_ci_lo=sqrtlgc(Cxy_mag_xf-ci_factor*Cxy_mag_xf_sigma);
   Cxy_mag_ci_hi=sqrtlgc(Cxy_mag_xf+ci_factor*Cxy_mag_xf_sigma);
   Cxy_phase_ci_lo=Cxy_phase-ci_factor*Cxy_phase_sigma;

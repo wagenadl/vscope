@@ -1,4 +1,4 @@
-function C_mag_thresh=f(t,roi,ref,f_res,f_star,alpha_thresh,PLOTFLAG)
+function C_mag_thresh=coh_mtm_control0(t,roi,ref,f_res,f_star,alpha_thresh,PLOTFLAG)
 if nargin<7
   PLOTFLAG=0;
 end

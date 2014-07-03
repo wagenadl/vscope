@@ -24,4 +24,4 @@ end
  
 fprintf(1,'Saving tapers for (%i,%.2f,%i) into %s\n',N,nw,K,ofn);
 
-save(ofn,'tapers','-v6');
+save(ofn,'tapers');

@@ -43,7 +43,7 @@ else
   f_star_hz = [];
 end
 
-if nargin<3 | isempty(dff)
+if nargin<3 || isempty(dff)
   dff = vscope_ratio(x, 2);
 end
 
@@ -97,7 +97,7 @@ f_res_coh=2/3;  % Hz
 [f_sigs,P_sigs]=pds_mtm0(tt,y_sigs,f_res_pow);
 
 f_star = f_ref(argmax(P_ref));
-if f_star<f0 | f_star>f1
+if f_star<f0 || f_star>f1
   f_star=fpre;
 end
 phase_offset = 2*pi*phase_delay_s*f_star;
@@ -156,9 +156,9 @@ vscope_cohpolar(...
     sig_labels,...
     C_mag_thresh);
 text(1.05, -1.05, sprintf('f* = %.2f Hz', f_star), ...
-    'horizontala', 'right', 'verticala', 'middle');
+    'horizontalalignment', 'right', 'verticalalignment', 'middle');
 text(1.05, 1.05, title_string, ...
-    'horizontala', 'right', 'verticala', 'middle');
+    'horizontalalignment', 'right', 'verticalalignment', 'middle');
 
 
 % sort the sigs in order of their coherence magnitude

@@ -1,4 +1,4 @@
-function [f,Pxx,Pxxs] = f(t,x,f_res)
+function [f,Pxx,Pxxs] = pds_mtm0(t,x,f_res)
 % PDS_MTM0 - Multi-taper spectral estimate
 %    This is DW's adaptation of Adam Taylor's PDS_MTM code
 %    [ff,Pxx,Pxxs] = PDS_MTM0(tt,xx,fres) calculates one-side multi-taper
@@ -20,7 +20,7 @@ function [f,Pxx,Pxxs] = f(t,x,f_res)
 %    used on Matlab installations without the Signal Processing toolbox.
 
 [T N]=size(x);
-if T==1 & N>1
+if T==1 && N>1
   x=x(:);
 end
 
