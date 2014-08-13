@@ -97,9 +97,9 @@ bool CCDAcq::prepare(ParamTree const *ptree,
     
     for (int k=0; k<ncams; k++) {
       QString id = camids[k];
-      QString root = "acqCCD/camera:" + id;
-      camEnabled.append(ptree->find(root + "/enable").toBool());
-      ParamTree const *rootTree = &::camTree(ptree, root); // _now_ find master
+      camEnabled.append(ptree->find("acqCCD/camera:" + id + "/enable")
+			.toBool());
+      ParamTree const *rootTree = &::camTree(ptree, id); // _now_ find master
       CCDConfig cfg;
       cfg.iscont = false;
       QRect reg(rootTree->find("region").toRect());

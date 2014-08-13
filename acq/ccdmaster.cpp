@@ -3,6 +3,7 @@
 #include "ccdmaster.h"
 #include <base/exception.h>
 #include <QSet>
+#include <base/dbg.h>
 
 ParamTree const *camTreep(ParamTree const *ptree, QString camid) {
   if (!ptree)
@@ -14,6 +15,7 @@ ParamTree const *camTreep(ParamTree const *ptree, QString camid) {
   QSet<ParamTree const *> seen;
   seen.insert(camtree);
   while (master.toLower() != "self") {
+    Dbg() << " camtreep " << camid << " ? " << master;
     camtree = ptree->treep("acqCCD/camera:"+master);
     if (!camtree)
       return 0;
