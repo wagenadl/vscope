@@ -28,34 +28,33 @@ ParamTree const *camTreep(ParamTree const *ptree, QString camid) {
 ParamTree const &camTree(ParamTree const *ptree, QString camid) {
   ParamTree const *camtree = camTreep(ptree, camid);
   if (camtree)
-    return camtree;
+    return *camtree;
   else
     throw Exception("CCDMaster::camTree", "Camera " + camid + " not found");
 }
 
 
 
-QString immediateCCDMaster(QString id) {
+QString immediateCCDMaster(ParamTree const *ptree, QString id) {
   /* Returns the master of camera ID, or "" if self. */
-  QString pname = "acqCCD/camera:" + id + "/master";
-  QString pval = Globals::ptree->find(pname).toString();
+  QString pval = ptree->find("acqCCD/camera:" + id + "/master").toString();
   if (pval.toLower()=="self")
     return "";
   else
     return pval;
 }
 
-static QString ultimateCCDMaster(QString id) {
+QString ultimateCCDMaster(ParamTree const *ptree, QString id) {
   /* Returns the (master of the master of the) master of camera ID,
      or "" if self, or "LOOP" if loop detected. */
-  QString m = immediateCCDMaster(id);
+  QString m = immediateCCDMaster(ptree, id);
   if (m=="")
     return "";
   QSet<QString> seen;
   seen.insert(id);
   while (true) {
     seen.insert(m);
-    QString mm = immediateCCDMaster(m);
+    QString mm = immediateCCDMaster(ptree, m);
     if (mm=="")
       return m;
     if (seen.contains(mm))
