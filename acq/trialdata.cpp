@@ -11,6 +11,7 @@
 #include <xml/paramtree.h>
 #include <base/xml.h>
 #include <base/base26.h>
+#include <acq/ccdmaster.h>
 
 #include <QDateTime>
 #include <QFile>
@@ -185,8 +186,9 @@ Transform TrialData::camPlace(QString camid) const {
   }
   Transform t0 = cam->placement;
   if (partree) {
-    QRect reg(partree->find("acqCCD/camera:"+camid+"/region").toRect());
-    QRect bin(partree->find("acqCCD/camera:"+camid+"/binning").toRect());
+    ParamTree const &ct = ::camTree(partree, camid);
+    QRect reg(ct.find("region").toRect());
+    QRect bin(ct.find("binning").toRect());
     /* This is actually hard to figure out for flipped cameras.
        Let's try some examples.
        A camera that y-flips, so that t0=1x-1+0+512.

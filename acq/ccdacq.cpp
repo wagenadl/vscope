@@ -1,3 +1,4 @@
+
 // ccdacq.cpp
 
 #include "ccdacq.h"
@@ -10,6 +11,7 @@
 #include <pvp/campool.h>
 #include "dutycyclelimit.h"
 #include <math.h>
+#include <acq/ccdmaster.h>
 
 static void generateMockData(CCDData *dest, CCDData::WriteKey *key, int seed) {
   int wid = dest->getSerPix();
@@ -81,7 +83,8 @@ CCDAcq::CCDAcq() {
   isDone=false;
 }
 
-bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
+bool CCDAcq::prepare(ParamTree const *ptree, 
+		     AllCCDTimingDetail const &timing) {
   if (isActive)
     throw Exception("CCDAcq","Cannot prepare while active");
   isActive = false; isGood=false; isDone = false;
@@ -96,11 +99,12 @@ bool CCDAcq::prepare(ParamTree const *ptree, AllCCDTimingDetail const &timing) {
       QString id = camids[k];
       QString root = "acqCCD/camera:" + id;
       camEnabled.append(ptree->find(root + "/enable").toBool());
+      ParamTree const *rootTree = &::camTree(ptree, root); // _now_ find master
       CCDConfig cfg;
       cfg.iscont = false;
-      QRect reg(ptree->find(root + "/region").toRect());
+      QRect reg(rootTree->find("region").toRect());
       cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
-      QRect bin(ptree->find(root + "/binning").toRect());
+      QRect bin(rootTree->find("binning").toRect());
       cfg.binning = CCDBinning(bin.width(),bin.height());
       CCDTimingDetail const &detail = timing[camids[k]];
       bool trigEach = DutyCycle::triggerEach(detail.duty_percent());

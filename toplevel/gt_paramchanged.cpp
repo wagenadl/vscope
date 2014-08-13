@@ -29,35 +29,7 @@
 #include <base/roidata3set.h>
 #include <base/enums.h>
 #include <acq/focus.h>
-
-static QString immediateCCDMaster(QString id) {
-  /* Returns the master of camera ID, or "" if self. */
-  QString pname = "acqCCD/camera:" + id + "/master";
-  QString pval = Globals::ptree->find(pname).toString();
-  if (Connections::allCams().contains(pval))
-    return pval;
-  else
-    return "";
-}
-
-static QString ultimateCCDMaster(QString id) {
-  /* Returns the (master of the master of the) master of camera ID,
-     or "" if self, or "LOOP" if loop detected. */
-  QString m = immediateCCDMaster(id);
-  if (m=="")
-    return "";
-  QSet<QString> seen;
-  seen.insert(id);
-  while (true) {
-    seen.insert(m);
-    QString mm = immediateCCDMaster(m);
-    if (mm=="")
-      return m;
-    if (seen.contains(mm))
-      return "LOOP";
-    m = mm;
-  }
-}  
+#include <acq/ccdmaster.h>
 
 static void ensureMasterOK(QString p) {
   QRegExp re("camera:([^/]*)/");
@@ -66,17 +38,13 @@ static void ensureMasterOK(QString p) {
     throw Exception("gt_paramchanged", "ensureMasterOK confused by " + p);
   QString myid = re.cap(1);
   Dbg() << "Checking on master for " << myid;
-  QString ultimate = ultimateCCDMaster(myid);
+  QString ultimate = ultimateCCDMaster(Globals::ptree, myid);
   if (ultimate=="LOOP") {
-    QString master = immediateCCDMaster(myid);
+    QString master = immediateCCDMaster(Globals::ptree, myid);
     Globals::ptree->find("acqCCD/camera:" + master + "/master").set("self");
   }
 }
       
-      
-      
-    
-
 static void setRefTrace() {
   int typ = Globals::ptree->find("analysis/refType").toInt();
   Enumerator *e = Enumerator::find("REFTYPE");
