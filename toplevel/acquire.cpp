@@ -106,6 +106,7 @@ void Acquire::acqTrial() {
     Globals::blackout->setText("Acquiring *DUMMY* Trial...");
   else
     Globals::blackout->setText("Acquiring Trial...");
+  Globals::blackout->countUp();
 }
 
 
