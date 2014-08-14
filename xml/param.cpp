@@ -403,7 +403,9 @@ Param::Param(Param const &src) {
   enumerator=src.enumerator;
   min=src.min; // note shallow copy
   max=src.max; // note shallow copy
-  cond = src.cond; // note shallow copy
+  cond = src.cond; // note shallow and naive copy
+  enable_if = src.enable_if;
+  deflt = src.deflt;
   immune = src.immune;
 }
 
@@ -415,7 +417,9 @@ Param &Param::operator=(Param const &src) {
   value = src.value;
   min=src.min; // note shallow copy
   max=src.max; // note shallow copy
-  cond = src.cond; // note shallow copy
+  cond = src.cond; // note shallow and naive copy
+  enable_if = src.enable_if; 
+  deflt = src.deflt;
   immune = src.immune;
   return *this;
 }
@@ -502,6 +506,10 @@ void Param::restore() {
 void Param::setEnabler(Param *cond_, QString enable_if_) {
   cond = cond_;
   enable_if = enable_if_.split(" ");
+}
+
+void Param::setEnabler(Param *cond_) {
+  cond = cond_;
 }
 
 bool Param::isImmune() const {

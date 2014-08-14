@@ -59,6 +59,9 @@ guiButton *guiMenu::addItem(PageBuildGeom &g, QDomElement doc) {
     throw Exception("guiPage", "Empty item ID in page " + path());
   
   guiButton *b = createItem(id);
+  Param *p = ptree ? ptree->findp(id) : 0;
+  if (p && p->isImmune())
+    b->makeROImmune();
   buttons[id] = b;
   buttons[id]->setup(doc);
   if (itemgroup)
@@ -131,7 +134,7 @@ void guiMenu::addAuto(PageBuildGeom &g, QDomElement doc) {
     throw Exception("guiMenu", "Can have only one <auto> item: " + path());
 
   autoItems = new AutoItems(this);
-  autoItems->setup(g, doc);
+  autoItems->setup(g, doc, ptree);
 }
 
 bool guiMenu::mayResize() {

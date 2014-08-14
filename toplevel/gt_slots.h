@@ -24,6 +24,11 @@ public slots:
   void everythingChanged();
 protected:
   void report(class Exception const &e, QString act);
+  class ParamTree *ptree();
+  void ensureMasterOK(QString);
+  void setRefTrace();
+protected:
+  guiRoot *guiroot;
 };
 
 #endif

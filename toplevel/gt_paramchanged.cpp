@@ -31,35 +31,36 @@
 #include <acq/focus.h>
 #include <acq/ccdmaster.h>
 
-static void ensureMasterOK(QString p) {
+void gt_slots::ensureMasterOK(QString p) {
   QRegExp re("camera:([^/]*)/");
   int pos = re.indexIn(p);
   if (pos<0)
     throw Exception("gt_paramchanged", "ensureMasterOK confused by " + p);
   QString myid = re.cap(1);
   Dbg() << "Checking on master for " << myid;
-  QString ultimate = ultimateCCDMaster(Globals::ptree, myid);
+  QString ultimate = ultimateCCDMaster(ptree(), myid);
   if (ultimate=="LOOP") {
-    QString master = immediateCCDMaster(Globals::ptree, myid);
-    Globals::ptree->find("acqCCD/camera:" + master + "/master").set("self");
+    QString master = immediateCCDMaster(ptree(), myid);
+    ptree()->find("acqCCD/camera:" + master + "/master").set("self");
   }
 }
       
-static void setRefTrace() {
-  int typ = Globals::ptree->find("analysis/refType").toInt();
+void gt_slots::setRefTrace() {
+  int typ = ptree()->find("analysis/refType").toInt();
+  Dbg() << "setRefTrace refType is " << typ;
   Enumerator *e = Enumerator::find("REFTYPE");
   if (typ==e->lookup("Analog")) {
-    QString chn = Globals::ptree->find("analysis/refTrace").toString();
+    QString chn = ptree()->find("analysis/refTrace").toString();
     Globals::vsdtraces->setRefTrace(chn);
     Globals::cohmaps->setRefTrace(chn);
     Globals::cohgraph->setRefTrace(chn);
   } else if (typ==e->lookup("Digital")) {
-    QString chn = Globals::ptree->find("analysis/refDigi").toString();
+    QString chn = ptree()->find("analysis/refDigi").toString();
     Globals::vsdtraces->setRefDigi(chn);
     Globals::cohmaps->setRefDigi(chn);
     Globals::cohgraph->setRefDigi(chn);
   } else if (typ==e->lookup("Frequency")) {
-    double frqhz = Globals::ptree->find("analysis/refFreq").toDouble();
+    double frqhz = ptree()->find("analysis/refFreq").toDouble();
     Globals::vsdtraces->setRefFreq(frqhz);
     Globals::cohmaps->setRefFreq(frqhz);
     Globals::cohgraph->setRefFreq(frqhz);
@@ -69,18 +70,18 @@ static void setRefTrace() {
 }
 
 void gt_slots::everythingChanged() {
-  Globals::videogui->reset(Globals::gui, Globals::ptree);
-  Globals::trial->prepare(Globals::ptree);
+  Globals::videogui->reset(Globals::gui, ptree());
+  Globals::trial->prepare(ptree());
   Globals::mgintra->rebuild();
   Globals::mgextra->rebuild();
   Globals::mgstim->rebuild();
   setRefTrace();
 
-  SHOWROIS sm = (SHOWROIS)Globals::ptree->find("analysis/showROIs").toInt();
+  SHOWROIS sm = (SHOWROIS)ptree()->find("analysis/showROIs").toInt();
   Globals::ccdw->showROIs(sm);
   Globals::cohmaps->setShowMode(sm);
   Globals::trove->roidata().
-    setDebleach((DEBLEACH)Globals::ptree->find("analysis/debleach").toInt());
+    setDebleach((DEBLEACH)ptree()->find("analysis/debleach").toInt());
   Globals::acquire->newTrialPeriod();
   Globals::acquire->setContEphys();
   Globals::acquire->setAutoRun();
@@ -107,7 +108,7 @@ void gt_slots::paramchanged(QString p, QString val) {
       if (Globals::liveephys)
         Globals::liveephys->setVCOChannel(val);
     } else if (p.startsWith("acqEphys/")) {
-      Globals::trial->prepare(Globals::ptree);
+      Globals::trial->prepare(ptree());
       Globals::mgstim->rebuild();
       Globals::mgintra->rebuild();
       Globals::mgextra->rebuild();
@@ -115,12 +116,12 @@ void gt_slots::paramchanged(QString p, QString val) {
 	       p=="analysis/refDigi" || p=="analysis/refFreq") {
       setRefTrace();
     } else if (p=="analysis/showROIs") {
-      SHOWROIS sm = (SHOWROIS)Globals::ptree->find(p).toInt();
+      SHOWROIS sm = (SHOWROIS)ptree()->find(p).toInt();
       Globals::ccdw->showROIs(sm);
       Globals::cohmaps->setShowMode(sm);
     } else if (p=="analysis/debleach") {
       Globals::trove->roidata().
-	setDebleach((DEBLEACH)Globals::ptree->find(p).toInt());
+	setDebleach((DEBLEACH)ptree()->find(p).toInt());
     } else if (p=="acquisition/trialPeriod") {
       Globals::acquire->newTrialPeriod();
     } else if (p=="panelLeft") {
@@ -129,19 +130,19 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::panelHistory->newSelection("Right");
     } else if (p=="stimVideo/enable") {
       OverrideCursor oc(Qt::WaitCursor);
-      Globals::videogui->changeEnable(Globals::gui,Globals::ptree);
+      Globals::videogui->changeEnable(Globals::gui,ptree());
     } else if (p=="stimVideo/prog") {
       OverrideCursor oc(Qt::WaitCursor);
-      Globals::videogui->changeProgram(Globals::gui,Globals::ptree);
+      Globals::videogui->changeProgram(Globals::gui,ptree());
     } else if (p.startsWith("stimVideo/par")) {
       OverrideCursor oc(Qt::WaitCursor);
-      Globals::videogui->changeParam(Globals::gui,Globals::ptree,p.mid(10));
+      Globals::videogui->changeParam(Globals::gui,ptree(),p.mid(10));
     } else if (QRegExp("acqCCD/camera:.*/master").exactMatch(p)) {
       ensureMasterOK(p);
     }
 
     if (p.startsWith("stim") || p.startsWith("acqCCD")) {
-      Globals::trial->prepare(Globals::ptree);
+      Globals::trial->prepare(ptree());
       Globals::mgstim->rebuild();
       Globals::mgintra->rebuild();
       Globals::mgextra->rebuild();
@@ -158,14 +159,14 @@ void gt_slots::paramchanged(QString p, QString val) {
       dbgfile->setDir(QDir::tempPath());
       int lastmax = Acquire::maxTrial();
       Dbg() << "trial for " << val << " is " << lastmax;
-      Globals::ptree->find("acquisition/trialno").setInt(lastmax);
+      ptree()->find("acquisition/trialno").setInt(lastmax);
       guiPage *pg = Globals::gui->findpPage("acquisition");
       if (pg && pg->isVisible())
 	pg->open();
     } else if (p=="acquisition/contEphys") {
       Globals::acquire->setContEphys();
     } else if (p=="acquisition/dummy") {
-      bool dummy = Globals::ptree->find(p).toBool();
+      bool dummy = ptree()->find(p).toBool();
       Globals::trove->setDummy(dummy);
       guiButton *b = Globals::gui->findpButton(p);
       b->setForeground(dummy ? QColor("#ff0000") : QColor("#000000"));
@@ -177,24 +178,24 @@ void gt_slots::paramchanged(QString p, QString val) {
         Globals::exptlog->addNote("Auto run: Disabled");
       Globals::acquire->setAutoRun();
     } else if (p=="stimVideo/lightOn") {
-      VideoLight::set(Globals::ptree->find(p).toBool());
+      VideoLight::set(ptree()->find(p).toBool());
     } else if (p=="scripts/run") {
-      Globals::scripts->setRunning(Globals::ptree->find(p).toBool());
+      Globals::scripts->setRunning(ptree()->find(p).toBool());
     } else if (p.startsWith("panel")) {
       ;
     } else if (p.startsWith("maintenance/focus/cam")) {
       QString oldA = Globals::focus->getCamA();
       QString oldB = Globals::focus->getCamB();
-      QString newA = Globals::ptree->find("maintenance/focus/camA").toString();
-      QString newB = Globals::ptree->find("maintenance/focus/camB").toString();
+      QString newA = ptree()->find("maintenance/focus/camA").toString();
+      QString newB = ptree()->find("maintenance/focus/camB").toString();
       if (newA==newB) {
 	if (p.endsWith("A"))
 	  newB = oldA;
 	else
 	  newA = oldB;
 	Dbg() << "cams was" << oldA<<oldB << " new " << newA<<newB;
-        Globals::ptree->find("maintenance/focus/camA").set(newA);
-        Globals::ptree->find("maintenance/focus/camB").set(newB);
+        ptree()->find("maintenance/focus/camA").set(newA);
+        ptree()->find("maintenance/focus/camB").set(newB);
 	guiPage *pg = Globals::gui->findpPage("maintenance/focus");
 	if (pg && pg->isVisible())
 	  pg->open();
@@ -204,17 +205,17 @@ void gt_slots::paramchanged(QString p, QString val) {
       dbg("focus/camB");
       QString oldA = Globals::focus->getCamA();
       QString oldB = Globals::focus->getCamB();
-      QString newB = Globals::ptree->find(p).toString();
+      QString newB = ptree()->find(p).toString();
       QString newA = oldA;
       if (newB==oldA) {
         newA = oldB;
-        Globals::ptree->find("maintenance/focus/camA").set(newA);
+        ptree()->find("maintenance/focus/camA").set(newA);
         // may have to set the menu option as well
         // this doesn't work when camera is not present
       }
       Globals::focus->setCams(newA, newB);
     } else if (p=="maintenance/focus/mode") {
-      Globals::focus->setViewMode(FOCUSMODE(Globals::ptree->find(p).toInt()));
+      Globals::focus->setViewMode(FOCUSMODE(ptree()->find(p).toInt()));
     } else {
       // Create log entry
       QRegExp re("/([^/:]+):([^/]+)/");
@@ -224,7 +225,7 @@ void gt_slots::paramchanged(QString p, QString val) {
 	arr=re.cap(1);
 	chn=re.cap(2);
       }
-      QString val = Globals::ptree->find(p).toString();
+      QString val = ptree()->find(p).toString();
       QString gp = Globals::gui->pathDeinstantiate(p);
       QStringList pathparts = gp.split("/");
       gp = "";

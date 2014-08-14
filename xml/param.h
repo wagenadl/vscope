@@ -248,6 +248,7 @@ public:
                   never be enabled.
    *:N Note that this mechanism is mainly useful if cond points to an enum.
    */
+  void setEnabler(Param *cond);
 private:
   void rangeCheck(QVariant const &v);
   /*:F rangeCheck

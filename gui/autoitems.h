@@ -16,7 +16,8 @@ class AutoItems: public QObject {
 public:
   AutoItems(guiPage *parent);
   void setup(PageBuildGeom &geom,
-	     QDomElement doc);
+	     QDomElement doc,
+	     ParamTree *ptree);
   void rebuild(PageBuildGeom *g_out=0);
   QStringList selectIDs(QStringList inlist);
 private:

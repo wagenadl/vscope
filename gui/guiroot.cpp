@@ -70,6 +70,8 @@ void guiRoot::setParam(QString path, QString newval) {
   QString olds = par.toString();
   par.set(newval);
   QString news = par.toString();
+  Dbg() << "guiroot::setparam" << path << "=" << newval
+	<< " ro=" << readOnly << " imm=" << par.isImmune();
   if (olds!=news && (!readOnly || par.isImmune()))
     emit paramChanged(path, news);
 }

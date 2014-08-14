@@ -19,16 +19,16 @@
 #include <gui/guibutton.h>
 #include <acq/contacq.h>
 
-static bool channelAvailable(QString cid, QString ctyp) {
-  if (ctyp=="ai")
-    return Enumerator::find("AICHAN")->has(cid);
-  else if (ctyp=="ao")
-    return Enumerator::find("AOCHAN")->has(cid);
-  else if (ctyp=="di" || ctyp=="do")
-    return Enumerator::find("DIGILINES")->has(cid);
-  else
-    return false;
-}  
+//static bool channelAvailable(QString cid, QString ctyp) {
+//  if (ctyp=="ai")
+//    return Enumerator::find("AICHAN")->has(cid);
+//  else if (ctyp=="ao")
+//    return Enumerator::find("AOCHAN")->has(cid);
+//  else if (ctyp=="di" || ctyp=="do")
+//    return Enumerator::find("DIGILINES")->has(cid);
+//  else
+//    return false;
+//}  
 
 LiveEPhys::LiveEPhys(QWidget *parent, QDomElement /*conf*/): QFrame(parent) {
   ic = new MultiGraph(this);

@@ -13,11 +13,14 @@ AutoItems::AutoItems(guiPage *parent):
 }
 
 void AutoItems::setup(PageBuildGeom &geom,
-		      QDomElement doc_) {
+		      QDomElement doc_,
+		      ParamTree *ptree) {
   initialGeom = geom;
   doc = doc_;
-  enumerator = Enumerator::find(doc.attribute("enum"));
   immune = doc.attribute("immune").toInt() > 0;
+  if (ptree && ptree->leafp() && ptree->leafp()->isImmune())
+    immune = true;
+  enumerator = Enumerator::find(doc.attribute("enum"));
   if (!enumerator)
     throw Exception("AutoItems", "No enumerator");
   rebuild(&geom);

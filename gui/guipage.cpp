@@ -108,7 +108,7 @@ void guiPage::connectToParent(QDomElement) {
 	     master, SIGNAL(buttonClicked(QString,QString)));
 }
 
-void guiPage::stylize(QDomElement doc) {
+void guiPage::stylize(QDomElement) {
   guiPage *par = parentPage();
   if (!par)
     return;
@@ -171,7 +171,8 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   QString id=xmlAttribute(doc, "id",
 			  "guiPage (addButton)", "Cannot read button ID");
   guiButton *b = new guiButton(this, id, master);
-  if (doc.tagName()=="immune")
+  Param *p = ptree ? ptree->findp(id) : 0;
+  if (doc.tagName()=="immune" || (p && p->isImmune()))
     b->makeROImmune();
   topgroup->add(b);
   b->setup(doc);
@@ -285,7 +286,9 @@ void guiPage::prepForOpening() {
     if (p) {
       // This is a button that directly represents a value.
       bool ena = p->isEnabled();
-      if (!ena) {
+      if (ena) {
+	b->setEnabled(true);
+      } else {
 	b->setEnabled(false);
 	p->restore();
 	guiPage *subpage = subpagep(id);
@@ -369,10 +372,15 @@ void guiPage::booleanButtonToggled(QString path) {
 }
 
 void guiPage::updateEnableIfs() {
+  Param *p0 = ptree ? ptree->findp("refType") : 0;
+  if (p0)
+    Dbg() << "guiPage::updateEnableIfs - refType" << p0->toString();
   foreach (QString id, buttons.keys()) {
     Param *p = ptree ? ptree->findp(id) : 0;
     if (p) {
       bool ena = p->isEnabled();
+      Dbg() << "guiPage::updateEnableIfs " << id
+	    << " e=" << ena << " pe=" << pageEnabled;
       buttons[id]->setEnabled(ena && pageEnabled);
       if (!ena) 
 	buttons[id]->setValue(p->toString());

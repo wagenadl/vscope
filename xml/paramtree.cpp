@@ -84,15 +84,17 @@ void ParamTree::buildEnablers() {
   for (QDomElement e=base.firstChildElement();
        !e.isNull(); e=e.nextSiblingElement()) {
     if (e.tagName()=="param" && e.hasAttribute("cond")) {
-      ParamTree *pt=children[e.attribute("id")];
+      QString id = e.attribute("id");
+      ParamTree *pt=children[id];
       if (!pt)
 	throw Exception("ParamTree",
-                        "Param '" + e.attribute("id") + "' not found!?",
+                        "Param '" + id + "' not found!?",
                         "buildEnablers");
       Param *p=pt->leaf_;
       QString cond = e.attribute("cond");
       QString enable_if = e.attribute("enable_if");
-      QStringList enable_ifs = enable_if.split(" "); 
+      QStringList enable_ifs = enable_if.split(" ");
+      condmap[id] = cond;
       if (cond=="*index") {
 	if (arrayElement.isEmpty())
 	  p->setEnabler(0,"");
@@ -211,6 +213,10 @@ void ParamTree::write(QDomElement doc) const {
        i!=children.end(); ++i) {
     ParamTree *c = i.value();
     QString id = i.key();
+    if (!c) {
+      Dbg() << "ParamTree::write: no value for " << id;
+      continue;
+    }
     if (!c->savable)
       continue; // don't write non-savable children.
     if (c->leaf_) {
@@ -465,12 +471,21 @@ ParamTree::ParamTree(ParamTree const &other): base(other.base) {
   else
     leaf_ = 0;
   savable = other.savable;
-  dbgPath = other.savable;
+  dbgPath = other.dbgPath;
+  condmap = other.condmap;
   foreach (QString c, other.children.keys())
     if (other.children[c])
       children[c] = new ParamTree(*other.children[c]);
     else
       children[c] = 0;
+  foreach (QString c, condmap.keys()) {
+    QString cond = condmap[c];
+    if (cond != "*index") {
+      ParamTree *condtree = children[cond];
+      if (condtree)
+        children[c]->leaf().setEnabler(condtree->leafp());
+    }
+  }
 }
 
 bool ParamTree::isSavable() const {
