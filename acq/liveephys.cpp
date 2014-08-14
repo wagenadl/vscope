@@ -30,7 +30,7 @@ static bool channelAvailable(QString cid, QString ctyp) {
     return false;
 }  
 
-LiveEPhys::LiveEPhys(QWidget *parent, QDomElement conf): QFrame(parent) {
+LiveEPhys::LiveEPhys(QWidget *parent, QDomElement /*conf*/): QFrame(parent) {
   ic = new MultiGraph(this);
   ec = new MultiGraph(this);
   isActive = false;
@@ -40,20 +40,11 @@ LiveEPhys::LiveEPhys(QWidget *parent, QDomElement conf): QFrame(parent) {
 
   contacq = 0;
 
-  for (QDomElement elt=conf.firstChildElement("multigraph");
-       !elt.isNull(); elt=elt.nextSiblingElement("multigraph")) {
-    QString id = elt.attribute("id");
-    QStringList *me = (id=="liveEPhysLeft") 
-      ? &potchs_left
-      : (id=="liveEPhysRight")
-      ?  &potchs_right
-      : 0;
-    if (me) {
-      for (QDomElement c=elt.firstChildElement("graph");
-	   !c.isNull(); c=c.nextSiblingElement("graph")) 
-	if (channelAvailable(c.attribute("ch"), c.attribute("typ"))) 
-	  me->append(c.attribute("ch"));
-    }
+  foreach (QString chn, Connections::analogInputs()) {
+    if (chn.startsWith("E"))
+      potchs_right << chn;
+    else
+      potchs_left << chn;
   }
 
   vcoidx = -1;
