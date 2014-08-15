@@ -296,6 +296,9 @@ void Acquire::loadData(QString xmlfn) {
   ptree->find("acquisition/exptname").set(exptbit);
   ptree->find("acquisition/trialno").set(trialbit);
   ptree->find("acquisition/dummy").set("true");
+  ptree->find("analysis/autosaveROIs").set("false");
+  Globals::trove->setDummy(true);
+  Globals::trove->setAutoSaveROIs(false);
   
   Globals::trove->roidata().
     setDebleach((DEBLEACH)ptree->find("analysis/debleach").toInt());
@@ -317,11 +320,19 @@ void Acquire::unlock() {
   Dbg() << "unlock: aich = " << Globals::trove->trial().paramTree()->find("acqEphys/aiChannels").toString();
   Dbg() << "  mytree: " << Globals::ptree->find("acqEphys/aiChannels").toString();
   Globals::trial->prepare(Globals::ptree);
+  Globals::trove->setAutoSaveROIs(false);
+  Globals::trove->rois().clear();
   displayCCD();
   displayEPhys();
   Globals::panelHistory->setTree(Globals::ptree);
   Globals::gui->setTree(Globals::ptree);
   Globals::gui->setReadOnly(false);
+
+  bool dummy = Globals::ptree->find("acquisition/dummy").toBool();
+  Globals::trove->setDummy(dummy);
+  bool asr = Globals::ptree->find("analysis/autosaveROIs").toBool();
+  Globals::trove->setAutoSaveROIs(asr);
+  
   Globals::gui->open();
   Dbg() << "after unlock: aich = " << Globals::trove->trial().paramTree()->find("acqEphys/aiChannels").toString();
   Dbg() << "  mytree: " << Globals::ptree->find("acqEphys/aiChannels").toString();

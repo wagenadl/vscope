@@ -115,5 +115,5 @@ void guiRoot::setReadOnly(bool ro) {
   if (ro)
     findButton("acquisition/unlock").show();
   else
-    findButton("acquisition/unlock").hide();    
+    findButton("acquisition/unlock").hide();
 }

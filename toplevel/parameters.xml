@@ -140,6 +140,8 @@
       <param id="debleach" type="enum" enum="DEBLEACH" default="None"
 	     immune="1" save="false"/>
       <param id="vsdDelay" type="time" default="250 ms"/>
+      <param id="autosaveROIs" type="bool" default="true" 
+	     save="false" immune="1"/>
     </category>
     <category id="maintenance">
       <category id="focus">

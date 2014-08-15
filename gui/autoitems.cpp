@@ -83,7 +83,6 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
 		     + "\"/>\n");
       QDomElement e = xml.documentElement();
       items[id] = p->addItem(g, e);
-      Dbg() << "autoitems " << id << ":" << immune;
       guiPage *pg = dynamic_cast<guiPage*>(parent());
       if (immune)
         items[id]->makeROImmune();

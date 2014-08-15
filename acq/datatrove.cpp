@@ -13,6 +13,8 @@ DataTrove::DataTrove(ParamTree *ptree): KeyAgg(0) {
   ptree_ = ptree;
   ownptree = false;
   constructData();
+  dummy = false;
+  asr = true;
 }
 
 void DataTrove::constructData() {
@@ -68,7 +70,9 @@ void DataTrove::updateCameras() {
 void DataTrove::read(QString dir, QString exptname, QString trialid) {
   KeyGuard guard(*this);
   bool d = dummy;
+  bool a = asr;
   dummy = true; // prevent immediate resaving of rois
+  asr = false; // prevent immediate resaving of rois
   rois_->clear();
   trial_->read(dir, exptname, trialid);
   rois_->load(QString("%1/%2/%3-rois.xml")
@@ -76,6 +80,7 @@ void DataTrove::read(QString dir, QString exptname, QString trialid) {
   //Dbg() << "DataTrove::read: "
   //	<< trial_->exptName() << "/" << trialid;
   dummy = d;
+  asr = a;
 }
 
 void DataTrove::write() {
@@ -92,13 +97,17 @@ void DataTrove::setDummy(bool d) {
   dummy = d;
 }
 
+void DataTrove::setAutoSaveROIs(bool a) {
+  asr = a;
+}
+
 void DataTrove::saveROIs() {
-  if (dummy) {
-    //Dbg() << "DataTrove::saveROIs: not saving: dummy";
+  if (!asr) {
+    Dbg() << "DataTrove::saveROIs: not saving";
     return;
   }
   
-  //  Dbg() << "DataTrove::saveROIs" << trial_->exptName() << "/" << trial_->trialID();
+  Dbg() << "DataTrove::saveROIs" << trial_->exptName() << "/" << trial_->trialID();
   try {
     rois_->save(QString("%1/%2/%3-rois.xml")
 		.arg(trial_->filePath())

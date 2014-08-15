@@ -165,8 +165,13 @@ void gt_slots::paramchanged(QString p, QString val) {
 	pg->open();
     } else if (p=="acquisition/contEphys") {
       Globals::acquire->setContEphys();
+    } else if (p=="analysis/autosaveROIs") { 
+      bool asr = ptree()->find(p).toBool(); 
+      Dbg() << "param asr " << asr;
+      Globals::trove->setAutoSaveROIs(asr);
     } else if (p=="acquisition/dummy") {
       bool dummy = ptree()->find(p).toBool();
+      Dbg() << "param dummy " << dummy;
       Globals::trove->setDummy(dummy);
       guiButton *b = Globals::gui->findpButton(p);
       b->setForeground(dummy ? QColor("#ff0000") : QColor("#000000"));

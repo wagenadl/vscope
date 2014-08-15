@@ -137,7 +137,7 @@ guiPage::~guiPage() {
 }
 
 void guiPage::addRadioGroup(PageBuildGeom &g, QDomElement doc) {
-  guiRadioGroup *bg = new guiRadioGroup(this);
+  guiRadioGroup *bg = new guiRadioGroup(doc.tagName()=="ungroup", this);
   bg->build(g, doc);
   groups[doc.attribute("id")] = bg;
 }
@@ -276,7 +276,6 @@ void guiPage::openChildren() {
 }
 
 void guiPage::prepForOpening() {
-  Dbg() << "prepforopening: " << myPath << ":" << ptree;
   foreach (guiRadioGroup *g, groups)
     g->rebuild();
   
@@ -372,15 +371,10 @@ void guiPage::booleanButtonToggled(QString path) {
 }
 
 void guiPage::updateEnableIfs() {
-  Param *p0 = ptree ? ptree->findp("refType") : 0;
-  if (p0)
-    Dbg() << "guiPage::updateEnableIfs - refType" << p0->toString();
   foreach (QString id, buttons.keys()) {
     Param *p = ptree ? ptree->findp(id) : 0;
     if (p) {
       bool ena = p->isEnabled();
-      Dbg() << "guiPage::updateEnableIfs " << id
-	    << " e=" << ena << " pe=" << pageEnabled;
       buttons[id]->setEnabled(ena && pageEnabled);
       if (!ena) 
 	buttons[id]->setValue(p->toString());
@@ -497,7 +491,7 @@ void guiPage::addChildren(PageBuildGeom &g, QDomElement doc) {
   for (QDomElement e=doc.firstChildElement(); !e.isNull();
        e=e.nextSiblingElement()) {
     QString tag = e.tagName();
-    if (tag=="group")
+    if (tag=="group" || tag=="ungroup")
       addRadioGroup(g,e);
     else if (tag=="button" || tag=="immune")
       addButton(g,e);

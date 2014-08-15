@@ -495,8 +495,12 @@
       <immune id="debleach" label="Debleach" x="2.1" y="4" bg="#66ddff"/>
     </group>
     <immune id="roiDeleteAll" label="Delete All ROIs" x="4.1" y="4" bg="#ff4411"/>
-    <immune id="zoomIn" label="Zoom In" x="4.1" y="1" bg="#55eecc"/>
-    <immune id="zoomOut" label="Zoom Out" bg="#22ddcc"/>
+    <ungroup id="zoomer" x="4.1" y="1" spanrows="1" spancols="1" cols="2">
+      <immune id="zoomIn" label="Zoom In" bg="#55eecc"/>
+      <immune id="zoomOut" label="Zoom Out" bg="#22ddcc"/>
+    </ungroup>
+    <immune id="autosaveROIs" label="Auto Save ROIs" type="bool"
+	    x="4.1" y="2" bg="#77ffff"/>
 
     <menu id="refType" rows="3" cols="1">
       <auto enum="REFTYPE"/>

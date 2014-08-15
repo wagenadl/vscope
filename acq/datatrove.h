@@ -19,9 +19,9 @@ public slots:
   void saveROIs(); // only works after write().
   void setDummy(bool dummy);
   /*:F setDummy
-   *:D If set, saving is disabled and the write() and saveROIs() slots do
-       nothing.
+   *:D If set, saving is disabled and the write() slot does nothing.
   */
+  void setAutoSaveROIs(bool asr);
 public:
   class TrialData &trial() { return *trial_; }
   class ROISet &rois() { return *rois_; }
@@ -40,6 +40,7 @@ private:
 private:
   bool ownptree;
   bool dummy;
+  bool asr;
 private: // not implemented
   DataTrove(DataTrove const &);
   DataTrove &operator=(DataTrove const &);

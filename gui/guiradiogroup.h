@@ -17,7 +17,8 @@ class PageBuildGeom;
 class guiRadioGroup: public QObject {
   Q_OBJECT;
 public:
-  guiRadioGroup(guiPage *parent);
+  guiRadioGroup(bool ungroup, guiPage *parent);
+  // "ungroup" means visually grouped but not radio grouped
   virtual ~guiRadioGroup();
   void build(PageBuildGeom &g, QDomElement doc);
   QStringList childIDs() const;
@@ -35,6 +36,7 @@ private:
   QString dflt;
   QSet<class AutoButtons *> autoButtons;
   QSet<QString> fixedids;
+  bool ungroup;
 };
 
 #endif

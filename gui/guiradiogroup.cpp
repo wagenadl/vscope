@@ -8,9 +8,9 @@
 #include <base/exception.h>
 #include "autobuttons.h"
 
-guiRadioGroup::guiRadioGroup(guiPage *parent):
+guiRadioGroup::guiRadioGroup(bool ungroup, guiPage *parent):
   QObject(parent),
-  page(parent) {
+  page(parent), ungroup(ungroup) {
   rg = new RadioGroup(this);
 }
 
@@ -29,7 +29,8 @@ void guiRadioGroup::build(PageBuildGeom &g0, QDomElement doc) {
     QString tag = e.tagName();
     if (tag=="button" || tag=="immune") {
       guiButton *b = page->addButton(g, e);
-      rg->add(b); // this overrides visual type...
+      if (!ungroup)
+	rg->add(b); // this overrides visual type...
       fixedids.insert(b->id());
       if (e.hasAttribute("vt")) // ... so we may have to restore it
 	b->setVisualType((VISUALTYPE)Enumerator::find("VISUALTYPE")
