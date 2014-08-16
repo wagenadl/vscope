@@ -11,6 +11,7 @@
 #include <xml/enumerator.h>
 #include <gui/guimenu.h>
 #include "vscopegui.h"
+#include "updatecamenum.h"
 
 CohImages::CohImages(CohData *data):
   CohMaps(QRect(0, 0, 512, 512)), data(data) {
@@ -69,9 +70,6 @@ void CohImages::setCameras(QStringList newids) {
   foreach (QString id, droppool)
     del(id);
 
-  Enumerator *showwhat = Enumerator::find("SHOWWHAT");
-  foreach (QString id, oldids)
-    showwhat->remove("Coh-"+id);
-  foreach (QString id, newids) 
-    showwhat->add("Coh-"+id);
+  ::updateCamEnum(Enumerator::find("SHOWWHAT"), "Coh-", newids);
+  ::updateCamEnum(Enumerator::find("CAMERAS"), "", newids);
 }

@@ -26,13 +26,14 @@ public:
   // TrialData &data() { return *dat; }
 public slots:
   void start();
-  void abort(); // I need to decide about error handling in abort() 
+  void abort(); // I need to decide about error handling in abort()
 signals:
   void ended(QString exptname, QString trialid);
 protected slots:
   void ephysoutComplete();
   void ephysacqComplete();
   void allEPhysComplete();
+  void updateCameras();
 private:
   TrialData *dat;
   // acquisition

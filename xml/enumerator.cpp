@@ -47,11 +47,15 @@ void Enumerator::add(QDomElement def) {
 }
 
 void Enumerator::add(QString s) {
+  if (has(s))
+    return;
   int n = isEmpty() ? 0 : largestVal + 1;
   add(s, n);
 }
 
 void Enumerator::add(QString s, int n) {
+  if (has(s))
+    remove(s);
   if (isEmpty() || n<smallestVal)
     smallestVal = n;
   if (isEmpty() || n>largestVal)
@@ -63,11 +67,11 @@ void Enumerator::add(QString s, int n) {
 }
 
 void Enumerator::remove(QString s) {
-  if (tag2val.contains(s)) {
-    val2tag.remove(tag2val[s]);
-    tag2val.remove(s);
-    orderedTags.removeAll(s);
-  }
+  if (!has(s))
+    return;
+  val2tag.remove(tag2val[s]);
+  tag2val.remove(s);
+  orderedTags.removeAll(s);
 }
 
 int Enumerator::lookup(QString s, int dflt) const {

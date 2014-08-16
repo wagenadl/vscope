@@ -54,7 +54,7 @@ public:
    *:D Only useful after read() or write().
    *:N The writable form breaks the KeyAccess convention.
    */
-  QStringList const &cameras() const { return camids; }
+  QStringList const &cameras() const;
 signals:
   void newCameras();
   /*:S newCameras

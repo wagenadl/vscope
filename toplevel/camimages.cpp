@@ -10,6 +10,7 @@
 #include <xml/enumerator.h>
 #include <gui/guimenu.h>
 #include "vscopegui.h"
+#include "updatecamenum.h"
 
 CamImages::CamImages(): ROIImages(QRect(0, 0, 512, 512)) {
 }
@@ -63,14 +64,8 @@ void CamImages::setCameras(QStringList newids) {
   foreach (QString id, droppool)
     del(id);
 
-  Dbg() << "camimages: updating SHOWWHAT";
-  Dbg() <<"  removing " << oldids.join(" ");
-  Dbg() <<"  adding " << newids.join(" ");
-  Enumerator *showwhat = Enumerator::find("SHOWWHAT");
-  foreach (QString id, oldids)
-    showwhat->remove("CCD-"+id);
-  foreach (QString id, newids) 
-    showwhat->add("CCD-"+id);
+  ::updateCamEnum(Enumerator::find("SHOWWHAT"), "CCD-", newids);
+  ::updateCamEnum(Enumerator::find("CAMERAS"), "", newids);
 
   QStringList pp = QString("Left Right").split(" ");
   foreach (QString p, pp) {

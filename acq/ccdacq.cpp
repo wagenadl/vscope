@@ -169,7 +169,8 @@ void CCDAcq::abort() {
       cameras[k]->abort();
 
   for (int k=0; k<ncams; k++)
-    dest[k]->checkin(keys[k]);
+    if (dest[k])
+      dest[k]->checkin(keys[k]);
   keys.clear();
   
   isActive=false;
@@ -197,7 +198,8 @@ void CCDAcq::start() {
 
   keys.clear();
   for (int k=0; k<ncams; k++)
-    keys.append(dest[k]->checkout());
+    if (dest[k])
+      keys.append(dest[k]->checkout());
   
   try {
     for (int k=0; k<ncams; k++)

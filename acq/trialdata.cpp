@@ -58,6 +58,11 @@ TrialData::~TrialData() {
     delete mypartree;
 }
 
+QStringList const &TrialData::cameras() const {
+  Dbg() << "TrialData " << (void*)this << " 62: camids " << camids.join(" ");  
+  return camids;
+}
+
 void TrialData::useConnectedCameras() {
   QStringList newcams = Connections::allCams();
   
@@ -72,6 +77,7 @@ void TrialData::useConnectedCameras() {
   // remove old cameras
   foreach (QString id, camids)
     if (!newset.contains(id)) {
+      remove(ccddata[id]);
       delete ccddata[id]; // automatically removes from signal list
       ccddata.remove(id);
       ccdplace.remove(id);
@@ -83,6 +89,7 @@ void TrialData::useConnectedCameras() {
       add(ccddata[id] = new CCDData());
 
   camids = newcams;
+  Dbg() << "TrialData " << (void*)this << " 86: camids " << camids.join(" ");
 
   // place all cameras
   foreach (QString id, camids) {
@@ -447,6 +454,7 @@ void TrialData::readCCD(XML &myxml, QString base) {
   }
 
   camids = newcams;
+  Dbg() << "TrialData " << (void*)this << " 450: camids " << camids.join(" ");
 
   foreach (QString id, newcams)
     ccdplace[id] = ccddata[id]->dataToCanvas();

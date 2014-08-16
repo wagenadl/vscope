@@ -22,6 +22,7 @@
 #include <toplevel/exptlog.h>
 #include <base/roiset.h>
 #include <xml/connections.h>
+#include <xml/enumerator.h>
 #include <video/videoprog.h>
 #include <acq/datatrove.h>
 #include <QDir>
@@ -171,9 +172,28 @@ void Acquire::redisplayCCD() {
   displayCCD();
 }
 
+static void updateCameraEnum() {
+  Enumerator *enu = Enumerator::find("CAMERAS");
+  QSet<QString> oldids;
+  foreach (QString id, enu->getNonnegativeTags())
+    oldids.insert(id);
+  QSet<QString> newids;
+  foreach (QString id, Globals::trove->trial().cameras())
+    newids.insert(id);
+  foreach (QString id, oldids)
+    if (!newids.contains(id))
+      enu->remove(id);
+  foreach (QString id, newids)
+    if (!oldids.contains(id))
+      enu->add(id);
+
+  Globals::gui->findPage("acquisition").updateAuto(); // rebuild camvals  
+}
+  
+
 void Acquire::displayCCD(bool writePixStatsToLog) {
   QVector<QString> camname;
-  foreach (QString id, Connections::allCams())
+  foreach (QString id, Globals::trove->trial().cameras()) // Connections::allCams())
     camname.push_back(id);
   int K = camname.size();
   
@@ -181,6 +201,7 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
   foreach (QString id, camname)
     imgs.push_back(Globals::ccdw->get(id));
 
+  updateCameraEnum();
   QVector<guiButton *> btn;
   foreach (QString id, camname)
     btn.push_back(&Globals::gui->findButton(QString("acquisition/camvals")

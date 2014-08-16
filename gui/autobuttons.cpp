@@ -17,6 +17,11 @@ void AutoButtons::setup(PageBuildGeom &geom,
 		      QDomElement doc_) {
   initialGeom = geom;
   doc = doc_;
+  pfx = doc.hasAttribute("id")
+    ? doc.attribute("id")
+    : group
+    ? group->id()
+    : "";
   initialGeom.go(doc);
   enumerator = Enumerator::find(doc.attribute("enum"));
   if (!enumerator)
@@ -35,11 +40,12 @@ QStringList AutoButtons::selectIDs(QStringList inlist) {
 
 void AutoButtons::rebuild(PageBuildGeom *g_out) {
   QStringList newids = selectIDs(enumerator->getNonnegativeTags());
+  Dbg() << "AutoButtons::rebuild " << page->path() << " " << newids.join(" ");
   if (newids == ids)
     return;
 
   foreach (QString id, buttons.keys()) 
-    page->deleteButton(id);
+    page->deleteButton(pfx + ":" + id);
 
   buttons.clear();
 
@@ -49,13 +55,8 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
   QDomDocument xml;
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
-  QString pfx = doc.hasAttribute("id")
-    ? doc.attribute("id")
-    : group
-      ? group->id()
-      : "";
   foreach (QString id, ids) {
-    QString fullid = pfx + ARRAYSEP + id;
+    QString fullid = pfx + ":" + id;
     // let's build an item
     xml.setContent(hd1 + "\n" + hd2 + "\n"
 		   + "<button id=\""

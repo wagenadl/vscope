@@ -7,6 +7,7 @@
 #include <xml/attribute.h>
 #include <base/exception.h>
 #include "autobuttons.h"
+#include <base/dbg.h>
 
 guiRadioGroup::guiRadioGroup(bool ungroup, guiPage *parent):
   QObject(parent),
@@ -67,6 +68,7 @@ QStringList guiRadioGroup::childIDs() const {
 }
 
 void guiRadioGroup::rebuild() {
+  Dbg() << "guiradiogroup::rebuild " << myid;
   foreach (AutoButtons *a, autoButtons)
     a->rebuild();
 }

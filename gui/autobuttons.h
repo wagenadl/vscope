@@ -27,6 +27,7 @@ private:
   QStringList ids;
   QMap<QString, guiButton *> buttons;
   QDomElement doc;
+  QString pfx;
   PageBuildGeom initialGeom;
   Enumerator const *enumerator;
   bool isDyn;

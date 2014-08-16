@@ -37,8 +37,8 @@ Trial::Trial(TrialData *d): dat(d) {
 
   ccdacq = new CCDAcq();
 
-  foreach (QString camid, Connections::allCams()) 
-    ccdacq->setDest(camid, dat->ccdData(camid));;
+  connect(dat, SIGNAL(newCameras()), SLOT(updateCameras()));
+  updateCameras();
 
   prep=false;
   active=false;
@@ -68,6 +68,14 @@ Trial::~Trial() {
   if (dat)
     delete dat; // eventually, this will not be here any more
 }
+
+void Trial::updateCameras() {
+  QSet<QString> cams;
+  foreach (QString id, dat->cameras())
+    cams.insert(id);
+  foreach (QString camid, Connections::allCams()) 
+    ccdacq->setDest(camid, cams.contains(camid) ? dat->ccdData(camid) : 0);
+}  
 
 void Trial::reconstructStim(ParamTree const *ptree) {
   ephysout->prepare(ptree, dat->allTiming());
