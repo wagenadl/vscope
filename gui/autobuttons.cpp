@@ -69,6 +69,7 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
     g.up(); g.right();
     if (group)
       group->add(buttons[id]);
+    buttons[id]->show();
   }
   
   if (g_out)
