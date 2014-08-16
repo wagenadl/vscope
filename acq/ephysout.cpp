@@ -137,12 +137,14 @@ void EPhysOut::setupDData_addStim(ParamTree const *ptree) {
 
   QStringList useStimLines;
   foreach (QString id, allStimLines) {
-    Param const &p =
-      ptree->find(QString("stimEphys/channel:%1/enable").arg(id));
+    Param const *p =
+      ptree->findp(QString("stimEphys/channel:%1/enable").arg(id));
+    if (!p)
+      continue;
     ddata->addLine(Connections::findDig(id).line);
     /* We're clamping all DOx lines, even if they
        are not enabled. (We'll just write zeros.) */
-    if (p.toBool())
+    if (p->toBool())
       useStimLines.append(id);
   }
   int nscans = ddata->getNumScans();

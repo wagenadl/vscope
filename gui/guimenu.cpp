@@ -10,6 +10,7 @@
 #include <xml/enumerator.h>
 #include "autoitems.h"
 #include <gfx/radiogroup.h>
+#include <base/dbg.h>
 
 guiMenu::guiMenu(class QWidget *parent,
 		 class ParamTree *ptree,
@@ -59,7 +60,7 @@ guiButton *guiMenu::addItem(PageBuildGeom &g, QDomElement doc) {
     throw Exception("guiPage", "Empty item ID in page " + path());
   
   guiButton *b = createItem(id);
-  Param *p = ptree ? ptree->findp(id) : 0;
+  Param *p = ptree ? ptree->leafp() : 0;
   if (p && p->isImmune())
     b->makeROImmune();
   buttons[id] = b;

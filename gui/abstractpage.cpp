@@ -188,7 +188,6 @@ void AbstractPage::setReadOnly(bool ro) {
 }
 
 void AbstractPage::reTree(ParamTree *neworigtree) {
-  Dbg() << "retree: " << myPath << ":" << neworigtree;
   if (neworigtree)
     origptree = neworigtree;
 

@@ -62,6 +62,7 @@ while ($code =~ /([ABCDE]+(\*[ABCDE]+)+)/) {
   my $srtl = join("*",@srt);
   unless (exists($bits{$srts})) {
     $bits{$srts}=1;
+    continue if $srts eq "EEEE"; # This variable is not used
     push @pwrs, "cplx $srts = $srtl;";
   }
 $grp =~ s/\*/\\\*/g;

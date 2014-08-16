@@ -48,8 +48,18 @@ void CohImages::setCameras(QStringList newids) {
       img->setRefTrace(Globals::ptree->find("analysis/refTrace").toString());
       img->setShowMode((SHOWROIS)Globals::ptree->find("analysis/showROIs").
                        toInt());
-      img->setCamPair(Connections::camPair(id)); // Really, this should be
-      // ... derived from TrialData too, but we don't have it there yet.
+
+      CamPair pair;
+      if (Connections::findpCam(id)) {
+	pair = Connections::camPair(id);
+	// Really, this should be derived from TrialData,
+	// but we don't have it there yet.	
+      } else {
+	pair.donor = id;
+	pair.acceptor = "";
+      }
+      img->setCamPair(pair);
+
       add(id, img);
       img->setGeometry(0,0,512,Globals::mainwindow->basey());
       img->hide();

@@ -8,18 +8,24 @@
     <param id="panelRight" type="enum" enum="SHOWWHAT" default="Welcome"
            immune="1" save="false"/>
     <category id="panelHistory">
-      <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="EphysInt"/>
-      <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysExt"/>
-      <param id="whatLeft3" type="enum" enum="SHOWWHAT" default="Stimuli"/>
-      <param id="prioLeft1" type="double" default="3"/> <!-- large=stronger -->
-      <param id="prioLeft2" type="double" default="2"/>
-      <param id="prioLeft3" type="double" default="1"/>
-      <param id="whatRight1" type="enum" enum="SHOWWHAT" default="EphysInt"/>
-      <param id="whatRight2" type="enum" enum="SHOWWHAT" default="EphysExt"/>
-      <param id="whatRight3" type="enum" enum="SHOWWHAT" default="VSDTraces"/>
-      <param id="prioRight1" type="double" default="3"/>
-      <param id="prioRight2" type="double" default="2"/>
-      <param id="prioRight3" type="double" default="1"/>
+      <param id="whatLeft1" type="enum" enum="SHOWWHAT" default="EphysInt"
+	     save="false"/>
+      <param id="whatLeft2" type="enum" enum="SHOWWHAT" default="EphysExt"
+	     save="false"/>
+      <param id="whatLeft3" type="enum" enum="SHOWWHAT" default="Stimuli"
+	     save="false"/>
+      <param id="prioLeft1" type="double" default="3" save="false"/>
+      <param id="prioLeft2" type="double" default="2" save="false"/>
+      <param id="prioLeft3" type="double" default="1" save="false"/>
+      <param id="whatRight1" type="enum" enum="SHOWWHAT" default="EphysInt"
+	     save="false"/>
+      <param id="whatRight2" type="enum" enum="SHOWWHAT" default="EphysExt"
+	     save="false"/>
+      <param id="whatRight3" type="enum" enum="SHOWWHAT" default="VSDTraces"
+	     save="false"/>
+      <param id="prioRight1" type="double" default="3" save="false"/>
+      <param id="prioRight2" type="double" default="2" save="false"/>
+      <param id="prioRight3" type="double" default="1" save="false"/>
     </category>
   
     <category id="acqEphys">

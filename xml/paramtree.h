@@ -129,6 +129,7 @@ public:
    *:D Define whether or not this parameter should be saved.
    */
   bool isArray() const;
+  QList<QString> childIDs() const;
 protected:
   ParamTree(QDomElement doc, QString elt);
   /*:F constructor

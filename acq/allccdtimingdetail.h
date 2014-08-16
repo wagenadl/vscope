@@ -19,6 +19,9 @@ public:
   CCDTimingDetail const &operator[](QString camid) const;
   CCDTimingDetail const &first() const; // temp.
   bool isSnap() const { return is_snap; }
+  bool has(QString id) const { return details.contains(id); }
+private:
+  void updateCameras(ParamTree const *ptree);
 private:
   bool is_snap;
   QMap<QString, CCDTimingDetail *> details;

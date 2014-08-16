@@ -52,6 +52,12 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
   uint32_t *data = ddata->allData(guard.key());
 
   foreach (QString id, camnames) {
+    if (!timing.has(id))
+      continue; // this happens if we are reconstructing stim for
+                // a loaded trial that doesn't have all our connected
+                // cameras. Really, of course, this should be rethought,
+                // but I think just skipping is OK; the reconstructed stim
+                // will not, after all, ever be actually used.
     for (int n=-timing[id].preHeatFrames(); n<timing[id].nframes(); n++) {
       int framestart = timing[id].startScans() + n*timing[id].periodScans();
       int trigend = framestart + 10;

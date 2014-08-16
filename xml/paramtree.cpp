@@ -133,7 +133,7 @@ void ParamTree::read(QDomElement doc) {
                 << v << " to " << id;
 	}
       } else {
-        Dbg() << "Warning: ParamTree (read): Unexpected element " << id;
+        // Dbg() << "ParamTree (read): Ignoring nonsavable element " << id;
       }
     }
   } else if (doc.tagName()=="array") {
@@ -299,6 +299,10 @@ Param const &ParamTree::leaf() const {
     throw Exception("ParamTree: No leaf");
 }
 
+QList<QString> ParamTree::childIDs() const {
+  return children.keys();
+}
+
 ParamTree const *ParamTree::childp(QString id) const {
   if (children.contains(id))
     return children[id];
@@ -338,7 +342,11 @@ ParamTree const *ParamTree::treep(QString path) const {
   ParamTree const *c = childp(head);
   if (c)
     return c->treep(tail);
-  else
+  else if (isArray()) {
+    Dbg() << "ParamTree::treep " << dbgPath << " no array elt " << head
+	  << " -- cannot construct in const";
+    return 0;
+  } else
     return 0;
 }
 
@@ -351,7 +359,11 @@ ParamTree *ParamTree::treep(QString path) {
   ParamTree *c = childp(head);
   if (c)
     return c->treep(tail);
-  else
+  else if (isArray()) {
+    Dbg() << "ParamTree::treep " << dbgPath << " no array elt " << head
+	  << " -- should construct";
+    return 0;
+  } else
     return 0;
 }
 
@@ -497,7 +509,7 @@ void ParamTree::setSavable(bool f) {
 }
 
 void ParamTree::decideSavable(QDomElement e) {
-    if (e.hasAttribute("save")) {
+  if (e.hasAttribute("save")) {
     Param s("bool");
     s.set(xmlAttribute(e, "save"));
     savable = s.toBool();

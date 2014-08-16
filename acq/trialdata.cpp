@@ -292,10 +292,12 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0) {
   QDomElement info = myxml.find("info");
   QDomElement settings = myxml.find("settings");
 
+  Dbg() << "TrialData::read";
   if (!mypartree)
     mypartree = new ParamTree(*partree);
   
   mypartree->read(settings);
+  Dbg() << "  read paramtree";
 
   mypartree->find("filePath").set(fpath);
   mypartree->find("acquisition/exptname").set(exptname);
@@ -350,8 +352,21 @@ void TrialData::writeCCD(QString base) const {
 		    "write");
 
   foreach (QString id, camids) {
-    QDomElement cam = ccddata[id]->write(ccdf, ccd);
-    cam.setAttribute("name", id);
+    if (ccddata[id]->getNFrames()>0) {
+      QDomElement cam = ccddata[id]->write(ccdf, ccd);
+      cam.setAttribute("name", id);
+      try {
+	CamPair pair(Connections::camPair(id));
+	if (pair.acceptor==id)
+	  cam.setAttribute("donor", pair.donor);
+      } catch (...) {
+	// We _try_ to add donor information, but not aggressively
+	// Eventually, we should do that in a better way, but for now this
+	// is enough to future-proof our files. This information is needed
+	// by camimages and cohimages. (Which are way too similar; there
+	// should be some subclassing there.)
+      }
+    }
   }
   ccdf.close();
 }
@@ -414,14 +429,17 @@ void TrialData::readCCD(XML &myxml, QString base) {
     /* End of format conversion. */
     newset.insert(id);
     newcams.append(id);
-    if (!oldset.contains(id))
+    if (!oldset.contains(id)) {
       ccddata[id] = new CCDData;
+      add(ccddata[id]); // to the keyagg
+    }
     ccddata[id]->read(ccdf, cam);
   }
   ccdf.close();
 
   foreach (QString id, camids) {
     if (!newset.contains(id)) {
+      remove(ccddata[id]); // from the keyagg
       delete ccddata[id];
       ccddata.remove(id);
       ccdplace.remove(id);

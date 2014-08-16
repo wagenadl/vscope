@@ -8,8 +8,6 @@
 
 AllCCDTimingDetail::AllCCDTimingDetail() {
   is_snap = false;
-  foreach (QString id, Connections::allCams()) 
-    details[id] = new CCDTimingDetail();
 }
 
 AllCCDTimingDetail::~AllCCDTimingDetail() {
@@ -17,13 +15,33 @@ AllCCDTimingDetail::~AllCCDTimingDetail() {
     delete p;
 }
 
+void AllCCDTimingDetail::updateCameras(ParamTree const *ptree) {
+  QSet<QString> oldids = QSet<QString>::fromList(details.keys());
+  QSet<QString> newids;
+  ParamTree const &p = ptree->tree("acqCCD/camera");
+  foreach (QString s, p.childIDs())
+    newids.insert(s);
+  foreach (QString s, oldids) {
+    if (!newids.contains(s)) {
+      delete details[s];
+      details.remove(s);
+    }
+  }
+  foreach (QString s, newids) 
+    if (!details.contains(s))
+      details[s] = new CCDTimingDetail();
+}
+  
+
 void AllCCDTimingDetail::prepTrial(ParamTree const *ptree) {
+  updateCameras(ptree);
   foreach (QString id, details.keys()) 
     details[id]->prepTrial(ptree, &::camTree(ptree, id));
   is_snap = false;
 }
 
 void AllCCDTimingDetail::prepSnap(ParamTree const *ptree) {
+  updateCameras(ptree);
   foreach (QString id, details.keys()) 
     details[id]->prepSnap(ptree, &::camTree(ptree, id));
   is_snap = true;

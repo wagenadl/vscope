@@ -44,8 +44,16 @@ void CamImages::setCameras(QStringList newids) {
       droppool.remove(id);
     } else {
       ROIImage *img = new ROIImage(Globals::leftplace);
-      img->setCamPair(Connections::camPair(id)); // Really, this should be
-      // ... derived from TrialData too, but we don't have it there yet.
+      CamPair pair;
+      if (Connections::findpCam(id)) {
+	pair = Connections::camPair(id);
+	// Really, this should be derived from TrialData,
+	// but we don't have it there yet.	
+      } else {
+	pair.donor = id;
+	pair.acceptor = "";
+      }
+      img->setCamPair(pair);
       add(id, img);
       img->setGeometry(0,0,512,Globals::mainwindow->basey());
       img->hide();
@@ -55,6 +63,9 @@ void CamImages::setCameras(QStringList newids) {
   foreach (QString id, droppool)
     del(id);
 
+  Dbg() << "camimages: updating SHOWWHAT";
+  Dbg() <<"  removing " << oldids.join(" ");
+  Dbg() <<"  adding " << newids.join(" ");
   Enumerator *showwhat = Enumerator::find("SHOWWHAT");
   foreach (QString id, oldids)
     showwhat->remove("CCD-"+id);
