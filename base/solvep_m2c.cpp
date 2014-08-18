@@ -1,6 +1,5 @@
 cplx AA = A*A;
 cplx AAA = AA*A;
-cplx AAAA = AA*AA;
 cplx BB = B*B;
 cplx BBB = BB*B;
 cplx BBBB = BB*BB;
@@ -12,7 +11,6 @@ cplx DDD = DD*D;
 cplx DDDD = DD*DD;
 cplx EE = E*E;
 cplx EEE = EE*E;
-cplx EEEE = EE*EE;
 cplx BCD = B*C*D;
 cplx ACE = A*C*E;
 cplx ADD = A*DD;

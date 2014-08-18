@@ -21,14 +21,14 @@ $code =~ s/p\(1\.\/2\)/sqrt/g;
 $code =~ s/p\(1\.\/3\)/curt/g;
 $code =~ s/p\(2\/3\)/cusq/g;
 
-print $code;
-print "---------------------------------------------------\n";
+#print $code;
+#print "---------------------------------------------------\n";
 
 # Now lets do the hard part: (xxx)sqrt becomes sqrt(xxx).
 while ($code =~ /\(/) {
   $code =~ s/\(([^()]+)\)(sqrt|curt|cusq|)/$2\[$1\]/g;
-print $code;
-print "---------------------------------------------------\n";
+#print $code;
+#print "---------------------------------------------------\n";
 }
 $code =~ s/\[/(/g;
 $code =~ s/\]/)/g;
@@ -46,14 +46,14 @@ my %bits;
 for my $v (qw/A B C D E/) {
   push @pwrs, "cplx $v$v = $v*$v;";
   push @pwrs, "cplx $v$v$v = $v$v*$v;";
-  push @pwrs, "cplx $v$v$v$v = $v$v*$v$v;";
+  push @pwrs, "cplx $v$v$v$v = $v$v*$v$v;" unless $v =~ /[AE]/;
   $code =~ s/\($v\*$v\)/$v$v/g;
   $code =~ s/\($v\*$v\*$v\)/$v$v$v/g;
   $code =~ s/\($v\*$v\*$v\*$v\)/$v$v$v$v/g;
 }
 
-print $code;
-print "---------------------------------------------------\n";
+#print $code;
+#print "---------------------------------------------------\n";
 
 while ($code =~ /([ABCDE]+(\*[ABCDE]+)+)/) {
   my $grp = $1;
@@ -62,11 +62,10 @@ while ($code =~ /([ABCDE]+(\*[ABCDE]+)+)/) {
   my $srtl = join("*",@srt);
   unless (exists($bits{$srts})) {
     $bits{$srts}=1;
-    continue if $srts eq "EEEE"; # This variable is not used
     push @pwrs, "cplx $srts = $srtl;";
   }
-$grp =~ s/\*/\\\*/g;
-  print "group: $grp. srts: $srts. srtl: $srtl.\n";
+  $grp =~ s/\*/\\\*/g;
+  #print "group: $grp. srts: $srts. srtl: $srtl.\n";
   $code =~ s/\b$grp\b/$srts/g;
 }
 

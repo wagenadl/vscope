@@ -53,7 +53,7 @@ void Camera::setConfig(CCDConfig const &cfg0) {
     : pvpcam->configFinite(rgn,trigmode,expotime,cfg.nframes);
 
   if (cfg.iscont) {
-    if (contBuffer.size()<npixels_for_seq)
+    if (contBuffer.size()<int(npixels_for_seq))
       contBuffer.resize(npixels_for_seq);
   }
 }
