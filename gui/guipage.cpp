@@ -573,7 +573,6 @@ QString guiPage::getCurrentElement() const {
 
 bool guiPage::deleteButton(QString id) {
   if (buttons.contains(id)) {
-    Dbg() << "guipage " << myPath << " delete " << id;
     delete buttons[id];
     buttons.remove(id);
     return true;
@@ -588,7 +587,6 @@ QList<guiButton *> guiPage::allButtons() {
 }
 
 void guiPage::updateAuto() {
-  Dbg() << "guiPage::updateAuto " << myPath;
   foreach (guiRadioGroup *rg, groups)
     rg->rebuild();
   foreach (AbstractPage *p, subPages) {

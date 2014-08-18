@@ -165,7 +165,7 @@ void Button::restoreActionFrame() {
 }  
 
 void Button::mouseDoubleClickEvent(class QMouseEvent *) {
-  if (readonly)
+  if (readonly && !immune)
     return;
   lastClick.start();
   if (vtype==VT_Action) {

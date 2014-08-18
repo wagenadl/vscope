@@ -169,6 +169,8 @@ void gt_slots::paramchanged(QString p, QString val) {
       bool asr = ptree()->find(p).toBool(); 
       Dbg() << "param asr " << asr;
       Globals::trove->setAutoSaveROIs(asr);
+      if (asr)
+	Globals::trove->saveROIs();
     } else if (p=="acquisition/dummy") {
       bool dummy = ptree()->find(p).toBool();
       Dbg() << "param dummy " << dummy;

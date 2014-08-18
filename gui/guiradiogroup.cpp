@@ -68,7 +68,6 @@ QStringList guiRadioGroup::childIDs() const {
 }
 
 void guiRadioGroup::rebuild() {
-  Dbg() << "guiradiogroup::rebuild " << myid;
   foreach (AutoButtons *a, autoButtons)
     a->rebuild();
 }

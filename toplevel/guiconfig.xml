@@ -445,7 +445,7 @@
     <group id="camvals" x="1.1" y="0">
       <button id="trialPeriod" label="Trial period" bg="#44ffaa" x="1" y="3"/>
       <group x="0" y="0">
-	<auto id="camvals" enum="CAMERAS"/>
+	<auto id="camvals" enum="CAMERAS" immune="1"/>
       </group>
     </group>
 

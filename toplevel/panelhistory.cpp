@@ -245,8 +245,8 @@ QWidget *PanelHistory::childWidget(QString what) {
 void PanelHistory::open(QString where, QString what) {
   menuButton(where,what).setSelected(true);
   QWidget *place = (where=="Left") ? Globals::leftplace : Globals::rightplace;
-  QWidget *&old = (where=="Left") ? oldLeft : oldRight;
-  QWidget *&otherOld = (where=="Left") ? oldRight : oldLeft;
+  QPointer<QWidget> &old = (where=="Left") ? oldLeft : oldRight;
+  QPointer<QWidget> &otherOld = (where=="Left") ? oldRight : oldLeft;
   QWidget *child = childWidget(what);
   if (!child) {
     dbg("PanelHistory::open: Don't know about %s",qPrintable(what));

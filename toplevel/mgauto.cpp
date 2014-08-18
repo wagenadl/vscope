@@ -61,7 +61,6 @@ bool MGAuto::useOutputChannel(QString id) const {
 }
 
 void MGAuto::rebuild() {
-  Dbg() << "MGAuto " << myname << " rebuild";
   QList<QString> newlist;
   QSet<QString> digi;
   QSet<QString> outp;

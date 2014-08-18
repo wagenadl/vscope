@@ -145,9 +145,9 @@ void ParamTree::read(QDomElement doc) {
         QString id = xmlAttribute(e, "id");
         newChildren << id;
         if (children[id]==0) {
-          Dbg() << "Paramtree: Old was zero " << id
-                << " *" << oldChildren.contains(id)
-                << " in " << dbgPath;
+          //Dbg() << "Paramtree: Old was zero " << id
+          //      << " *" << oldChildren.contains(id)
+          //      << " in " << dbgPath;
           children[id] = new ParamTree(base, id);
         }
         try {
@@ -163,8 +163,6 @@ void ParamTree::read(QDomElement doc) {
     }
     foreach (QString id, oldChildren) {
       if (!newChildren.contains(id)) {
-        Dbg() << "paramtree: Dropping " << id
-              << " in " << dbgPath;
         delete children[id];
         children.remove(id);
       }

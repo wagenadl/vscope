@@ -199,9 +199,7 @@ void AbstractPage::reTree(ParamTree *neworigtree) {
     ptree = sub=="" ? 0 : origptree->childp(sub);
     if (!ptree) {
       if (sub!="")
-        Dbg() << "No ptree for " << getCurrentElement();
-      else
-        Dbg() << "No sub element";
+        Dbg() << "No ptree for " << sub;
       ptree = origptree;
       close();
       return;

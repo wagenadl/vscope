@@ -35,6 +35,7 @@ protected:
   QList<ROIImage *> images();
 protected:
   QSignalMapper *sm;
+  ROISet *rs;
 };
 
 #endif

@@ -40,7 +40,6 @@ QStringList AutoButtons::selectIDs(QStringList inlist) {
 
 void AutoButtons::rebuild(PageBuildGeom *g_out) {
   QStringList newids = selectIDs(enumerator->getNonnegativeTags());
-  Dbg() << "AutoButtons::rebuild " << page->path() << " " << newids.join(" ");
   if (newids == ids)
     return;
 
@@ -55,15 +54,16 @@ void AutoButtons::rebuild(PageBuildGeom *g_out) {
   QDomDocument xml;
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
+  QString tag = (doc.hasAttribute("immune") && doc.attribute("immune").toInt())
+    ? "immune" : "button";
   foreach (QString id, ids) {
     QString fullid = pfx + ":" + id;
     // let's build an item
     xml.setContent(hd1 + "\n" + hd2 + "\n"
-		   + "<button id=\""
-		   + fullid
-		   + "\" value=\""
-		   + id
-		   + "\"/>\n");
+		   + "<" + tag
+		   + " id=\"" + fullid + "\""
+		   + " value=\"" + id + "\""
+		   + "/>\n");
     QDomElement e = xml.documentElement();
     buttons[id] = page->addButton(g, e);
     g.up(); g.right();

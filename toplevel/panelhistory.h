@@ -6,6 +6,8 @@
 
 #include <QString>
 #include <QObject>
+#include <QWidget>
+#include <QPointer>
 #include <xml/param.h>
 
 class PanelHistory: public QObject {
@@ -98,7 +100,7 @@ private slots:
 private:
   bool busy;
   int nButtons;
-  class QWidget *oldLeft, *oldRight;
+  QPointer<QWidget> oldLeft, oldRight;
 private:
   QString lasttrial;
   int figno;

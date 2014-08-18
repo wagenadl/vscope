@@ -5,6 +5,7 @@
 #include <base/dbg.h>
 
 ROIImages::ROIImages(QRect c): CCDImages(c) {
+  rs = 0;
   sm = new QSignalMapper(this);
   connect(sm, SIGNAL(mapped(QString)), SLOT(shareSelection(QString)));
 }
@@ -14,6 +15,7 @@ ROIImages::~ROIImages() {
 
 void ROIImages::add(QString id, ROIImage *img) {
   CCDImages::add(id, img);
+  img->setROIs(rs);
   connect(img,SIGNAL(newSelection(int)), sm, SLOT(map()));
   sm->setMapping(img, id);
 }
@@ -46,7 +48,9 @@ void ROIImages::showROIs(SHOWROIS sm) {
     ri->showROIs(sm);
 }
 
-void ROIImages::setROIs(ROISet *rs) {
+void ROIImages::setROIs(ROISet *rs_) {
+  Dbg() << "ROIImages::setROIs " << QStringList(imgs.keys()).join(" ");
+  rs = rs_;
   foreach (ROIImage *ri, images())
     ri->setROIs(rs);
 }

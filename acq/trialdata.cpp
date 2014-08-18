@@ -59,7 +59,6 @@ TrialData::~TrialData() {
 }
 
 QStringList const &TrialData::cameras() const {
-  Dbg() << "TrialData " << (void*)this << " 62: camids " << camids.join(" ");  
   return camids;
 }
 
@@ -89,7 +88,6 @@ void TrialData::useConnectedCameras() {
       add(ccddata[id] = new CCDData());
 
   camids = newcams;
-  Dbg() << "TrialData " << (void*)this << " 86: camids " << camids.join(" ");
 
   // place all cameras
   foreach (QString id, camids) {
