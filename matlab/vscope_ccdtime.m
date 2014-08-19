@@ -13,7 +13,14 @@ if isfield(x, 'ccd')
 end
 
 if nargin<2 || isempty(id)
+  N = length(x.info.framestart_s);
   idx = 1;
+  for n=1:N
+    if x.info.nframes{n}>0
+      idx = n;
+      break;
+    end
+  end
 elseif ischar(id)
   idx = strcmp(id, x.ccd.info.camid);
   if isempty(idx)
@@ -23,13 +30,13 @@ else
   idx = id;
 end
 
-tt = x.info.framestart_s{idx};
-te = x.info.frameend_s{idx};
-
-% Old style:
-%  t0 = x.info.delay_ms{idx}/1e3;
-%  f = x.info.rate_hz{idx};
-%  n = x.info.nframes{idx};
-%  tt = [0:n-1]'/f + t0;
-%  te = [1:n]'/f + t0;
-
+if isempty(x.info.framestart_s{idx})
+  t0 = x.info.delay_ms{idx}/1e3;
+  f = x.info.rate_hz{idx};
+  n = x.info.nframes{idx};
+  tt = [0:n-1]'/f + t0;
+  te = [1:n]'/f + t0;
+else
+  tt = x.info.framestart_s{idx};
+  te = x.info.frameend_s{idx};
+end
