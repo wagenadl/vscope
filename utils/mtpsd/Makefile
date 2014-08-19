@@ -30,7 +30,7 @@ else
 	CC=g++
 endif
 
-CFLAGS=-c -g -O3 -W -Wall -Iinclude -Isrc/dpss -Isrc/mtpsd -Isrc/common -I/usr/local/include/octave-3.5.0+ -fPIC
+CFLAGS=-c -g -O3 -W -Wall -Iinclude -Isrc/dpss -Isrc/mtpsd -Isrc/common -I/usr/include/octave-3.8.1 -I/usr/include/octave-3.8.1/octave -fPIC
 LDFLAGS:= -llapack -lfftw3 $(LDFLAGS)
 
 OCT_CC=mkoctfile

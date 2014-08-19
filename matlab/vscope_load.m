@@ -107,8 +107,8 @@ elseif endswith(ifn,'.xml')
     fclose(ifd);
   end
 
-  dat.ccd.info.frame_s = vsdl_frametimes(dat);
-
+  [dat.ccd.info.frame_s, dat.ccd.info.framestart_s, ...
+	dat.ccd.info.frameend_s] = vsdl_frametimes(dat);
 else
   fclose(ifd);
   error(['vscope_load: Unknown filetype "' ifn '"']);
@@ -729,7 +729,7 @@ if scl==0
 end
 
 
-function t = vsdl_frametimes(dat)
+function [t, t0, t1] = vsdl_frametimes(dat)
 t = cell(0,0);
 if ~isfield(dat, 'ccd')
   return;
@@ -745,6 +745,9 @@ fhz = dat.digital.info.rate_hz;
 C = length(ids);
 K = length(lines);
 t = cell(C,1);
+t0 = cell(C,1);
+t1 = cell(C,1);
+
 for c=1:C
   idx = find(strcmp(['Frame:' ids{c}], lines));
   if length(idx)==1
@@ -752,5 +755,7 @@ for c=1:C
     [iup, idn] = schmitt(dd, [], [], 2);
     imid = (iup+idn-1)/2;
     t{c} = (imid-1)/fhz;
+    t0{c} = (iup-1)/fhz;
+    t1{c} = (idn-1)/fhz;
   end
 end
