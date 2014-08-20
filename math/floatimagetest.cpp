@@ -5,10 +5,10 @@
 #include <math.h>
 
 int main() {
-  QImage img("../../testdata/025.png");
+  QImage img("../../testdata/025x.png");
   FloatImage fi(img);
   fi.noisify();
-  FloatImage g = FloatImage::gaussian(10, 25);
+  FloatImage g = FloatImage::gaussian(10, 24, 2.5, 6);
   //  fi.apply(sqrtf);
   FloatImage avg = fi.convNorm(g);
 
@@ -18,14 +18,14 @@ int main() {
   f2 *= f2;
   FloatImage c2 = f2.convNorm(g);
   c2.apply(sqrtf);
-  FloatImage rms = c2.convNorm(g);
+  FloatImage rms = c2; //.convNorm(g);
 
   rms += rms.mean()/4; // protect corners
 
   FloatImage ace = dif; ace /= rms;
   
   QImage i0(ace.toImage(-2, 2));
-  i0.save("/tmp/i0.png");
+  i0.save("/tmp/i0x.png");
   return 0;
 }
 

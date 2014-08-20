@@ -11,6 +11,7 @@
 class FloatImage: private QVector<float> {
 public:
   FloatImage();
+  FloatImage(uint16_t const *data, int width, int height);
   FloatImage(int width, int height);
   FloatImage(QImage const &);
   float operator()(int x, int y) const;
@@ -32,14 +33,15 @@ public:
   FloatImage &operator/=(FloatImage const &);
   FloatImage convNorm(FloatImage const &v) const;
   // can only convolve with odd*odd shaped image
-  // also, v must be smaller than we are
+  // also, v must be smaller than we are.
+  FloatImage ace(float sx, int rx, float sy, int ry) const;
   void apply(float (*foo)(float));
   void noisify();
   double mean() const;
   QImage toImage(float min, float max) const;
   QImage toImage(float min, float max, QVector<uint8_t> const &lut) const;
   static QVector<uint8_t> sigmoidLUT(float alpha, int K=1024);
-  static FloatImage gaussian(float sigma, int r);
+  static FloatImage gaussian(float sigmax, int rx, float sigmay=-1, int ry=-1);
 private:
   bool ensureCompatible(FloatImage const &);
   static void grayPalette(QImage &);

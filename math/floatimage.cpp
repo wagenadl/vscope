@@ -7,6 +7,16 @@ FloatImage::FloatImage() {
   wid = hei = 0;
 }
 
+FloatImage::FloatImage(uint16_t const *src, int width, int height) {
+  wid = width;
+  hei = height;
+  resize(wid*hei);
+  float *dst = data();
+  int n = wid*hei;
+    while (n--) 
+      *dst++ = *src++;
+}
+  
 
 FloatImage::FloatImage(int width, int height) {
   wid = width;
@@ -438,12 +448,32 @@ bool FloatImage::ensureCompatible(FloatImage const &v) {
   return false;
 }
 
-FloatImage FloatImage::gaussian(float sigma, int r) {
-  FloatImage f(2*r+1, 2*r+1);
-  for (int y=-r; y<=r; y++) {
-    float *dst = f.row(y+r);
-    for (int x=-r; x<=r; x++) 
-      *dst++ = exp(-.5*(x*x + y*y) / (sigma*sigma));
+FloatImage FloatImage::gaussian(float sigx, int rx, float sigy, int ry) {
+  if (sigy<0)
+    sigy = sigx;
+  if (ry<0)
+    ry = rx;
+  FloatImage f(2*rx+1, 2*ry+1);
+  double sx2 = sigx*sigx;
+  double sy2 = sigy*sigy;
+  for (int y=-ry; y<=ry; y++) {
+    float *dst = f.row(y+ry);
+    for (int x=-rx; x<=rx; x++) 
+      *dst++ = exp(-.5*(x*x/sx2 + y*y/sy2));
   }
   return f;
 }
+
+FloatImage FloatImage::ace(float sigx, int rx, float sigy, int ry) const {
+  FloatImage g = gaussian(sigx, rx, sigy, ry);
+  FloatImage avg = convNorm(g);
+  FloatImage dif = *this; dif -= avg;
+  FloatImage rms = dif; rms *= rms;
+  rms = rms.convNorm(g);
+  rms.apply(sqrtf);
+  rms = rms.convNorm(g); // this may not really matter
+  rms += rms.mean()/4;
+  dif /= rms;
+  return dif;
+}
+  
