@@ -14,6 +14,8 @@ public:
   FloatImage(uint16_t const *data, int width, int height);
   FloatImage(int width, int height);
   FloatImage(QImage const &);
+  bool ensureSize(int width, int height);
+  // clears and returns true if size is changing
   float operator()(int x, int y) const;
   float &operator()(int x, int y);
   float const *data() const;

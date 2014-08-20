@@ -10,9 +10,10 @@
 #include <base/types.h>
 #include <base/xyrra.h>
 #include <base/transform.h>
+#include <math/floatimage.h>
 
 class CCDImage_ {
-  public:
+public: // everything is initialized in CCDImage's constructor
   QImage image; // currently displayed image
   uint16_t min, max; // color map ranges
   QRect zoomRect; // current zoom, in canvas coords
@@ -22,7 +23,12 @@ class CCDImage_ {
   class QRubberBand *rubberband; // used during zoom dragging
   QPoint clickPoint; // location of most recent mouse press
   double adjust_black, adjust_white;
-  QVector<int> gamma_table;
+  QVector<float> gamma_table;
+  FloatImage origImage;
+  FloatImage gammaImage;
+  FloatImage aceImage; //  only defined if acePercentage>0
+  double aceFraction;
+  bool hasACE;
 };
 
 class CCDImage: public QWidget, protected CCDImage_ {

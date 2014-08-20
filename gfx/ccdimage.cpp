@@ -22,6 +22,8 @@ CCDImage::CCDImage(QWidget *parent):
   min = 0;
   max = 65535;
   adjust_black = adjust_white = 0;
+  aceFraction = 0;
+  hasACE = false;
   rebuildGammaTable();
   rubberband = 0;
   recolor("reset");
@@ -68,24 +70,23 @@ static int ccdTestImageCounter = 0;
 void CCDImage::createTestImage() {
   int wid = canvasRect.width();
   int hei = canvasRect.height();
-  image = QImage(wid, hei, QImage::Format_RGB32);
-  // I could use Indexed8 if that's faster.
-  uint32_t *dst = (uint32_t*)image.bits();
+  origImage = FloatImage(wid, hei);
+  float *dst = origImage.data();
   int phase1 = ccdTestImageCounter*138;
   int phase2 = ccdTestImageCounter*38901;
-  QVector<uint8_t> costbl(256);
+  QVector<float> costbl(256);
   for (int i=0; i<256; i++)
-    costbl[i] = uint8_t(127+127*cos(i*6.2832/256));
+    costbl[i] = cos(i*6.2832/256);
   ccdTestImageCounter++;
-  uint8_t const *cosdata = costbl.constData();
+  float const *cosdata = costbl.constData();
   for (int y=0; y<hei; y++) {
     for (int x=0; x<wid; x++) {
-      uint8_t rd = cosdata[int(256*2*y/hei+phase1)&255];
-      uint8_t gr = cosdata[int(256*3*x/wid+phase2)&255];
-      uint8_t bl = cosdata[int(256*2*y/hei+256*3*x/wid+phase1+phase2)&255];
-      *dst++ = (rd<<16) + (gr<<8) + bl + 0xff000000;
+      float rd = cosdata[int(256*2*y/hei+phase1)&255];
+      *dst++ = rd;
     }
   }
+  hasACE = false;
+  rebuildImage();
 }
 
 void CCDImage::newImage(uint16_t const *data, int X, int Y,
@@ -108,44 +109,69 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
   bool flipX = t.reflectsX();
   bool flipY = t.reflectsY();
 
-  if (image.width()!=X || image.height()!=Y)
-    image = QImage(X,Y,QImage::Format_RGB32);
-  // I could use Indexed8 if that's faster.
-  uint32_t *dst = (uint32_t *)image.bits();
-  int rng = 1 + max - min;
+  // simply copy data, taking care of flips
+  origImage.ensureSize(X, Y);
+  float *dst = origImage.data();
   for (int y=0; y<Y; y++) {
     uint16_t const *row = flipY ? (data+(Y-1-y)*X) : data+y*X;
-    if (adjust_black>0 || adjust_white>0) {
-      int const *gamma = gamma_table.constData();
-      for (int x=0; x<X; x++) {
-	int px = row[flipX ? (X-1-x) : x] - min;
-	px*=CCDImage_GAMMA_Entries;
-	px/=rng;
-	if (px<0)
-	  px=0;
-	else if (px>=CCDImage_GAMMA_Entries)
-	  px=CCDImage_GAMMA_Entries-1;
-	*dst++ = gamma[px]*0x010101 + 0xff000000;
-      }
-    } else {
-      for (int x=0; x<X; x++) {
-	int px = row[flipX ? (X-1-x) : x] - min;
-	px*=256;
-	px/=rng;
-	if (px<0)
-	  px=0;
-	else if (px>255)
-	  px=255;
-	*dst++ = px*0x010101 + 0xff000000;
-      }
-    }
+    for (int x=0; x<X; x++) 
+      *dst++ = row[flipX ? (X-1-x) : x];
   }
+
   Transform t0;
   if (flipX)
     t0.flipx(X);
   if (flipY)
     t0.flipy(Y);
   img2cnv = t(t0);
+
+  hasACE = false;
+
+  rebuildImage();
+}
+
+void CCDImage::rebuildImage() {
+  int X = origImage.width();
+  int Y = origImage.height();
+
+  // rebuild gamma image if needed
+  if (adjust_black>0 || adjust_white>0) {
+    gammaImage.ensureSize(X, Y);
+    float const *src = origImage.data();
+    float *dst = gammaImage.data();
+    float const *gamma = gamma_table.constData();
+    int rng = 1 + max - min;
+    int N = X*Y;
+    while (N--) {
+      float px = (*src++ - min) / rng;
+      int idx = px * CCDImage_GAMMA_Entries;
+      if (idx<0)
+	px=0;
+      else if (idx>=CCDImage_GAMMA_Entries)
+	idx=CCDImage_GAMMA_Entries-1;
+      *dst++ = gamma[px];
+    }
+  }
+
+  // rebuild ACE immage if needed
+  if (aceFraction>0 && !hasACE) {
+    aceImage = origImage.ace(X/51, X/21, Y/51, Y/21);
+    hasACE = true;
+  }
+
+  // reconstruct final image
+  if (aceFraction>0) {
+    FloatImage x = (adjust_black>0 || adjust_white>0) ? gammaImage : origImage;
+    x *= (1-aceFraction);
+    FloatImage y = aceImage;
+    y += 128;
+    y *= 64 * aceFraction;
+    x += aceImage;
+    image = x.toImage(0, 255);
+  } else {
+    image = ((adjust_black>0 || adjust_white>0) ? gammaImage : origImage)
+      .toImage(0, 255);
+  }    
   update();
 }
 
@@ -167,9 +193,18 @@ void CCDImage::recolor(QString act) {
       adjust_white *= 1.3;
   } else if (act=="whiteMin") {
     adjust_white /= 1.3;
+  } else if (act=="acePlus") {
+    aceFraction += 0.10;
+    if (aceFraction>1)
+      aceFraction = 1;
+  } else if (act=="aceMin") {
+    aceFraction -= 0.10;
+    if (aceFraction<0)
+      aceFraction = 0;
   }
   // dbg("recolor: black: %.2f white %.2f",adjust_black, adjust_white);
   rebuildGammaTable();
+  rebuildImage();
 }
 
 void CCDImage::adjustedRange(uint16_t const *data, int X, int Y) {

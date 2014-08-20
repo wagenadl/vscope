@@ -453,12 +453,14 @@
     <button id="exptelapsed" label="Since Start: %1" bg="#88bb88"/>
     <button id="trialelapsed" label="Since Last: %1" bg="#77cc77"/>
 
-    <tabbedpage id="camvals">
-      <immune id="blackPlus" label="More black"/>
-      <immune id="blackMin" label="Less black"/>
-      <immune id="whitePlus" label="More white"/>
-      <immune id="whiteMin" label="Less white"/>
-      <immune id="reset" label="Reset"/>
+    <tabbedpage id="camvals" cols="2">
+      <immune id="blackMin" label="Less black" y="0" x="0"/>
+      <immune id="blackPlus" label="More black" y="0" x="1"/>
+      <immune id="whiteMin" label="Less white" y="1" x="0"/>
+      <immune id="whitePlus" label="More white" y="1" x="1"/>
+      <immune id="aceMin" label="Less ACE" y="2" x="0"/>
+      <immune id="acePlus" label="More ACE" y="2" x="1"/>
+      <immune id="reset" label="Reset" y="3" x=".5"/>
     </tabbedpage>
 
     <menu id="trialPeriod"  cols="1">

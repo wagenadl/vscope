@@ -16,7 +16,6 @@ FloatImage::FloatImage(uint16_t const *src, int width, int height) {
     while (n--) 
       *dst++ = *src++;
 }
-  
 
 FloatImage::FloatImage(int width, int height) {
   wid = width;
@@ -24,11 +23,18 @@ FloatImage::FloatImage(int width, int height) {
   resize(wid*hei);
 }
 
-
 FloatImage::FloatImage(QImage const &img) {
   wid = 0;
   hei = 0;
   *this = img;
+}
+
+bool FloatImage::ensureSize(int w, int h) {
+  if (w==wid && h==hei)
+    return false;
+  wid = w; hei=h;
+  resize(wid*hei);
+  return true;
 }
 
 FloatImage &FloatImage::operator=(QImage const &img) {
