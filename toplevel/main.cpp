@@ -3,6 +3,7 @@
 #include "vscopegui.h"
 #include "globals.h"
 #include "gt_slots.h"
+#include <gfx/progressdialog.h>
 #include <QWidget>
 #include <QApplication>
 #include <QDesktopWidget>
@@ -492,9 +493,10 @@ int main(int argc, char **argv) {
     Globals::panelHistory->makeButtons();
 
     Globals::scripts = new Scripts(&Globals::gui->findPage("scripts"));
-    
-    Globals::mainwindow->show();
 
+    ProgressDialog::setRoot(Globals::mainwindow);
+    Globals::mainwindow->show();
+    
     reportCameraSituation();
     reportDAQSituation();
 

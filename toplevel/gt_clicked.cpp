@@ -99,7 +99,6 @@ void gt_slots::clicked(QString p) {
 	QStringList bits = p.split("/");
 	QString leaf = bits.takeLast();
 	Globals::ccdw->get(id)->recolor(leaf);
-	Globals::acquire->redisplayCCD();
       }
     } else if (p=="scripts/load") {
       Globals::scripts->prepareLoad();

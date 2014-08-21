@@ -6,9 +6,9 @@ TARGET = vscope-math
 include(../config.pro)
 
 HEADERS += cplx.h fft.h psdest.h taperid.h tapers.h taperbank.h
-HEADERS += cohest.h cohestci.h cohdata.h
+HEADERS += cohest.h cohestci.h cohdata.h floatimage.h
 SOURCES += fft.cpp psdest.cpp taperid.cpp tapers.cpp taperbank.cpp
-SOURCES += cohest.cpp cohestci.cpp cohdata.cpp
+SOURCES += cohest.cpp cohestci.cpp cohdata.cpp floatimage.cpp
 
 HEADERS += cvec.h
 SOURCES += cvec.cpp

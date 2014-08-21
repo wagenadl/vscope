@@ -1,6 +1,7 @@
 // acquire.cpp
 
 #include "acquire.h"
+#include <gfx/progressdialog.h>
 #include <toplevel/globals.h>
 #include <toplevel/vscopegui.h>
 #include <toplevel/mgauto.h>
@@ -295,6 +296,8 @@ void Acquire::loadData(QString xmlfn) {
   trialbit.replace("-analog.dat","");
   trialbit.replace("-digital.dat","");
   trialbit.replace("-ccd.dat","");
+
+  ProgressDialog dlg("Loading data");
   
   try {
     Globals::trove->trial().cloneThisPTree(Globals::ptree);
@@ -332,9 +335,6 @@ void Acquire::loadData(QString xmlfn) {
   
   if (loadframe)
       loadframe->hide();
-
-  Dbg() << "loaded: aich = " << ptree->find("acqEphys/aiChannels").toString();
-  Dbg() << "  mytree: " << Globals::ptree->find("acqEphys/aiChannels").toString();
 }
 
 void Acquire::unlock() {

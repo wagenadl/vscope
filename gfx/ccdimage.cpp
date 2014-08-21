@@ -1,6 +1,7 @@
 // ccdimage.cpp
 
 #include <gfx/ccdimage.h>
+#include <gfx/progressdialog.h>
 #include <base/exception.h>
 #include <base/types.h>
 #include <algorithm>
@@ -33,7 +34,6 @@ CCDImage::CCDImage(QWidget *parent):
   p.setColor(QPalette::Window, QColor("#333333"));
   setPalette(p);
   //Dbg() << "CCDImage: CanvasRect is " << canvasRect;
-  createTestImage();
   resetZoom();
 }
 
@@ -65,30 +65,6 @@ void CCDImage::rebuildGammaTable() {
   }
 }
 
-static int ccdTestImageCounter = 0;
-
-void CCDImage::createTestImage() {
-  int wid = canvasRect.width();
-  int hei = canvasRect.height();
-  origImage = FloatImage(wid, hei);
-  float *dst = origImage.data();
-  int phase1 = ccdTestImageCounter*138;
-  int phase2 = ccdTestImageCounter*38901;
-  QVector<float> costbl(256);
-  for (int i=0; i<256; i++)
-    costbl[i] = cos(i*6.2832/256);
-  ccdTestImageCounter++;
-  float const *cosdata = costbl.constData();
-  for (int y=0; y<hei; y++) {
-    for (int x=0; x<wid; x++) {
-      float rd = cosdata[int(256*2*y/hei+phase1)&255];
-      *dst++ = rd;
-    }
-  }
-  hasACE = false;
-  rebuildImage();
-}
-
 void CCDImage::newImage(uint16_t const *data, int X, int Y,
 			bool flipX, bool flipY) {
   Transform t;
@@ -109,13 +85,16 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
   bool flipX = t.reflectsX();
   bool flipY = t.reflectsY();
 
+  Dbg() << "newImage " << data << " " << X << "x" << Y;
+
   // simply copy data, taking care of flips
   origImage.ensureSize(X, Y);
   float *dst = origImage.data();
+  float rng = 1 + max - min;
   for (int y=0; y<Y; y++) {
     uint16_t const *row = flipY ? (data+(Y-1-y)*X) : data+y*X;
     for (int x=0; x<X; x++) 
-      *dst++ = row[flipX ? (X-1-x) : x];
+      *dst++ = 256.*(row[flipX ? (X-1-x) : x] - min) / rng;
   }
 
   Transform t0;
@@ -133,6 +112,7 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
 void CCDImage::rebuildImage() {
   int X = origImage.width();
   int Y = origImage.height();
+  Dbg() << "rebuildimage" << X << "x" << Y;
 
   // rebuild gamma image if needed
   if (adjust_black>0 || adjust_white>0) {
@@ -140,21 +120,20 @@ void CCDImage::rebuildImage() {
     float const *src = origImage.data();
     float *dst = gammaImage.data();
     float const *gamma = gamma_table.constData();
-    int rng = 1 + max - min;
     int N = X*Y;
     while (N--) {
-      float px = (*src++ - min) / rng;
-      int idx = px * CCDImage_GAMMA_Entries;
+      int idx = *src++ * CCDImage_GAMMA_Entries / 256;
       if (idx<0)
-	px=0;
+	idx = 0;
       else if (idx>=CCDImage_GAMMA_Entries)
-	idx=CCDImage_GAMMA_Entries-1;
-      *dst++ = gamma[px];
+	idx = CCDImage_GAMMA_Entries-1;
+      *dst++ = gamma[idx];
     }
   }
 
   // rebuild ACE immage if needed
   if (aceFraction>0 && !hasACE) {
+    ProgressDialog dlg("Calculating ACE");
     aceImage = origImage.ace(X/51, X/21, Y/51, Y/21);
     hasACE = true;
   }
@@ -164,14 +143,15 @@ void CCDImage::rebuildImage() {
     FloatImage x = (adjust_black>0 || adjust_white>0) ? gammaImage : origImage;
     x *= (1-aceFraction);
     FloatImage y = aceImage;
-    y += 128;
-    y *= 64 * aceFraction;
-    x += aceImage;
+    y += 2; // convert [-2, 2] to [0, 4]
+    y *= 64 * aceFraction; // convert [0, 4] to [0, 256], and mul by frac
+    x += y;
     image = x.toImage(0, 255);
   } else {
     image = ((adjust_black>0 || adjust_white>0) ? gammaImage : origImage)
       .toImage(0, 255);
-  }    
+  }
+
   update();
 }
 
@@ -356,7 +336,7 @@ void CCDImage::paintEvent(class QPaintEvent *) {
   QPainter p(this);
   QRect r = rect(); // (0,0,width,height) of this widget
   constrainZoom();
-  p.drawImage(r,image,img2cnv.inverse()(zoomRect),
+  p.drawImage(r, image, img2cnv.inverse()(zoomRect),
 	      Qt::DiffuseDither|Qt::ColorOnly|Qt::PreferDither);
 }
 

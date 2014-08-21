@@ -139,10 +139,6 @@ signals:
    *:N Rectangle is in canvas coordinates.
    */
 protected:
-  void createTestImage();
-  /*:F createTestImage
-   *:D Produces a colorful test image.
-   */
   void constrainZoom();
   /*:F constrainZoom
    *:D Makes zoom's aspect ratio match canvas aspect ratio and fit
@@ -174,6 +170,7 @@ protected:
   */
 protected:
   void rebuildGammaTable();
+  void rebuildImage();
 public:
   Transform const &imageToCanvas() { return img2cnv; }
   Transform const &canvasToScreen() { return cnv2scr; }

@@ -2,6 +2,7 @@
 
 #include "floatimage.h"
 #include <math.h>
+#include <QDebug>
 
 FloatImage::FloatImage() {
   wid = hei = 0;
@@ -394,6 +395,8 @@ void FloatImage::grayPalette(QImage &img) {
 
 
 QImage FloatImage::toImage(float min, float max) const {
+  if (wid*hei==0)
+    return QImage();
   QImage img(wid, hei, QImage::Format_Indexed8);
   grayPalette(img);
   float const *src = data();
@@ -414,6 +417,8 @@ QImage FloatImage::toImage(float min, float max) const {
 
 QImage FloatImage::toImage(float min, float max,
                            QVector<uint8_t> const &lut) const {
+  if (wid*hei==0)
+    return QImage();
   QImage img(wid, hei, QImage::Format_Indexed8);
   grayPalette(img);
   float const *src = data();
