@@ -3,6 +3,7 @@
 #include "floatimage.h"
 #include <math.h>
 #include <QDebug>
+#include <gfx/progressdialog.h>
 
 FloatImage::FloatImage() {
   wid = hei = 0;
@@ -210,7 +211,9 @@ FloatImage &FloatImage::operator/=(FloatImage const &v) {
   return *this;
 }
 
-FloatImage FloatImage::convNorm(FloatImage const &v) const {
+FloatImage FloatImage::convNorm(FloatImage const &v,
+                                QProgressDialog *pd,
+                                int v0, int v1) const {
   int w2 = v.width();
   int h2 = v.height();
   if ((w2&1)==0 || (h2&1)==0)
@@ -223,6 +226,8 @@ FloatImage FloatImage::convNorm(FloatImage const &v) const {
   FloatImage r(wid, hei);
 
   for (int y=0; y<ry; y++) {
+    if (pd) 
+      pd->setValue(v0 + y*(v1-v0)/hei);
     float const *src = row(0);
     float *dst = r.row(y);
     float const *s2_ = v.row(ry - y);
@@ -276,6 +281,8 @@ FloatImage FloatImage::convNorm(FloatImage const &v) const {
   }
   
   for (int y=ry; y<hei-ry; y++) {
+    if (pd)
+      pd->setValue(v0 + y*(v1-v0)/hei);
     float const *src = row(y-ry);
     float *dst = r.row(y);
     float const *s2_ = v.row(0);
@@ -331,6 +338,8 @@ FloatImage FloatImage::convNorm(FloatImage const &v) const {
   }
 
   for (int y=hei-ry; y<hei; y++) {
+    if (pd)
+      pd->setValue(v0 + y*(v1-v0)/hei);
     float const *src = row(y-ry);
     float *dst = r.row(y);
     float const *s2_ = v.row(0);
@@ -475,16 +484,22 @@ FloatImage FloatImage::gaussian(float sigx, int rx, float sigy, int ry) {
   return f;
 }
 
-FloatImage FloatImage::ace(float sigx, int rx, float sigy, int ry) const {
+FloatImage FloatImage::ace(float sigx, int rx, float sigy, int ry,
+                           bool showProgress) const {
+   ProgressDialog *pd;
+  if (showProgress) 
+    pd = new ProgressDialog("Calculating ACE");
   FloatImage g = gaussian(sigx, rx, sigy, ry);
-  FloatImage avg = convNorm(g);
+  FloatImage avg = convNorm(g, pd, 0, 33);
   FloatImage dif = *this; dif -= avg;
   FloatImage rms = dif; rms *= rms;
-  rms = rms.convNorm(g);
+  rms = rms.convNorm(g, pd, 33, 66);
   rms.apply(sqrtf);
-  rms = rms.convNorm(g); // this may not really matter
+  rms = rms.convNorm(g, pd, 66, 99); // this may not really matter
   rms += rms.mean()/4;
   dif /= rms;
+  if (pd)
+    delete pd;
   return dif;
 }
   

@@ -14,7 +14,8 @@ public:
   //  DataTrove(QDomElement elt);
   virtual ~DataTrove();
 public slots:
-  void read(QString dir, QString exptname, QString trialid);
+  void read(QString dir, QString exptname, QString trialid,
+            class QProgressDialog *pd=0);
   void write(); // implies saveROIs. does nothing if dummy is set
   void saveROIs(); // only works after write().
   void setDummy(bool dummy);

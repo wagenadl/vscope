@@ -6,7 +6,7 @@
 
 #include <QProgressDialog>
 
-class ProgressDialog: private QProgressDialog {
+class ProgressDialog: public QProgressDialog {
 public:
   ProgressDialog(QString text);
 public:

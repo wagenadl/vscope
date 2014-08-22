@@ -33,10 +33,13 @@ public:
   FloatImage &operator-=(FloatImage const &);
   FloatImage &operator*=(FloatImage const &);
   FloatImage &operator/=(FloatImage const &);
-  FloatImage convNorm(FloatImage const &v) const;
+  FloatImage convNorm(FloatImage const &v,
+                      class QProgressDialog *pd=0,
+                      int v0=0, int v1=0) const;
   // can only convolve with odd*odd shaped image
   // also, v must be smaller than we are.
-  FloatImage ace(float sx, int rx, float sy, int ry) const;
+  FloatImage ace(float sx, int rx, float sy, int ry,
+                 bool showProgress=false) const;
   void apply(float (*foo)(float));
   void noisify();
   double mean() const;

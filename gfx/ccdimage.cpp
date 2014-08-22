@@ -1,7 +1,6 @@
 // ccdimage.cpp
 
 #include <gfx/ccdimage.h>
-#include <gfx/progressdialog.h>
 #include <base/exception.h>
 #include <base/types.h>
 #include <algorithm>
@@ -133,8 +132,7 @@ void CCDImage::rebuildImage() {
 
   // rebuild ACE immage if needed
   if (aceFraction>0 && !hasACE) {
-    ProgressDialog dlg("Calculating ACE");
-    aceImage = origImage.ace(X/51, X/21, Y/51, Y/21);
+    aceImage = origImage.ace(X/51, X/21, Y/51, Y/21, true);
     hasACE = true;
   }
 

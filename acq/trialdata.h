@@ -25,7 +25,8 @@ public:
   void prepare();
   void prepareSnapshot();
   virtual void write() const;
-  virtual void read(QString dir, QString exptname, QString trialid);
+  virtual void read(QString dir, QString exptname, QString trialid,
+                    class QProgressDialog *pd=0);
 public:
   ParamTree const *paramTree() const { return partree; } // may be 0 if unprep.
   ParamTree *myParamTree() const { return mypartree; } // may be 0 if unprep.

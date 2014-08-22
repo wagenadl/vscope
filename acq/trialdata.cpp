@@ -21,7 +21,7 @@
 #include <xml/enumerator.h>
 #include <base/dbg.h>
 #include <video/videoprog.h>
-
+#include <QProgressDialog>
 #include "trialdata.h"
 #include <base/keyagg.h>
 
@@ -284,7 +284,8 @@ void TrialData::write() const {
   xml->write(base + ".xml");
 }
 
-void TrialData::read(QString dir, QString exptname0, QString trialid0) {
+void TrialData::read(QString dir, QString exptname0, QString trialid0,
+                     QProgressDialog *pd) {
   KeyGuard guard(*this);
   prep=false;
 
@@ -303,6 +304,8 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0) {
   
   mypartree->read(settings);
   Dbg() << "  read paramtree";
+  if (pd)
+    pd->setValue(15);
 
   mypartree->find("filePath").set(fpath);
   mypartree->find("acquisition/exptname").set(exptname);
@@ -317,6 +320,8 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0) {
     prepareSnapshot(false);
   else
     prepare(false);
+  if (pd)
+    pd->setValue(20);
 
   if (xml)
     delete xml;
@@ -325,15 +330,19 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0) {
   if (snap || contEphys) {
     clearAnalog();
     clearDigital();
+    pd->setValue(30);
   } else {
     readAnalog(myxml, base);
+    pd->setValue(25);
     readDigital(myxml, base);
+    pd->setValue(30);
   }
 
   if (do_ccd) 
     readCCD(myxml, base);
   else
     clearCCD();
+  pd->setValue(50);
 }
 
 void TrialData::writeAnalog(QString base) const {

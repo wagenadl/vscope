@@ -8,6 +8,7 @@
 #include <math/cohdata.h>
 #include <base/dbg.h>
 #include <xml/connections.h>
+#include <QProgressDialog>
 
 DataTrove::DataTrove(ParamTree *ptree): KeyAgg(0) {
   ptree_ = ptree;
@@ -67,14 +68,17 @@ void DataTrove::updateCameras() {
 	    roidata_, SLOT(updateCCDData()));
 }
 
-void DataTrove::read(QString dir, QString exptname, QString trialid) {
+void DataTrove::read(QString dir, QString exptname, QString trialid,
+                     QProgressDialog *pd) {
   KeyGuard guard(*this);
   bool d = dummy;
   bool a = asr;
   dummy = true; // prevent immediate resaving of rois
   asr = false; // prevent immediate resaving of rois
   rois_->clear();
-  trial_->read(dir, exptname, trialid);
+  if (pd)
+    pd->setValue(10);
+  trial_->read(dir, exptname, trialid, pd);
   rois_->load(QString("%1/%2/%3-rois.xml")
 	      .arg(dir).arg(exptname).arg(trialid));
   //Dbg() << "DataTrove::read: "

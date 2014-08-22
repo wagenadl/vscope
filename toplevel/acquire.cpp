@@ -301,7 +301,8 @@ void Acquire::loadData(QString xmlfn) {
   
   try {
     Globals::trove->trial().cloneThisPTree(Globals::ptree);
-    Globals::trove->read(dirbit, exptbit, trialbit);
+    Globals::trove->read(dirbit, exptbit, trialbit, &dlg);
+    dlg.setValue(50);
   } catch (Exception const &e) {
     GUIExc::report(e,"load data");
     unlock();
@@ -309,13 +310,16 @@ void Acquire::loadData(QString xmlfn) {
   }
 
   ParamTree *ptree = Globals::trove->trial().myParamTree();
+  dlg.setValue(55);
 
   Globals::panelHistory->setTree(ptree);
   Globals::gui->setTree(ptree);
   Globals::gui->setReadOnly(true);
+  dlg.setValue(60);
   
   Globals::trial->reconstructStim(ptree);
   Globals::trove->trial().refineCCDTiming();
+  dlg.setValue(65);
 
   ptree->find("acquisition/exptname").set(exptbit);
   ptree->find("acquisition/trialno").set(trialbit);
@@ -327,7 +331,9 @@ void Acquire::loadData(QString xmlfn) {
   Globals::trove->roidata().
     setDebleach((DEBLEACH)ptree->find("analysis/debleach").toInt());
   displayCCD();
+  dlg.setValue(80);
   displayEPhys();
+  dlg.setValue(95);
 
   Globals::panelHistory->relabelAll();
 
