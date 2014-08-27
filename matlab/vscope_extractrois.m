@@ -3,7 +3,7 @@ function [dat] = vscope_extractrois(ccd, roi)
 %    dat = VSCOPE_EXTRACTROIS(ccd, rois) extracts the number of photons
 %    in each ROI. This currently uses a fixed PHOTONS_PER_DIGI value.
 %    DAT will be shaped TxNxC where T is the number of frames, N the number
-%    of ROIs, and T the number of cameras.
+%    of ROIs, and C the number of cameras.
 %    dat = VSCOPE_EXTRACTROIS(x) where X is straight from VSCOPE_LOAD also
 %    works.
 

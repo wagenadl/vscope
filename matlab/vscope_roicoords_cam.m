@@ -5,8 +5,8 @@ function p = vscope_roicoords_cam(rois, info, camno)
 %   system of the camera identified by CAMNO. INFO must be a CCD.INFO field
 %   from VSCOPE_LOAD. ROIs may be specified xyrra-style (aka elliptic), or
 %   polygon-style (aka blob).
-%   p = VSCOPE_ROICOORDS(x, camno), where X is straight from VSCOPE_LOAD
-%   is also permitted.
+%   p = VSCOPE_ROICOORDS_CAM(x, camno), where X is straight from VSCOPE_LOAD
+%   is also supported.
 %   P will be a struct array (one struct per ROI) with fields X and Y that
 %   are vectors containing the coordinates.
 %   In all cases, coordinates will be restricted to what's actually inside
@@ -48,8 +48,8 @@ for k=1:K
     X = 1+x1-x0;
     Y = 1+y1-y0;
     
-    xx = repmat([x0:x1],[Y 1]);
-    yy = repmat([y0:y1]',[1 X]);
+    xx = repmat([x0:x1], [Y 1]);
+    yy = repmat([y0:y1]', [1 X]);
     xx_ = vrc_xform_x(xx, info.xform{camno}) - el.x0;
     yy_ = vrc_xform_y(yy, info.xform{camno}) - el.y0;
     

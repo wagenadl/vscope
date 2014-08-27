@@ -1,5 +1,7 @@
 function [xx,yy] = vscope_roicoords(roi,X,Y)
 % VSCOPE_ROICOORDS - Returns a list of all pixels inside an ROI
+%    DEPRECATED in favor of VSCOPE_ROICOORDS_CAM.
+
 %    [xx,yy] = VSCOPE_ROICOORDS(roi) returns coordinates of all pixels
 %    inside an ROI, which can either be specified xyrra-style (aka
 %    elliptic), or polygon-style (aka blob).

@@ -1,4 +1,4 @@
-function C_mag_thresh=coh_mtm_control0(t,roi,ref,f_res,f_star,alpha_thresh,PLOTFLAG)
+function [C_mag_thresh, sams]=coh_mtm_control0(t,roi,ref,f_res,f_star,alpha_thresh,PLOTFLAG)
 if nargin<7
   PLOTFLAG=0;
 end
@@ -26,8 +26,13 @@ for j=1:N_passes
 end
 if mod(j,50)~=0 fprintf(1,'\n'); end
 
+if nargout>=2
+  sams = C_mag_samples;
+end
+
 % collect the samples into a vector
-C_mag_samples=C_mag_samples(:);
+C_mag_samples=C_mag_samples(~isnan(C_mag_samples));
+N_perms = length(C_mag_samples);
 
 % plot the histo
 [n_C_mag_samples,C_mag_grid]=hist(C_mag_samples,100);

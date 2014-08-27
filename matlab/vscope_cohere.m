@@ -15,8 +15,9 @@ function str=vscope_cohere(x, ref, dff, ofnbase)
 %    str = VSCOPE_COHERE(...) returns the data
 %    If X is a number and OFNBASE is not given, it is automatically set.
 
-frange=[.2 inf 1];
-f0=frange(1); f1=frange(2); fpre=frange(3);
+f0 = 0.2;
+f1 = inf;
+fpre = 1;
 
 if nargin<4
   ofnbase=[];
@@ -35,7 +36,7 @@ if ischar(ref)
     error('Unknown reference channel');
   end
   f_star_hz = [];
-elseif length(ref)==1
+elseif isscalar(ref)
   chanidx = [];
   f_star_hz = ref;
 else
@@ -52,10 +53,11 @@ end
 % ----------
 alpha_ci = .31; % one-sigma error bars
 %alpha_ci = 1; % Do not show error bars
-alpha_thresh_single = .01; % Really, should be 10^-4 to avoid slew of false positives.
-%alpha_thresh_single=1;
-f_star = 1.; % Hz
-phase_delay_s = .10;
+alpha_thresh_single = .01;
+% Really, should be 10^-4 to avoid slew of false positives.
+
+f_star_0 = 1.; % Hz - default value
+phase_delay_s = .0; % Set to nonzero for slow VSDs
 
 title_string = sprintf('%s #%03i', x.info.expt, x.info.trial);
 e_phys_plot_tog=zeros(1, length(x.analog.info.channo));
@@ -70,6 +72,7 @@ for n=1:N
     sig_labels{n} = base26(n);
   end
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 y_sigs = dff(2:end, :);
@@ -81,7 +84,7 @@ if ~isempty(chanidx)
   [b, a] = butterlow1(3*ephys_opt_freq);
   y_ref = interp1(te, filtfilt(b, a, x.analog.dat(:, chanidx)), tt, 'linear');
 elseif ~isempty(f_star_hz)
-  y_ref = sin(2*pi*tt*f_star);
+  y_ref = sin(2*pi*tt*f_star_0);
 else
   y_ref = ref(2:end);
   y_ref = y_ref(:); % Make column vector

@@ -4,7 +4,7 @@ function tapers = dpss0(N,nw,K)
 %    See matlab's DPSS.
 
 if ~isempty(ver('Octave'))
-    base = [ getenv('HOME') filesep 'octave' filesep '.dpss' filesep ];
+    base = [ getenv('HOME') filesep 'matlab' filesep '.dpss' filesep ];
 elseif filesep=='/'
     % unix
     base = '/home/wagenaar/matlab/.dpss/';
