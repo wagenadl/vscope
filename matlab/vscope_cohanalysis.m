@@ -8,6 +8,7 @@ function coh = vscope_cohanalysis(x, varargin)
 %       camera - camera name or number. Defaults to first active camera.
 %       frequency - use sine wave with given frequency in Hz as reference.
 %       analog - use named or numbered analog channel as reference.
+%       optical - use named or numbered ROI as reference
 %       direct - use directly specified reference (value must be a vector
 %                defined at the "ccd times" of the trial).
 %       df_psd - frequency resolution for power spectral density. Default
@@ -52,7 +53,7 @@ function coh = vscope_cohanalysis(x, varargin)
 %                               these if you want to overlay the image with
 %                               VSCOPE_ROIOUTLINE results.)
 
-kv = getopt([ 'camera=[] frequency=[] analog=[] direct=[] ' ...
+kv = getopt([ 'camera=[] frequency=[] analog=[] direct=[] optical=[] ' ...
       'df_psd=1/3 df_coh=2/3 f_star=[] ci=1 pthresh=0.01 ' ...
       't0=[] t1=[] sig=[] debleach=2 func=''mean'''], varargin);
 
@@ -67,6 +68,15 @@ if isempty(kv.camera)
   if isempty(kv.camera)
     error('No camera with frames');
   end
+end
+if ischar(kv.camera) 
+  kv.camera = find(strcmp(kv.camera, x.ccd.info.camid));
+  if isempty(kv.camera)
+    error('Could not match requested camera to trial data');
+  end
+end
+if length(kv.camera)>1
+  error('Cannot analyze multiple cameras at once');
 end
 [t_on, t_off] = vscope_ccdtime(x, kv.camera);
 
@@ -107,6 +117,11 @@ elseif ~isempty(kv.analog)
   end
   ref = x.analog.dat(:, kv.analog);
   ref = vscope_ephysatccd(x, ref, 'func', kv.func);
+elseif ~isempty(kv.optical)
+  if ischar(kv.optical)
+    kv.optical = vscope_roinum(kv.optical);
+  end
+  ref = sig(:, kv.optical);
 else 
   if isempty(kv.frequency)
     kv.frequency = 1;

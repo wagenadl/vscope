@@ -18,21 +18,21 @@ end
 idx = find(coh.mag >= coh.thr);
 
 % Draw image
-qimsc(coh.extra.xx, coh.extra.yy, coh.extra.img);
+qimsc(coh.extra.xx, -coh.extra.yy, coh.extra.img);
 
 % Draw ROIs
 qpen none
 for k = idx
   qbrush(coh.cc(k,:));
   qbrush(1); % Opacity
-  qpatch(xx{k}, yy{k});
+  qpatch(xx{k}, -yy{k});
 end
 
 % Draw labels
 qbrush none
 qpen k
 for k = idx
-  qat(mean(xx{k}), mean(yy{k}));
+  qat(mean(xx{k}), mean(-yy{k}));
   qalign center middle
   qtext(0, 0, vscope_roiid(k));
 end
