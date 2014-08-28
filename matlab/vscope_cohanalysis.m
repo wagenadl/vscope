@@ -13,8 +13,9 @@ function coh = vscope_cohanalysis(x, varargin)
 %       df_psd - frequency resolution for power spectral density. Default
 %                is 0.333 Hz.
 %       df_coh - frequency resolution for coherence. Default is 0.667 Hz.
-%       f_star - override frequency at which to measure coherence. (Ignored
-%                if comparing to sine wave.)
+%       f_star - override frequency at which to measure coherence. (Default
+%                is to find peak in reference signal; ignored if comparing
+%                to sine wave.)
 %       ci - confidence interval (units of sigma) for coherence
 %       pthresh - threshold for significance. Use [] to omit calculations.
 %       t0 - start time of analysis. Default to 3rd frame of optical trace.

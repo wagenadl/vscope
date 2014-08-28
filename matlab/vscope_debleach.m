@@ -28,7 +28,9 @@ tidx=[1+skipstart:T-skipend]';
 tt=tt-mean(tt(tidx));
 
 for n=1:N
-  if ord==0
+  if any(isnan(xx(:,n)))
+    xx(:,n) = nan;
+  elseif ord==0
     p = physfit('expc', tt(tidx), xx(tidx,n));
     xx(:,n) = xx(:,n) - physfit_apply(p, tt)  + mean(xx(:,n));
   else
