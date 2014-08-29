@@ -17,3 +17,5 @@ SOURCES += allccdtimingdetail.cpp ccdmaster.cpp
 LIBS += -L../base -L../gfx -L../xml -L../gui
 LIBS += -lvscope-base -lvscope-gfx -lvscope-xml -lvscope-gui
 LIBS += -L../daq -L../pvp -lvscope-daq -lvscope-pvp
+LIBS += -L../math -lvscope-math -L../video -lvscope-video
+

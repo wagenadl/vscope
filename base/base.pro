@@ -46,6 +46,8 @@ SOURCES += base26.cpp \
 
 
 HEADERS += enums.h
+HEADERS += progressdialog.h
+SOURCES += progressdialog.cpp
 RESOURCES += base.qrc
 
 QMAKE_EXTRA_TARGETS += enums
