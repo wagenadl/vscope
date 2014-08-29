@@ -55,7 +55,11 @@ qalign right middle
 qtext(-7, 0, '180⁰');
 qat(0, -1);
 qalign center top
-qtext(0, 7, '270⁰');
+qtext(0, 7, '-90⁰');
+qalign left top
+qtextonpath(cos([0:.01:pi]), sin([0:.01:pi]), 20, 7, 'Later →');
+qalign right top
+qtextonpath(cos([pi:.01:2*pi]), sin([pi:.01:2*pi]), -20, 7, '← Earlier');
 
 %% Draw error bars
 if isfield(coh, 'phase_lo')

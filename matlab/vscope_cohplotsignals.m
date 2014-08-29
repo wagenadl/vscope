@@ -63,8 +63,10 @@ if kv.uniform
   scl = repmat(sd(ceil(.75*N)) * 5, [N 1]);
 else
   scl = 5*std(sig(:,idx));  
+  s0 = median(scl);
+  scl(scl<s0) = s0;
 end
-dy = sensiblestep(min(scl));
+dy = sensiblestep(.95*min(scl));
 
 t1 = coh.extra.tt(end);
 qpen 1 roundcap
