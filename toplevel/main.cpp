@@ -3,7 +3,7 @@
 #include "vscopegui.h"
 #include "globals.h"
 #include "gt_slots.h"
-#include <gfx/progressdialog.h>
+#include <base/progressdialog.h>
 #include <QWidget>
 #include <QApplication>
 #include <QDesktopWidget>

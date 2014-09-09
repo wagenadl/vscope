@@ -663,7 +663,7 @@ while 1
     kv = vsdl_params(str);
     id = atoi(vsdl_getval(kv,'id'));
     n = vsdl_getval(kv,'n');
-    roicams{id} = strtoks(vsdl_getval(kv, 'cam'), ':');
+    roicams{id} = strsplit(vsdl_getval(kv, 'cam'), ':');
     
     if isempty(n)
       % This is xyrra

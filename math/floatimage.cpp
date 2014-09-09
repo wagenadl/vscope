@@ -3,7 +3,7 @@
 #include "floatimage.h"
 #include <math.h>
 #include <QDebug>
-#include <gfx/progressdialog.h>
+#include <base/progressdialog.h>
 
 FloatImage::FloatImage() {
   wid = hei = 0;
@@ -397,9 +397,12 @@ FloatImage FloatImage::convNorm(FloatImage const &v,
 }
 
 void FloatImage::grayPalette(QImage &img) {
-  img.setColorCount(256);
-  for (int x=0; x<256; x++)
-    img.setColor(x, qRgb(x, x, x));
+  static QVector<QRgb> graypal;
+  if (graypal.isEmpty()) 
+    for (int x=0; x<256; x++)
+      graypal << qRgb(x, x, x);
+  
+  img.setColorTable(graypal);
 }
 
 

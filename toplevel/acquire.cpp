@@ -1,7 +1,7 @@
 // acquire.cpp
 
 #include "acquire.h"
-#include <gfx/progressdialog.h>
+#include <base/progressdialog.h>
 #include <toplevel/globals.h>
 #include <toplevel/vscopegui.h>
 #include <toplevel/mgauto.h>
