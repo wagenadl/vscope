@@ -5,5 +5,6 @@
      <file alias="connections.xml">toplevel/connections.xml</file>
      <file alias="version.xml">toplevel/version.xml</file>
      <file alias="enums.xml">base/enums.xml</file>
+     <file alias="aliases.xml">toplevel/aliases.xml</file>
  </qresource>
 </RCC>
