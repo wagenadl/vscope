@@ -7,10 +7,9 @@ function xx = vscope_debleach(xx, ord, skipstart, skipend)
 %    (The default is to ignore 2 frames at the start and 3 at the end.)
 %    If XX is multidimensional, this function operates on the first dimension.
 %    If ORD is 0, we do an "exponential+constant" fit. This requires PHYSFIT.
+%    If ORD<0, we use SALPA with tau=-ord. In this case, skipstart and skipend
+%    are ignored.
 
-if ord<0
-  return;
-end
 if nargin<3
   skipstart=2;
 end
@@ -22,6 +21,13 @@ S = size(xx);
 T = S(1);
 N = prod(S)/T;
 xx = reshape(xx, [T N]);
+
+if ord<0
+  for n=1:N
+    xx(:, n) = salpa(xx(:, n) - mean(xx(:, n)), 'tau', -ord) + mean(xx(:, n));
+  end
+  return;
+end
 
 tt=[1:T]';
 tidx=[1+skipstart:T-skipend]';

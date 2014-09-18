@@ -79,7 +79,7 @@ MTPSD_LIB=   lib/libmtpsd.a
 
 .PHONY : clean install cleanall all oct lib dpss mtpsd dpss_lib mtpsd_lib dpss_oct mtpsd_oct
 
-all:  bin/mkdpss # mtpsd_lib dpss_oct mtpsd_oct dpss_lib dpss_cmd dpss_bin
+all:  bin/mkdpss  mtpsd_lib dpss_oct mtpsd_oct dpss_lib dpss_cmd dpss_bin
 
 dpss: dpss_oct dpss_lib dpss_cmd
 
@@ -155,5 +155,6 @@ clean:
 cleanall: clean
 	rm -rf ${DPSS_LIB} $(MTPSD_LIB) $(DPSS_OCT) $(MTPSD_OCT) $(DPSS_CMD)
 
-install:
-	@echo "\n  WARNING: manual installation required!! \n  All C++ libraries are in lib/, and oct-files and executables in bin/\n"
+install: oct
+	strip $(MTPSD_OCT) $(DPSS_OCT)
+	cp $(MTPSD_OCT) $(DPSS_OCT) ../../matlab/private/

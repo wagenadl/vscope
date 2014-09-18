@@ -25,6 +25,7 @@ function coh = vscope_cohanalysis(x, varargin)
 %       sig - override what signals to use. Default is extracted ROI data.
 %       debleach - order VSCOPE_DEBLEACH. Default is 2. Use [] for no 
 %                  debleaching. Debleaching is never done on override signals.
+%                  Use -tau for SALPA debleaching.
 %       func - function to apply to the named analog channel to average
 %              its values for each frame. Default is "mean".
 %
@@ -52,6 +53,12 @@ function coh = vscope_cohanalysis(x, varargin)
 %       extra.xx and extra.yy - transformed coordinates for that image. (Use
 %                               these if you want to overlay the image with
 %                               VSCOPE_ROIOUTLINE results.)
+%
+%    Since we usually do multiple comparisons, either pthresh should be 
+%    chosen conservatively, or, more clever, put in pthresh=-0.05 (or -p in
+%    general), and we will automatically find the lowest value of N such
+%    that there are at most N signals significant at |pthresh|/N. In this
+%    case, coh.pthr will end up being the p-value ultimately used.
 
 kv = getopt([ 'camera=[] frequency=[] analog=[] direct=[] optical=[] ' ...
       'df_psd=1/3 df_coh=2/3 f_star=[] ci=1 pthresh=0.01 ' ...
@@ -146,6 +153,7 @@ coh.extra.tt0 = (t_on + t_off) / 2;
 coh.extra.sig0 = sig;
 coh.extra.ref0 = ref;
 
+fprintf(1, 'Calculating PSD...\n');
 % Calculate power spectrum of reference and signal and store results
 refpsd = vscope_psd(tt, y_ref, 'df', kv.df_psd);
 if isempty(kv.f_star)
@@ -160,6 +168,7 @@ sigpsd = vscope_psd(tt, y_sig, 'df', kv.df_psd);
 coh.extra.psd = sigpsd.psd;
 coh.psd = interp1(sigpsd.f, sigpsd.psd, coh.f, 'linear');
 
+fprintf(1, 'Calculating Coherence...\n');
 % Calculate coherence (at peak frequency) and store results
 cohe = vscope_coherence(tt, y_ref, y_sig, ...
     'df', kv.df_coh, 'ci', kv.ci, 'f', kv.f_star);
@@ -175,9 +184,36 @@ end
 
 % Calculate threshold for significance
 if ~isempty(kv.pthresh)
-  cohc = vscope_cohcontrol(tt, y_ref, y_sig, ...
+  if kv.pthresh>0
+    cohc = vscope_cohcontrol(tt, y_ref, y_sig, ...
       'df', kv.df_coh, 'p', kv.pthresh, 'f', kv.f_star);
-  coh.thr = cohc.thr;
+    coh.pthr = kv.pthresh;
+  else
+    k0 = 1;
+    k1 = length(coh.mag);
+    k = k0;
+    while 1
+      cohc = vscope_cohcontrol(tt, y_ref, y_sig, ...
+	  'df', kv.df_coh, 'p', -kv.pthresh/k, 'f', kv.f_star);
+      nk = length(find(coh.mag>=cohc.thr));
+      printf('Calculating control [%i %i] %i -> %i\n', k0, k1, k, nk);
+      if nk>k
+	k0 = k;
+	k1 = nk;
+	k = ceil(sqrt(k0*k1));
+      elseif nk<k
+	k1 = k;
+	k = floor(sqrt(k0*k1));
+	if nk>k0
+	  k0 = nk;
+	end
+      else
+	break;
+      end
+    end
+    coh.thr = cohc.thr;
+    coh.pthr = -kv.pthresh / k;
+  end
 end
 
 % Calculate colors for coherence representation

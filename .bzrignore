@@ -31,3 +31,5 @@ utils/mtpsd/bin/mkdpss
 utils/mtpsd/bin/mtpsd.oct
 vscope.0
 floatimage
+vscope-0.1.0/private/dpss.oct
+vscope-0.1.0/private/mtpsd.oct

@@ -22,7 +22,7 @@ if nargin<2 || isempty(id)
     end
   end
 elseif ischar(id)
-  idx = strcmp(id, x.ccd.info.camid);
+  idx = strcmp(id, x.info.camid);
   if isempty(idx)
     error(['No camera named ' id]);
   end

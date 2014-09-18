@@ -38,7 +38,7 @@ end
 
 if kv.order==0
   % ROI ID order: lowest ID on top
-  sortkey = -idx;
+  sortkey = -[1:length(coh.mag)];
 elseif kv.order==1
   sortkey = coh.mag;
 elseif kv.order==2

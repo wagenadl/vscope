@@ -731,6 +731,8 @@ end
 
 function [t, t0, t1] = vsdl_frametimes(dat)
 t = cell(0,0);
+t0 = t;
+t1 = t;
 if ~isfield(dat, 'ccd')
   return;
 end
