@@ -110,6 +110,8 @@ if isempty(kv.sig)
 	  sum(t_off<kv.t0), sum(t_on>kv.t1));
     end
   end
+else
+  sig = kv.sig;
 end
 
 % Determine reference signal
