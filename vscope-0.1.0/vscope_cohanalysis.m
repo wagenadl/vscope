@@ -56,8 +56,8 @@ function coh = vscope_cohanalysis(x, varargin)
 %
 %    Since we usually do multiple comparisons, either pthresh should be 
 %    chosen conservatively, or, more clever, put in pthresh=-0.05 (or -p in
-%    general), and we will automatically find the lowest value of N such
-%    that there are at most N signals significant at |pthresh|/N. In this
+%    general), and we will automatically find the highest value of N such
+%    that there are  N signals significant at |pthresh|/N. In this
 %    case, coh.pthr will end up being the p-value ultimately used.
 
 kv = getopt([ 'camera=[] frequency=[] analog=[] direct=[] optical=[] ' ...
@@ -191,30 +191,12 @@ if ~isempty(kv.pthresh)
       'df', kv.df_coh, 'p', kv.pthresh, 'f', kv.f_star);
     coh.pthr = kv.pthresh;
   else
-    k0 = 1;
-    k1 = length(coh.mag);
-    k = k0;
-    while 1
-      cohc = vscope_cohcontrol(tt, y_ref, y_sig, ...
-	  'df', kv.df_coh, 'p', -kv.pthresh/k, 'f', kv.f_star);
-      nk = length(find(coh.mag>=cohc.thr));
-      printf('Calculating control [%i %i] %i -> %i\n', k0, k1, k, nk);
-      if nk>k
-	k0 = k;
-	k1 = nk;
-	k = ceil(sqrt(k0*k1));
-      elseif nk<k
-	k1 = k;
-	k = floor(sqrt(k0*k1));
-	if nk>k0
-	  k0 = nk;
-	end
-      else
-	break;
-      end
-    end
-    coh.thr = cohc.thr;
-    coh.pthr = -kv.pthresh / k;
+    [nbest, thrbest] = vcoa_bestp(tt, y_ref, y_sig, coh.mag, kv);
+    coh.thr = thrbest;
+    coh.pthr = -kv.pthresh / nbest;
+    fprintf(1, ...
+	'Found %i significant cell(s) at p < %g/%i = %.3g; mag >= %.2f\n', ...
+	length(find(coh.mag>=coh.thr)), -kv.pthresh, nbest, coh.pthr, coh.thr);
   end
 end
 

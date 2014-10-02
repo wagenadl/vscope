@@ -8,8 +8,10 @@ function vscope_cohplotimage(x, coh, varargin)
 %       qpt - filename for QPlot figure (empty for current)
 %       width - width of QPlot figure (inch)
 %       height - height of QPlot figure
+%       alpha - transparency (1=solid, 0=invisible) of ROIs
 
-kv = getopt('qpt=''/tmp/vscope_coh_image'' width=5 height=5', varargin);
+kv = getopt('qpt=''/tmp/vscope_coh_image'' width=5 height=5, alpha=1', ...
+    varargin);
 if ~isempty(kv.qpt)
   qfigure(kv.qpt, kv.width, kv.height);
 end
@@ -24,7 +26,7 @@ qimsc(coh.extra.xx, -coh.extra.yy, coh.extra.img);
 qpen none
 for k = idx
   qbrush(coh.cc(k,:));
-  qbrush(1); % Opacity
+  qbrush(kv.alpha); % Opacity
   qpatch(xx{k}, -yy{k});
 end
 
