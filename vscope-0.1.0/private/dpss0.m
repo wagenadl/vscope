@@ -3,7 +3,7 @@ function tapers = dpss0(N,nw,K)
 %    tapers = DPSS0(N,nw,K). 
 %    See matlab's DPSS.
 
-if exist('dpss', 'file')
+if exist('dpss')
   tapers = dpss(N, nw, K);
   return;
 end
@@ -29,5 +29,9 @@ else
       'DPSS0: No previously created tapers available for %i,%.2f,%i.\n', ...
       N, nw, K);
   dpss0_prepare(N, nw, K, ifn);
-  error('DPSS0: Failed to load tapers');
+  if exist(ifn)
+    load(ifn);
+  else
+    error('DPSS0: Failed to load tapers');
+  end
 end

@@ -10,6 +10,7 @@ end
 
 if exist('dpss')
   tapers = dpss(N, nw, K);
+  fprintf(1, 'Saving tapers for (%i,%.2f,%i) into %s\n',N, nw, K, ofn);
   save(ofn, 'tapers');
 else
   fprintf(1, 'Please find a Matlab installation that has DPSS from the\n');
@@ -17,11 +18,7 @@ else
   fprintf(1, '  dpss0_prepare(%i,%.2f,%i)\n\n', N, nw, K);
   fprintf(1, 'and copy the result to "%s"\n', ofn);
   error('DPSS0: Tapers not available.');
-  else
-    return
-  end
 end
  
-fprintf(1, 'Saving tapers for (%i,%.2f,%i) into %s\n',N, nw, K, ofn);
 
 
