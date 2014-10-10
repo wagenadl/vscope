@@ -189,6 +189,7 @@ static void updateCameraEnum() {
       enu->add(id);
 
   Globals::gui->findPage("acquisition").updateAuto(); // rebuild camvals  
+  Globals::gui->findPage("acqCCD").updateAuto(); // rebuild cameras  
 }
   
 

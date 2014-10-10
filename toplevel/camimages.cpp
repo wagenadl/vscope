@@ -76,7 +76,11 @@ void CamImages::setCameras(QStringList newids) {
   }
   guiPage *page = Globals::gui->findpPage("acquisition");
   if (!page)
-      throw Exception("CamImages", "No acquisition page");
-    page->updateAuto();
-    
+    throw Exception("CamImages", "No acquisition page");
+  page->updateAuto();
+  
+  page = Globals::gui->findpPage("acqCCD");
+  if (!page)
+    throw Exception("CamImages", "No acqCCD page");
+  page->updateAuto();    
 }

@@ -199,7 +199,9 @@ void AbstractPage::reTree(ParamTree *neworigtree) {
     ptree = sub=="" ? 0 : origptree->childp(sub);
     if (!ptree) {
       if (sub!="")
-        Dbg() << "No ptree for " << sub;
+        Dbg() << "No ptree for " << sub
+	      << "; children are: "
+	      << QStringList(origptree->childIDs()).join(" ");
       ptree = origptree;
       close();
       return;

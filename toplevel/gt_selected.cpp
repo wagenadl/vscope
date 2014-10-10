@@ -15,6 +15,7 @@
 #include <toplevel/panelhistory.h>
 
 void gt_slots::selected(QString p) {
+  Dbg() << "Selected " << p;
   try {
     QStringList l = p.split("/");
     QString tail=l.last();
