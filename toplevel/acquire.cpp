@@ -331,6 +331,7 @@ void Acquire::loadData(QString xmlfn) {
   
   Globals::trove->roidata().
     setDebleach((DEBLEACH)ptree->find("analysis/debleach").toInt());
+  Globals::gui->findPage("stimEphys").updateAuto(); // rebuild stim chs
   displayCCD();
   dlg.setValue(80);
   displayEPhys();
@@ -350,6 +351,7 @@ void Acquire::unlock() {
   Globals::trial->prepare(Globals::ptree);
   Globals::trove->setAutoSaveROIs(false);
   Globals::trove->rois().clear();
+  Globals::gui->findPage("stimEphys").updateAuto(); // rebuild stim chs
   displayCCD();
   displayEPhys();
   Globals::panelHistory->setTree(Globals::ptree);
