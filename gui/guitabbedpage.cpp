@@ -39,7 +39,8 @@ void guiTabbedPage::reconnect() {
       if (!b) 
 	continue; //throw Exception("guiTabbedPage", "Button " + i + " not found in parent", path());
 
-      connect(b, SIGNAL(selected(QString,QString)),this, SLOT(open(QString)));
+      connect(b, SIGNAL(selected(QString,QString)),
+	      this, SLOT(open(QString)), Qt::UniqueConnection);
       disconnect(b, SIGNAL(selected(QString,QString)),
 		 master, SIGNAL(buttonSelected(QString,QString)));
       disconnect(b, SIGNAL(deselected(QString,QString)),
@@ -47,25 +48,26 @@ void guiTabbedPage::reconnect() {
       disconnect(b, SIGNAL(activated(QString,QString)),
 		 master, SIGNAL(buttonClicked(QString,QString)));
       connect(b, SIGNAL(selected(QString,QString)),
-	      par, SLOT(addTriangle(QString)));
+	      par, SLOT(addTriangle(QString)), Qt::UniqueConnection);
       connect(b, SIGNAL(deselected(QString,QString)),
-	      par, SLOT(removeTriangle(QString)));
+	      par, SLOT(removeTriangle(QString)), Qt::UniqueConnection);
       if (penable) {
 	b->setVisualType(VT_ArrayCtrl);
         b->makeROImmune();
 	connect(b, SIGNAL(doubleClicked(QString,QString)),
-		penable, SLOT(toggleSelected()));
+		penable, SLOT(toggleSelected()), Qt::UniqueConnection);
       }
       connect(b, SIGNAL(doubleClicked(QString,QString)),
-	      master, SIGNAL(buttonDoubleClicked(QString,QString)));
+	      master, SIGNAL(buttonDoubleClicked(QString,QString)),
+	      Qt::UniqueConnection);
     }
   }
 
   if (penable) {
     connect(penable, SIGNAL(selected(QString,QString)),
-	    par, SLOT(childTabEnabled(QString)));
+	    par, SLOT(childTabEnabled(QString)), Qt::UniqueConnection);
     connect(penable, SIGNAL(deselected(QString,QString)),
-	    par, SLOT(childTabEnabled(QString)));
+	    par, SLOT(childTabEnabled(QString)), Qt::UniqueConnection);
   }
 }
 

@@ -131,6 +131,7 @@ void Button::setSelected(bool sel) {
 }
 
 void Button::toggleSelected() {
+  Dbg() << "toggleSelected " << myID << ":"<<isRadio<<":"<<isAction<<":"<<isSelected;
   if (isRadio)
     setSelected(true);
   else
