@@ -592,6 +592,9 @@ void guiPage::updateAuto() {
   foreach (guiRadioGroup *rg, groups)
     rg->rebuild();
   foreach (AbstractPage *p, subPages) {
+    guiPage *gp = dynamic_cast<guiPage *>(p);
+    if (gp)
+      gp->updateAuto();
     guiTabbedPage *tp = dynamic_cast<guiTabbedPage *>(p);
     if (tp)
       tp->reconnect();

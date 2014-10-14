@@ -3,7 +3,7 @@
 #include <xml/enumerator.h>
 #include <base/exception.h>
 #include <base/dbg.h>
-
+#include <QSet>
 #include <QStringList>
 
 #include <iostream>
@@ -136,4 +136,16 @@ void Enumerator::readAll(QDomElement doc) {
   for (QDomElement e=doc.firstChildElement("enum");
        !e.isNull(); e=e.nextSiblingElement("enum"))
     new Enumerator(e);
+}
+
+void Enumerator::replace(QSet<QString> const &newids) {
+  QSet<QString> oldids;
+  foreach (QString id, getNonnegativeTags())
+    oldids.insert(id);
+  foreach (QString id, oldids)
+    if (!newids.contains(id))
+      remove(id);
+  foreach (QString id, newids)
+    if (!oldids.contains(id))
+      add(id);
 }

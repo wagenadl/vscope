@@ -99,6 +99,7 @@ public:
   /*:F reset
    *:D Drops all tags
    */
+  void replace(QSet<QString> const &newids);
 private:
   QMap<QString,int> tag2val;
   QMap<int,QString> val2tag;

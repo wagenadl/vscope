@@ -81,6 +81,7 @@ public:
        on actual frame times.
   */
 private:
+  void updateEnums();
   QString trialname() const;
   void generalPrep(bool newccds);
   void writeAnalog(QString base) const;

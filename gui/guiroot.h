@@ -64,7 +64,7 @@ public:
    *:D Like findpPage, but returns a reference, and throws an exception
        if the path does not indicate a page.
   */
-  
+  void updateAuto();  
 signals:
   void buttonClicked(QString path, QString text);
   void buttonDoubleClicked(QString path, QString text);

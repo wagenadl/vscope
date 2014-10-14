@@ -101,6 +101,10 @@ guiPage &guiRoot::findPage(QString path) {
   return root->findPage(path.split(QChar('/')));
 }
 
+void guiRoot::updateAuto() {
+  root->updateAuto();
+}
+
 void guiRoot::setTree(ParamTree *pt) {
   ptree = pt;
   root->reTree(pt);

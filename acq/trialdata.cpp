@@ -222,6 +222,7 @@ void TrialData::useThisPTree(ParamTree const *ptree) {
     delete mypartree;
   partree = mypartree = 0;
   partree = ptree;
+  updateEnums();
   prepare();
 }
 
@@ -231,6 +232,7 @@ void TrialData::cloneThisPTree(ParamTree const *ptree) {
   mypartree = 0;
   mypartree = new ParamTree(*ptree);
   partree = mypartree;
+  updateEnums();
   prepare();
 }
 
@@ -519,3 +521,7 @@ void TrialData::refineCCDTiming() {
   }
 }
 
+void TrialData::updateEnums() {
+  Enumerator::find("CAMERAS")->replace(QSet<QString>::fromList(cameras()));
+  // It would be nice if we could do same with STIMCHS and AICHANNELS, perhaps
+}

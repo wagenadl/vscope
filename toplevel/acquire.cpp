@@ -173,24 +173,10 @@ void Acquire::redisplayCCD() {
   displayCCD();
 }
 
-static void updateCameraEnum() {
-  Enumerator *enu = Enumerator::find("CAMERAS");
-  QSet<QString> oldids;
-  foreach (QString id, enu->getNonnegativeTags())
-    oldids.insert(id);
-  QSet<QString> newids;
-  foreach (QString id, Globals::trove->trial().cameras())
-    newids.insert(id);
-  foreach (QString id, oldids)
-    if (!newids.contains(id))
-      enu->remove(id);
-  foreach (QString id, newids)
-    if (!oldids.contains(id))
-      enu->add(id);
-
-  Globals::gui->findPage("acquisition").updateAuto(); // rebuild camvals  
-  Globals::gui->findPage("acqCCD").updateAuto(); // rebuild cameras  
-}
+//static void updateCameraEnum() {
+//  Globals::gui->findPage("acquisition").updateAuto(); // rebuild camvals  
+//  Globals::gui->findPage("acqCCD").updateAuto(); // rebuild cameras  
+//}
   
 
 void Acquire::displayCCD(bool writePixStatsToLog) {
@@ -203,7 +189,6 @@ void Acquire::displayCCD(bool writePixStatsToLog) {
   foreach (QString id, camname)
     imgs.push_back(Globals::ccdw->get(id));
 
-  updateCameraEnum();
   QVector<guiButton *> btn;
   foreach (QString id, camname)
     btn.push_back(&Globals::gui->findButton(QString("acquisition/camvals")
@@ -331,7 +316,7 @@ void Acquire::loadData(QString xmlfn) {
   
   Globals::trove->roidata().
     setDebleach((DEBLEACH)ptree->find("analysis/debleach").toInt());
-  Globals::gui->findPage("stimEphys").updateAuto(); // rebuild stim chs
+  Globals::gui->updateAuto();
   displayCCD();
   dlg.setValue(80);
   displayEPhys();
@@ -351,7 +336,7 @@ void Acquire::unlock() {
   Globals::trial->prepare(Globals::ptree);
   Globals::trove->setAutoSaveROIs(false);
   Globals::trove->rois().clear();
-  Globals::gui->findPage("stimEphys").updateAuto(); // rebuild stim chs
+  Globals::gui->updateAuto();
   displayCCD();
   displayEPhys();
   Globals::panelHistory->setTree(Globals::ptree);

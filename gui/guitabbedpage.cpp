@@ -70,6 +70,7 @@ void guiTabbedPage::reconnect() {
     uniqueConnect(penable, SIGNAL(deselected(QString,QString)),
 		  par, SLOT(childTabEnabled(QString)))
   }
+  prepForOpening();
 }
 
 guiTabbedPage::~guiTabbedPage() {
