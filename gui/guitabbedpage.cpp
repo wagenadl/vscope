@@ -20,6 +20,8 @@ void guiTabbedPage::connectToParent(QDomElement doc) {
   reconnect();
 }
 
+#define uniqueConnect(src, sig, dst, slt) { disconnect(src, sig, dst, slt); connect(src, sig, dst, slt); }
+
 void guiTabbedPage::reconnect() {
   guiPage *par = parentPage();
   Dbg() << "guitabbedpage::reconnect " << this << par;
@@ -39,35 +41,34 @@ void guiTabbedPage::reconnect() {
       if (!b) 
 	continue; //throw Exception("guiTabbedPage", "Button " + i + " not found in parent", path());
 
-      connect(b, SIGNAL(selected(QString,QString)),
-	      this, SLOT(open(QString)), Qt::UniqueConnection);
+      uniqueConnect(b, SIGNAL(selected(QString,QString)),
+		    this, SLOT(open(QString)));
       disconnect(b, SIGNAL(selected(QString,QString)),
 		 master, SIGNAL(buttonSelected(QString,QString)));
       disconnect(b, SIGNAL(deselected(QString,QString)),
 		 master, SIGNAL(buttonDeselected(QString,QString)));
       disconnect(b, SIGNAL(activated(QString,QString)),
 		 master, SIGNAL(buttonClicked(QString,QString)));
-      connect(b, SIGNAL(selected(QString,QString)),
-	      par, SLOT(addTriangle(QString)), Qt::UniqueConnection);
-      connect(b, SIGNAL(deselected(QString,QString)),
-	      par, SLOT(removeTriangle(QString)), Qt::UniqueConnection);
+      uniqueConnect(b, SIGNAL(selected(QString,QString)),
+		    par, SLOT(addTriangle(QString)));
+      uniqueConnect(b, SIGNAL(deselected(QString,QString)),
+		    par, SLOT(removeTriangle(QString)));
       if (penable) {
 	b->setVisualType(VT_ArrayCtrl);
         b->makeROImmune();
-	connect(b, SIGNAL(doubleClicked(QString,QString)),
-		penable, SLOT(toggleSelected()), Qt::UniqueConnection);
+	uniqueConnect(b, SIGNAL(doubleClicked(QString,QString)),
+		      penable, SLOT(toggleSelected()));
       }
-      connect(b, SIGNAL(doubleClicked(QString,QString)),
-	      master, SIGNAL(buttonDoubleClicked(QString,QString)),
-	      Qt::UniqueConnection);
+      uniqueConnect(b, SIGNAL(doubleClicked(QString,QString)),
+		    master, SIGNAL(buttonDoubleClicked(QString,QString)));
     }
   }
 
   if (penable) {
-    connect(penable, SIGNAL(selected(QString,QString)),
-	    par, SLOT(childTabEnabled(QString)), Qt::UniqueConnection);
-    connect(penable, SIGNAL(deselected(QString,QString)),
-	    par, SLOT(childTabEnabled(QString)), Qt::UniqueConnection);
+    uniqueConnect(penable, SIGNAL(selected(QString,QString)),
+		  par, SLOT(childTabEnabled(QString)));
+    uniqueConnect(penable, SIGNAL(deselected(QString,QString)),
+		  par, SLOT(childTabEnabled(QString)))
   }
 }
 
