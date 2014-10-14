@@ -79,8 +79,10 @@ void DataTrove::read(QString dir, QString exptname, QString trialid,
   if (pd)
     pd->setValue(10);
   trial_->read(dir, exptname, trialid, pd);
-  rois_->load(QString("%1/%2/%3-rois.xml")
-	      .arg(dir).arg(exptname).arg(trialid));
+  QString roifn = QString("%1/%2/%3-rois.xml")
+    .arg(dir).arg(exptname).arg(trialid);
+  if (QFile(roifn).exists())
+    rois_->load(roifn);
   //Dbg() << "DataTrove::read: "
   //	<< trial_->exptName() << "/" << trialid;
   dummy = d;
