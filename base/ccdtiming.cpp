@@ -3,19 +3,14 @@
 #include "ccdtiming.h"
 #include "minmax.h"
 
-CCDTiming::CCDTiming() {
-  reset();
+CCDTiming::CCDTiming(int fs) {
+  reset(fs);
 }
 
-CCDTiming &CCDTiming::reset() {
+CCDTiming &CCDTiming::reset(int fs) {
+  fs_hz_ = fs;
   nframes_= 0; 
   t0_ms_ = dt_ms_ = 0;
-  setRate(0);
-  return *this;
-}
-
-CCDTiming &CCDTiming::setRate(double fs_hz) {
-  fs_hz_ = fs_hz;
   recalc();
   return *this;
 }

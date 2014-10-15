@@ -191,7 +191,7 @@ void CohData::recalcTiming() const {
   // Now, for each camera pair, let's get the basic timing
   foreach (CamPair const &cp, campair_exemplars.keys()) {
     ROI3Data const *example = rs3d->getData(campair_exemplars[cp]);
-    data.timing[cp].setRate(fs_hz);
+    data.timing[cp].reset(fs_hz);
     if (example->getDonorNFrames())
       data.timing[cp]
 	.setFrames(example->getDonorNFrames())

@@ -13,7 +13,7 @@ CCDTimingDetail::CCDTimingDetail() {
 
 void CCDTimingDetail::generalPrep(ParamTree const *ptree,
 				  ParamTree const *camtree) {
-  setRate(ptree->find(PAR_OUTRATE).toDouble());
+  reset(ptree->find(PAR_OUTRATE).toInt());
   double outrate_hz = fs_hz();
 
   bool enableCCD = (is_snap ? true : ptree->find("acqCCD/enable").toBool())
@@ -61,14 +61,12 @@ void CCDTimingDetail::generalPrep(ParamTree const *ptree,
 
 void CCDTimingDetail::prepTrial(ParamTree const *ptree,
 				ParamTree const *camtree) {
-  reset();
   is_snap = false;
   generalPrep(ptree, camtree);
 }
  
 void CCDTimingDetail::prepSnap(ParamTree const *ptree,
 				ParamTree const *camtree) {
-  reset();
   is_snap = true;
   generalPrep(ptree, camtree);
 }
