@@ -4,7 +4,7 @@
 
 #define DUTYCYCLELIMIT_H
 
-#define DUTYCYCLE_PERCENT_MIN 5
+#define DUTYCYCLE_PERCENT_MIN 1
 #define DUTYCYCLE_PERCENT_MAX 99.9
 
 namespace DutyCycle {
