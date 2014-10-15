@@ -49,7 +49,7 @@ void CCDTimingDetail::generalPrep(ParamTree const *ptree,
   int nframes = is_snap ? 1 : floori(sequence_ms/frame_ms+.0001);
 
   setFrames(nframes);
-  setTiming(delay_ms, frame_ms, dutyCycle_percent);
+  setTimingI(delay_ms*1e3, frame_ms*1e3, dutyCycle_percent);
 
   illumprescans = floori(preillum_ms*outrate_hz/1000);
   illumpostscans = floori(postillum_ms*outrate_hz/1000);

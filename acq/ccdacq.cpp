@@ -109,8 +109,8 @@ bool CCDAcq::prepare(ParamTree const *ptree,
       CCDTimingDetail const &detail = timing[camids[k]];
       bool trigEach = DutyCycle::triggerEach(detail.duty_percent());
   
-      t0_ms = detail.t0_ms();
-      dt_ms = detail.dt_ms();
+      t0_ms = detail.t0_us()/1e3;
+      dt_ms = detail.dt_us()/1e3;
       
       cfg.nframes = detail.nframes();
       cfg.expose_us = 1000*dt_ms*detail.duty_percent()/100;

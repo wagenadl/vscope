@@ -127,7 +127,7 @@ bool CohData::validate() const {
     if (rs3d->haveData(id)) {
       CamPair const &cp = rs3d->getCam(id);
       CCDTiming const &t = data.timing[cp];
-      double dt_s = t.dt_ms()/1000;
+      double dt_s = t.dt_us()/1e6;
       double df_hz = 2./3;
       int N = t.nframes() - COH_STRIP_START - COH_STRIP_END;
       if (N>0) {
@@ -195,19 +195,19 @@ void CohData::recalcTiming() const {
     if (example->getDonorNFrames())
       data.timing[cp]
 	.setFrames(example->getDonorNFrames())
-	.setTiming(example->getDonorT0ms(),
-		   example->getDonorDTms(),
-		   example->getDonorDurms()*100.0/example->getDonorDTms());
+	.setTimingI(1000*example->getDonorT0ms(),
+		    1000*example->getDonorDTms(),
+		    example->getDonorDurms()*100.0/example->getDonorDTms());
     else
       data.timing[cp]
 	.setFrames(example->getAcceptorNFrames())
-	.setTiming(example->getAcceptorT0ms(),
-		   example->getAcceptorDTms(),
-		   example->getAcceptorDurms()
-		   *100.0/example->getAcceptorDTms());
+	.setTimingI(1000*example->getAcceptorT0ms(),
+		    1000*example->getAcceptorDTms(),
+		    example->getAcceptorDurms()
+		    *100.0/example->getAcceptorDTms());
     Dbg() << "CohData: timing for " << cp << ": "
-	  << data.timing[cp].t0_ms() << " + "
-	  << data.timing[cp].dt_ms() << " / " 
+	  << data.timing[cp].t0_us() << " + "
+	  << data.timing[cp].dt_us() << " / " 
 	  << data.timing[cp].duty_percent();
   }
 }  
@@ -270,8 +270,8 @@ void CohData::recalcReference() const {
     }
 
     for (int k=0; k<N; k++) {
-      double tstart = t.t0_ms()+(k+COH_STRIP_START)*t.dt_ms();
-      double tend = tstart+t.dt_ms()*t.duty_percent()/100;
+      double tstart = (t.t0_us()/1e3)+(k+COH_STRIP_START)*(t.dt_us()/1e3);
+      double tend = tstart+t.dt_us()/1e3*t.duty_percent()/100;
       int istart = int(tstart/1e3*fs_hz);
       int iend = int(tend/1e3*fs_hz);
       if (istart<0)
@@ -335,7 +335,7 @@ void CohData::recalcReference() const {
     }
     
     // run a psdest to find spectral peak
-    double dt_s = t.dt_ms()/1000;
+    double dt_s = t.dt_us()/1e6;
     double df_hz = 1./3;
     TaperID tid(N, dt_s, df_hz);
     data.taperIDs[cp] = tid;

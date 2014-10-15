@@ -8,28 +8,24 @@ CCDTiming::CCDTiming(int fs) {
 }
 
 CCDTiming &CCDTiming::reset(int fs) {
-  fs_hz_ = fs;
+  scan_us = 1000000 / fs;
   nframes_= 0; 
-  t0_ms_ = dt_ms_ = 0;
-  recalc();
+  start_scans = 0;
+  period_scans = 0;
+  actv_scans = 0;  
   return *this;
 }
-
-void CCDTiming::recalc() {
-  start_scans = floori(t0_ms_*fs_hz_/1000);
-  period_scans = floori(dt_ms_*fs_hz_/1000);
-  actv_scans = floori(dt_ms_*fs_hz_/1000*duty_pct_/100);
-}  
 
 CCDTiming &CCDTiming::setFrames(int nfr) {
   nframes_ = nfr;
   return *this;
 }
 
-CCDTiming &CCDTiming::setTiming(double t0_ms, double dt_ms, double duty_pct) {
-  t0_ms_ = t0_ms;
-  dt_ms_ = dt_ms;
+CCDTiming &CCDTiming::setTimingI(int t0_us, int dt_us, int duty_pct) {
+  start_scans = t0_us/scan_us;
+  period_scans = dt_us/scan_us;
+  int actv_ms = (dt_us*duty_pct) / 1000;
+  actv_scans = (actv_ms*1000) / scan_us;
   duty_pct_ = duty_pct;
-  recalc();
   return *this;
 }
