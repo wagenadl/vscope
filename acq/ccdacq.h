@@ -78,7 +78,7 @@ private:
   bool isGood;
   bool isDone;
 
-  double t0_ms, dt_ms; // expected timing of frames relative to trial
+  int t0_us, dt_us, frdur_us; // expected timing of frames relative to trial
   QVector<KeyAccess::WriteKey *> keys;
 };
 

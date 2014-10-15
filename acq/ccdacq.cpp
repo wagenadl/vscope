@@ -109,12 +109,14 @@ bool CCDAcq::prepare(ParamTree const *ptree,
       CCDTimingDetail const &detail = timing[camids[k]];
       bool trigEach = DutyCycle::triggerEach(detail.duty_percent());
   
-      t0_ms = detail.t0_us()/1e3;
-      dt_ms = detail.dt_us()/1e3;
+      t0_us = detail.t0_us();
+      dt_us = detail.dt_us();
+      frdur_us = detail.active_us();
       
       cfg.nframes = detail.nframes();
-      cfg.expose_us = 1000*dt_ms*detail.duty_percent()/100;
-      cfg.trigmode = trigEach ? CCDTrigMode::EachFrame : CCDTrigMode::FirstFrame;
+      cfg.expose_us = frdur_us;
+      cfg.trigmode = trigEach ? CCDTrigMode::EachFrame
+	: CCDTrigMode::FirstFrame;
       cfg.clear_every_frame = false; // trigEach ? true : false;
   
       cfg.region = CCDRegion(caminfo[k]->placement.inverse()(reg));
@@ -142,7 +144,7 @@ bool CCDAcq::prepare(ParamTree const *ptree,
 
     for (int k=0; k<ncams; k++) 
       if (dest[k])
-	dest[k]->setTimeBase(t0_ms,dt_ms);
+	dest[k]->setTimeBase(t0_us/1e3, dt_us/1e3, frdur_us/1e3);
 
     for (int k=0; k<ncams; k++)
       if (cameras[k])
@@ -194,7 +196,7 @@ void CCDAcq::start() {
   
   for (int k=0; k<ncams; k++) 
     if (dest[k])
-      dest[k]->setTimeBase(t0_ms,dt_ms);
+      dest[k]->setTimeBase(t0_us/1e3, dt_us/1e3, frdur_us/1e3);
 
   keys.clear();
   for (int k=0; k<ncams; k++)

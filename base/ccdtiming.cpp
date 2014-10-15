@@ -22,10 +22,16 @@ CCDTiming &CCDTiming::setFrames(int nfr) {
 }
 
 CCDTiming &CCDTiming::setTimingI(int t0_us, int dt_us, int duty_pct) {
-  start_scans = t0_us/scan_us;
-  period_scans = dt_us/scan_us;
-  int actv_ms = (dt_us*duty_pct) / 1000;
-  actv_scans = (actv_ms*1000) / scan_us;
   duty_pct_ = duty_pct;
+  start_scans = t0_us/scan_us;
+  if (duty_pct==100) {
+    int per_ms = dt_us/1000;
+    period_scans = (per_ms*1000) / scan_us;
+    actv_scans = period_scans;
+  } else {
+    period_scans = dt_us/scan_us;
+    int actv_ms = (dt_us*duty_pct) / 1000;
+    actv_scans = (actv_ms*1000) / scan_us;
+  }
   return *this;
 }
