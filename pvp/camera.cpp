@@ -41,7 +41,7 @@ void Camera::setConfig(CCDConfig const &cfg0) {
   int trigmode = pvpcam->pvpTrigMode(cfg.trigmode);
 
   int32 expores_us;
-  int32 expotime = pvpcam->pvpExposureTime(int32(1000*cfg.expose_ms),
+  int32 expotime = pvpcam->pvpExposureTime(cfg.expose_us,
 					   &expores_us);
   expose_ms = expotime * (expores_us / 1000.0);
 

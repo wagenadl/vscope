@@ -106,7 +106,7 @@ void Focus::setCamA(QString idA) {
   }
   
   camIDA = idA;
-  cfgA->expose_ms = exp_msA;
+  cfgA->expose_us = 1000*exp_msA;
   cfgA->clear_every_frame = exp_msA < 100;
   cfgA->region = CCDRegion(0, X-1, 0, Y-1);
 
@@ -143,7 +143,7 @@ void Focus::setCamB(QString idB) {
   }
 
   camIDB = idB;
-  cfgB->expose_ms = exp_msB;
+  cfgB->expose_us = 1000*exp_msB;
   cfgB->clear_every_frame = exp_msB < 100;
   cfgB->region = CCDRegion(0, X-1, 0, Y-1);
 

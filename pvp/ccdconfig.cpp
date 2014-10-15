@@ -4,7 +4,7 @@
 
 CCDConfig::CCDConfig() {
   nframes = 1;
-  expose_ms = 10;
+  expose_us = 10000;
   clear_every_frame = false;
   trigmode = CCDTrigMode::Immediate;
   iscont = false;
@@ -16,7 +16,7 @@ CCDConfig::CCDConfig(CCDConfig const &c) {
 
 CCDConfig &CCDConfig::operator=(CCDConfig const &c) {
   nframes = c.nframes;
-  expose_ms = c.expose_ms;
+  expose_us = c.expose_us;
   clear_every_frame = c.clear_every_frame;
   region = c.region;
   binning = c.binning;

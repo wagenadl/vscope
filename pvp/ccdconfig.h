@@ -29,7 +29,7 @@ public:
       
 public:
   int nframes; // undefined for continuous
-  double expose_ms;
+  int expose_us;
   bool clear_every_frame;
   CCDRegion region;
   CCDBinning binning;

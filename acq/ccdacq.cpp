@@ -113,7 +113,7 @@ bool CCDAcq::prepare(ParamTree const *ptree,
       dt_ms = detail.dt_ms();
       
       cfg.nframes = detail.nframes();
-      cfg.expose_ms = dt_ms*detail.duty_percent()/100;
+      cfg.expose_us = 1000*dt_ms*detail.duty_percent()/100;
       cfg.trigmode = trigEach ? CCDTrigMode::EachFrame : CCDTrigMode::FirstFrame;
       cfg.clear_every_frame = false; // trigEach ? true : false;
   
