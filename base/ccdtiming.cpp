@@ -30,7 +30,7 @@ CCDTiming &CCDTiming::setTimingI(int t0_us, int dt_us, int duty_pct) {
     actv_scans = period_scans;
   } else {
     period_scans = dt_us/scan_us;
-    int actv_ms = (dt_us*duty_pct) / 1000;
+    int actv_ms = (dt_us*duty_pct/100) / 1000;
     actv_scans = (actv_ms*1000) / scan_us;
   }
   return *this;

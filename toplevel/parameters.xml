@@ -84,13 +84,13 @@
   	     min="0 ms" max="1 h"
   	     cond="master" enable_if="self"/>
         <param id="postIllum" type="time" default="0.1 ms"
-  	     min="0 ms" max="1 h"
+  	     min="-10 ms" max="1 h"
   	     cond="master" enable_if="self"/>
         <param id="preShutter" type="time" default="50 ms"
   	     min="0 ms" max="1 h"
   	     cond="master" enable_if="self"/>
         <param id="postShutter" type="time" default="100 ms"
-  	     min="0 ms" max="1 h"
+  	     min="-10 ms" max="1 h"
   	     cond="master" enable_if="self"/>
         <param id="preHeat" type="time" default="0 ms"
   	     min="0 ms" max="1 h"
