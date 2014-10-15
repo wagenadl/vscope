@@ -40,9 +40,10 @@ void Camera::setConfig(CCDConfig const &cfg0) {
   rgn_type rgn = pvpcam->pvpRegion(cfg.region,cfg.binning);
   int trigmode = pvpcam->pvpTrigMode(cfg.trigmode);
 
-  double expores_ms;
-  int expotime = pvpcam->pvpExposureTime(cfg.expose_ms, &expores_ms);
-  expose_ms = expotime * expores_ms;
+  int32 expores_us;
+  int32 expotime = pvpcam->pvpExposureTime(int32(1000*cfg.expose_ms),
+					   &expores_us);
+  expose_ms = expotime * (expores_us / 1000.0);
 
   pvpcam->setClearMode(cfg.clear_every_frame
 		       ? pvpCamera::ClearMode::PreExposure

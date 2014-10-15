@@ -27,7 +27,10 @@ public: // Class 3 parameters - public read access only!
 public:
   static int pvpTrigMode(class CCDTrigMode const &tm) throw(pvpException);
   static rgn_type pvpRegion(class CCDRegion const &reg, class CCDBinning const &bin) throw(pvpException);
-  int pvpExposureTime(double t_ms, double *reso_ms_out=0) throw(pvpException);
+  static int32 bestExposureTime(int32 t_us);
+  // Returns best available exposure time given requested duration
+  // In practice, this rounds down to integer milliseconds.
+  int32 pvpExposureTime(int32 t_us, int32 *reso_us_out=0) throw(pvpException);
   // returns exposure in internal units, and sets exposure resolution
   void setRegion(class CCDRegion const &reg);
   void setBinning(class CCDBin const &reg);
@@ -64,7 +67,7 @@ private:
   QString serno;
   short camh;
   
-  QVector<double> expres;
+  QVector<int32> expres;
 };
 
 #endif

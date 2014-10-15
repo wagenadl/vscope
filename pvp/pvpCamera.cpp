@@ -28,16 +28,16 @@ pvpCamera::pvpCamera(QString camname) throw(pvpException):
   setGainIndex(1);
 
   int N = countExpResIndex();
-  expres.fill(0,N);
+  expres.fill(0, N);
   for (int n=0; n<N; n++) {
     setExpResIndex(n);
     ExpRes e = getExpRes();
     switch (e) {
     case ExpRes::Millisec:
-      expres[n] = 1;
+      expres[n] = 1000;
       break;
     case ExpRes::Microsec:
-      expres[n] = 0.001;
+      expres[n] = 1;
       break;
     default:
       throw pvpException("pvpCamera (constructor): unknown exposure resolution");
@@ -115,12 +115,17 @@ rgn_type pvpCamera::pvpRegion(CCDRegion const &region,
   return rgn;
 }
 
-int pvpCamera::pvpExposureTime(double t_ms, double *reso_ms_out)
+int32 pvpCamera::bestExposureTime(int32 t_us) {
+  int32 t_ms = t_us/1000; // round down to whole milliseconds
+  return 1000*t_ms;
+}
+
+int32 pvpCamera::pvpExposureTime(int32 t_us, int32 *reso_us_out)
   throw(pvpException) {
   int best_reso_idx = 0;
   for (int n=0; n<expres.size(); n++) {
     //if (expres[n] > t_ms/1e4 && expres[n]<expres[best_reso_idx]) {
-    if (expres[n] > .1 && expres[n] < 10) {
+    if (expres[n] > 100 && expres[n] < 10000) {
       // Select the one that is 1 ms; the 1 us one is broken in the pvcam
       // library.
       best_reso_idx = n;
@@ -129,10 +134,10 @@ int pvpCamera::pvpExposureTime(double t_ms, double *reso_ms_out)
 
   setExpResIndex(best_reso_idx);
 
-  int32 expotime = int32(t_ms / expres[best_reso_idx]);
+  int32 expotime = t_us / expres[best_reso_idx];
 
-  if (reso_ms_out)
-    *reso_ms_out = expres[best_reso_idx];
+  if (reso_us_out)
+    *reso_us_out = expres[best_reso_idx];
 
   return expotime;
 }
