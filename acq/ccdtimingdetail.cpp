@@ -22,14 +22,10 @@ void CCDTimingDetail::generalPrep(ParamTree const *ptree,
   double sequence_ms = enableCCD ? camtree->find("dur").toDouble() : 0;
   // Note: sequence_ms is not used for snapshots
   double preillum_ms = camtree->find("preIllum").toDouble();
-  double postillum_ms = is_snap ? 1
-    : camtree->find("postIllum").toDouble();
+  double postillum_ms = camtree->find("postIllum").toDouble();
   double preshtr_ms = camtree->find("preShutter").toDouble();
-  double postshtr_ms = is_snap ? 1
-    : camtree->find("postShutter").toDouble();
+  double postshtr_ms = camtree->find("postShutter").toDouble();
   double preheat_ms = camtree->find("preHeat").toDouble();
-  if (is_snap) 
-    dbg("Post-illum/post-shtr ignored for snapshot. Using 1 ms fixed value.");
   double pre_ms = preillum_ms > preshtr_ms ? preillum_ms : preshtr_ms;
   double post_ms = postillum_ms > postshtr_ms ? postillum_ms : postshtr_ms;
 
