@@ -27,6 +27,8 @@ private:
   class AnalogOut *master;
   uint32_t cmask;
   class DigitalData *data;
+  QVector<uint8_t> data8;
+  QVector<uint16_t> data16;
 private:
   void writeData() throw(daqException);
 public: // for internal use

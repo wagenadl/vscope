@@ -112,7 +112,6 @@ void Trial::prepare(ParamTree const *ptree) {
 
   outcomplete = acqcomplete = false;
   prep = true;
-  dat->digitalStimuli()->writeUInt32("digital4.dat");
 }
 
 void Trial::prepareSnapshot(ParamTree const *ptree) {
@@ -130,7 +129,6 @@ void Trial::prepareSnapshot(ParamTree const *ptree) {
 }
 
 void Trial::start() {
-  dat->digitalStimuli()->writeUInt32("digital5.dat");
   if (!prep || !dat->isPrepared())
     throw Exception("Trial","Cannot start: not prepared");
   QDomElement info = dat->getXML()->find("info");
@@ -138,21 +136,16 @@ void Trial::start() {
   info.setAttribute("date",now.toString("yyMMdd"));
   info.setAttribute("time",now.toString("hhmmss"));
   
-  dat->digitalStimuli()->writeUInt32("digital7.dat");
   outcomplete = acqcomplete = false;
   ephysout->commit();
-  dat->digitalStimuli()->writeUInt32("digital8.dat");
   if (dat->isCCD()) {
     ccdacq->start();
   }
-  dat->digitalStimuli()->writeUInt32("digital9.dat");
   ephysout->start(); // this won't do anything if there is a master
-  dat->digitalStimuli()->writeUInt32("digital10.dat");
   if (dat->isEPhys()) {
     ephysacq->start(); // This starts ephysout synchronously through the "master" system.
   }
   active = true;
-  dat->digitalStimuli()->writeUInt32("digital6.dat");
 }
 
 void Trial::abort() {
@@ -182,7 +175,6 @@ public:
 };
 
 void Trial::allEPhysComplete() {
-  dat->digitalStimuli()->writeUInt32("digital2.dat");
   if (dat->isCCD()) {
     double maxwait_ms = 1000;
     while (!ccdacq->hasEnded()) {
@@ -199,7 +191,6 @@ void Trial::allEPhysComplete() {
 
   if (dat->isCCD())
     dat->refineCCDTiming();
-  dat->digitalStimuli()->writeUInt32("digital3.dat");
   
   QDomElement info = dat->getXML()->find("info");
   QDateTime now(QDateTime::currentDateTime());

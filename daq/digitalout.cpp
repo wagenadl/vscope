@@ -86,21 +86,28 @@ void DigitalOut::writeData() throw(daqException) {
   int nscans=data->getNumScans();
   long scanswritten;
   int nli = device().nDIOLines();
+  void const *useptr = 0;
   if (nli>=17 && nli<=32) {
-    ; // all good
+    useptr = (void const *)srcptr;
   } else if (nli>0 && nli<=8) {
-    uint8_t *src8 = (uint8_t*)srcptr;
+    if (data8.size()<nscans)
+      data8.resize(nscans);
+    uint8_t *src8 = data8.data();
     for (int i=0; i<nscans; i++)
       src8[i] = srcptr[i];
+    useptr = (void const *)src8;
   } else if (nli<=16) {
-    uint16_t *src16 = (uint16_t*)srcptr;
+    if (data16.size()<nscans)
+      data16.resize(nscans);
+    uint16_t *src16 = data16.data();
     for (int i=0; i<nscans; i++)
       src16[i] = srcptr[i];
+    useptr = (void const *)src16;
   } else {
     throw daqException("DigitalOut","Data has unacceptable bit depth");
   }
   daqTry(DAQmxWriteRaw(th,nscans,false,timeout,
-         	       (void*)srcptr,
+         	       (void*)useptr,
 		       &scanswritten, 0),
 	 "DigitalOut","Write data (preparation)");
   // const uInt32 *sp = (const uInt32 *)srcptr;
