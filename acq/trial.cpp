@@ -138,12 +138,16 @@ void Trial::start() {
   info.setAttribute("date",now.toString("yyMMdd"));
   info.setAttribute("time",now.toString("hhmmss"));
   
+  dat->digitalStimuli()->writeUInt32("digital7.dat");
   outcomplete = acqcomplete = false;
   ephysout->commit();
+  dat->digitalStimuli()->writeUInt32("digital8.dat");
   if (dat->isCCD()) {
     ccdacq->start();
   }
+  dat->digitalStimuli()->writeUInt32("digital9.dat");
   ephysout->start(); // this won't do anything if there is a master
+  dat->digitalStimuli()->writeUInt32("digital10.dat");
   if (dat->isEPhys()) {
     ephysacq->start(); // This starts ephysout synchronously through the "master" system.
   }
