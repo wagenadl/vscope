@@ -266,6 +266,7 @@ void Acquire::doneFrame() {
 
 void Acquire::doneTrial() {
   dbg("trial complete.");
+  Globals::trove->trial().digitalStimuli()->writeUInt32("digital1.dat");
   saveData();
   displayCCD();
   displayEPhys();

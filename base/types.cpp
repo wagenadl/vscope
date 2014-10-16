@@ -6,6 +6,8 @@
 #include <base/dbg.h>
 
 void checkTypes() {
+  if (sizeof(int)<4)
+    throw Exception("checkTypes","int has fewer than 32 bits.");
   if (sizeof(int8_t)!=1)
     throw Exception("checkTypes","int8 has incorrect size.");
   if (sizeof(int16_t)!=2)
