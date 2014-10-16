@@ -20,7 +20,8 @@ void AllCCDTimingDetail::updateCameras(ParamTree const *ptree) {
   QSet<QString> newids;
   ParamTree const &p = ptree->tree("acqCCD/camera");
   foreach (QString s, p.childIDs())
-    newids.insert(s);
+    if (ptree->find("acqCCD/camera:"+s+"/enable").toBool())
+      newids.insert(s);
   foreach (QString s, oldids) {
     if (!newids.contains(s)) {
       delete details[s];
