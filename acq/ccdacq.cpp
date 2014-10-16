@@ -66,17 +66,13 @@ static void generateMockData(CCDData *dest, CCDData::WriteKey *key, int seed) {
 }
 
 CCDAcq::CCDAcq() {
-  QStringList cams = Connections::allCams();
-  ncams=0;
-  foreach (QString id, cams) {
-    camids.append(id);
-    caminfo.append(Connections::findpCam(id));
-    camidx[id]=ncams;
-    ncams++;
+  camids = Connections::allCams();
+  foreach (QString id, camids) {
+    caminfo[id] = Connections::findpCam(id);
+    ccdcfg[id] = CCDConfig();
+    dest[id] = 0;
+    cameras[id] = 0;
   }
-  ccdcfg.resize(ncams);
-  dest.fill(0, ncams);
-  cameras.fill(0, ncams);
 
   isActive=false;
   isGood=false;
@@ -93,65 +89,68 @@ bool CCDAcq::prepare(ParamTree const *ptree,
     
     // I am calling ser=x, par=y.
 
-    QList<bool> camEnabled;
+    QSet<QString> enabledCams;
     
-    for (int k=0; k<ncams; k++) {
-      QString id = camids[k];
-      camEnabled.append(ptree->find("acqCCD/camera:" + id + "/enable")
-			.toBool());
-      ParamTree const *rootTree = &::camTree(ptree, id); // _now_ find master
-      CCDConfig cfg;
-      cfg.iscont = false;
-      QRect reg(rootTree->find("region").toRect());
-      cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
-      QRect bin(rootTree->find("binning").toRect());
-      cfg.binning = CCDBinning(bin.width(),bin.height());
-      CCDTimingDetail const &detail = timing[camids[k]];
-      bool trigEach = DutyCycle::triggerEach(detail.duty_percent());
-  
-      t0_us = detail.t0_us();
-      dt_us = detail.dt_us();
-      frdur_us = detail.active_us();
-      
-      cfg.nframes = detail.nframes();
-      cfg.expose_us = frdur_us;
-      cfg.trigmode = trigEach ? CCDTrigMode::EachFrame
-	: CCDTrigMode::FirstFrame;
-      cfg.clear_every_frame = false; // trigEach ? true : false;
-  
-      cfg.region = CCDRegion(caminfo[k]->placement.inverse()(reg));
-      ccdcfg[k] = cfg;
+    foreach (QString id, camids) {
+      bool ena = ptree->find("acqCCD/camera:" + id + "/enable").toBool();
+      if (ena) {
+	enabledCams.insert(id);
+	ParamTree const *rootTree = &::camTree(ptree, id); // _now_ find master
+	CCDConfig cfg;
+	cfg.iscont = false;
+	QRect reg(rootTree->find("region").toRect());
+	cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
+	QRect bin(rootTree->find("binning").toRect());
+	cfg.binning = CCDBinning(bin.width(),bin.height());
+	CCDTimingDetail const &detail = timing[id];
+	bool trigEach = DutyCycle::triggerEach(detail.duty_percent());
+	
+	t0_us = detail.t0_us();
+	dt_us = detail.dt_us();
+	frdur_us = detail.active_us();
+	
+	cfg.nframes = detail.nframes();
+	cfg.expose_us = frdur_us;
+	cfg.trigmode = trigEach ? CCDTrigMode::EachFrame
+	  : CCDTrigMode::FirstFrame;
+	cfg.clear_every_frame = false; // trigEach ? true : false;
+	
+	cfg.region = CCDRegion(caminfo[id]->placement.inverse()(reg));
+	ccdcfg[id] = cfg;
+      } else {
+	ccdcfg[id] = CCDConfig();
+      }
     }
     
-    for (int k=0; k<ncams; k++) {
-      if (camEnabled[k])
-	cameras[k] = CamPool::findp(camids[k]);
+    foreach (QString id, camids) {
+      if (enabledCams.contains(id))
+	cameras[id] = CamPool::findp(id);
       else
-	cameras[k] = 0;
+	cameras[id] = 0;
 
 #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
       // we are going to generate mock data
 #else
-      if (!cameras[k])
-	ccdcfg[k].nframes=0; // we won't acquire from dummy camera
+      if (!cameras[id])
+	ccdcfg[id].nframes = 0; // we won't acquire from dummy camera
 #endif
     }
 
-    for (int k=0; k<ncams; k++)
-      if (dest[k])
-	dest[k]->reshape(ccdcfg[k].getSerPix(),ccdcfg[k].getParPix(),
-			 ccdcfg[k].nframes);
+    foreach (QString id, camids) 
+      if (dest[id])
+	dest[id]->reshape(ccdcfg[id].getSerPix(),ccdcfg[id].getParPix(),
+			 ccdcfg[id].nframes);
 
-    for (int k=0; k<ncams; k++) 
-      if (dest[k])
-	dest[k]->setTimeBase(t0_us/1e3, dt_us/1e3, frdur_us/1e3);
+    foreach (QString id, camids) 
+      if (dest[id])
+	dest[id]->setTimeBase(t0_us/1e3, dt_us/1e3, frdur_us/1e3);
 
-    for (int k=0; k<ncams; k++)
-      if (cameras[k])
-        cameras[k]->setConfig(ccdcfg[k]);
+    foreach (QString id, camids)
+      if (cameras[id])
+        cameras[id]->setConfig(ccdcfg[id]);
   
-    for (int k=0; k<ncams; k++)
-      if (camEnabled[k] && !cameras[k])
+    foreach (QString id, camids)
+      if (enabledCams.contains(id) && !cameras[id])
 	return false;
 
     return true;
@@ -166,13 +165,13 @@ CCDAcq::~CCDAcq() {
 }
 
 void CCDAcq::abort() {
-  for (int k=0; k<ncams; k++)
-    if (cameras[k])
-      cameras[k]->abort();
+  foreach (QString id, camids)
+    if (cameras[id])
+      cameras[id]->abort();
 
-  for (int k=0; k<ncams; k++)
-    if (dest[k])
-      dest[k]->checkin(keys[k]);
+  foreach (QString id, camids)
+    if (dest[id])
+      dest[id]->checkin(keys[id]);
   keys.clear();
   
   isActive=false;
@@ -185,31 +184,32 @@ void CCDAcq::start() {
     throw Exception("CCDAcq","Cannot start while active");
   isGood=false; isDone = false;
 
-  for (int k=0; k<ncams; k++)
-    if (cameras[k] && !dest[k])
+  foreach (QString id, camids)
+    if (cameras[id] && !dest[id])
       throw Exception("CCDAcq","Cannot start without destination buffers");
 
-  for (int k=0; k<ncams; k++)
-    if (dest[k])
-      dest[k]->reshape(ccdcfg[k].getSerPix(),ccdcfg[k].getParPix(),
-		       ccdcfg[k].nframes);
+  foreach (QString id, camids)
+    if (dest[id])
+      dest[id]->reshape(ccdcfg[id].getSerPix(),ccdcfg[id].getParPix(),
+		       ccdcfg[id].nframes);
   
-  for (int k=0; k<ncams; k++) 
-    if (dest[k])
-      dest[k]->setTimeBase(t0_us/1e3, dt_us/1e3, frdur_us/1e3);
+  foreach (QString id, camids) 
+    if (dest[id])
+      dest[id]->setTimeBase(t0_us/1e3, dt_us/1e3, frdur_us/1e3);
 
-  keys.clear();
-  for (int k=0; k<ncams; k++)
-    if (dest[k])
-      keys.append(dest[k]->checkout());
+  Q_ASSERT(keys.isEmpty());
+  foreach (QString id, camids)
+    if (dest[id])
+      keys[id] = dest[id]->checkout();
   
   try {
-    for (int k=0; k<ncams; k++)
-      if (cameras[k])
-	cameras[k]->startFinite(dest[k]->frameData(keys[k]),
-				dest[k]->getTotalPix());
-      else if (dest[k])
-	generateMockData(dest[k], keys[k], k);
+    int k = 0;
+    foreach (QString id, camids)
+      if (cameras[id])
+	cameras[id]->startFinite(dest[id]->frameData(keys[id]),
+				dest[id]->getTotalPix());
+      else if (dest[id])
+	generateMockData(dest[id], keys[id], k++);
     isActive = true;
   } catch (Exception const &) {
     dbg("CCDAcq: exception during start");
@@ -222,12 +222,9 @@ void CCDAcq::start() {
   }
 }
 
-int CCDAcq::nPixelsSoFar(QString camid) {
-  if (!camidx.contains(camid))
-    return 0;
-  int k = camidx[camid];
-  if (cameras[k])
-    return cameras[k]->nPixelsSoFar();
+int CCDAcq::nPixelsSoFar(QString id) {
+  if (cameras.contains(id) && cameras[id])
+    return cameras[id]->nPixelsSoFar();
   else
     return 0;
 }
@@ -245,15 +242,15 @@ bool CCDAcq::hasEnded() {
 
   try {
     bool anyIncomplete = false;
-    for (int k=0; k<ncams; k++)
-      if (cameras[k] && !cameras[k]->hasCompleted())
+    foreach (QString id, camids)
+      if (cameras[id] && !cameras[id]->hasCompleted())
 	anyIncomplete = true;
     if (!anyIncomplete) {
       isActive = false;
       isDone = true;
       isGood = true;
-      for (int k=0; k<ncams; k++)
-	dest[k]->checkin(keys[k]);
+      foreach (QString id, camids)
+	dest[id]->checkin(keys[id]);
       keys.clear();
     }
   } catch (Exception const &) {
@@ -261,8 +258,8 @@ bool CCDAcq::hasEnded() {
     isActive = false;
     isDone = true;
     isGood = false;
-    for (int k=0; k<ncams; k++)
-      dest[k]->checkin(keys[k]);
+    foreach (QString id, camids)
+      dest[id]->checkin(keys[id]);
     keys.clear();
   }
 
@@ -277,16 +274,13 @@ bool CCDAcq::wasSuccessful() {
 }
 
 void CCDAcq::setDest(QString camid, CCDData *destforid) {
-  if (!camidx.contains(camid))
-    throw Exception("CCDAcq","Unknown camera ID");
-  dest[camidx[camid]] = destforid;
+  dest[camid] = destforid;
 }
 
 Transform CCDAcq::placement(QString id) const {
-  if (camidx.contains(id)) {
-    int idx = camidx[id];
-    Transform t = caminfo[idx]->placement;
-    return t(ccdcfg[idx].placement());
+  if (caminfo.contains(id)) {
+    Transform t = caminfo[id]->placement;
+    return t(ccdcfg[id].placement());
   } else {
     Dbg() << "CCDAcq::placement: Warning: no info for " << id;
     return Transform();

@@ -66,20 +66,18 @@ public:
    *:N Returns a unit Transform if the camera is not in the set of cameras.
    */
 private:
-  QVector<QString> camids;
-  QVector<Connections::CamCon const *> caminfo;
-  QVector<class CCDData *> dest;
-  QVector<CCDConfig> ccdcfg;
-  QVector<class Camera *> cameras;
-  QMap<QString, int> camidx;
-  int ncams;
+  QStringList camids;
+  QMap<QString, Connections::CamCon const *> caminfo;
+  QMap<QString, class CCDData *> dest;
+  QMap<QString, CCDConfig> ccdcfg;
+  QMap<QString, class Camera *> cameras;
 
   bool isActive;
   bool isGood;
   bool isDone;
 
   int t0_us, dt_us, frdur_us; // expected timing of frames relative to trial
-  QVector<KeyAccess::WriteKey *> keys;
+  QMap<QString, KeyAccess::WriteKey *> keys;
 };
 
 #endif
