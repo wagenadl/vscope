@@ -81,7 +81,7 @@
   	     min="0%" max="100%"
   	     cond="master" enable_if="self"/>
         <param id="preIllum" type="time" default="1.5 ms"
-  	     min="0 ms" max="1 h"
+  	     min="-10 ms" max="1 h"
   	     cond="master" enable_if="self"/>
         <param id="postIllum" type="time" default="0.1 ms"
   	     min="-10 ms" max="1 h"
