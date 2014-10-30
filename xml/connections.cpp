@@ -21,6 +21,7 @@ namespace Connections {
     ground="NRSE";
     range = 5;
     scale = 1000;
+    offset = 0;
     unit = "mV";
   }
 
@@ -68,6 +69,7 @@ namespace Connections {
       e.setAttribute("range",QString("%1V").arg(aic.range));
       e.setAttribute("unit",aic.unit);
       e.setAttribute("scale",QString("%1").arg(aic.scale));
+      e.setAttribute("offset",QString("%1").arg(aic.offset));
     }
   }
 
@@ -143,6 +145,11 @@ namespace Connections {
 	  Param p("double");
 	  p.set(e.attribute("scale"));
 	  aic->scale = p.toDouble();
+	}
+	if (e.hasAttribute("offset")) {
+	  Param p("double");
+	  p.set(e.attribute("offset"));
+	  aic->offset = p.toDouble();
 	}
 	if (e.hasAttribute("unit"))
 	  aic->unit = e.attribute("unit");

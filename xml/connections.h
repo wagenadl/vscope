@@ -27,11 +27,12 @@ namespace Connections {
     int line;       // line of this channel
     QString ground; // RSE, NRSE, or DIFF
     double range;   // in volts: maximum expected voltage at DAQ.
-    double scale;   // this says by how much a DAQ value (in volts) has to be
+    double scale;   // This says by how much a DAQ value (in volts) has to be
                     // multiplied to get our desired units.
                     // For instance, if we are measuring 10Vm with a 1x probe,
                     // so DAQ voltage is 10 * Vm, scale would be 1000 mV/V / 10,
                     // i.e., 100.
+    double offset;  // This offset, in our own units, is added after scaling.
     QString unit;   // e.g. "mV" or "pA".
   };
 

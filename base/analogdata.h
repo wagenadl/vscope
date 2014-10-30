@@ -45,12 +45,12 @@ public:
    *:D Set all data to zero.
    */
   void defineChannel(int index, QString channel,
-		     double scale=1, QString unit="V");
+		     double scale=1, QString unit="V", double offset=0);
   /*:F void defineChannel(int index, int channel)
    *:D Specifies mapping for one physical channel.
    *:A int index: index within the scan.
     :  QString channel: physical channel to associate with that index.
-    :  scale, unit: conversion from DAQ units to logical units.
+    :  scale, unit, offset: conversion from DAQ units to logical units.
   */
   typedef QMap<QString, double> ScaleMap;
   void write(QString ofn, QDomElement elt);
@@ -101,6 +101,7 @@ public:
    *:R Physical channel name.
    */
   double getScaleAtIndex(int n) const;
+  double getOffsetAtIndex(int n) const;
   QString getUnitAtIndex(int n) const;
   bool contains(QString ch) const;
   /*:F contains
@@ -116,6 +117,7 @@ private:
   double fs_hz;
   QVector<QString> index2id;
   QVector<double> index2scale;
+  QVector<double> index2offset;
   QVector<QString> index2unit;
   QMap<QString, int32_t> id2index;
   QVector<double> data; // by index

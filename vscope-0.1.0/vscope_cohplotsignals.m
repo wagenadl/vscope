@@ -55,7 +55,7 @@ end
 idx = idx(ord);
 N = length(idx);
 
-sig = bsxfun(@rdivide, coh.extra.sig, mean(coh.extra.sig0));
+sig = bsxfun(@rdivide, coh.extra.sig0(2:end,:), mean(coh.extra.sig0)) - 1;
 
 if kv.uniform
   sd = std(sig(:,idx));
@@ -68,7 +68,7 @@ else
 end
 dy = sensiblestep(.95*min(scl));
 
-t1 = coh.extra.tt(end);
+t1 = coh.extra.tt0(end);
 qpen 1 roundcap
 for n=1:N
   if kv.color
@@ -78,8 +78,8 @@ for n=1:N
   else
     qpen b
   end
-  qplot(coh.extra.tt, sig(:,idx(n))/scl(n) + n);
-  qat(coh.extra.tt(1), n);
+  qplot(coh.extra.tt0(2:end), sig(:,idx(n))/scl(n) + n);
+  qat(coh.extra.tt0(1), n);
   qalign right middle
   qtext(-5, 0, vscope_roiid(idx(n)));
   if ~kv.uniform
@@ -90,10 +90,10 @@ for n=1:N
   end
 end
 
-dx = sensiblestep((t1-coh.extra.tt(1)) / 3);
-rng = [ceil(coh.extra.tt(1)/dx)*dx : dx : floor(t1/dx)*dx];
+dx = sensiblestep((t1-coh.extra.tt0(1)) / 3);
+rng = [ceil(coh.extra.tt0(1)/dx)*dx : dx : floor(t1/dx)*dx];
 qpen k 0
-qxaxis(0, [coh.extra.tt(1) t1], rng, 'Time (s)');
+qxaxis(0, [coh.extra.tt0(1) t1], rng, 'Time (s)');
 qat(t1, 'bottom');
 qalign right bottom
 qtext(10, 0, sprintf('Scale: %g %%', dy*100));

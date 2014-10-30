@@ -171,8 +171,7 @@ void MGAuto::newtraces() {
 		    DataPtr(astim->channelData(id)),
 		    astim->getNumScans(),
 		    astim->getNumChannels());
-	tr->setScaleFactor(astim->getScaleAtIndex
-			   (astim->whereIsChannel(id)));
+	tr->setScaleFactor(astim->getScaleAtIndex(astim->whereIsChannel(id)));
 	g->setYLabel("("+astim->getUnitAtIndex(astim->whereIsChannel(id))+")");
       }
     } else {
@@ -189,6 +188,7 @@ void MGAuto::newtraces() {
 		    aacq->getNumScans(),
 		    aacq->getNumChannels());
 	tr->setScaleFactor(aacq->getScaleAtIndex(aacq->whereIsChannel(id)));
+	tr->setOffset(aacq->getOffsetAtIndex(aacq->whereIsChannel(id)));
 	g->setYLabel("("+aacq->getUnitAtIndex(aacq->whereIsChannel(id))+")");
       }
     }

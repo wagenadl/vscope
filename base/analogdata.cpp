@@ -12,12 +12,14 @@ AnalogData::AnalogData(int nscans_, int nchannels_, double fs_hz_) {
 
   index2id.resize(nchannels);
   index2scale.resize(nchannels);
+  index2offset.resize(nchannels);
   index2unit.resize(nchannels);
   id2index.clear();
   for (int n=0; n<nchannels; n++) {
     QString id ="A" + QString::number(n);
     index2id[n] = id;
     index2scale[n] = 1;
+    index2offset[n] = 0;
     index2unit[n] = "V";
     id2index[id] = n;
   }
@@ -52,11 +54,13 @@ bool AnalogData::reshape(int nscans1, int nchannels1, bool free) {
   index2id.resize(nchannels);
   index2unit.resize(nchannels);
   index2scale.resize(nchannels);
+  index2offset.resize(nchannels);
   // add names for new channels
   for (int n=nchannels1; n<nchannels; n++) {
     QString id = "A" + QString::number(n);
     index2id[n] = id;
     index2scale[n] = 1;
+    index2offset[n] = 0;
     index2unit[n] = "V";
     id2index[id] = n;
   }
@@ -70,7 +74,7 @@ bool AnalogData::reshape(int nscans1, int nchannels1, bool free) {
 }
 
 void AnalogData::defineChannel(int index, QString id,
-			       double scale, QString unit) {
+			       double scale, QString unit, double offset) {
   KeyGuard guard(*this);
   if (index<0 || index>=nchannels)
     throw Exception("AnalogData", "Inappropriate channel definition");
@@ -79,6 +83,7 @@ void AnalogData::defineChannel(int index, QString id,
   
   index2id[index] = id;
   index2scale[index] = scale;
+  index2offset[index] = offset;
   index2unit[index] = unit;
   id2index[id] = index;
   
@@ -107,6 +112,8 @@ void AnalogData::write(QString ofn, QDomElement elt) {
     UnitQty scl(scales[index2id[n]]*index2scale[n],
 		index2unit[n]);
     channel.setAttribute("scale", scl.pretty(6));
+    UnitQty off(index2offset[n], index2unit[n]);
+    channel.setAttribute("offset", off.pretty(6));
   }
 }
 
@@ -180,6 +187,7 @@ void AnalogData::read(QString ifn, QDomElement elt) {
   reshape(scans, chans);
   index2id.resize(chans);
   index2scale.resize(chans);
+  index2offset.resize(chans);
   index2unit.resize(chans);
   id2index.clear();
   ScaleMap scales;
@@ -195,6 +203,12 @@ void AnalogData::read(QString ifn, QDomElement elt) {
     index2unit[idx] = scl.unitEPhys();
     index2scale[idx] = 1;
     scales[id] = scl.toDouble(index2unit[idx]);
+    if (e.hasAttribute("offset")) {
+      UnitQty off(e.attribute("offset"));
+      index2offset[idx] = off.toDouble(index2unit[idx]);
+    } else {
+      index2offset[idx] = 0;
+    }
   }
   readInt16(ifn, scales);
   if (nscans != scans)
@@ -297,5 +311,12 @@ double AnalogData::getScaleAtIndex(int n) const {
     return index2scale[n];
   else
     return 1;
+}
+    
+double AnalogData::getOffsetAtIndex(int n) const {
+  if (n>=0 && n<nchannels)
+    return index2offset[n];
+  else
+    return 0;
 }
     

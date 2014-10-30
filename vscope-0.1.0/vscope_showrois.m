@@ -25,8 +25,8 @@ for c=1:length(ids);
       xx(end+1) = xx(1);
       yy(end+1) = yy(1);
       plot(xx, yy, 'color', cc(r,:));
-      text(x0, y0, vscope_roiid(r), 'horizontala', 'center',...
-	  'verticala', 'middle', 'color', cc(r,:));
+      text(x0, y0, vscope_roiid(r), 'horizontalalignment', 'center',...
+	  'verticalalignment', 'middle', 'color', cc(r,:));
     end
   end
   title(cid)

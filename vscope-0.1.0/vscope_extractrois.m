@@ -34,7 +34,7 @@ dat = zeros(T,N,C) + nan;
 for n=1:N
   for c=1:C
     if isempty(roicams) ...
-	  || ~isempty(strmatch(ccd.info.camid{c}, roicams{n}, 'exact'))
+	  || ~isempty(find(strcmp(ccd.info.camid{c}, roicams{n})))
       dat(:,n,c) = squeeze(sum(ccd.dat(idx{n,c},c,:)-DIGI_BASE,1));
     end
   end

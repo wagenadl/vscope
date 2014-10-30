@@ -83,6 +83,7 @@ void VSDTraces::updateEPhysData() {
 		      adata->getNumScans(),
 		      adata->getNumChannels());
     reftrace->setScaleFactor(adata->getScaleAtIndex(idx));
+    reftrace->setOffset(adata->getOffsetAtIndex(idx));
     refgraph->setYLabel("("+adata->getUnitAtIndex(idx)+")");
   } else {
     DataPtr dp(adata->allData());
