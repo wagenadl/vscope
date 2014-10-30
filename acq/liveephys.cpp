@@ -415,7 +415,8 @@ void LiveEPhys::newTimebase() {
 	data->defineChannel(idx,
 			    src->getChannelAtIndex(idx),
 			    src->getScaleAtIndex(idx),
-			    src->getUnitAtIndex(idx));
+			    src->getUnitAtIndex(idx),
+			    src->getOffsetAtIndex(idx));
     else 
       throw Exception("LiveEPhys","No contacq src. This should not happen. (3)");
   } else {

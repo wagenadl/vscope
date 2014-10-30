@@ -172,6 +172,7 @@ void MGAuto::newtraces() {
 		    astim->getNumScans(),
 		    astim->getNumChannels());
 	tr->setScaleFactor(astim->getScaleAtIndex(astim->whereIsChannel(id)));
+	tr->setOffset(astim->getOffsetAtIndex(astim->whereIsChannel(id)));
 	g->setYLabel("("+astim->getUnitAtIndex(astim->whereIsChannel(id))+")");
       }
     } else {

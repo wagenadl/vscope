@@ -23,7 +23,8 @@ elseif nargin==2
     i0 = info.chunk(k).istart;
     i1 = min(info.chunk(k).iend,L/C);
     for c=1:C
-      dat(c,i0:i1) = dat(c,i0:i1) * info.chunk(k).scale(c);
+      dat(c,i0:i1) = dat(c,i0:i1) * info.chunk(k).scale(c) ...
+	  + info.chunk(k).offset(c);
     end
   end
   dat = dat';
@@ -42,7 +43,8 @@ elseif nargin==3
   for k=1:length(info.chunk)
     i0 = info.chunk(k).istart;
     i1 = min(info.chunk(k).iend,L);
-    dat(i0:i1) = dat(i0:i1) * info.chunk(k).scale(c);
+    dat(i0:i1) = dat(i0:i1) * info.chunk(k).scale(c) ...
+	+ info.chunk(k).offset(c);
   end
 else
   error 'Bad argument count'

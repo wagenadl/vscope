@@ -404,6 +404,16 @@ while 1
     [scl,uni] = vsdl_getscale(vsdl_getval(kv,'scale'));
     ana.info.units{idx+1} = uni;
     ana.info.chunk(ichunk).scale(idx+1) = scl;
+    of0 = vsdl_getval(kv,'offset');
+    if isempty(of0)
+      off = 0;
+    else
+      [off, uni1] = vsdl_getscale(of0);
+      if ~strcmp(uni1, uni)
+	error('Offset is in units other than scale');
+      end
+    end
+    ana.info.chunk(ichunk).offset(idx+1) = off;
   end
   if ~isempty(findstr(str,'<scale'))
     kv = vsdl_params(str);
@@ -415,11 +425,12 @@ while 1
     ana.info.chunk(ichunk).istart = ss+1;
     ana.info.chunk(ichunk).iend = inf;
     ana.info.chunk(ichunk).scale = ones(nchans,1);
+    ana.info.chunk(ichunk).offset = zeros(nchans,1);
   end
 end
 
 if getdat
-  ana.dat = vscope_load_analog(ifn,ana.info);
+  ana.dat = vscope_load_analog(ifn, ana.info);
 else
   ana.dat = [];
 end
