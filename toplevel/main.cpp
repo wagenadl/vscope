@@ -396,7 +396,7 @@ void reportCameraSituation() {
     Dbg() << "Missing camera(s): " << missingCams.join(", ") << ".";
   
 #ifndef vsdLINUX
-  if (okCams.isEmpty()) {
+  if (okCams.isEmpty() && !missingCams.isEmpty()) {
   #if CCDACQ_ACQUIRE_EVEN_WITHOUT_CAMERA
     Warning() << "Cameras not available. Acquisition will take black frames.";
   #else
