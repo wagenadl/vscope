@@ -27,7 +27,6 @@ else
   idx = find(coh.mag >= kv.threshold);
 end
 
-kv.height
 if isempty(kv.height)
   kv.height = kv.width * (3 + length(idx))/30;
 end
@@ -63,14 +62,25 @@ if kv.uniform
   scl = repmat(sd(ceil(.75*N)) * 5, [N 1]);
 else
   scl = 5*std(sig(:,idx));  
-  s0 = median(scl);
+  if isempty(scl)
+    s0 = 1;
+  else
+    s0 = median(scl);
+  end
   scl(scl<s0) = s0;
 end
-dy = sensiblestep(.95*min(scl));
+if isempty(scl)
+  dy = 1;
+else
+  dy = sensiblestep(.95*min(scl));
+end
 
 t1 = coh.extra.tt0(end);
 qpen 1 roundcap
 for n=1:N
+  if all(isnan(sig(:,idx(n))))
+    continue;
+  end
   if kv.color
     qpen(coh.cc(idx(n), :));
   elseif mod(n,2)>0

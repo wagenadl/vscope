@@ -27,7 +27,7 @@ while n1>n0 || isnan(nbest)
   if k<=n
     % This is acceptable in principle, but it could be that smaller n
     % is better
-    if k>kbest || (k==kbest && n>nbest)
+    if isnan(nbest) || k>kbest || (k==kbest && n>nbest)
       kbest = k;
       nbest = n;
       thrbest = cohc.thr;

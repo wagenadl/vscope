@@ -401,14 +401,14 @@ while 1
       ana.info.channo(idx+1) = chn;
       ana.info.chanid{idx+1} = id;
     end
-    [scl,uni] = vsdl_getscale(vsdl_getval(kv,'scale'));
+    [scl,uni] = vsdl_getscale(vsdl_getval(kv, 'scale'));
     ana.info.units{idx+1} = uni;
     ana.info.chunk(ichunk).scale(idx+1) = scl;
-    of0 = vsdl_getval(kv,'offset');
+    of0 = vsdl_getval(kv, 'offset');
     if isempty(of0)
       off = 0;
     else
-      [off, uni1] = vsdl_getscale(of0);
+      [off, uni1] = vsdl_getoffset(of0);
       if ~strcmp(uni1, uni)
 	error('Offset is in units other than scale');
       end
@@ -739,6 +739,17 @@ if scl==0
   fprintf(1,'Warning: assuming scale=1 mV.\n');
 end
 
+function [off,uni] = vsdl_getoffset(off_u)
+if endswith(off_u,'V')
+  off = vsdl_mvolt(off_u);
+  uni = 'mV';
+elseif endswith(off_u,'A')
+  off = vsdl_namp(off_u);
+  uni = 'nA';
+else
+  [off,uni] = sscanf(off_u,'%g %s');
+  fprintf(1,'Warning: scale is in odd units: %s\n',uni);
+end
 
 function [t, t0, t1] = vsdl_frametimes(dat)
 t = cell(0,0);

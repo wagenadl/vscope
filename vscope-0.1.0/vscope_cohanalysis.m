@@ -152,8 +152,8 @@ coh.extra.tt = tt;
 coh.extra.sig = y_sig;
 coh.extra.ref = y_ref;
 coh.extra.tt0 = (t_on + t_off) / 2;
-coh.extra.sig0 = sig;
-coh.extra.ref0 = ref;
+coh.extra.sig0 = sig(1:length(t_on),:); % In case the final frames are junk
+coh.extra.ref0 = ref(1:length(t_on),:);
 
 fprintf(1, 'Calculating PSD...\n');
 % Calculate power spectrum of reference and signal and store results
@@ -188,7 +188,8 @@ end
 if ~isempty(kv.pthresh)
   if kv.pthresh>0
     cohc = vscope_cohcontrol(tt, y_ref, y_sig, ...
-      'df', kv.df_coh, 'p', kv.pthresh, 'f', kv.f_star);
+	'df', kv.df_coh, 'p', kv.pthresh, 'f', kv.f_star);
+    coh.thr = cohc.thr;
     coh.pthr = kv.pthresh;
   else
     [nbest, thrbest] = vcoa_bestp(tt, y_ref, y_sig, coh.mag, kv);
@@ -198,6 +199,9 @@ if ~isempty(kv.pthresh)
 	'Found %i significant cell(s) at p < %g/%i = %.3g; mag >= %.2f\n', ...
 	length(find(coh.mag>=coh.thr)), -kv.pthresh, nbest, coh.pthr, coh.thr);
   end
+else
+  coh.pthr = 1;
+  coh.thr = 0;
 end
 
 % Calculate colors for coherence representation
