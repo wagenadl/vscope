@@ -21,3 +21,4 @@ else
   img = img(2:Y-1,:);
 end
 
+img(isnan(img)) = 0;

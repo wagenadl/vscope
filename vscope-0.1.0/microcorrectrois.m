@@ -13,8 +13,8 @@ function [vsd, dd, ee] = microcorrectrois(vsd, rois)
 %       [out, dd, ee] = microcorrectrois(vsd, rois);
 
 [Y X T] = size(vsd);
-SX = 0.5 * round(X/128);
-SY = 0.5 * round(Y/128);
+SX = 0.5; % * round(X/128);
+SY = 0.5; % * round(Y/128);
 T0 = ceil(T/2);
 
 ref = vsd(:,:,T0);

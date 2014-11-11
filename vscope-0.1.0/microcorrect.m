@@ -14,8 +14,8 @@ function [vsd, dd, ee] = microcorrect(vsd, msk)
 
 [Y X T] = size(vsd);
 T0 = ceil(T/2);
-SX = 0.5*max(1, round(X/128));
-SY = 0.5*max(1, round(Y/128));
+SX = 0.5; % *max(1, round(X/128));
+SY = 0.5; % *max(1, round(Y/128));
 
 ref = vsd(:,:,T0);
 ref1 = ref(2:end-1, 2:end-1);
@@ -27,7 +27,8 @@ end
 
 ee.e0 = zeros(T,1);
 for t=1:T
-  ee.e0(t) = sqrt(mean(mean((vsd(:,:,t)-vsd(:,:,T0)).^2, 1), 2));
+  out = vsd(2:end-1, 2:end-1, t);
+  ee.e0(t) = sqrt(mean((out(:)-ref1(:)).^2));
 end
 
 dd.t0 = T0;
