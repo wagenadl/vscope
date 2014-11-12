@@ -2,10 +2,8 @@
 % MICROPERSPECTIVE - Microperspectived image
 %    img = MICROPERSPECTIVE(img, dx, dy) perspectivises the image IMG by
 %    DX pixels in x and DY pixels in y. That's at the extreme edge of
-%    the figure. If the original image is YxX 
-%    pixels, the output is (Y-2)x(X-2), because edge pixels are trimmed.
-%    Edges are zerod if that if DX or DY is so big that trimming one pixel
-%    is not enough. 
+%    the figure.
+%    Edge pixels may become nan.
 
 [Y X] = size(img);
 
@@ -29,6 +27,4 @@ end
 xx = xx+x0;
 yy = yy+y0;
 img = interp2([1:X], [1:Y], img, xx, yy, 'linear');
-img=img(2:end-1,2:end-1);
-img(isnan(img))=0;
 

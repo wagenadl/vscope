@@ -13,8 +13,8 @@ function [vsd, dd, ee] = microcorrectrois(vsd, rois)
 %       [out, dd, ee] = microcorrectrois(vsd, rois);
 
 [Y X T] = size(vsd);
-SX = 0.5; % * round(X/128);
-SY = 0.5; % * round(Y/128);
+SX = 1; % * round(X/128);
+SY = 0.25; % * round(Y/128);
 T0 = ceil(T/2);
 
 ref = vsd(:,:,T0);
@@ -40,15 +40,10 @@ end
 
 dd.t0 = T0;
 
-rfx1_ = microshift(ref, -SX, 0);
-rfx2_ = microshift(ref, SX, 0);
-rfy1_ = microshift(ref, 0, -SY);
-rfy2_ = microshift(ref, 0, SY);
-
-rfx1 = ref; rfx1(2:end-1,2:end-1) = rfx1_;
-rfx2 = ref; rfx2(2:end-1,2:end-1) = rfx2_;
-rfy1 = ref; rfy1(2:end-1,2:end-1) = rfy1_;
-rfy2 = ref; rfy2(2:end-1,2:end-1) = rfy2_;
+rfx1 = microshift(ref, -SX, 0);
+rfx2 = microshift(ref, SX, 0);
+rfy1 = microshift(ref, 0, -SY);
+rfy2 = microshift(ref, 0, SY);
 
 dd.dx = zeros(T,N);
 dd.dy = zeros(T,N);
@@ -63,17 +58,29 @@ for t=1:T
   er0 = ee.e0(t,:);
   
   dx = bestshiftrois(img, rfx1, rfx2, rois)*SX/0.5;
-  dy = bestshiftrois(img, rfy1, rfy2, rois)*SY/0.5;
-  
-  out = microshiftrois(img, dx, dy, rois);
+  out = microshiftrois(img, dx, 0, rois);
   err = zeros(N,1);
   for n=1:N
     if ~isempty(idx{n})
       err(n) = sqrt(mean((out(idx{n})-ref(idx{n})).^2));
-      ee.dshift(t,n) = err(n);
+      ee.dx(t,n) = err(n);
       if err(n)<er0(n)
 	img(idx{n}) = out(idx{n});
 	dd.dx(t,n) = dx(n);
+	er0(n) = err(n);
+      end
+    end
+  end
+
+  dy = bestshiftrois(img, rfy1, rfy2, rois)*SY/0.5;
+  out = microshiftrois(img, 0, dy, rois);
+  err = zeros(N,1);
+  for n=1:N
+    if ~isempty(idx{n})
+      err(n) = sqrt(mean((out(idx{n})-ref(idx{n})).^2));
+      ee.dy(t,n) = err(n);
+      if err(n)<er0(n)
+	img(idx{n}) = out(idx{n});
 	dd.dy(t,n) = dy(n);
 	er0(n) = err(n);
       end
