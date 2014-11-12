@@ -14,9 +14,9 @@ function [vsd, dd, ee, ff] = microcorrect(vsd, msk)
 
 [Y X T] = size(vsd);
 T0 = ceil(T/2);
-SX = 0.5; % * max(1, round(X/128));
-SY = 0.125; % * max(1, round(Y/128));
-SS = 0.1;
+SX = 1; % * max(1, round(X/128));
+SY = 0.25; % * max(1, round(Y/128));
+SS = 0.25;
 
 ref = vsd(:,:,T0);
 if nargin>=2
