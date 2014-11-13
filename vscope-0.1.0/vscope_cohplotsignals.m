@@ -16,9 +16,10 @@ function vscope_cohplotsignals(coh, varargin)
 %               2: phase 0 on top, phase 180 on bottom
 %               3: phase 90 on top, phase 270 on bottom
 %               4: phase 0 on top, phase 359 on bottom
+%       nmax - maximum number of signals to plot (default: all)
 
 kv = getopt([ 'qpt=''/tmp/vscope_coh_signals'' width=5 height=5 ' ...
-      'threshold=[] color=0 uniform=0 order=0' ], ...
+      'threshold=[] color=0 uniform=0 order=0 nmax=[]' ], ...
     varargin);
 
 if isempty(kv.threshold)
@@ -50,9 +51,18 @@ else
   error('Invalid value for plotting order');
 end
 
+if isempty(kv.nmax)
+  kv.nmax = inf;
+end
+
 [dd, ord] = sort(sortkey(idx));
 idx = idx(ord);
 N = length(idx);
+
+if N > kv.nmax
+  idx = idx(N-kv.nmax+1:N);
+  N = length(idx);
+end
 
 sig = bsxfun(@rdivide, coh.extra.sig0(2:end,:), mean(coh.extra.sig0)) - 1;
 

@@ -24,10 +24,17 @@ if nargin>=2
 else
   bri0 = 0;
 end
+ 
+margx = 4*max(1, round(X/128));
+margy = 4*max(1, round(Y/128));
+refbri = mean(mean(ref(margy+1:end-margy, margx+1:end-margx), 1), 2);
 
 ee.e0 = zeros(T,1);
 for t=1:T
-  ee.e0(t) = marginlessdiff(vsd(:,:,t), ref);
+  img = vsd(:,:,t);
+  imbri = mean(mean(img(margy+1:end-margy, margx+1:end-margx), 1), 2);
+  fac(t) = refbri / imbri;
+  ee.e0(t) = marginlessdiff(fac(t)*img, ref);
 end
 
 dd.t0 = T0;
@@ -48,7 +55,7 @@ for t=1:T
   if t==T0
     continue;
   end
-  img = vsd(:,:,t);
+  img = fac(t) * vsd(:,:,t);
   er0 = ee.e0(t);
   
   dx = bestshift(img, rfx1, rfx2)*SX/0.5;
@@ -78,7 +85,7 @@ for t=1:T
   end
 
   if bri0>0
-    bri = mean(img(msk));
+    bri = mean(img(msk))/fac(t);
     img = img .* bri0/bri;
     dd.dbri(t) = 100*(bri0/bri-1);
   end
@@ -124,7 +131,7 @@ for t=1:T
 
   % Rotate?
 
-  vsd(:,:,t) = img;
+  vsd(:,:,t) = img / fac(t);
 end
 fprintf(2,'\n');
 
