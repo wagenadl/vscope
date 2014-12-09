@@ -59,9 +59,9 @@ void CohMaps::setShowMode(SHOWROIS m) {
     c->setShowMode(m);
 }
 
-void CohMaps::setRefTrace(QString s) {
+void CohMaps::setRefTrace(QString s, bool train) {
   foreach (Coherence *c, images())
-    c->setRefTrace(s);
+    c->setRefTrace(s, train);
 }
 
 void CohMaps::setRefDigi(QString s) {

@@ -490,6 +490,8 @@
       <immune id="refType" label="Ref. Type" x="3.1" y="3" bg="#44ffee"/>
       <immune id="refTrace" label="Ref. Trace" x="3.1" y="4" bg="#55ccdd"
 	      hidewhendisabled="yes"/>
+      <immune id="refTrain" label="Ref. Trace" x="3.1" y="4" bg="#55ccdd"
+	      hidewhendisabled="yes"/>
       <immune id="refDigi" label="Digi. Ref." x="3.1" y="4" bg="#55ccdd"
 	      hidewhendisabled="yes"/>
       <immune id="refFreq" label="Ref. Freq." x="3.1" y="4" bg="#55ccdd"
@@ -537,6 +539,10 @@
       <auto enum="AICHAN"/>
     </menu>
 
+    <menu id="refTrain" rows="4" cols="4">
+      <auto enum="AICHAN"/>
+    </menu>
+    
     <menu id="showROIs"  cols="1">
       <auto enum="SHOWROIS"/>
     </menu>

@@ -230,6 +230,7 @@ void CohData::recalcReference() const {
     case RT_Analog: ok = adata!=0; break;
     case RT_Digital: ok = ddata!=0; break;
     case RT_Frequency: ok = ref_hz>0; break;
+    case RT_Train: ok = adata!=0; break;
     }
     if (!ok) {
       for (int k=0; k<N; k++)
@@ -242,24 +243,25 @@ void CohData::recalcReference() const {
       ? ddata->allData() : 0;
     DigitalData::DataType dmask = refType==RT_Digital
       ? ddata->maskForLine(ref_chn) : 0;
-    double const *asrc = refType==RT_Analog
+    double const *asrc = (refType==RT_Analog || refType==RT_Train)
       ? adata->channelData(ref_chn) : 0;
     int astep = asrc
       ? adata->getNumChannels() : 0;
     int ephyslen =
       refType==RT_Digital ? ddata->getNumScans()
-      : refType==RT_Analog ? adata->getNumScans()
+      : (refType==RT_Analog || refType==RT_Train) ? adata->getNumScans()
       : refType==RT_Frequency ? 1000000000
       : 0;
     double fs_hz =
       refType==RT_Digital ? ddata->getSamplingFrequency()
-      : refType==RT_Analog ? adata->getSamplingFrequency()
+      : (refType==RT_Analog || refType==RT_Train)
+      ? adata->getSamplingFrequency()
       : refType==RT_Frequency ? 1e6
       : 0;
     
     if (refType==RT_Digital)
       ok = dsrc!=0;
-    else if (refType==RT_Analog)
+    else if (refType==RT_Analog || refType==RT_Train)
       ok = asrc!=0;
     
     if (!ok) {
@@ -288,7 +290,7 @@ void CohData::recalcReference() const {
 	    v += (dsrc[t]&dmask)>0;
 	  ref[k] = v/(iend-istart);
 	  break;
-	case RT_Analog:
+	case RT_Analog: case RT_Train:
 	  for (int t=istart; t<iend; t++)
 	    v += asrc[t*astep];
 	  ref[k] = v/(iend-istart);
@@ -302,36 +304,14 @@ void CohData::recalcReference() const {
       }
     }
 
-    /* Linear detrend of the reference channel.
-       Fit y(t) = a t + b.
-         dChi^2/da = 0 <=> sum(t*(at + b - x)) = 0.
-         dChi^2/db = 0 <=> sum(at + b - x) = 0.
-       i.e.
-         a sum t^2 + b sum t - sum tx = 0
-         a sum t   + b sum 1 - sum x = 0
-       i.e.
-         (a sum t^2 sum 1 - sum tx sum 1) - (a sum t sum t - sum x sum t) = 0
-         (b sum t sum t - sum tx sum t) - (b sum 1 sum t^2 - sum x sum t^2) = 0
-       i.e.
-         b = (sum tx sum t - sum x sum t^2) / (sum t sum t - sum 1 sum t^2)
-         a = (sum tx sum 1 - sum x sum t) / (sum t^2 sum 1 - sum t sum t) = 0
-       If I shift s.t. sum t = 0, things are easier:
-         b = sum x / sum 1
-         a = sum tx / sum t^2
-     */
-    double t0 = (N-1.)/2.;
-    double sumx=0, sumtx=0, sumtt=0;
-    for (int k=0; k<N; k++) {
-      double t = k-t0;
-      sumx += ref[k];
-      sumtx += t*ref[k];
-      sumtt += t*t;
-    }
-    double b = sumx/t.nframes();
-    double a = sumtx / sumtt;
-    for (int k=0; k<N; k++) {
-      double t = k-t0;
-      ref[k] -= a*t+b;
+    detrend(ref);
+    if (refType==RT_Train) {
+      filterForTrain(ref, 1e6/t.dt_us());
+      QFile f("/tmp/train.txt");
+      f.open(QFile::WriteOnly);
+      QTextStream ts(&f);
+      foreach (double v, ref)
+	ts << v << "\n";
     }
     
     // run a psdest to find spectral peak
@@ -342,27 +322,37 @@ void CohData::recalcReference() const {
     if (Taperbank::bank().canProvide(tid, true)) {
       Tapers const &tapers = Taperbank::bank().find(tid);
       psdest->compute(ref, dt_s, df_hz, tapers);
+      if (refType!=RT_Frequency)
+	crazyFilter(psdest->psd, psdest->freqbase[1]-psdest->freqbase[0]);
       double max=0;
       double df2_best = numbers.inf;
       int N = psdest->psd.size();
-      for (int n=0; n<N; n++) { // skip DC
+      QFile f("/tmp/psd.txt");
+      f.open(QFile::WriteOnly);
+      QTextStream ts(&f);
+      int nbest = 0;
+      for (int n=1; n<N; n++) { // skip DC
 	bool best;
 	if (refType==RT_Frequency) {
 	  double f = psdest->freqbase[n];
 	  double df = f-ref_hz;
 	  double df2 = df*df;
 	  best = df2<df2_best;
-	  if (best)
+	  if (best) {
 	    df2_best = df2;
+	    nbest = n;
+	  }
 	} else {
 	  double y = psdest->psd[n];
+	  ts << n << " " << psdest->freqbase[n] << " " << y << "\n";
 	  best = n>0 && y>max;
-	  if (best)
+	  if (best) {
 	    max = y;
+	    nbest = n;
+	  }
 	}
-	if (best)
-	  data.fstar_hz[cp] = psdest->freqbase[n];
       }
+      data.fstar_hz[cp] = psdest->freqbase[nbest];
     } else {
       data.fstar_hz[cp] = 1;
       if (Taperbank::bank().couldExist(tid) &&
@@ -384,8 +374,8 @@ void CohData::setRefDigi(QString digiline) {
   invalidate();
 }
 
-void CohData::setRefTrace(QString ach) {
-  refType = RT_Analog;
+void CohData::setRefTrace(QString ach, bool train) {
+  refType = train ? RT_Train : RT_Analog;
   ref_chn = ach;
   invalidate();
 }
@@ -419,3 +409,149 @@ double CohData::getTypicalFStarHz() const {
     return 1;
 }
 
+void CohData::detrend(rvec &ref) {
+  int N = ref.size();
+  /* Linear detrend of the reference channel.
+     Fit y(t) = a t + b.
+     dChi^2/da = 0 <=> sum(t*(at + b - x)) = 0.
+     dChi^2/db = 0 <=> sum(at + b - x) = 0.
+     i.e.
+     a sum t^2 + b sum t - sum tx = 0
+     a sum t   + b sum 1 - sum x = 0
+     i.e.
+     (a sum t^2 sum 1 - sum tx sum 1) - (a sum t sum t - sum x sum t) = 0
+     (b sum t sum t - sum tx sum t) - (b sum 1 sum t^2 - sum x sum t^2) = 0
+     i.e.
+     b = (sum tx sum t - sum x sum t^2) / (sum t sum t - sum 1 sum t^2)
+     a = (sum tx sum 1 - sum x sum t) / (sum t^2 sum 1 - sum t sum t) = 0
+     If I shift s.t. sum t = 0, things are easier:
+     b = sum x / sum 1
+     a = sum tx / sum t^2
+  */
+  double t0 = (N-1.)/2.;
+  double sumx=0, sumtx=0, sumtt=0;
+  for (int k=0; k<N; k++) {
+    double t = k-t0;
+    sumx += ref[k];
+    sumtx += t*ref[k];
+    sumtt += t*t;
+  }
+  double b = sumx/N;
+  double a = sumtx / sumtt;
+  for (int k=0; k<N; k++) {
+    double t = k-t0;
+    ref[k] -= a*t+b;
+  }
+}
+
+void CohData::filterForTrain(rvec &ref, double fs_hz) {
+  //== First, we construct a Butterworth low pass filter at 4 Hz.
+  double f0_hz = 4;
+
+  // This comes straight from my BUTTERLOW1 Octave code:
+  double c = 1/tan((f0_hz/fs_hz)*M_PI);
+  double n0 = 1;
+  double n1 = 1;
+  double d0 = c + 1;
+  double d1 = -c + 1;
+
+  // double a1 = 1;
+  double a2 = d1/d0;
+  double b1 = n0/d0;
+  double b2 = n1/d0;
+  
+  //== Then we filter once in forward direction
+  /* Using Octave's filter eqn:
+       y(n) = -sum_(k=1..N) c(k+1) y(n-k) + sum_(k=0..N) d(k+1) x(n-k)
+     where
+       c_k := a_k / a_1   and   d_k = b_k / a_1.
+     For us that means:
+        y(n) = -a2 y(n-1) + b1 x(n) + b2 x(n-1).
+  */
+  int N = ref.size();
+  if (N<2)
+    return;
+  
+  double xn1 = ref[0];
+  double yn1 = ref[0];
+  for (int n=1; n<N; n++) {
+    double xn = ref[n];
+    double yn = -a2*yn1 + b1*xn + b2*xn1;
+    ref[n] = yn;
+    xn1 = xn;
+    yn1 = yn;
+  }
+
+  //== And again, backwards
+  xn1 = ref[N-1];
+  yn1 = ref[N-1];
+  for (int n=N-2; n>=0; n--) {
+    double xn = ref[n];
+    double yn = -a2*yn1 + b1*xn + b2*xn1;
+    ref[n] = yn;
+    xn1 = xn;
+    yn1 = yn;
+  }
+
+  //== Now, we calculate the average, min, max
+  /* This method is numerically not very stable, but we don't have
+     that many data points, so we'll be OK.
+  */
+  double avg = 0;
+  double minr = 1e99;
+  double maxr = -1e99;
+  for (int n=0; n<N; n++) {
+    double y = ref[n];
+    avg += y;
+    if (y>maxr)
+      maxr = y;
+    if (y<minr)
+      minr = y;
+  }      
+  avg /= N;
+
+  //== Then, schmitt trigger at the average with a little margin
+  bool up=false;
+  double marg = (maxr-minr)/100;
+  for (int n=0; n<N; n++) {
+    if (up) {
+      if (ref[n] < avg - marg)
+	up = false;
+    } else {
+      if (ref[n] > avg + marg)
+	up = true;
+    }
+    ref[n] = up ? 1 : -1;
+  }
+
+  //== Lastly, subtract average
+  avg = 0;
+  for (int n=0; n<N; n++) {
+    double y = ref[n];
+    avg += y;
+  }
+  avg /= N;
+  for (int n=0; n<N; n++)
+    ref[n] -= avg;  
+
+}    
+  
+void CohData::crazyFilter(rvec &psd, double df_hz) {
+  // filter each point in the psd to resolution f.
+  rvec psd0 = psd;
+  int N = psd.size();
+  for (int n=1; n<N; n++) {
+    double f = n*df_hz;
+    double df02 = .25*f + .5;
+    double y = 0;
+    double x = 0;
+    for (int k=-N; k<2*N; k++) {
+      double df = (k-n)*df_hz;
+      double g = exp(-.5*df*df/df02);
+      x += g;
+      if (k>=0 && k<N)
+	y += psd0[k]*g;
+    }
+    psd[n] = y/x;
+  }
+}

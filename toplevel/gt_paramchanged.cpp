@@ -64,6 +64,11 @@ void gt_slots::setRefTrace() {
     Globals::vsdtraces->setRefFreq(frqhz);
     Globals::cohmaps->setRefFreq(frqhz);
     Globals::cohgraph->setRefFreq(frqhz);
+  } else if (typ==e->lookup("Train")) {
+    QString chn = ptree()->find("analysis/refTrain").toString();
+    Globals::vsdtraces->setRefTrace(chn);
+    Globals::cohmaps->setRefTrace(chn, true);
+    Globals::cohgraph->setRefTrace(chn, true);
   } else {
     dbg("gt_paramchanged: Unknown reference type");
   }
@@ -112,8 +117,9 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::mgstim->rebuild();
       Globals::mgintra->rebuild();
       Globals::mgextra->rebuild();
-    } else if (p=="analysis/refType" || p=="analysis/refTrace" ||
-	       p=="analysis/refDigi" || p=="analysis/refFreq") {
+    } else if (p=="analysis/refType" || p=="analysis/refTrace"
+	       || p=="analysis/refDigi" || p=="analysis/refFreq"
+	       || p=="analysis/refTrain") {
       setRefTrace();
     } else if (p=="analysis/showROIs") {
       SHOWROIS sm = (SHOWROIS)ptree()->find(p).toInt();

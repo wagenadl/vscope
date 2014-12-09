@@ -33,7 +33,7 @@ public:
   class CohData /*const*/ *getData() const { return data; }
   void setCamPair(class CamPair const &);
 public slots:
-  void setRefTrace(QString achn);
+  void setRefTrace(QString achn, bool train=false);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void setShowMode(SHOWROIS sm);

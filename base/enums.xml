@@ -21,6 +21,7 @@
       <item tag="Analog"/>
       <item tag="Digital"/>
       <item tag="Frequency"/>
+      <item tag="Train"/>
     </enum>
       
     <enum id="DEBLEACH" prefix="DB">
