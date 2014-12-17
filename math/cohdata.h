@@ -14,6 +14,7 @@
 #include <math/taperid.h>
 #include <base/keyaccess.h>
 #include <base/enums.h>
+#include <base/stimulusdef.h>
 
 class CohData: public KeyAccess {
   Q_OBJECT;
@@ -26,6 +27,7 @@ public slots:
 		class DigitalData const *dd);
   void setCCDData(class ROIData3Set *rs3d);
   void setRefTrace(QString achn, bool train=false);
+  void setRefTrain(StimulusDef const &s);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void invalidate();
@@ -56,8 +58,11 @@ private:
   class DigitalData const *ddata; // we do not own this
 private:
   REFTYPE refType;
-  QString ref_chn; // for RT_Analog and RT_Digital mode
-  double ref_hz; // for RT_Frequency mode
+  struct { // I'd like to say union, but that's not OK in C++.
+    QString chn; // for RT_Analog, and RT_Digital mode
+    double freq_Hz; // for RT_Frequency mode
+    StimulusDef stim; // for RT_Train
+  } refID;
   struct Data {
     QMap<int, double> coh_mag;
     QMap<int, double> coh_pha;

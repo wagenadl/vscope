@@ -229,8 +229,8 @@ void CohData::recalcReference() const {
     switch (refType) {
     case RT_Analog: ok = adata!=0; break;
     case RT_Digital: ok = ddata!=0; break;
-    case RT_Frequency: ok = ref_hz>0; break;
-    case RT_Train: ok = adata!=0; break;
+    case RT_Frequency: ok = refID.freq_Hz>0; break;
+    case RT_Train: ok = true; break;
     }
     if (!ok) {
       for (int k=0; k<N; k++)
@@ -242,11 +242,9 @@ void CohData::recalcReference() const {
     DigitalData::DataType const *dsrc = refType==RT_Digital
       ? ddata->allData() : 0;
     DigitalData::DataType dmask = refType==RT_Digital
-      ? ddata->maskForLine(ref_chn) : 0;
-    double const *asrc = (refType==RT_Analog || refType==RT_Train)
-      ? adata->channelData(ref_chn) : 0;
-    int astep = asrc
-      ? adata->getNumChannels() : 0;
+      ? ddata->maskForLine(refID.chn) : 0;
+    double const *asrc = refType==RT_Analog ? adata->channelData(refID.chn) : 0;
+    int astep = asrc ? adata->getNumChannels() : 0;
     int ephyslen =
       refType==RT_Digital ? ddata->getNumScans()
       : (refType==RT_Analog || refType==RT_Train) ? adata->getNumScans()
@@ -261,7 +259,7 @@ void CohData::recalcReference() const {
     
     if (refType==RT_Digital)
       ok = dsrc!=0;
-    else if (refType==RT_Analog || refType==RT_Train)
+    else if (refType==RT_Analog)
       ok = asrc!=0;
     
     if (!ok) {
@@ -290,13 +288,17 @@ void CohData::recalcReference() const {
 	    v += (dsrc[t]&dmask)>0;
 	  ref[k] = v/(iend-istart);
 	  break;
-	case RT_Analog: case RT_Train:
+	case RT_Analog: 
 	  for (int t=istart; t<iend; t++)
 	    v += asrc[t*astep];
 	  ref[k] = v/(iend-istart);
 	  break;
 	case RT_Frequency:
-	  ref[k] = -1. + 2.*(fmod((tstart+tend)/2/1000 * ref_hz, 1) < 0.5);
+	  ref[k] = -1.
+	    + 2.*(fmod((tstart+tend)/2/1000 * refID.freq_Hz, 1) < 0.5);
+	  break;
+	case RT_Train:
+	  ref[k] = 0; // yeah, right
 	  break;
 	}
       } else {
@@ -335,7 +337,7 @@ void CohData::recalcReference() const {
 	bool best;
 	if (refType==RT_Frequency) {
 	  double f = psdest->freqbase[n];
-	  double df = f-ref_hz;
+	  double df = f - refID.freq_Hz;
 	  double df2 = df*df;
 	  best = df2<df2_best;
 	  if (best) {
@@ -370,20 +372,26 @@ void CohData::recalcReference() const {
 
 void CohData::setRefDigi(QString digiline) {
   refType = RT_Digital;
-  ref_chn = digiline;
+  refID.chn = digiline;
   invalidate();
 }
 
-void CohData::setRefTrace(QString ach, bool train) {
-  refType = train ? RT_Train : RT_Analog;
-  ref_chn = ach;
+void CohData::setRefTrace(QString ach, bool) {
+  refType = RT_Analog;
+  refID.chn = ach;
+  invalidate();
+}
+
+void CohData::setRefTrain(StimulusDef const &s) {
+  refType = RT_Train;
+  refID.stim = s;
   invalidate();
 }
 
 void CohData::setRefFreq(double fref_hz) {
   dbg("coherence setRefFreq: %g",fref_hz);
   refType = RT_Frequency;
-  ref_hz = fref_hz;
+  refID.freq_Hz = fref_hz;
   invalidate();
 }
 
