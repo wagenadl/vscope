@@ -20,7 +20,7 @@ HEADERS += base26.h \
 	roiset.h roidata3set.h \
 	analogdata.h digitaldata.h \
 	xml.h unitqty.h xyabc.h \
-        ccdtiming.h \
+        ccdtiming.h stimulusdef.h \
         roicoords.h transform.h campair.h \
         keyaccess.h idkeyaccess.h object.h cache.h keyagg.h \
         tests.h \
@@ -39,7 +39,7 @@ SOURCES += base26.cpp \
 	roiset.cpp roidata3set.cpp \
 	analogdata.cpp digitaldata.cpp \
 	xml.cpp unitqty.cpp xyabc.cpp \
-        ccdtiming.cpp \
+        ccdtiming.cpp stimulusdef.cpp \
         roicoords.cpp transform.cpp \
         keyaccess.cpp idkeyaccess.cpp object.cpp cache.cpp keyagg.cpp \
         tests.cpp

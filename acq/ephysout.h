@@ -36,7 +36,7 @@ private:
   void setupAData_stim(class ParamTree const *ptree);
   void setupAData_dummy();
   bool createDAQ(class ParamTree const *ptree); // true iff hardware present
-  void setupAData_mkStim(ParamTree const *ptree, QString ch, QString path);
+  void setupAData_mkStim(ParamTree const *ptree, QString ch);
 private:
   bool active;
   bool prep;

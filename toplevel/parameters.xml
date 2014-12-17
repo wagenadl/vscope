@@ -136,7 +136,7 @@
 	     immune="1" save="false"/>
       <param id="refTrace" type="enum" enum="AICHAN" cond="refType"
 	     immune="1" save="false" enable_if="Analog"/>
-      <param id="refTrain" type="enum" enum="AICHAN" cond="refType"
+      <param id="refTrain" type="enum" enum="STIMCHS" cond="refType"
 	     immune="1" save="false" enable_if="Train"/>
       <param id="refDigi" type="enum" enum="DIGILINES" cond="refType"
 	     immune="1" save="false" enable_if="Digital"/>

@@ -20,6 +20,7 @@
 #include <QSet>
 #include <acq/epho_ccd.h>
 #include <xml/outrate.h>
+#include <xml/definestimulus.h>
 
 EPhysOut::EPhysOut() {
   timer = 0;
@@ -150,45 +151,13 @@ void EPhysOut::setupDData_addStim(ParamTree const *ptree) {
   }
   int nscans = ddata->getNumScans();
   double freqhz = ptree->find(PAR_OUTRATE).toDouble();
-  uint32_t one = 1;
   uint32_t *dat = ddata->allData(guard.key());
 
   foreach (QString id, useStimLines) {
     uint32_t line = Connections::findDig(id).line;
-    uint32_t cmask = one<<line;
-    double delayms =
-      ptree->find(QString("stimEphys/channel:%1/delay")
-		  .arg(id)).toDouble();
-    int ntrains =
-      ptree->find(QString("stimEphys/channel:%1/nTrains")
-		  .arg(id)).toInt();
-    double trainperiodms =
-      ptree->find(QString("stimEphys/channel:%1/trainPeriod")
-		  .arg(id)).toDouble();
-    int npulses =
-      ptree->find(QString("stimEphys/channel:%1/nPulses")
-		  .arg(id)).toInt();
-    double pulseperiodms =
-      ptree->find(QString("stimEphys/channel:%1/pulsePeriod")
-		  .arg(id)).toDouble();
-    double pulsedurms =
-      ptree->find(QString("stimEphys/channel:%1/pulseDur")
-		  .arg(id)).toDouble();
-
-    int pulseperiodscans = roundi(pulseperiodms*freqhz/1000);
-    int pulsedur1scans = roundi(pulsedurms*freqhz/1000);
-    for (int itr=0; itr<ntrains; itr++) {
-      int s00 = roundi((delayms+itr*trainperiodms)*freqhz/1000);
-      for (int ipu=0; ipu<npulses; ipu++) {
-	int s0 = s00 + ipu*pulseperiodscans;
-	/* This way of rounding ensures that the pulseperiod is the same
-	   for each pulse in the train, even if that makes the entire
-	   train duration imperfectly rounded. */
-	int s1=mini(s0+pulsedur1scans,nscans);
-	for (int s=s0; s<s1; s++)
-	  dat[s] |= cmask;
-      }
-    }
+    StimulusDef s = defineStimulus(ptree,
+				   QString("stimEphys/channel:%1").arg(id));
+    s.instantiateDigital(dat, nscans, line, freqhz);
   }
 }
 
@@ -241,69 +210,21 @@ void EPhysOut::setupAData_stim(ParamTree const *ptree) {
     adata->defineChannel(idx++, name, aoc.scale, aoc.unit);
 
     if (stimChannels.contains(name))
-      setupAData_mkStim(ptree, name,
-			QString("stimEphys/channel:%1/").arg(name));
+      setupAData_mkStim(ptree, name);
   }
 }
 
 void EPhysOut::setupAData_mkStim(ParamTree const *ptree,
-				 QString channel, QString path) {
+				 QString channel) {
   KeyGuard guard(*adata);
+  QString path = QString("stimEphys/channel:%1/").arg(channel);
+  
   double *dat = adata->channelData(guard.key(), channel);
   double freqhz = ptree->find(PAR_OUTRATE).toDouble();
   int nscans = adata->getNumScans();
   int nchans = adata->getNumChannels();
-  double delayms = ptree->find(path+"delay").toDouble();
-  int ntrains = ptree->find(path+"nTrains").toInt();
-  double trainperiodms = ptree->find(path+"trainPeriod").toDouble();
-  int npulses = ptree->find(path+"nPulses").toInt();
-  double pulseperiodms = ptree->find(path+"pulsePeriod").toDouble();
-  double pulsedurms = ptree->find(path+"pulseDur").toDouble();
-  double pulsedur2ms = ptree->find(path+"pulseDur2").toDouble();
-  double pulseampmV = ptree->find(path+"pulseAmp").toDouble();
-  double pulseamp2mV = ptree->find(path+"pulseAmp2").toDouble();
-  PULSETYPE pulseType = (PULSETYPE)ptree->find(path+"pulseType").toInt();
-  
-  for (int s=0; s<nscans; s++)
-    dat[s*nchans] = 0;
-  
-  int pulseperiodscans = roundi(pulseperiodms*freqhz/1000);
-  int pulsedur1scans = roundi(pulsedurms*freqhz/1000);
-  int pulsedur2scans = roundi(pulsedur2ms*freqhz/1000);
-  for (int itr=0; itr<ntrains; itr++) {
-    int s00 = roundi((delayms+itr*trainperiodms)*freqhz/1000);
-    for (int ipu=0; ipu<npulses; ipu++) {
-      int s0 = s00 + ipu*pulseperiodscans;
-      /* This way of rounding ensures that the pulseperiod is the same
-	 for each pulse in the train, even if that makes the entire
-	 train duration imperfectly rounded. */
-      if (pulseType==PT_TTL) {
-	pulseampmV=5000;
-	pulseType=PT_Square;
-      }
-      if (pulseType==PT_Square || pulseType==PT_Biphasic) {
-	int s1=mini(s0+pulsedur1scans,nscans);
-	for (int s=s0; s<s1; s++)
-	  dat[s*nchans] = pulseampmV/1000;
-	if (pulseType==PT_Biphasic) {
-	  int s2=mini(s1+pulsedur2scans,nscans);
-	  for (int s=s1; s<s2; s++)
-	    dat[s*nchans] = pulseamp2mV/1000;
-	}
-      } else if (pulseType==PT_Ramp) {	  
-	int s1=mini(s0+pulsedur1scans,nscans);
-	int ds = s1-s0-1;
-	if (ds<1)
-	  ds=1;
-	double dV = (pulseamp2mV-pulseampmV)/1000/ds;
-	for (int s=s0; s<s1; s++) 
-	  dat[s*nchans] = pulseampmV/1000 + dV*(s-s0);
-      } else
-	throw Exception("EPhysOut","Unknown pulse type: '"
-			+ ptree->find(path+"pulseType").toString() + "'",
-			"setupAData_mkStim");
-    }
-  }
+  StimulusDef s = defineStimulus(ptree, path);
+  s.instantiateAnalog(dat, nscans, nchans, freqhz);
 }
 
 void EPhysOut::setupAData_dummy() {
