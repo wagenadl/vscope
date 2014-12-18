@@ -2,6 +2,7 @@
 
 #include "stimulusdef.h"
 #include <base/minmax.h>
+#include <base/dbg.h>
 
 StimulusDef::StimulusDef() {
   delay_ms = 0;
@@ -89,6 +90,8 @@ void StimulusDef::instantiateTrainReference(double *data,
   if (pulseType==PT_Biphasic)
     trainDur_ms += pulseDur2_ms;
   int trainDur_scans = roundi(trainDur_ms/dt_ms);
+  Dbg() << "StimulusDef" << t0_ms << "+" << dt_ms;
+  Dbg() << "  td = " << trainDur_ms << ":" << trainDur_scans;
   
   for (int itr=0; itr<nTrains; itr++) {
     int s0 = roundi((delay_ms + itr*trainPeriod_ms - t0_ms)/dt_ms);

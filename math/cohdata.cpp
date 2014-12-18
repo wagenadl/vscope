@@ -330,7 +330,7 @@ void CohData::recalcReference() const {
       int nbest = 0;
       if (refType==RT_Frequency || refType==RT_Train) {
         double f0 = refType==RT_Frequency ? refID.freq_Hz
-          : (1e3/refID.stim.pulsePeriod_ms);
+          : (1e3/refID.stim.trainPeriod_ms);
         double df2_best = numbers.inf;
         for (int n=1; n<N; n++) { // skip DC
 	  double f = psdest->freqbase[n];

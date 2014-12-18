@@ -70,6 +70,8 @@ void CohGraph::paintEvent(QPaintEvent *e) {
       continue;
     double pha = data->phase(id);
     double mag = data->magnitude(id);
+    if (isnan(mag)) 
+      mag = pha = 0;
     int hue = int(pha*180/3.141592);
     if (hue<0)
       hue+=360;

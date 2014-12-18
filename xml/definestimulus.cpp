@@ -1,10 +1,15 @@
 // definestimulus.cpp
 
 #include "definestimulus.h"
+#include <base/dbg.h>
 
 StimulusDef defineStimulus(ParamTree const *ptree, QString chnid) {
-  QString path = QString("stimEphys/channel:%1").arg(chnid);
+  QString path = QString("stimEphys/channel:%1/").arg(chnid);
   StimulusDef s;
+  if (!ptree->findp(path+"delay")) {
+    Dbg() << "defineStimulus: Stimulus channel " << chnid << " not found";
+    return s; // stimulus not found
+  }
   s.delay_ms = ptree->find(path+"delay").toDouble();
   s.nTrains = ptree->find(path+"nTrains").toInt();
   s.trainPeriod_ms = ptree->find(path+"trainPeriod").toDouble();

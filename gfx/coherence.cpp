@@ -55,11 +55,14 @@ void Coherence::paintEvent(QPaintEvent *e) {
     QPointF xy = canvasToScreen()(roi.center());
     double pha = data->phase(id);
     double mag = data->magnitude(id);
+    if (isnan(mag)) 
+      mag = pha = 0;
     int hue = int(pha*180/3.141592);
     if (hue<0)
       hue+=360;
     int val = int(mag*255);
     int sat = int(mag*255);
+    Dbg() << "hsv = " << hue <<", " << sat << ", " << val;
     QColor c; c.setHsv(hue,sat,val);
     p.setBrush(c);
     p.setPen(QPen(Qt::NoPen));
