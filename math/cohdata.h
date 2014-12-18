@@ -27,7 +27,7 @@ public slots:
 		class DigitalData const *dd);
   void setCCDData(class ROIData3Set *rs3d);
   void setRefTrace(QString achn);
-  void setRefTrain(StimulusDef const &s);
+  void setRefStim(StimulusDef const &s, bool pulse_not_train=false);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void invalidate();

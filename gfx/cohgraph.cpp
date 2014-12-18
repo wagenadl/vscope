@@ -128,9 +128,9 @@ void CohGraph::setRefTrace(QString ach) {
   perhapsRefresh();
 }
 
-void CohGraph::setRefTrain(class StimulusDef const &s) {
+void CohGraph::setRefStim(class StimulusDef const &s, bool p) {
   if (data)
-    data->setRefTrain(s);
+    data->setRefStim(s, p);
   perhapsRefresh();
 }
 

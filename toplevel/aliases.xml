@@ -49,6 +49,9 @@
   <alias id="DO2" label="DO_2"/>
   <alias id="DO3" label="DO_3"/>
   <alias id="Lamp:Video" label="Light_vid"/>
+
+  <alias id="Train" label="Stim. Train"/>
+  <alias id="Pulses" label="Stim. Pulses"/>
 </aliases>
 
 <colors>

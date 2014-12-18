@@ -15,6 +15,8 @@ public:
 			  double fs_Hz) const;
   void instantiateTrainReference(double *data, int len,
                                  double t0_ms, double dt_ms) const;
+  void instantiatePulseReference(double *data, int len,
+                                 double t0_ms, double dt_ms) const;
   int neededLength(double fs_Hz) const;
 public:
   double delay_ms;

@@ -246,7 +246,7 @@ void CohData::recalcReference() const {
   case RT_Analog: ok = adata!=0; break;
   case RT_Digital: ok = ddata!=0; break;
   case RT_Frequency: ok = refID.freq_Hz>0; break;
-  case RT_Train: ok = true; break;
+  case RT_Train: case RT_Pulses: ok = true; break;
   }
   
   data.refs.clear();
@@ -314,6 +314,12 @@ void CohData::recalcReference() const {
                              t.dt_us()/1e3);
       detrend0(ref);
     } break;
+    case RT_Pulses: {
+      refID.stim.instantiatePulseReference(ref.data(), ref.size(),
+                             t.t0_us()/1e3+COH_STRIP_START*t.dt_us()/1e3,
+                             t.dt_us()/1e3);
+      detrend0(ref);
+    } break;
     }
 
     // run a psdest to find spectral peak
@@ -328,9 +334,10 @@ void CohData::recalcReference() const {
 	crazyFilter(psdest->psd, psdest->freqbase[1]-psdest->freqbase[0]);
       int N = psdest->psd.size();
       int nbest = 0;
-      if (refType==RT_Frequency || refType==RT_Train) {
+      if (refType==RT_Frequency || refType==RT_Train || refType==RT_Pulses) {
         double f0 = refType==RT_Frequency ? refID.freq_Hz
-          : (1e3/refID.stim.trainPeriod_ms);
+          : refType==RT_Train ? (1e3/refID.stim.trainPeriod_ms)
+	  : (1e3/refID.stim.pulsePeriod_ms);
         double df2_best = numbers.inf;
         for (int n=1; n<N; n++) { // skip DC
 	  double f = psdest->freqbase[n];
@@ -378,8 +385,8 @@ void CohData::setRefTrace(QString ach) {
   invalidate();
 }
 
-void CohData::setRefTrain(StimulusDef const &s) {
-  refType = RT_Train;
+void CohData::setRefStim(StimulusDef const &s, bool pulse_not_train) {
+  refType = pulse_not_train ? RT_Pulses: RT_Train;
   refID.stim = s;
   invalidate();
 }

@@ -62,7 +62,6 @@ void Coherence::paintEvent(QPaintEvent *e) {
       hue+=360;
     int val = int(mag*255);
     int sat = int(mag*255);
-    Dbg() << "hsv = " << hue <<", " << sat << ", " << val;
     QColor c; c.setHsv(hue,sat,val);
     p.setBrush(c);
     p.setPen(QPen(Qt::NoPen));
@@ -130,9 +129,9 @@ void Coherence::setRefTrace(QString ach) {
   perhapsRefresh();
 }
 
-void Coherence::setRefTrain(StimulusDef const &s) {
+void Coherence::setRefStim(StimulusDef const &s, bool p) {
   if (data)
-    data->setRefTrain(s);
+    data->setRefStim(s, p);
   perhapsRefresh();
 }
 

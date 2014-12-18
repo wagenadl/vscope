@@ -490,7 +490,7 @@
       <immune id="refType" label="Ref. Type" x="3.1" y="3" bg="#44ffee"/>
       <immune id="refTrace" label="Ref. Trace" x="3.1" y="4" bg="#55ccdd"
 	      hidewhendisabled="yes"/>
-      <immune id="refTrain" label="Ref. Stim." x="3.1" y="4" bg="#55ccdd"
+      <immune id="refStim" label="Ref. Stim." x="3.1" y="4" bg="#55ccdd"
 	      hidewhendisabled="yes"/>
       <immune id="refDigi" label="Digi. Ref." x="3.1" y="4" bg="#55ccdd"
 	      hidewhendisabled="yes"/>
@@ -539,7 +539,7 @@
       <auto enum="AICHAN"/>
     </menu>
 
-    <menu id="refTrain" rows="4" cols="4">
+    <menu id="refStim" rows="4" cols="4">
       <auto enum="STIMCHS"/>
     </menu>
     

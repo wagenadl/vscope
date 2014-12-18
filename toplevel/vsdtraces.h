@@ -29,7 +29,7 @@ public slots:
   void setRefTrace(QString chn);
   void setRefDigi(QString chn);
   void setRefFreq(double frqhz);
-  void setRefTrain(class StimulusDef const &s);
+  void setRefStim(class StimulusDef const &s, bool pulse_not_train);
 private slots:
   void updateEPhysData();
 private:

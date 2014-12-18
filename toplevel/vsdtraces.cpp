@@ -58,15 +58,15 @@ void VSDTraces::setRefTrace(QString id) {
 }
 
 void VSDTraces::setRefDigi(QString) {
-  dbg("VSDTraces::setRefDigi: not yet implemented");
+  dbg("VSDTraces::setRefDigi: not yet implemented (but don't worry)");
 }
 
 void VSDTraces::setRefFreq(double) {
-  dbg("VSDTraces::setRefFreq: not yet implemented");
+  dbg("VSDTraces::setRefFreq: not yet implemented (but don't worry)");
 }
 
-void VSDTraces::setRefTrain(StimulusDef const &) {
-  dbg("VSDTraces::setRefTrain: not yet implemented");
+void VSDTraces::setRefStim(StimulusDef const &, bool) {
+  dbg("VSDTraces::setRefStim: not yet implemented (but don't worry)");
 }
 
 void VSDTraces::updateEPhysData() {

@@ -47,31 +47,34 @@ void gt_slots::ensureMasterOK(QString p) {
 }
       
 void gt_slots::setRefTrace() {
-  int typ = ptree()->find("analysis/refType").toInt();
-  Dbg() << "setRefTrace refType is " << typ;
-  Enumerator *e = Enumerator::find("REFTYPE");
-  if (typ==e->lookup("Analog")) {
+  REFTYPE typ = REFTYPE(ptree()->find("analysis/refType").toInt());
+  switch (typ) {
+  case RT_Analog: {
     QString chn = ptree()->find("analysis/refTrace").toString();
     Globals::vsdtraces->setRefTrace(chn);
     Globals::cohmaps->setRefTrace(chn);
     Globals::cohgraph->setRefTrace(chn);
-  } else if (typ==e->lookup("Digital")) {
+  } break;
+  case RT_Digital: {
     QString chn = ptree()->find("analysis/refDigi").toString();
     Globals::vsdtraces->setRefDigi(chn);
     Globals::cohmaps->setRefDigi(chn);
     Globals::cohgraph->setRefDigi(chn);
-  } else if (typ==e->lookup("Frequency")) {
+  } break;
+  case RT_Frequency: {
     double frqhz = ptree()->find("analysis/refFreq").toDouble();
     Globals::vsdtraces->setRefFreq(frqhz);
     Globals::cohmaps->setRefFreq(frqhz);
     Globals::cohgraph->setRefFreq(frqhz);
-  } else if (typ==e->lookup("Train")) {
-    QString chn = ptree()->find("analysis/refTrain").toString();
+  } break;
+  case RT_Train: case RT_Pulses: {
+    QString chn = ptree()->find("analysis/refStim").toString();
     StimulusDef s(defineStimulus(ptree(), chn));
-    Globals::vsdtraces->setRefTrain(s);
-    Globals::cohmaps->setRefTrain(s);
-    Globals::cohgraph->setRefTrain(s);
-  } else {
+    Globals::vsdtraces->setRefStim(s, typ==RT_Pulses);
+    Globals::cohmaps->setRefStim(s,typ==RT_Pulses);
+    Globals::cohgraph->setRefStim(s, typ==RT_Pulses);
+  } break;
+  default:
     dbg("gt_paramchanged: Unknown reference type");
   }
 }

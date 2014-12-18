@@ -105,3 +105,31 @@ void StimulusDef::instantiateTrainReference(double *data,
   }
 }
   
+void StimulusDef::instantiatePulseReference(double *data,
+                                            int len,
+                                            double t0_ms, double dt_ms) const {
+  for (int s=0; s<len; s++)
+    data[s] = 0;
+
+  int pulseDur_scans = roundi((pulseDur_ms
+			       + (pulseType==PT_Biphasic?pulseDur2_ms:0))
+			      / dt_ms);
+  if (pulseDur_scans==0)
+    pulseDur_scans = 1;
+  int pulsePeriod_scans = roundi(pulsePeriod_ms/dt_ms);
+
+  for (int itr=0; itr<nTrains; itr++) {
+    int s00 = roundi((delay_ms + itr*trainPeriod_ms - t0_ms)/dt_ms);
+    for (int ipu=0; ipu<nPulses; ipu++) {
+      int s0 = s00 + ipu*pulsePeriod_scans;
+      int s1 = s0 + pulseDur_scans;
+      if (s0<0)
+	s0 = 0;
+      if (s1>len)
+	s1 = len;
+      for (int s=s0; s<s1; s++)
+	data[s] = 1;
+    }
+  }
+}
+  

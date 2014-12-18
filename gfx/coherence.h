@@ -34,7 +34,7 @@ public:
   void setCamPair(class CamPair const &);
 public slots:
   void setRefTrace(QString achn);
-  void setRefTrain(class StimulusDef const &);
+  void setRefStim(class StimulusDef const &, bool pulse_not_train);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void setShowMode(SHOWROIS sm);

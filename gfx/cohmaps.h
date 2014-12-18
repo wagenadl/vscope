@@ -28,7 +28,7 @@ public:
                 Transform const &t);
 public slots:
   void setRefTrace(QString achn);
-  void setRefTrain(class StimulusDef const &s);
+  void setRefStim(class StimulusDef const &s, bool pulse_not_train);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void setShowMode(SHOWROIS sm);

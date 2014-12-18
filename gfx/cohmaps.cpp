@@ -64,9 +64,9 @@ void CohMaps::setRefTrace(QString s) {
     c->setRefTrace(s);
 }
 
-void CohMaps::setRefTrain(StimulusDef const &s) {
+void CohMaps::setRefStim(StimulusDef const &s, bool p) {
   foreach (Coherence *c, images())
-    c->setRefTrain(s);
+    c->setRefStim(s, p);
 }
   
 
