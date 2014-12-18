@@ -19,6 +19,9 @@ StimulusDef::StimulusDef() {
 
 void StimulusDef::instantiateAnalog(double *data, int len, int stride,
 				    double fs_Hz) const {
+  if (len<=0)
+    return;
+
   for (int s=0; s<len; s++)
     data[s*stride] = 0;
 
@@ -56,13 +59,20 @@ void StimulusDef::instantiateAnalog(double *data, int len, int stride,
       }
     }
   }
+  data[(len-1)*stride] = 0;
 }
   
 
 void StimulusDef::instantiateDigital(DigitalData::DataType *data,
 				     int len, int line, double fs_Hz) const {
+  if (len<=0)
+    return;
+
   DigitalData::DataType one = 1;
   DigitalData::DataType cmask = one<<line;
+
+  for (int i=0; i<len; i++)
+    data[i] &= ~cmask;
 
   int pulsePeriod_scans = roundi(pulsePeriod_ms*fs_Hz/1000);
   int pulseDur_scans = roundi(pulseDur_ms*fs_Hz/1000);
@@ -78,6 +88,7 @@ void StimulusDef::instantiateDigital(DigitalData::DataType *data,
 	data[s] |= cmask;
     }
   }
+  data[len-1] &= ~cmask;
 }  
    
 void StimulusDef::instantiateTrainReference(double *data,
