@@ -13,6 +13,8 @@ public:
   void instantiateAnalog(double *data, int len, int stride, double fs_Hz) const;
   void instantiateDigital(DigitalData::DataType *data, int len, int line,
 			  double fs_Hz) const;
+  void instantiateTrainReference(double *data, int len,
+                                 double t0_ms, double dt_ms) const;
   int neededLength(double fs_Hz) const;
 public:
   double delay_ms;

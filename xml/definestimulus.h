@@ -7,6 +7,6 @@
 #include <base/stimulusdef.h>
 #include <xml/paramtree.h>
 
-extern StimulusDef defineStimulus(ParamTree const *tree, QString path);
+extern StimulusDef defineStimulus(ParamTree const *tree, QString chnid);
 
 #endif

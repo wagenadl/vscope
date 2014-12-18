@@ -210,12 +210,45 @@ void CohData::recalcTiming() const {
 	  << data.timing[cp].dt_us() << " / " 
 	  << data.timing[cp].duty_percent();
   }
-}  
+}
+
+static void getTStartAndTEnd(CCDTiming const &t, int k,
+                             double *tStart_out, double *tEnd_out) {
+  double tstart = (t.t0_us()/1e3)+(k+COH_STRIP_START)*(t.dt_us()/1e3);
+  double tend = tstart+t.dt_us()/1e3*t.duty_percent()/100;
+  *tStart_out = tstart;
+  *tEnd_out = tend;
+}
+
+static void getIStartAndIEnd(CCDTiming const &t, int k,
+                             int ephyslen, double fs_hz,
+                             int *iStart_out, int *iEnd_out) {
+  double tstart, tend;
+  getTStartAndTEnd(t, k, &tstart, &tend);
+  int istart = int(tstart/1e3*fs_hz);
+  int iend = int(tend/1e3*fs_hz);
+  if (istart<0)
+    istart=0;
+  if (iend>ephyslen)
+    iend=ephyslen;
+  if (iend<istart)
+    iend=istart;
+  *iStart_out = istart;
+  *iEnd_out = iend;
+}
 
 void CohData::recalcReference() const {
   /* We are going to reinterpolate the reference signal at the times of the
      ccd frames. We will also recalculate fstar_hz. */
 
+  bool ok = false;
+  switch (refType) {
+  case RT_Analog: ok = adata!=0; break;
+  case RT_Digital: ok = ddata!=0; break;
+  case RT_Frequency: ok = refID.freq_Hz>0; break;
+  case RT_Train: ok = true; break;
+  }
+  
   data.refs.clear();
   foreach (CamPair const &cp, data.timing.keys()) {
     CCDTiming const &t(data.timing[cp]);
@@ -224,98 +257,65 @@ void CohData::recalcReference() const {
       continue;
     rvec &ref(data.refs[cp]);
     ref.resize(N);
-    
-    bool ok = false;
-    switch (refType) {
-    case RT_Analog: ok = adata!=0; break;
-    case RT_Digital: ok = ddata!=0; break;
-    case RT_Frequency: ok = refID.freq_Hz>0; break;
-    case RT_Train: ok = true; break;
-    }
-    if (!ok) {
-      for (int k=0; k<N; k++)
-	ref[k]=0;
-      data.fstar_hz[cp] = 1;
+    memset((void*)ref.data(), 0, N*sizeof(double));
+    data.fstar_hz[cp] = 1;
+    if (!ok)
       continue;
-    }
-    
-    DigitalData::DataType const *dsrc = refType==RT_Digital
-      ? ddata->allData() : 0;
-    DigitalData::DataType dmask = refType==RT_Digital
-      ? ddata->maskForLine(refID.chn) : 0;
-    double const *asrc = refType==RT_Analog ? adata->channelData(refID.chn) : 0;
-    int astep = asrc ? adata->getNumChannels() : 0;
-    int ephyslen =
-      refType==RT_Digital ? ddata->getNumScans()
-      : (refType==RT_Analog || refType==RT_Train) ? adata->getNumScans()
-      : refType==RT_Frequency ? 1000000000
-      : 0;
-    double fs_hz =
-      refType==RT_Digital ? ddata->getSamplingFrequency()
-      : (refType==RT_Analog || refType==RT_Train)
-      ? adata->getSamplingFrequency()
-      : refType==RT_Frequency ? 1e6
-      : 0;
-    
-    if (refType==RT_Digital)
-      ok = dsrc!=0;
-    else if (refType==RT_Analog)
-      ok = asrc!=0;
-    
-    if (!ok) {
-      for (int k=0; k<N; k++)
-	ref[k]=0;
-      data.fstar_hz[cp] = 1;
-      continue;
-    }
 
-    for (int k=0; k<N; k++) {
-      double tstart = (t.t0_us()/1e3)+(k+COH_STRIP_START)*(t.dt_us()/1e3);
-      double tend = tstart+t.dt_us()/1e3*t.duty_percent()/100;
-      int istart = int(tstart/1e3*fs_hz);
-      int iend = int(tend/1e3*fs_hz);
-      if (istart<0)
-	istart=0;
-      if (iend>ephyslen)
-	iend=ephyslen;
-      if (iend<istart)
-	iend=istart;
-      if (iend>istart) {
-	double v=0;
-	switch (refType) {
-	case RT_Digital:
+    switch (refType) {
+    case RT_Digital: {
+      DigitalData::DataType const *dsrc = ddata->allData();
+      if (!dsrc)
+        continue;
+      DigitalData::DataType dmask = ddata->maskForLine(refID.chn);
+      int ephyslen = ddata->getNumScans();
+      double fs_hz = ddata->getSamplingFrequency();
+      for (int k=0; k<N; k++) {
+        int istart, iend;
+        getIStartAndIEnd(t, k, ephyslen, fs_hz, &istart, &iend);
+        if (iend>istart) {
+          double v = 0;
 	  for (int t=istart; t<iend; t++) 
 	    v += (dsrc[t]&dmask)>0;
 	  ref[k] = v/(iend-istart);
-	  break;
-	case RT_Analog: 
-	  for (int t=istart; t<iend; t++)
-	    v += asrc[t*astep];
-	  ref[k] = v/(iend-istart);
-	  break;
-	case RT_Frequency:
-	  ref[k] = -1.
-	    + 2.*(fmod((tstart+tend)/2/1000 * refID.freq_Hz, 1) < 0.5);
-	  break;
-	case RT_Train:
-	  ref[k] = 0; // yeah, right
-	  break;
-	}
-      } else {
-	ref[k] = 0;
+        }
       }
+      detrend(ref);
+    } break;
+    case RT_Analog: {
+      double const *asrc = adata->channelData(refID.chn);
+      if (!asrc)
+        continue;
+      int astep = adata->getNumChannels();
+      int ephyslen = adata->getNumScans();
+      double fs_hz = adata->getSamplingFrequency();
+      for (int k=0; k<N; k++) {
+        int istart, iend;
+        getIStartAndIEnd(t, k, ephyslen, fs_hz, &istart, &iend);
+        if (iend>istart) {
+          double v = 0;
+          for (int t=istart; t<iend; t++)
+            v += asrc[t*astep];
+          ref[k] = v/(iend-istart);
+        }
+      }
+      detrend(ref);
+    } break;
+    case RT_Frequency: {
+      for (int k=0; k<N; k++) {
+        double tstart, tend;
+        getTStartAndTEnd(t, k, &tstart, &tend);
+        ref[k] = 2*(fmod((tstart+tend)/2/1000 * refID.freq_Hz, 1) < 0.5) - 1;
+      }
+    } break;
+    case RT_Train: {
+      refID.stim.instantiateTrainReference(ref.data(), ref.size(),
+                             t.t0_us()/1e3+COH_STRIP_START*t.dt_us()/1e3,
+                             t.dt_us()/1e3);
+      detrend0(ref);
+    } break;
     }
 
-    detrend(ref);
-    if (refType==RT_Train) {
-      filterForTrain(ref, 1e6/t.dt_us());
-      QFile f("/tmp/train.txt");
-      f.open(QFile::WriteOnly);
-      QTextStream ts(&f);
-      foreach (double v, ref)
-	ts << v << "\n";
-    }
-    
     // run a psdest to find spectral peak
     double dt_s = t.dt_us()/1e6;
     double df_hz = 1./3;
@@ -324,31 +324,28 @@ void CohData::recalcReference() const {
     if (Taperbank::bank().canProvide(tid, true)) {
       Tapers const &tapers = Taperbank::bank().find(tid);
       psdest->compute(ref, dt_s, df_hz, tapers);
-      if (refType!=RT_Frequency)
+      if (refType==RT_Analog)
 	crazyFilter(psdest->psd, psdest->freqbase[1]-psdest->freqbase[0]);
-      double max=0;
-      double df2_best = numbers.inf;
       int N = psdest->psd.size();
-      QFile f("/tmp/psd.txt");
-      f.open(QFile::WriteOnly);
-      QTextStream ts(&f);
       int nbest = 0;
-      for (int n=1; n<N; n++) { // skip DC
-	bool best;
-	if (refType==RT_Frequency) {
+      if (refType==RT_Frequency || refType==RT_Train) {
+        double f0 = refType==RT_Frequency ? refID.freq_Hz
+          : (1e3/refID.stim.pulsePeriod_ms);
+        double df2_best = numbers.inf;
+        for (int n=1; n<N; n++) { // skip DC
 	  double f = psdest->freqbase[n];
-	  double df = f - refID.freq_Hz;
+	  double df = f - f0;
 	  double df2 = df*df;
-	  best = df2<df2_best;
-	  if (best) {
-	    df2_best = df2;
+	  if (df2<df2_best) {
+            df2_best = df2;
 	    nbest = n;
 	  }
-	} else {
+        }
+      } else {
+        double max = 0;
+        for (int n=1; n<N; n++) { // skip DC
 	  double y = psdest->psd[n];
-	  ts << n << " " << psdest->freqbase[n] << " " << y << "\n";
-	  best = n>0 && y>max;
-	  if (best) {
+	  if (y>max) {
 	    max = y;
 	    nbest = n;
 	  }
@@ -357,8 +354,7 @@ void CohData::recalcReference() const {
       data.fstar_hz[cp] = psdest->freqbase[nbest];
     } else {
       data.fstar_hz[cp] = 1;
-      if (Taperbank::bank().couldExist(tid) &&
-	  !warned.contains(tid.name())) {
+      if (Taperbank::bank().couldExist(tid) && !warned.contains(tid.name())) {
 	Warning()
 	  << QString("Missing tapers '%1'.")
 	  .arg(tid.name())
@@ -417,8 +413,19 @@ double CohData::getTypicalFStarHz() const {
     return 1;
 }
 
-void CohData::detrend(rvec &ref) {
+void CohData::detrend0(rvec &ref) {
+  /* Subtract mean from the reference channel.
+   */
   int N = ref.size();
+  double sumx=0;
+  for (int k=0; k<N; k++) 
+    sumx += ref[k];
+  double a = sumx/N;
+  for (int k=0; k<N; k++) 
+    ref[k] -= a;
+}
+
+void CohData::detrend(rvec &ref) {
   /* Linear detrend of the reference channel.
      Fit y(t) = a t + b.
      dChi^2/da = 0 <=> sum(t*(at + b - x)) = 0.
@@ -436,6 +443,7 @@ void CohData::detrend(rvec &ref) {
      b = sum x / sum 1
      a = sum tx / sum t^2
   */
+  int N = ref.size();
   double t0 = (N-1.)/2.;
   double sumx=0, sumtx=0, sumtt=0;
   for (int k=0; k<N; k++) {
@@ -452,98 +460,6 @@ void CohData::detrend(rvec &ref) {
   }
 }
 
-void CohData::filterForTrain(rvec &ref, double fs_hz) {
-  //== First, we construct a Butterworth low pass filter at 4 Hz.
-  double f0_hz = 4;
-
-  // This comes straight from my BUTTERLOW1 Octave code:
-  double c = 1/tan((f0_hz/fs_hz)*M_PI);
-  double n0 = 1;
-  double n1 = 1;
-  double d0 = c + 1;
-  double d1 = -c + 1;
-
-  // double a1 = 1;
-  double a2 = d1/d0;
-  double b1 = n0/d0;
-  double b2 = n1/d0;
-  
-  //== Then we filter once in forward direction
-  /* Using Octave's filter eqn:
-       y(n) = -sum_(k=1..N) c(k+1) y(n-k) + sum_(k=0..N) d(k+1) x(n-k)
-     where
-       c_k := a_k / a_1   and   d_k = b_k / a_1.
-     For us that means:
-        y(n) = -a2 y(n-1) + b1 x(n) + b2 x(n-1).
-  */
-  int N = ref.size();
-  if (N<2)
-    return;
-  
-  double xn1 = ref[0];
-  double yn1 = ref[0];
-  for (int n=1; n<N; n++) {
-    double xn = ref[n];
-    double yn = -a2*yn1 + b1*xn + b2*xn1;
-    ref[n] = yn;
-    xn1 = xn;
-    yn1 = yn;
-  }
-
-  //== And again, backwards
-  xn1 = ref[N-1];
-  yn1 = ref[N-1];
-  for (int n=N-2; n>=0; n--) {
-    double xn = ref[n];
-    double yn = -a2*yn1 + b1*xn + b2*xn1;
-    ref[n] = yn;
-    xn1 = xn;
-    yn1 = yn;
-  }
-
-  //== Now, we calculate the average, min, max
-  /* This method is numerically not very stable, but we don't have
-     that many data points, so we'll be OK.
-  */
-  double avg = 0;
-  double minr = 1e99;
-  double maxr = -1e99;
-  for (int n=0; n<N; n++) {
-    double y = ref[n];
-    avg += y;
-    if (y>maxr)
-      maxr = y;
-    if (y<minr)
-      minr = y;
-  }      
-  avg /= N;
-
-  //== Then, schmitt trigger at the average with a little margin
-  bool up=false;
-  double marg = (maxr-minr)/100;
-  for (int n=0; n<N; n++) {
-    if (up) {
-      if (ref[n] < avg - marg)
-	up = false;
-    } else {
-      if (ref[n] > avg + marg)
-	up = true;
-    }
-    ref[n] = up ? 1 : -1;
-  }
-
-  //== Lastly, subtract average
-  avg = 0;
-  for (int n=0; n<N; n++) {
-    double y = ref[n];
-    avg += y;
-  }
-  avg /= N;
-  for (int n=0; n<N; n++)
-    ref[n] -= avg;  
-
-}    
-  
 void CohData::crazyFilter(rvec &psd, double df_hz) {
   // filter each point in the psd to resolution f.
   rvec psd0 = psd;

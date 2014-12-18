@@ -2,7 +2,8 @@
 
 #include "definestimulus.h"
 
-StimulusDef defineStimulus(ParamTree const *ptree, QString path) {
+StimulusDef defineStimulus(ParamTree const *ptree, QString chnid) {
+  QString path = QString("stimEphys/channel:%1").arg(chnid);
   StimulusDef s;
   s.delay_ms = ptree->find(path+"delay").toDouble();
   s.nTrains = ptree->find(path+"nTrains").toInt();

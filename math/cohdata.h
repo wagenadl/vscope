@@ -46,8 +46,8 @@ private:
   bool validate() const;
   void recalcReference() const;
   void recalcTiming() const;
-  static void filterForTrain(rvec &ref, double fs_hz);
   static void detrend(rvec &ref);
+  static void detrend0(rvec &ref);
   static void crazyFilter(rvec &psd, double df_hz);
 private:
   void copy(CohData const &other);

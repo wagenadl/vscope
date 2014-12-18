@@ -79,3 +79,26 @@ void StimulusDef::instantiateDigital(DigitalData::DataType *data,
   }
 }  
    
+void StimulusDef::instantiateTrainReference(double *data,
+                                            int len,
+                                            double t0_ms, double dt_ms) const {
+  for (int s=0; s<len; s++)
+    data[s] = 0;
+
+  double trainDur_ms = (nPulses-1)*pulsePeriod_ms + pulseDur_ms;
+  if (pulseType==PT_Biphasic)
+    trainDur_ms += pulseDur2_ms;
+  int trainDur_scans = roundi(trainDur_ms/dt_ms);
+  
+  for (int itr=0; itr<nTrains; itr++) {
+    int s0 = roundi((delay_ms + itr*trainPeriod_ms - t0_ms)/dt_ms);
+    int s1 = s0 + trainDur_scans;
+    if (s0<0)
+      s0 = 0;
+    if (s1>len)
+      s1 = len;
+    for (int s=s0; s<s1; s++)
+      data[s] = 1;
+  }
+}
+  

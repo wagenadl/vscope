@@ -155,8 +155,7 @@ void EPhysOut::setupDData_addStim(ParamTree const *ptree) {
 
   foreach (QString id, useStimLines) {
     uint32_t line = Connections::findDig(id).line;
-    StimulusDef s = defineStimulus(ptree,
-				   QString("stimEphys/channel:%1").arg(id));
+    StimulusDef s = defineStimulus(ptree, id);
     s.instantiateDigital(dat, nscans, line, freqhz);
   }
 }
@@ -217,13 +216,12 @@ void EPhysOut::setupAData_stim(ParamTree const *ptree) {
 void EPhysOut::setupAData_mkStim(ParamTree const *ptree,
 				 QString channel) {
   KeyGuard guard(*adata);
-  QString path = QString("stimEphys/channel:%1/").arg(channel);
   
   double *dat = adata->channelData(guard.key(), channel);
   double freqhz = ptree->find(PAR_OUTRATE).toDouble();
   int nscans = adata->getNumScans();
   int nchans = adata->getNumChannels();
-  StimulusDef s = defineStimulus(ptree, path);
+  StimulusDef s = defineStimulus(ptree, channel);
   s.instantiateAnalog(dat, nscans, nchans, freqhz);
 }
 
