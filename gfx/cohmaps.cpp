@@ -59,10 +59,16 @@ void CohMaps::setShowMode(SHOWROIS m) {
     c->setShowMode(m);
 }
 
-void CohMaps::setRefTrace(QString s, bool train) {
+void CohMaps::setRefTrace(QString s) {
   foreach (Coherence *c, images())
-    c->setRefTrace(s, train);
+    c->setRefTrace(s);
 }
+
+void CohMaps::setRefTrain(StimulusDef const &s) {
+  foreach (Coherence *c, images())
+    c->setRefTrain(s);
+}
+  
 
 void CohMaps::setRefDigi(QString s) {
   foreach (Coherence *c, images())

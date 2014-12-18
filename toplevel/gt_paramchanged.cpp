@@ -30,6 +30,7 @@
 #include <base/enums.h>
 #include <acq/focus.h>
 #include <acq/ccdmaster.h>
+#include <xml/definestimulus.h>
 
 void gt_slots::ensureMasterOK(QString p) {
   QRegExp re("camera:([^/]*)/");
@@ -66,9 +67,10 @@ void gt_slots::setRefTrace() {
     Globals::cohgraph->setRefFreq(frqhz);
   } else if (typ==e->lookup("Train")) {
     QString chn = ptree()->find("analysis/refTrain").toString();
-    Globals::vsdtraces->setRefTrace(chn);
-    Globals::cohmaps->setRefTrace(chn, true);
-    Globals::cohgraph->setRefTrace(chn, true);
+    StimulusDef s(defineStimulus(ptree(), chn));
+    Globals::vsdtraces->setRefTrain(s);
+    Globals::cohmaps->setRefTrain(s);
+    Globals::cohgraph->setRefTrain(s);
   } else {
     dbg("gt_paramchanged: Unknown reference type");
   }

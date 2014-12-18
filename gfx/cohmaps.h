@@ -27,7 +27,8 @@ public:
   void newImage(QString camid, uint16_t const *data, int X, int Y,
                 Transform const &t);
 public slots:
-  void setRefTrace(QString achn, bool train=false);
+  void setRefTrace(QString achn);
+  void setRefTrain(class StimulusDef const &s);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void setShowMode(SHOWROIS sm);

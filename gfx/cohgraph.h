@@ -26,7 +26,8 @@ public:
    */
 public slots:
   void updateData();
-  void setRefTrace(QString achn, bool train=false);
+  void setRefTrace(QString achn);
+  void setRefTrain(class StimulusDef const &s);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);
   void updateSelection(int id);

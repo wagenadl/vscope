@@ -120,9 +120,15 @@ void CohGraph::setRefDigi(QString digiline) {
   perhapsRefresh();
 }
 
-void CohGraph::setRefTrace(QString ach, bool train) {
+void CohGraph::setRefTrace(QString ach) {
   if (data)
-    data->setRefTrace(ach, train);
+    data->setRefTrace(ach);
+  perhapsRefresh();
+}
+
+void CohGraph::setRefTrain(class StimulusDef const &s) {
+  if (data)
+    data->setRefTrain(s);
   perhapsRefresh();
 }
 

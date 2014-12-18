@@ -65,6 +65,10 @@ void VSDTraces::setRefFreq(double) {
   dbg("VSDTraces::setRefFreq: not yet implemented");
 }
 
+void VSDTraces::setRefTrain(StimulusDef const &) {
+  dbg("VSDTraces::setRefTrain: not yet implemented");
+}
+
 void VSDTraces::updateEPhysData() {
   //  Dbg() << "VSDTraces::updateEphysData";
   AnalogData const *adata = Globals::trove->trial().analogData();

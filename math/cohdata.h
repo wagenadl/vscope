@@ -26,7 +26,7 @@ public slots:
   void setEPhys(class AnalogData const *ad,
 		class DigitalData const *dd);
   void setCCDData(class ROIData3Set *rs3d);
-  void setRefTrace(QString achn, bool train=false);
+  void setRefTrace(QString achn);
   void setRefTrain(StimulusDef const &s);
   void setRefDigi(QString digiline);
   void setRefFreq(double fref_hz);

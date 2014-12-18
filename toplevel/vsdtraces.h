@@ -29,6 +29,7 @@ public slots:
   void setRefTrace(QString chn);
   void setRefDigi(QString chn);
   void setRefFreq(double frqhz);
+  void setRefTrain(class StimulusDef const &s);
 private slots:
   void updateEPhysData();
 private:

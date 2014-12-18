@@ -372,7 +372,7 @@ void CohData::setRefDigi(QString digiline) {
   invalidate();
 }
 
-void CohData::setRefTrace(QString ach, bool) {
+void CohData::setRefTrace(QString ach) {
   refType = RT_Analog;
   refID.chn = ach;
   invalidate();
