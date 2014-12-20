@@ -79,7 +79,6 @@ void CCDImage::black() {
 
 void CCDImage::newImage(uint16_t const *data, int X, int Y,
 			Transform const &t) {
-
   bool flipX = t.reflectsX();
   bool flipY = t.reflectsY();
 

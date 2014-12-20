@@ -219,19 +219,6 @@ void gt_slots::paramchanged(QString p, QString val) {
 	  pg->open();
       }
       Globals::focus->setCams(newA, newB);
-    } else if (p=="maintenance/focus/camB") {
-      dbg("focus/camB");
-      QString oldA = Globals::focus->getCamA();
-      QString oldB = Globals::focus->getCamB();
-      QString newB = ptree()->find(p).toString();
-      QString newA = oldA;
-      if (newB==oldA) {
-        newA = oldB;
-        ptree()->find("maintenance/focus/camA").set(newA);
-        // may have to set the menu option as well
-        // this doesn't work when camera is not present
-      }
-      Globals::focus->setCams(newA, newB);
     } else if (p=="maintenance/focus/mode") {
       Globals::focus->setViewMode(FOCUSMODE(ptree()->find(p).toInt()));
     } else {
