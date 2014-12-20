@@ -37,8 +37,11 @@ Focus::Focus(QWidget *parent): QFrame(parent) {
   
   left = new CCDImage(this);
   right = new CCDImage(this);
-  hiddenA = new CCDImage(this); hiddenA->hide();
-  hiddenB = new CCDImage(this); hiddenB->hide();
+
+  hiddenA = new CCDImage(this);
+  hiddenB = new CCDImage(this);
+  hiddenA->hide();
+  hiddenB->hide();
 
   QRect cnv(0,0,512,512);
   left->setCanvas(cnv);
@@ -76,9 +79,7 @@ void Focus::setCams(QString idA, QString idB) {
     activate();
 }
   
-
 void Focus::setCamA(QString idA) {
-
   bool wasactive = isActive;
   if (wasactive)
     deactivate();
@@ -86,7 +87,7 @@ void Focus::setCamA(QString idA) {
   Connections::CamCon const *ccA = Connections::findpCam(idA);
   if (ccA) {
     if (ccA==Connections::findpCam(camIDB))
-      throw Exception("Focus","Cameras cannot be the same: " + idA,"setCamA");
+      throw Exception("Focus", "Cameras cannot be the same: " + idA, "setCamA");
     flipXA = ccA->placement.reflectsX();
     flipYA = ccA->placement.reflectsY();
     exp_msA = ccA->focusexp_ms;
@@ -122,7 +123,7 @@ void Focus::setCamB(QString idB) {
   Connections::CamCon const *ccB = Connections::findpCam(idB);
   if (ccB) {
     if (ccB==Connections::findpCam(camIDA))
-      throw Exception("Focus","Cameras cannot be the same: " + idB,"setCamB");
+      throw Exception("Focus", "Cameras cannot be the same: " + idB, "setCamB");
 
     flipXB = ccB->placement.reflectsX();
     flipYB = ccB->placement.reflectsY();
@@ -130,8 +131,8 @@ void Focus::setCamB(QString idB) {
     X = ccB->xpix;
     Y = ccB->ypix;
     npix = X*Y;
-    if (camB && camB->getConfig().getPixPerFrame()!=npix)
-      throw Exception("Focus","Pixel count mismatch","setCamB");
+    if (camA && camA->getConfig().getPixPerFrame()!=npix)
+      throw Exception("Focus", "Pixel count mismatch", "setCamB");
     camB = CamPool::findp(ccB->serno);
   } else {
     if (idB!="")
@@ -150,7 +151,6 @@ void Focus::setCamB(QString idB) {
   if (wasactive)
     activate();
 }
-
 
 Focus::~Focus() {
   if (isActive) {

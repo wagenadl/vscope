@@ -155,7 +155,16 @@
       <category id="focus">
         <param id="camA" type="string" default="" save="false"/>
         <param id="camB" type="string" default="" save="false"/>
-        <param id="mode" type="enum" enum="FOCUSMODE" default="TwoFull" save="false"/>
+        <param id="mode" type="enum" enum="FOCUSMODE" default="TwoFull"
+               save="false"/>
+        <!--param id="focusA" type="string" default="-" save="false"/>
+        <param id="focusB" type="string" default="-" save="false"/>
+        <param id="intensityA" type="string" default="-" save="false"/>
+        <param id="intensityB" type="string" default="-" save="false"/>
+        <param id="alignScale" type="string" default="-" save="false"/>
+        <param id="alignRotate" type="string" default="-" save="false"/>
+        <param id="alignX" type="string" default="-" save="false"/>
+        <param id="alignY" type="string" default="-" save="false"/-->
       </category>
       <category id="liveEphys">
         <param id="timeBase" type="time" default="100 ms" 

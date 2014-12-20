@@ -343,7 +343,6 @@ void guiPage::childTabEnabled(QString path) {
   QString child = pathToLocal(path);
   child = child.left(child.indexOf('/'));
   guiPage *p = subpagep(child);
-  Dbg() << "childtabenabled "<< path;
   if (p) {
     QString but = child + ARRAYSEP + p->getCurrentElement();
     representTabEnabled(but);
@@ -588,7 +587,6 @@ QList<guiButton *> guiPage::allButtons() {
 }
 
 void guiPage::updateAuto() {
-  Dbg() << "guipage:updateauto " << myPath;
   foreach (guiRadioGroup *rg, groups)
     rg->rebuild();
   foreach (AbstractPage *p, subPages) {

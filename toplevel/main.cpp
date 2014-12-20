@@ -482,6 +482,8 @@ int main(int argc, char **argv) {
 
     if (Globals::focus)
       Globals::focus->contactButtons(Globals::gui);
+    else
+      Dbg() << "No focus page---Cannot contactButtons";
 
     Globals::blackout = new Blackout(Globals::mainwindow);
     Globals::blackout->hide();

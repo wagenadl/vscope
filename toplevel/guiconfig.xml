@@ -571,14 +571,14 @@
         <immune id="camB" label="Camera B"  bg="#ffff77"/>
       </group>
       <group id="val" x="0" y="0" spancols="2" spanrows="4">
-        <immune id="focusA" label="A Focus" bg="#cceeff"/>
-        <immune id="focusB" label="B Focus" bg="#ffff77"/>
-        <immune id="intensityA" label="A Avg/Max" bg="#bbddff"/>
-        <immune id="intensityB" label="B Avg/Max" bg="#eeee55"/>
-        <immune id="alignScale" label="Scale"  bg="#ffffaa"/>
-        <immune id="alignRotate" label="Rotation" bg="#ffddcc"/>
-        <immune id="alignX" label="X Shift" bg="#ffdd99"/>
-        <immune id="alignY" label="Y Shift" bg="#ffddbb"/>
+        <immune id="focusA" label="A Focus: %1" bg="#cceeff"/>
+        <immune id="focusB" label="B Focus: %1" bg="#ffff77"/>
+        <immune id="intensityA" label="A Avg/Max: %1" bg="#bbddff"/>
+        <immune id="intensityB" label="B Avg/Max: %1" bg="#eeee55"/>
+        <immune id="alignScale" label="Scale: %1"  bg="#ffffaa"/>
+        <immune id="alignRotate" label="Rotation: %1" bg="#ffddcc"/>
+        <immune id="alignX" label="X Shift: %1" bg="#ffdd99"/>
+        <immune id="alignY" label="Y Shift: %1" bg="#ffddbb"/>
       </group>
       <menu id="camA" cols="1" rows="5">
         <auto enum="CAMERAS"/>

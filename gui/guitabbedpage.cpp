@@ -24,7 +24,6 @@ void guiTabbedPage::connectToParent(QDomElement doc) {
 
 void guiTabbedPage::reconnect() {
   guiPage *par = parentPage();
-  Dbg() << "guitabbedpage::reconnect " << this << par;
 
   if (!par)
     return;
@@ -32,12 +31,9 @@ void guiTabbedPage::reconnect() {
   guiButton *penable = buttonp("enable");
   guiRadioGroup *pctrl = par->groupp(id());
 
-  Dbg() << "  guitabbedpage::reconnect " << id() << pctrl;
-
   if (pctrl) {
     foreach (QString i, pctrl->childIDs()) {
       guiButton *b = par->buttonp(id() + ARRAYSEP + i);
-      Dbg() << "   " << i << b;
       if (!b) 
 	continue; //throw Exception("guiTabbedPage", "Button " + i + " not found in parent", path());
 

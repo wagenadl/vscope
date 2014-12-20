@@ -32,7 +32,6 @@ CCDImage::CCDImage(QWidget *parent):
   QPalette p = palette();
   p.setColor(QPalette::Window, QColor("#333333"));
   setPalette(p);
-  //Dbg() << "CCDImage: CanvasRect is " << canvasRect;
   resetZoom();
 }
 
@@ -84,8 +83,6 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
   bool flipX = t.reflectsX();
   bool flipY = t.reflectsY();
 
-  Dbg() << "newImage " << data << " " << X << "x" << Y;
-
   // simply copy data, taking care of flips
   origImage.ensureSize(X, Y);
   float *dst = origImage.data();
@@ -111,7 +108,6 @@ void CCDImage::newImage(uint16_t const *data, int X, int Y,
 void CCDImage::rebuildImage() {
   int X = origImage.width();
   int Y = origImage.height();
-  Dbg() << "rebuildimage" << X << "x" << Y;
 
   // rebuild gamma image if needed
   if (adjust_black>0 || adjust_white>0) {

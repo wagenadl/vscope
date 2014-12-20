@@ -63,13 +63,13 @@ void dbg(char const *fmt, ...) throw() {
 DbgFile *dbgfile = 0;
 
 DbgFile::DbgFile() {
-  printf("DbgFile(%p) constructor\n",this);
+  //  printf("DbgFile(%p) constructor\n",this);
   dir = "";
   ts=0;
 }
 
 DbgFile::~DbgFile() {
-  printf("DbgFile(%p) destructor\n",this);
+  //  printf("DbgFile(%p) destructor\n",this);
   if (ts)
     delete ts;
 }

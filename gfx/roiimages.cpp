@@ -49,7 +49,6 @@ void ROIImages::showROIs(SHOWROIS sm) {
 }
 
 void ROIImages::setROIs(ROISet *rs_) {
-  Dbg() << "ROIImages::setROIs " << QStringList(imgs.keys()).join(" ");
   rs = rs_;
   foreach (ROIImage *ri, images())
     ri->setROIs(rs);

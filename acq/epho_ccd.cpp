@@ -52,25 +52,12 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
   uint32_t *data = ddata->allData(guard.key());
 
   foreach (QString id, camnames) {
-    Dbg() << "ephy_ccd:prepare " << id << " " << timing.has(id);
     if (!timing.has(id))
       continue; // this happens if we are reconstructing stim for
                 // a loaded trial that doesn't have all our connected
                 // cameras. Really, of course, this should be rethought,
                 // but I think just skipping is OK; the reconstructed stim
                 // will not, after all, ever be actually used.
-    Dbg() << "  preHeat " << timing[id].preHeatFrames();
-    Dbg() << "  nframes " << timing[id].nframes();
-    Dbg() << "  startscans " << timing[id].startScans();
-    Dbg() << "  periodscans " << timing[id].periodScans();
-    Dbg() << "  illumprescans " << timing[id].illumPreScans();
-    Dbg() << "  illumpostscans " << timing[id].illumPostScans();
-    Dbg() << "  shtrprescans " << timing[id].shtrPreScans();
-    Dbg() << "  shtrpostscans " << timing[id].shtrPostScans();
-    Dbg() << "  activescans " << timing[id].activeScans();
-    Dbg() << "  lamp " << lampvals[id];
-    Dbg() << "  shtr " << shtrvals[id];
-    Dbg() << "  trig " << trigvals[id];
     
     for (int n=-timing[id].preHeatFrames(); n<timing[id].nframes(); n++) {
       int framestart = timing[id].startScans() + n*timing[id].periodScans();
