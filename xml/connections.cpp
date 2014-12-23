@@ -81,6 +81,7 @@ namespace Connections {
       e.setAttribute("id",cam.id);
       e.setAttribute("partnerid",cam.partnerid);
       e.setAttribute("shutter",cam.shtrid);
+      e.setAttribute("trigger",cam.trigid);
       e.setAttribute("lamp",cam.lampid);
       e.setAttribute("serno",cam.serno);
       e.setAttribute("xpix",QString::number(cam.xpix));
@@ -196,6 +197,10 @@ namespace Connections {
       cam->exists = false;
       cam->serno = e.attribute("serno");
       cam->partnerid = e.attribute("partnerid");
+      if (e.hasAttribute("trigger"))
+        cam->trigid = e.attribute("trigger");
+      else
+        cam->trigid = id;
       cam->shtrid = e.attribute("shutter");
       cam->lampid = e.attribute("lamp");
       cam->xpix = e.attribute("xpix").toInt();

@@ -25,22 +25,30 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
   uint32_t one = 1;
   foreach (QString id, camnames) {
     Connections::CamCon const &cam = Connections::findCam(id);
-    int l = lines->lookup("Trigger:" + id);
+    int l = lines->lookup("Trigger:" + cam.trigid);
     ddata->addLine(l);
     trigvals[id] = one<<l;
     if (cam.shtrid=="") {
       shtrvals[id] = 0;
     } else {
-      int l = lines->lookup("Shutter:" + cam.shtrid);
-      ddata->addLine(l);
-      shtrvals[id] = one<<l;
+      try {
+        int l = lines->lookup("Shutter:" + cam.shtrid);
+        ddata->addLine(l);
+        shtrvals[id] = one<<l;
+      } catch (Exception const &) {
+        // Warn about missing shutter
+      }
     }
     if (cam.lampid=="") {
       lampvals[id] = 0;
     } else {
-      int l = lines->lookup("Lamp:" + cam.lampid);
-      ddata->addLine(l);
-      lampvals[id] = one<<l;
+      try {
+        int l = lines->lookup("Lamp:" + cam.lampid);
+        ddata->addLine(l);
+        lampvals[id] = one<<l;
+      } catch (Exception const&) {
+        // Warn about missing lamp
+      }
     }
   }
     

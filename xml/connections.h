@@ -74,6 +74,7 @@ namespace Connections {
     QString lampid; // light source to be switched on for this camera or null 
                     // for a light source that is not s/w controlled
     QString shtrid; // shutter to be opened for this camera or null for none
+    QString trigid; // trigger to acquire a frame for this camera
     int xpix, ypix; // number of pixels in full frame
     double focusexp_ms;
     bool isdonor;
