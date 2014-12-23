@@ -213,7 +213,11 @@ void Focus::dataAvailable() {
       dbg("  No B frame read");
     }
   }
+
   if (viewMode==FM_Difference) {
+    Dbg() << "Diff " << newA << isfirstA << newB << isfirstB 
+	  << " * " << frmA << " " << frmB
+	  << " * " << hiddenA << " " << hiddenB;
     if (newA) {
       if (isfirstA)
 	hiddenA->autoRange(frmA,X,Y);
@@ -226,25 +230,42 @@ void Focus::dataAvailable() {
       isfirstB=false;
       hiddenB->newImage(frmB,X,Y,flipXB,flipYB);
     }
+    Dbg() << "focus1";
     if (newA || newB) {
       QImage imgA = hiddenA->currentImage();
       QImage imgB = hiddenB->currentImage();
+      if (imgA.format()!=QImage::Format_Indexed8) 
+	imgA = imgA.convertToFormat(QImage::Format_Indexed8);
+      if (imgB.format()!=QImage::Format_Indexed8) 
+	imgB = imgB.convertToFormat(QImage::Format_Indexed8);
       if (imgA.width()==X && imgA.height()==Y &&
 	  imgB.width()==X && imgB.height()==Y) {
 	// so we have good images on both sides
+	Dbg() << "focus2";
 	QImage img=left->currentImage();
-	if (img.width()!=X || img.height()!=Y)
+	if (img.width()!=X || img.height()!=Y 
+	    || img.format()!=QImage::Format_RGB32)
 	  img = QImage(X,Y,QImage::Format_RGB32);
 	uint32_t *dst = (uint32_t *)img.bits();
-	uint32_t *srcA = (uint32_t *)imgA.bits();
-	uint32_t *srcB = (uint32_t *)imgB.bits();
-	uint32_t mskA=0x0000ff00;
-	uint32_t mskB=~mskA;
+	uint8_t const *srcA 
+	  = reinterpret_cast<uint8_t const *>(imgA.bits());
+	uint8_t const *srcB
+	  = reinterpret_cast<uint8_t const *>(imgB.bits());
+	Dbg() << "focus fmt " << img.format() << " * " << imgA.format() << " " << imgB.format();
+	Dbg() << "bits " << srcA << " " << srcB << " > " << dst;
+	Dbg() << " XY " << X << " " << Y << ": " << imgA.bytesPerLine() << " " << imgB.bytesPerLine() << " . " << img.bytesPerLine();
+	uint32_t mskA=0x00000100;
+	uint32_t mskB=0x00010001;
+	uint32_t base = 0xff000000;
+	Dbg() << "focus3";
 	for (int y=0; y<Y; y++)
 	  for (int x=0; x<X; x++) 
-	    *dst++ = (*srcA++ & mskA) | (*srcB++ & mskB);
+	    *dst++ = base  | (*srcA++ * mskA) | (*srcB++ * mskB);
+	Dbg() << "focus4";
 	left->overwriteImage(img);
+	Dbg() << "focus5";
 	right->overwriteImage(img);
+	Dbg() << "focus6";
       }
     }    
   } else {
