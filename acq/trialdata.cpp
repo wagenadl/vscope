@@ -80,6 +80,7 @@ void TrialData::useConnectedCameras() {
       delete ccddata[id]; // automatically removes from signal list
       ccddata.remove(id);
       ccdplace.remove(id);
+      campairs.remove(id);
     }
 
   // add new cameras
@@ -94,6 +95,10 @@ void TrialData::useConnectedCameras() {
     ccdplace[id] = camPlace(id);
     ccddata[id]->setDataToCanvas(ccdplace[id]);
   }
+
+  // create pairs
+  foreach (QString id, camids) 
+    campairs[id] = Connections::camPair(id);
   
   if (newset!=oldset)
     emit newCameras();
@@ -124,6 +129,13 @@ CCDData *TrialData::ccdData(QString camid) {
 Transform const &TrialData::ccdPlacement(QString camid) const {
   if (haveCCDData(camid))
     return ccdplace.find(camid).value();
+  else
+    throw Exception("TrialData", "No CCD Data for camera " + camid);
+}
+
+CamPair const &TrialData::camPair(QString camid) const {
+  if (haveCCDData(camid))
+    return campairs.find(camid).value();
   else
     throw Exception("TrialData", "No CCD Data for camera " + camid);
 }
@@ -459,14 +471,27 @@ void TrialData::readCCD(XML &myxml, QString base) {
       delete ccddata[id];
       ccddata.remove(id);
       ccdplace.remove(id);
+      campairs.remove(id);
     }
   }
 
   camids = newcams;
   Dbg() << "TrialData " << (void*)this << " 450: camids " << camids.join(" ");
 
-  foreach (QString id, newcams)
+  foreach (QString id, camids)
     ccdplace[id] = ccddata[id]->dataToCanvas();
+
+  foreach (QString id, camids)
+    campairs[id] = CamPair(id);
+  
+  for (QDomElement cam = ccd.firstChildElement("camera");
+       !cam.isNull(); cam = cam.nextSiblingElement("camera")) {
+    QString id = cam.attribute("name");
+    if (cam.hasAttribute("donor")) {
+      QString did = cam.attribute("donor");
+      campairs[id] = campairs[did] = CamPair(did, id);
+    }
+  }
 
   if (newset!=oldset)
     emit newCameras();

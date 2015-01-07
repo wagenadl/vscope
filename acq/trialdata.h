@@ -14,6 +14,7 @@
 #include <base/ccddata.h>
 #include <base/analogdata.h>
 #include <base/digitaldata.h>
+#include <base/campair.h>
 
 class TrialData: public KeyAgg {
   Q_OBJECT;
@@ -75,6 +76,9 @@ public:
   Transform const &ccdPlacement(QString camid) const;
   /*:F ccdPlacement
     :N Throws exception if camid not found */
+  CamPair const &camPair(QString camid) const;
+  /*:F camPair
+    :N Throws exception if camid not found */
   void refineCCDTiming();
   /*:F refineCCDTiming
    *:D After trial is complete, update the CCD data's t0 and dt based
@@ -101,6 +105,7 @@ private:
   QStringList camids;
   QMap<QString, CCDData *> ccddata;
   QMap<QString, Transform> ccdplace;
+  QMap<QString, CamPair> campairs;
   class AnalogData *adataIn, *adataOut;
   class DigitalData *ddataIn, *ddataOut;
   class ParamTree const *partree;

@@ -50,15 +50,7 @@ void CohImages::setCameras(QStringList newids) {
       img->setShowMode((SHOWROIS)Globals::ptree->find("analysis/showROIs").
                        toInt());
 
-      CamPair pair;
-      if (Connections::findpCam(id)) {
-	pair = Connections::camPair(id);
-	// Really, this should be derived from TrialData,
-	// but we don't have it there yet.	
-      } else {
-	pair.donor = id;
-	pair.acceptor = "";
-      }
+      CamPair pair = Globals::trove->trial().camPair(id);
       img->setCamPair(pair);
 
       add(id, img);

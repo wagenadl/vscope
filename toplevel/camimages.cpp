@@ -45,15 +45,7 @@ void CamImages::setCameras(QStringList newids) {
       droppool.remove(id);
     } else {
       ROIImage *img = new ROIImage(Globals::leftplace);
-      CamPair pair;
-      if (Connections::findpCam(id)) {
-	pair = Connections::camPair(id);
-	// Really, this should be derived from TrialData,
-	// but we don't have it there yet.	
-      } else {
-	pair.donor = id;
-	pair.acceptor = "";
-      }
+      CamPair pair = Globals::trove->trial().camPair(id);
       img->setCamPair(pair);
       add(id, img);
       img->setGeometry(0,0,512,Globals::mainwindow->basey());
