@@ -89,7 +89,6 @@ void ROIImage::setMode(ClickMode cm) {
 }
 
 void ROIImage::setZoom(QRect const &z) {
-  dbg("roiimage: setzoom");
   CCDImage::setZoom(z);
   recalcEllipse();
   update();
@@ -102,7 +101,6 @@ void ROIImage::resetZoom() {
 }
 
 void ROIImage::zoomIn() {
-  dbg("roiimage: zoomin");
   if (selectedroi>0) 
     if (!roiset->contains(selectedroi)) 
       select(0);
@@ -120,7 +118,6 @@ void ROIImage::updateZoom(QRect rect) {
 }
 
 void ROIImage::paintEvent(class QPaintEvent *e) {
-  //  dbg("roiimage:paintevent");
   CCDImage::paintEvent(e);
   QPainter p(this);
   QPen pen = p.pen();
@@ -132,7 +129,7 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 
   foreach (int id, roiset->ids()) {
     bool isselected = id==selectedroi;
-    bool ismycam = campair==roiset->cam(id);
+    bool ismycam = campair.looseMatch(roiset->cam(id));
     bool showID = showMode==SR_Full || showMode==SR_IDs;
     bool showDot = showMode==SR_Centers && !isselected;
     bool showOutline = showMode==SR_Full || showMode==SR_Outlines || isselected;
@@ -151,8 +148,8 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 
     if (resetPen) {
       color.setGreen(isselected ? 0 : 255);
-      color.setAlpha(ismycam ? 80 : 50);
-      pen.setWidthF(ismycam ? 1.5 : 1.0);
+      color.setAlpha(ismycam ? 80 : 40);
+      pen.setWidthF(ismycam ? 1.8 : 1.0);
       pen.setColor(color);
       p.setPen(pen);
       resetPen = false;
@@ -182,7 +179,6 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 		 num2az(id));
     }
   }
-  //  dbg("roiimage:paintevent: done with painter");
 }
 
 void ROIImage::mousePressEvent(QMouseEvent *e) {
@@ -197,14 +193,11 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
     CCDImage::mousePressEvent(e);
     break;
   case CM_SelectROI:
-    // perhaps this should be done on release instead?
     select(findNearestROI(clickPoint,5));
     break;
   case CM_AddROI: { // This adds a XYRRA
     select(0);
-    //Dbg() <<"addroi: editing was"<<editing;
     editing = new ROICoords();
-    //Dbg() << "addroi: editing="<<editing;
     editing->makeXYRRA();
     editing->xyrra() = XYRRA(canvasPoint);
     recalcEllipse();
@@ -322,7 +315,7 @@ int ROIImage::findNearestROI(QPoint xy, double marg) {
   int bestid=0;
   double dd;
   foreach (int id, roiset->ids()) {
-    if (campair!=roiset->cam(id))
+    if (!campair.looseMatch(roiset->cam(id)))
       continue; // we won't select ROIs that are not on this camera (pair)
     double d = euclideanDist2(xy_, roiset->get(id).center());
     if (bestid==0 || d<dd) {
