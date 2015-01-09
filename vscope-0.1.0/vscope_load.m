@@ -106,7 +106,7 @@ elseif endswith(ifn,'.xml')
     [dat.rois, dat.roicams] = vsdl_rois(ifd);
     fclose(ifd);
   end
-
+  
   [dat.ccd.info.frame_s, dat.ccd.info.framestart_s, ...
 	dat.ccd.info.frameend_s] = vsdl_frametimes(dat);
 else
@@ -227,7 +227,7 @@ elseif endswith(str,' s')
 elseif endswith(str,' min')
   t_ms = t_ms*1e3*60;
 else
-  fprintf(1,'Warning: unsure that "%s" is a valid time.\n',str);
+  warning(sprintf('VSCOPE_LOAD: Unsure that "%s" is a valid time.',str));
 end
 
 function f_hz = vsdl_freq(str)
@@ -240,13 +240,15 @@ elseif endswith(str,'kHz')
 elseif endswith(str,' Hz')
   ;
 else
-  fprintf(1,'Warning: unsure that "%s" is a valid frequency.\n',str);
+  warning(sprintf('VSCOPE_LOAD: Unsure that "%s" is a valid frequency.',str));
 end
 
 function v_mv = vsdl_mvolt(str)
 % VSDL_MVOLT - Converts a string to a voltage in millivolts
 v_mv = sscanf(str,'%g');
-if endswith(str,'nV')
+if endswith(str,'pV')
+  v_mv = v_mv/1e9;
+elseif endswith(str,'nV')
   v_mv = v_mv/1e6;
 elseif endswith(str,'uV')
   v_mv = v_mv/1e3;
@@ -257,7 +259,7 @@ elseif endswith(str,'kV')
 elseif endswith(str,' V')
   v_mv = v_mv*1e3;
 else
-  fprintf(1,'Warning: unsure that "%s" is a valid voltage.\n',str);
+  warning(sprintf('VSCOPE_LOAD: Unsure that "%s" is a valid voltage.',str));
 end
 
 function i_na = vsdl_namp(str)
@@ -276,7 +278,7 @@ elseif endswith(str,'mA')
 elseif endswith(str,' A')
   i_na = i_na*1e9;
 else
-  fprintf(1,'Warning: unsure that "%s" is a valid current.\n',str);
+  warning(sprintf('VSCOPE_LOAD: Unsure that "%s" is a valid current.',str));
 end
 
 function b = vsdl_bool(str)
@@ -731,12 +733,12 @@ elseif endswith(scl_u,'A')
   uni = 'nA';
 else
   [scl,uni] = sscanf(scl_u,'%g %s');
-  fprintf(1,'Warning: scale is in odd units: %s\n',uni);
+  warning(sprintf('VSCOPE_LOAD: Scale is in odd units: %s',uni));
 end
 if scl==0
   scl = 1;
   uni = 'mV';
-  fprintf(1,'Warning: assuming scale=1 mV.\n');
+  warning(sprintf('VSCOPE_LOAD: Assuming scale=1 mV.'));
 end
 
 function [off,uni] = vsdl_getoffset(off_u)
@@ -748,7 +750,7 @@ elseif endswith(off_u,'A')
   uni = 'nA';
 else
   [off,uni] = sscanf(off_u,'%g %s');
-  fprintf(1,'Warning: scale is in odd units: %s\n',uni);
+  warning(sprintf('VSCOPE_LOAD: Scale is in odd units: %s',uni));
 end
 
 function [t, t0, t1] = vsdl_frametimes(dat)
