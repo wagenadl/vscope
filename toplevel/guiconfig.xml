@@ -321,7 +321,7 @@
     </tabbedpage>
   </page>
 
-  <!-- ******************** CCD ACQUISITION CONFIG PAGE ******************* -->
+  <!-- ******************** STIM VIDEO CONFIG PAGE ******************* -->
   <page id="stimVideo" subdxl="3.1">
     <button id="enable" type="bool" bg="#ffff33"/>
     <group id="b" x="0" y="1">
@@ -440,17 +440,17 @@
     <button id="singletrial" label="Single Trial" bg="#bb99ff"/>
     <button id="dummy" label="Dummy" type="bool" bg="#ffffff"/>
     <button id="log"  label="Log Note..." bg="#eeeecc"/>
-    <button id="contEphys" label="Cont. E'phys Disabled" x="2.1" y="1"
+    <button id="contEphys" label="Cont. E'phys Disabled" x="2.1" y="2"
 	    type="bool" bg="#22ff77"/>
     <button id="autoRun"  label="Auto Run Disabled" type="bool" bg="#9977ff"/>
     <group id="camvals" x="1.1" y="0">
-      <button id="trialPeriod" label="Trial period" bg="#44ffaa" x="1" y="3"/>
-      <group x="0" y="0">
+      <button id="trialPeriod" label="Trial period" bg="#44ffaa" x="1" y="4"/>
+      <group x="0" y="0" spanrows="2" spancols="2">
 	<auto id="camvals" enum="CAMERAS" immune="1"/>
       </group>
     </group>
 
-    <button id="walltime" label="%1" x="1.1" y="1" bg="#99aa99"/>
+    <button id="walltime" label="%1" x="1.1" y="2" bg="#99aa99"/>
     <button id="exptelapsed" label="Since Start: %1" bg="#88bb88"/>
     <button id="trialelapsed" label="Since Last: %1" bg="#77cc77"/>
 

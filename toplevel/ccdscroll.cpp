@@ -53,8 +53,9 @@ void CCDScroll::rerange(double t0_, double t1_, double ival_) {
   t0 = t0_;
   t1 = t1_;
   ival = ival_;
-  setRange(t0, t1-t0);
-  setSlider(t0, ival);
+  double dt = (t1-t0)/6;
+  setRange(t0, t1-t0 + dt);
+  setSlider(t0, ival + dt);
   sliderMove(t0);
 }
 

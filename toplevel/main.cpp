@@ -270,8 +270,8 @@ void setupMainWindow(QApplication &app) {
 void setupCCDScroll() {
   QWidget &acqPage = Globals::gui->findPage("acquisition");
   CCDScroll *bar = new CCDScroll(&acqPage);
-  bar->setGeometry(acqPage.width()/5+12, acqPage.height()*4/5+8,
-		   acqPage.width()*4/5-17,acqPage.height()/5-15);
+  bar->setGeometry(acqPage.width()*3/5+12, acqPage.height()*4/5+8,
+		   acqPage.width()*2/5-17,acqPage.height()/5-15);
   QObject::connect(&Globals::trove->trial(),
 		   SIGNAL(newData()),
 		   bar, SLOT(newData()));
