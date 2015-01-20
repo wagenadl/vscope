@@ -59,14 +59,14 @@ void VSDGraph::updateSelection(int id) {
     if (plotDonor) {
       addTrace("donor", trcDonor);
       setTraceLabel("donor", cams.donor);
-      setTracePen("donor", Colors::find("CCD"+cams.donor, "blue"));
+      setTracePen("donor", Colors::find("CCD:"+cams.donor, "blue"));
     } else {
       removeTrace("donor");
     }
     if (plotAcceptor) {
       addTrace("acceptor", trcAcceptor);
       setTraceLabel("acceptor", cams.acceptor);
-      setTracePen("acceptor", Colors::find("CCD"+cams.acceptor, "red"));
+      setTracePen("acceptor", Colors::find("CCD:"+cams.acceptor, "red"));
     } else {
       removeTrace("acceptor");
     }
