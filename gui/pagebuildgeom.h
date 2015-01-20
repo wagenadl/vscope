@@ -27,6 +27,7 @@ public:
   void left();
   void up();
   void last(int n=1);
+  void go(int col, int row);
   QRect const &boundingBox() const;
   void include(QRect bb);
 private:

@@ -62,6 +62,8 @@ void PageBuildGeom::setup(QDomElement doc, QRect geom) {
   double avwidth = geom.width() + master->intx;
   double avheight = geom.height() + master->inty;
 
+  bool fullspec = cols>0 && rows>0;
+  
   if (rows==0)
     rows = round(avheight / button.dy);
   if (cols==0)
@@ -80,8 +82,11 @@ void PageBuildGeom::setup(QDomElement doc, QRect geom) {
   page.dyt = int(button.dy*doc.attribute("subdyt").toDouble() + 1);
   page.dyb = int(button.dy*doc.attribute("subdyb").toDouble() + 1);
 
-  nextcol = 0;
-  nextrow = 0;
+  if (fullspec) {
+    go(cols-1, rows-1);
+    include(bbox());
+  }
+  go(0, 0);
 }
 
 void PageBuildGeom::down() {
@@ -128,6 +133,11 @@ void PageBuildGeom::go(QDomElement doc) {
     nextcol = doc.attribute("x").toDouble();
   if (doc.hasAttribute("y"))
     nextrow = doc.attribute("y").toDouble();
+}
+
+void PageBuildGeom::go(int col, int row) {
+  nextcol = col;
+  nextrow = row;
 }
 
 QRect PageBuildGeom::bbox() {

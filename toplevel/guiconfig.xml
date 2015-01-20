@@ -45,10 +45,10 @@
   <immune id="minimize" label="Minimize" x="7.2" y="4.2" bg="#88dddd"/>
   <immune id="quit" label="Quit" x="7.2" y="5.2" bg="#dddd88"/>
 
-  <menu id="panelLeft"  rows="3" >
+  <menu id="panelLeft" cols="5" rows="3" >
     <auto enum="SHOWWHAT" immune="1"/>
   </menu>
-  <menu id="panelRight"  rows="3">
+  <menu id="panelRight"  cols="5" rows="3">
     <auto enum="SHOWWHAT" immune="1"/>
   </menu>
 
