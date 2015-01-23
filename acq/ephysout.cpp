@@ -61,8 +61,12 @@ bool EPhysOut::prepare(ParamTree const *ptree,
     throw Exception("EPhysOut","No digital buffer defined",
 		    "prepare");
   trialtime_ms = ptree->find("acqEphys/acqTime").toDouble();
+  double samprate_hz = ptree->find("acqEphys/acqFreq").toDouble();
+  int nscans = roundi(trialtime_ms*samprate_hz/1000);
   EPhO_CCD epho_ccd(timing);
-  ddata->reshape(timing.neededScans());
+  if (timing.neededScans() > nscans)
+      nscans = timing.neededScans();
+  ddata->reshape(nscans);
   ddata->zero();
   foreach (QString id, Connections::digiOutputLines())
     ddata->defineLine(Connections::findDig(id).line, id);
