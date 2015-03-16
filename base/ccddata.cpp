@@ -4,6 +4,7 @@
 #include <base/exception.h>
 #include <base/dbg.h>
 #include <base/unitqty.h>
+#include <base/progressdialog.h>
 
 CCDData::CCDData(int serpix_, int parpix_, int nframes_) {
   serpix = serpix_;
@@ -90,7 +91,7 @@ QDomElement CCDData::write(QFile &f, QDomElement dst) const {
   return dst;
 }
 
-void CCDData::read(QFile &f, QDomElement src) {
+void CCDData::read(QFile &f, QDomElement src, ProgressDialog *pd) {
   if (src.tagName()!="camera")
     throw Exception("CCDData","Cannot read without a <camera> element");
 
@@ -133,9 +134,17 @@ void CCDData::read(QFile &f, QDomElement src) {
   
   int nbytes = nfrm*nser*npar*2;
   Q_ASSERT(data.size() >= nfrm*nser*npar);
-  if (f.read((char*)data.data(), nbytes) != nbytes)
-    throw Exception("CCDData", "Cannot read CCD data");
-
+  int offset = 0;
+  while (offset<nbytes) {
+    int now = nbytes - offset;
+    if (now>65536)
+      now = 65536;
+    if (f.read((char*)data.data()+offset, now) != now)
+      throw Exception("CCDData", "Cannot read CCD data");
+    offset+=now;
+    if (pd)
+      pd->progress(offset*100.0/nbytes);
+  }
 }
 
 void CCDData::zero() {

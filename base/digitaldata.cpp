@@ -5,6 +5,7 @@
 #include <base/unitqty.h>
 #include <base/dbg.h>
 #include <QFile>
+#include <base/progressdialog.h>
 
 DigitalData::DigitalData(int nscans_, double fs) {
   fs_hz = fs;
@@ -58,14 +59,14 @@ void DigitalData::write(QString ofn, QDomElement elt) {
   }
 }
 
-void DigitalData::read(QString ifn, QDomElement elt) {
+void DigitalData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
   if (elt.tagName()!="digital")
     elt = elt.firstChildElement("digital");
   if (elt.isNull())
     throw Exception("DigitalData", "Cannot find xml info");
 
   KeyGuard guard(*this);
-  readUInt32(ifn);
+  readUInt32(ifn, pd);
 
   /* Read aux. info from xml and use it! */
   fs_hz = UnitQty(elt.attribute("rate")).toDouble("Hz");
@@ -96,7 +97,7 @@ void DigitalData::writeUInt32(QString ofn) {
   ofd.close();
 }
 
-void DigitalData::readUInt32(QString ifn) {
+void DigitalData::readUInt32(QString ifn, ProgressDialog *pd) {
   KeyGuard guard(*this);
   QFile ifd(ifn);
   if (!ifd.open(QFile::ReadOnly))
@@ -108,8 +109,17 @@ void DigitalData::readUInt32(QString ifn) {
 		       "Unexpected file size: not a multiple of scan size",
 		       "readUInt32");
   reshape(newscans);
-  if (ifd.read((char*)data.data(), filelength_bytes) != filelength_bytes)
-    throw Exception("DigitalData", "Cannot read '" + ifn + "'");
+  int offset = 0;
+  while (offset<filelength_bytes) {
+    int now = filelength_bytes - offset;
+    if (now>65536)
+      now = 65536;
+    if (ifd.read((char*)data.data()+offset, now) != now)
+      throw Exception("DigitalData", "Cannot read '" + ifn + "'");
+    offset += now;
+    if (pd)
+      pd->progress(offset*100.0/filelength_bytes);
+  }
   ifd.close();
   cmask = ~0;
   ensureIDs();

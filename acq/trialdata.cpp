@@ -21,7 +21,7 @@
 #include <xml/enumerator.h>
 #include <base/dbg.h>
 #include <video/videoprog.h>
-#include <QProgressDialog>
+#include <base/progressdialog.h>
 #include "trialdata.h"
 #include <base/keyagg.h>
 
@@ -299,7 +299,8 @@ void TrialData::write() const {
 }
 
 void TrialData::read(QString dir, QString exptname0, QString trialid0,
-                     QProgressDialog *pd) {
+                     ProgressDialog *pd) {
+  pd->push(5, "Loading trial metadata");
   KeyGuard guard(*this);
   prep=false;
 
@@ -318,8 +319,6 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   
   mypartree->read(settings);
   Dbg() << "  read paramtree";
-  if (pd)
-    pd->setValue(15);
 
   mypartree->find("filePath").set(fpath);
   mypartree->find("acquisition/exptname").set(exptname);
@@ -334,29 +333,35 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
     prepareSnapshot(false);
   else
     prepare(false);
-  if (pd)
-    pd->setValue(20);
+
+  pd->pop();
 
   if (xml)
     delete xml;
   xml = new XML(myxml);
 
+  pd->push(95, "Loading trial data");
   if (snap || contEphys) {
     clearAnalog();
     clearDigital();
-    pd->setValue(30);
   } else {
-    readAnalog(myxml, base);
-    pd->setValue(25);
-    readDigital(myxml, base);
-    pd->setValue(30);
+    pd->push(do_ccd ? 25 : 100);
+    pd->push(75, "Loading analog data");
+    readAnalog(myxml, base, pd);
+    pd->pop();
+    pd->push(25, "Loading digital data");
+    readDigital(myxml, base, pd);
+    pd->pop();
+    pd->pop();
   }
 
-  if (do_ccd) 
-    readCCD(myxml, base);
-  else
+  if (do_ccd) {
+    pd->push((snap||contEphys) ? 100 : 75, "Loading CCD data");
+    readCCD(myxml, base, pd);
+    pd->pop();
+  } else {
     clearCCD();
-  pd->setValue(50);
+  }
 }
 
 void TrialData::writeAnalog(QString base) const {
@@ -407,17 +412,17 @@ void TrialData::clearDigital() {
   ddataIn->zero();
 }
 
-void TrialData::readAnalog(XML &myxml, QString base) {
+ void TrialData::readAnalog(XML &myxml, QString base, ProgressDialog *pd) {
   QDomElement analog = myxml.find("analog");
-  adataIn->read(base+"-analog.dat", analog);
+  adataIn->read(base+"-analog.dat", analog, pd);
 }
 
-void TrialData::readDigital(XML &myxml, QString base) {
+void TrialData::readDigital(XML &myxml, QString base, ProgressDialog *pd) {
   QDomElement digital = myxml.find("digital");
-  ddataIn->read(base+"-digital.dat", digital);
+  ddataIn->read(base+"-digital.dat", digital, pd);
 }
 
-void TrialData::readCCD(XML &myxml, QString base) {
+ void TrialData::readCCD(XML &myxml, QString base, ProgressDialog *pd) {
   QDomElement ccd = myxml.find("ccd");
   /* We now have three versions of ccd data storage
      (1) The very oldest, with interleaved frames for precisely two cameras.
@@ -446,6 +451,11 @@ void TrialData::readCCD(XML &myxml, QString base) {
     throw Exception("Trial",
 		    QString("Cannot open '%1' for reading").arg(ccdfn),
 		    "read");
+  int ncams = 0;
+  for (QDomElement cam = ccd.firstChildElement("camera");
+       !cam.isNull(); cam = cam.nextSiblingElement("camera"))
+    ncams++;
+
   for (QDomElement cam = ccd.firstChildElement("camera");
        !cam.isNull(); cam = cam.nextSiblingElement("camera")) {
     QString id = cam.attribute("name");
@@ -461,7 +471,9 @@ void TrialData::readCCD(XML &myxml, QString base) {
       ccddata[id] = new CCDData;
       add(ccddata[id]); // to the keyagg
     }
-    ccddata[id]->read(ccdf, cam);
+    pd->push(90.0/ncams, QString("Loading CCD data: %1").arg(id));
+    ccddata[id]->read(ccdf, cam, pd);
+    pd->pop();
   }
   ccdf.close();
 
@@ -492,6 +504,7 @@ void TrialData::readCCD(XML &myxml, QString base) {
       campairs[id] = campairs[did] = CamPair(did, id);
     }
   }
+  pd->progress(100);
 
   if (newset!=oldset)
     emit newCameras();

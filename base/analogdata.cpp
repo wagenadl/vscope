@@ -3,6 +3,7 @@
 #include <base/analogdata.h>
 #include <base/dbg.h>
 #include <base/unitqty.h>
+#include <base/progressdialog.h>
 
 AnalogData::AnalogData(int nscans_, int nchannels_, double fs_hz_) {
   nscans = nscans_;
@@ -161,7 +162,7 @@ AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
   return steps;
 }
 
-void AnalogData::read(QString ifn, QDomElement elt) {
+void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
   KeyGuard guard(*this);
 
   if (elt.tagName()!="analog")
@@ -210,12 +211,13 @@ void AnalogData::read(QString ifn, QDomElement elt) {
       index2offset[idx] = 0;
     }
   }
-  readInt16(ifn, scales);
+  readInt16(ifn, scales, pd);
   if (nscans != scans)
     throw Exception("AnalogData", "Scan count mismatch between data and xml");
 }
 
-void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps) {
+void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
+			   ProgressDialog *pd) {
   KeyGuard guard(*this);
 
   for (int c=0; c<nchannels; c++)
@@ -239,6 +241,7 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps) {
   QVector<int16_t> buffer(nchannels*BUFSIZE);
   int scansleft = newscans;
   double *dp = data.data();
+  int k = 0;
   while (scansleft) {
     int now = scansleft < BUFSIZE ? scansleft : BUFSIZE;
     int nbytes = nchannels*2*now;
@@ -250,6 +253,9 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps) {
       for (int c=0; c<nchannels; c++)
 	*dp++ = *bp++ * steps[index2id[c]];
     scansleft-=now;
+    if (pd)
+      if (((++k)&15)==0)
+	pd->progress((newscans-scansleft)*100.0/newscans);
   }
   emitUnlessCheckedOut();
 }

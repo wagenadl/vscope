@@ -27,7 +27,7 @@ public:
   void prepareSnapshot();
   virtual void write() const;
   virtual void read(QString dir, QString exptname, QString trialid,
-                    class QProgressDialog *pd=0);
+                    class ProgressDialog *pd=0);
 public:
   ParamTree const *paramTree() const { return partree; } // may be 0 if unprep.
   ParamTree *myParamTree() const { return mypartree; } // may be 0 if unprep.
@@ -91,9 +91,9 @@ private:
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;
-  void readAnalog(XML &myxml, QString base);
-  void readDigital(XML &myxml, QString base);
-  void readCCD(XML &myxml, QString base);
+  void readAnalog(XML &myxml, QString base, class ProgressDialog *pd);
+  void readDigital(XML &myxml, QString base, class ProgressDialog *pd);
+  void readCCD(XML &myxml, QString base, class ProgressDialog *pd);
   void clearAnalog();
   void clearDigital();
   void clearCCD();

@@ -44,7 +44,7 @@ public:
        function.
    *:N We cannot provide the "name" information to the XML.
   */
-void read(QFile &f, QDomElement src);
+  void read(QFile &f, QDomElement src, class ProgressDialog *);
   /*:F read
    *:D Data is read from an already open file, from the current read pointer.
        DST must be a "camera" element.

@@ -59,8 +59,8 @@ public:
    *:D Writes data to a new file in a compact binary file format.
    *:R Value of digital steps for each channel (in DAQ input Volts).
    */
-  void read(QString ifn, QDomElement elt);
-  void readInt16(QString ifn, ScaleMap const &steps);
+  void read(QString ifn, QDomElement elt, class ProgressDialog *);
+  void readInt16(QString ifn, ScaleMap const &steps, class ProgressDialog *);
   /*:F readInt16
    *:D Reads data from a file created by writeInt16(). Unlike read(), this
        requires that the channel map has already been set up.

@@ -8,7 +8,7 @@
 #include <math/cohdata.h>
 #include <base/dbg.h>
 #include <xml/connections.h>
-#include <QProgressDialog>
+#include <base/progressdialog.h>
 
 DataTrove::DataTrove(ParamTree *ptree): KeyAgg(0) {
   ptree_ = ptree;
@@ -69,7 +69,7 @@ void DataTrove::updateCameras() {
 }
 
 void DataTrove::read(QString dir, QString exptname, QString trialid,
-                     QProgressDialog *pd) {
+                     ProgressDialog *pd) {
   KeyGuard guard(*this);
   bool d = dummy;
   bool a = asr;
@@ -77,7 +77,7 @@ void DataTrove::read(QString dir, QString exptname, QString trialid,
   asr = false; // prevent immediate resaving of rois
   rois_->clear();
   if (pd)
-    pd->setValue(10);
+    pd->progress(10);
   trial_->read(dir, exptname, trialid, pd);
   QString roifn = QString("%1/%2/%3-rois.xml")
     .arg(dir).arg(exptname).arg(trialid);

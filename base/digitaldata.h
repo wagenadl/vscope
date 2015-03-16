@@ -34,8 +34,8 @@ public:
   /*:F writeUInt32
    *:D Writes data to a file in a raw binary format.
    */
-  void read(QString ifn, QDomElement elt);
-  void readUInt32(QString ifn);
+  void read(QString ifn, QDomElement elt, class ProgressDialog *);
+  void readUInt32(QString ifn, class ProgressDialog *);
   /*:F readUInt32
    *:D Reads data back from a file previously written by writeUInt32.
    */
