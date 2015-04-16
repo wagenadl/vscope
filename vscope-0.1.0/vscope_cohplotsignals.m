@@ -28,6 +28,9 @@ else
   idx = find(coh.mag >= kv.threshold);
 end
 
+% Use only those times for calculating scale that were used for coherence
+tidx = coh.extra.tt0>=coh.extra.tt(1) & coh.extra.tt0<=coh.extra.tt(end);
+
 if isempty(kv.height)
   kv.height = kv.width * (3 + length(idx))/30;
 end
@@ -67,11 +70,11 @@ end
 sig = bsxfun(@rdivide, coh.extra.sig0(2:end,:), mean(coh.extra.sig0)) - 1;
 
 if kv.uniform
-  sd = std(sig(:,idx));
+  sd = std(sig(tidx(2:end), idx));
   sd = sort(sd);
   scl = repmat(sd(ceil(.75*N)) * 5, [N 1]);
 else
-  scl = 5*std(sig(:,idx));  
+  scl = 5*std(sig(tidx(2:end), idx));  
   if isempty(scl)
     s0 = 1;
   else
@@ -98,7 +101,8 @@ for n=1:N
   else
     qpen b
   end
-  qplot(coh.extra.tt0(2:end), sig(:,idx(n))/scl(n) + n);
+  qplot(coh.extra.tt0(2:end), ...
+      (sig(:,idx(n))-mean(sig(tidx(2:end),idx(n))))/scl(n) + n);
   qat(coh.extra.tt0(1), n);
   qalign right middle
   qtext(-5, 0, vscope_roiid(idx(n)));
