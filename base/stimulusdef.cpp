@@ -48,13 +48,21 @@ void StimulusDef::instantiateAnalog(double *data, int len, int stride,
 	}
       } break;
       case PT_Ramp: {
-	int s1 = mini(s0 + pulseDur_scans, len);
-	int ds = s1 - s0 - 1;
+	int s1 = mini(s0+pulseDur_scans, len);
+	int ds = pulseDur_scans - 1;
 	if (ds<1)
 	  ds = 1;
 	double dV = (pulseAmp2_mV - pulseAmp_mV)/1000/ds;
 	for (int s=s0; s<s1; s++) 
 	  data[s*stride] = pulseAmp_mV/1000 + dV*(s-s0);
+      } break;
+      case PT_Sine: {
+	int s1 = mini(s0+pulsePeriod_scans, len);
+	int ds = pulsePeriod_scans;
+	if (ds<1)
+	  ds = 1;
+	for (int s=s0; s<s1; s++)
+	  data[s*stride] = pulseAmp_mV/1000 * sin((s-s0)*2*M_PI/ds);
       } break;
       }
     }

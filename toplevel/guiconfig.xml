@@ -112,6 +112,7 @@
         <item value="Square"/>
         <item value="Biphasic"/>
         <item value="Ramp"/>
+        <item value="Sine"/>
       </menu>    
     
       <menu id="nTrains"  cols="4.1">
