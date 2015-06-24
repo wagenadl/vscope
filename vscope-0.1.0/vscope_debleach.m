@@ -24,7 +24,10 @@ xx = reshape(xx, [T N]);
 
 if ord<0
   for n=1:N
-    xx(:, n) = salpa(xx(:, n) - mean(xx(:, n)), 'tau', -ord) + mean(xx(:, n));
+    m0 = mean(xx(:,n));
+    yy = salpa(xx(:, n) - m0, 'tau', -ord) + m0;
+    yy(isnan(yy)) = m0; % VSCOPE does not like SALPA's NANs
+    xx(:, n) = yy;
   end
   return;
 end

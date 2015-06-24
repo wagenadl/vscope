@@ -35,8 +35,8 @@ C_mag_samples=C_mag_samples(~isnan(C_mag_samples));
 N_perms = length(C_mag_samples);
 
 % plot the histo
-[n_C_mag_samples,C_mag_grid]=hist(C_mag_samples,100);
 if PLOTFLAG
+  [n_C_mag_samples,C_mag_grid]=hist(C_mag_samples,100);
   figure;
   h=bar(C_mag_grid,n_C_mag_samples);
   set(h,'EdgeColor','none');
