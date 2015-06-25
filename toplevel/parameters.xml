@@ -111,23 +111,16 @@
   
     <category id="stimVideo">
       <param id="enable" type="bool" default="false"/>
-      <param id="avoidCCD" type="bool" default="false"/>
-      <param id="lightOn" type="bool" default="false" save="false"/>
+      <param id="type" type="enum" enum="VIDEOSTIMTYPE" default="Waves"/>
+      <param id="angle" type="double" default="0"/>
+      <param id="wavelength" type="length" default="50 mm"/>
+      <param id="frequency" type="freq" default="2 Hz"/>
       <param id="delay" type="time" default="100 ms" min="10 ms" max="1 h"/>
       <param id="dur" type="time" default="10 s" min="100 ms" max="1 h"/>
-      <param id="prog" type="string" default="1"/>
-      <param id="parA" type="double" default="0"/>
-      <param id="parB" type="double" default="0"/>
-      <param id="parC" type="double" default="0"/>
-      <param id="marginPreCCD" type="time" default="5.5 ms" min="0 ms" max="500 ms"/>
-      <param id="marginPostCCD" type="time" default="0.5 ms" min="0 ms" max="500 ms"/>
-      <param id="xscale" type="voltage" default="1.35 V"/>
-      <param id="yscale" type="voltage" default="1.5 V"/>
-      <param id="xhome" type="voltage" default="0 V"/>
-      <param id="yhome" type="voltage" default="0 V"/>
-      <param id="frameRate" type="freq" default="10 Hz"/>
-      <param id="preIllum" type="time" default="0 ms" min="0 ms" max="1 min"/>
-      <param id="postIllum" type="time" default="0 ms" min="0 ms" max="1 min"/>
+      <param id="xscale" type="length" default="90 mm"/>
+      <param id="yscale" type="length" default="52.5 mm"/>
+      <param id="xhome" type="length" default="0 mm"/>
+      <param id="yhome" type="length" default="0 mm"/>
     </category>
   
     <category id="acquisition">
@@ -226,14 +219,13 @@
       <category id="stimVideo">
         <param id="delay-1" type="time" default="1.0 s"/>
         <param id="dur-1" type="time" default="5 min"/>
-        <param id="frameRate-1" type="freq" default="60 Hz"/>
-        <param id="preIllum-1" type="time" default="1 s"/>
-        <param id="postIllum-1" type="time" default="1 s"/>
-        <param id="marginPreCCD-1" type="time" default="5 ms"/>
-        <param id="marginPostCCD-1" type="time" default="0.5 ms"/>
-        <param id="parA-1" type="double" default="0"/>
-        <param id="parB-1" type="double" default="0"/>
-        <param id="parC-1" type="double" default="0"/>
+        <param id="angle-1" type="double" default="0"/>
+        <param id="wavelength-1" type="length" default="10 mm"/>
+        <param id="frequency-1" type="freq" default="1 Hz"/>
+        <param id="xscale-1" type="length" default="90 mm"/>
+        <param id="yscale-1" type="length" default="52.5 mm"/>
+        <param id="xhome-1" type="length" default="0 mm"/>
+        <param id="yhome-1" type="length" default="0 mm"/>
       </category>
       <category id="acquisition">
         <param id="trialPeriod-1" type="time" default="12 s"/>

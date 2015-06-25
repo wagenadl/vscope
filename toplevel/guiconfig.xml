@@ -325,59 +325,19 @@
   <!-- ******************** STIM VIDEO CONFIG PAGE ******************* -->
   <page id="stimVideo" subdxl="3.1">
     <button id="enable" type="bool" bg="#ffff33"/>
-    <group id="b" x="0" y="1">
-      <button id="avoidCCD" label="Avoid CCD" type="bool" bg="#cccc99"/>
-      <button id="lightOn" label="[Light On]" type="bool" y="3" bg="#ffff00"
-	      neverdisable="true"/>
-    </group>
     <group id="a" x="0" y="0">
       <button id="delay" label="Onset delay" y="2" bg="#dddd66"/>
       <button id="dur" label="Duration" bg="#bbbb44"/>
-      <button id="prog" label="Program" x="1" y="0" bg="#bbbb44"/>
-      <button id="parA" label="Param A #" bg="#ffff88"/>
-      <button id="parB" label="Param B #" bg="#ffff55"/>
-      <button id="parC" label="Param C #" bg="#ffff22"/>
-      <button id="frameRate" label="Frame Rate" x="2" y="0" bg="#dddd99"/>
-      <button id="preIllum" label="Pre-illum."  bg="#dddd99"/>
-      <button id="postIllum" label="Post-illum." bg="#dddd99"/>
-      <button id="marginPreCCD" label="Pre-CCD"  bg="#bb99ff"/>
-      <button id="marginPostCCD" label="Post-CCD" bg="#bb99ff"/>
+      <button id="type" label="Type" x="1" y="0" bg="#bbbb44"/>
+      <button id="angle" label="Angle" bg="#ffff88"/>
+      <button id="wavelength" label="Wavelength" bg="#ffff55"/>
+      <button id="frequency" label="Frequency" bg="#ffff22"/>
+      <button id="xscale" label="H-T Scale" x="2" y="0" bg="#dddd99"/>
+      <button id="yscale" label="L-R Scale"  bg="#dddd99"/>
+      <button id="xhome" label="H-T Home" bg="#dddd99"/>
+      <button id="yhome" label="L-R Home"  bg="#bb99ff"/>
+      <!--button id="marginPostCCD" label="Post-CCD" bg="#bb99ff"/-->
     </group>
-
-    <menu id="frameRate" rows="4" cols="5.8">
-      <items>
-	5 Hz, 10 Hz, 15 Hz, 20 Hz, 25 Hz, 30 Hz, 40 Hz, 50 Hz,
-      </items>
-      <item custom="1" editcaption="Video frame rate if not avoiding CCD"/>
-    </menu>
-
-    <menu id="preIllum" rows="4" cols="5.8">
-      <items>
-	0 ms, 1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
-      </items>
-      <item custom="1" editcaption="Pre-illumination time"/>
-    </menu>
-
-    <menu id="postIllum" rows="4" cols="5.8">
-      <items>
-	0 ms, 1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
-      </items>
-      <item custom="1" editcaption="Post-illumination time"/>
-    </menu>
-
-    <menu id="marginPreCCD" rows="4" cols="5.8">
-      <items>
-	0 ms, 1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
-      </items>
-      <item custom="1" editcaption="Pre-CCD avoidance time"/>
-    </menu>
-
-    <menu id="marginPostCCD" rows="4" cols="5.8">
-      <items>
-	0 ms, 1 ms, 2 ms, 5 ms, 10 ms, 20 ms, 50 ms, 100 ms, 200 ms, 500 ms
-      </items>
-      <item custom="1" editcaption="Post-CCD avoidance time"/>
-    </menu>
 
     <menu id="delay"  cols="5.8">
       <items>
@@ -397,34 +357,66 @@
       <item custom="1"  editcaption="Duration of video stimulation"/>
     </menu>
 
-    <menu id="prog"  cols="4.8">
+    <menu id="type"  cols="4.8">
       <items>
-	01, 02, 03, 04, 05, 11, 12, 13, 14, 15, 21, 22, 23, 24, 25,
+        <item value="Waves"/>
+        <item value="Standing"/>
+        <item value="Flicker"/>
+        <item value="StaticOn"/>
+        <item value="Calibrate"/>
       </items>
     </menu>
 
-    <menu id="parA"  cols="5.8">
+    <menu id="angle"  cols="5.8">
       <items>
-	01, 02, 03, 04, 05, 11, 12, 13, 14, 15,
-	21, 22, 23, 24, 25, 31, 32, 33, 34,
+        0, 90, 180, 270
       </items>
       <item custom="1"  editcaption="Parameter value"/>
     </menu>
 
-    <menu id="parB"  cols="4">
+    <menu id="wavelength"  cols="4">
       <items>
-	01, 02, 03, 04, 05, 11, 12, 13, 14, 15,
-	21, 22, 23, 24, 25, 31, 32, 33, 34,
+        5 mm, 10 mm, 15 mm, 20 mm, 25 mm, 30 mm, 40 mm, 50 mm,
+        60 mm, 80 mm, 100 mm, 120 mm, 140 mm, 170 mm, 210 mm,
+        270 mm, 350 mm
       </items>
-      <item custom="1"  editcaption="Parameter value"/>
+      <item custom="110 mm"  editcaption="Wavelength"/>
     </menu>
 
-    <menu id="parC"  cols="4">
+    <menu id="frequency"  cols="4">
       <items>
-	01, 02, 03, 04, 05, 11, 12, 13, 14, 15,
-	21, 22, 23, 24, 25, 31, 32, 33, 34,
+        0.1 Hz, 0.2 Hz, 0.3 Hz, 0.5 Hz, 0.7 Hz,
+        1 Hz, 1.5 Hz, 2 Hz, 3 Hz, 4 Hz, 5 Hz, 6 Hz, 8 Hz, 10 Hz
       </items>
-      <item custom="1"  editcaption="Parameter value"/>
+      <item custom="0.15 Hz"  editcaption="Frequency"/>
+    </menu>
+
+    <menu id="xscale"  cols="4">
+      <items>
+        80 mm, 85 mm, 90 mm, 95 mm, 100 mm
+      </items>
+      <item custom="10 mm"  editcaption="Head-to-tail scale"/>
+    </menu>
+
+    <menu id="yscale"  cols="4">
+      <items>
+        40 mm, 50 mm, 60 mm
+      </items>
+      <item custom="52.5 mm"  editcaption="Left-to-right scale"/>
+    </menu>
+
+    <menu id="xhome"  cols="4">
+      <items>
+        0 mm
+      </items>
+      <item custom="0 mm"  editcaption="Head-to-tail home position"/>
+    </menu>
+
+    <menu id="yhome"  cols="4">
+      <items>
+        0 mm
+      </items>
+      <item custom="0 mm"  editcaption="Left-to-right home position"/>
     </menu>
   </page>
 
