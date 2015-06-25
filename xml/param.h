@@ -48,6 +48,12 @@ class Param {
                 "uA" or "mA". Converted to double, the value is returned
 		in nA. Converted to string, a unit is automatically chosen
 		to make the number look reasonable.
+         length - A length, internally stored in millimeters. Valid string
+                representations are: a plain number (interpreted as mm), or
+                a number followed by one of the units "m", "cm", "mm", "um".
+                Converted to double, the value is returned in mm. Converted
+                to string, a unit is automatically chosen to make the number
+                look reasonable.
          geometry - A pixel geometry, internally stored as a QRect. The only
                 valid string representation is "WxH+XL+YT".
          enum - A single enumeration value. The Enumerator that this value

@@ -78,6 +78,7 @@ void Param::newType(QString type, QString enumname) {
 	valueType=="freq" ||
 	valueType=="voltage" ||
 	valueType=="current" ||
+	valueType=="length" ||
 	valueType=="geometry" ||
 	valueType=="string" ||
 	valueType=="enum" ||
@@ -178,6 +179,23 @@ void Param::set(QString s) {
       v = QVariant(val);
     } else {
       throw Exception("Param","Current must be expressed in pA, nA, uA, or mA");
+    }
+  } else if (valueType=="length") {
+    QRegExp re("^([0-9-.]+)\\s*(|um|mm|cm|m)$");
+    if (re.indexIn(s)>-1) {
+      double val = re.cap(1).toDouble(&ok);
+      QString unit = re.cap(2);
+      if (unit=="mm" || unit=="")
+	;
+      else if (unit=="um")
+	val/=1000;
+      else if (unit=="m")
+	val*=1000;
+      else if (unit=="cm")
+	val*=10;
+      v = QVariant(val);
+    } else {
+      throw Exception("Param","Length must be expressed in um, mm, cm, or m");
     }
   } else if (valueType=="geometry") {
     QRegExp re("^(\\d+)x(\\d+)\\+(\\d+)\\+(\\d+)$");
@@ -313,6 +331,8 @@ void Param::setDouble(double f) {
     v=QVariant(f); // assume mV.
   else if (valueType=="current")
     v=QVariant(f); // assume nA.
+  else if (valueType=="length")
+    v=QVariant(f); // assume mm.
   else 
     throw Exception("Param", QString("Cannot make '") + valueType +"' from integer");
   rangeCheck(v);
@@ -386,6 +406,14 @@ QString Param::toString() const {
       return QString("%1 nA").arg(v);
     else
       return QString("%1 pA").arg(v*1000);      
+  } else if (valueType=="length") {
+    double v = value.toDouble();
+    if (fabs(v)>=200) 
+      return QString("%1 m").arg(v/1000);
+    else if (fabs(v)>=0.2)
+      return QString("%1 mm").arg(v);
+    else
+      return QString("%1 um").arg(v*1000);      
   } else if (valueType=="geometry") {
     QRect r = value.toRect();
     return QString("%1x%2+%3+%4").
