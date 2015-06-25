@@ -74,6 +74,14 @@
       <item tag="Difference"/>
     </enum>
 
+    <enum id="VIDEOSTIMTYPE" prefix="VST">
+      <item tag="Waves"/>
+      <item tag="Standing"/>
+      <item tag="Flicker"/>
+      <item tag="StaticOn"/>
+      <item tag="Calibrate"/>
+    </enum>
+
     <enum id="STIMCHS">
     </enum>
   </enums>
