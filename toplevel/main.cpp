@@ -51,8 +51,6 @@
 #include <acq/trial.h>
 #include <acq/datatrove.h>
 #include <acq/contacq.h>
-#include <video/videoprog.h>
-#include <gui/videogui.h>
 
 #include <toplevel/acquire.h>
 #include <toplevel/mgauto.h>
@@ -65,6 +63,7 @@
 #include <gui/guiexc.h>
 #include <math/taperbank.h>
 #include <math/cohdata.h>
+#include <video/vprojector.h>
 
 #include <acq/ccdacq.h>
 
@@ -429,6 +428,7 @@ int main(int argc, char **argv) {
   QApplication app(argc, argv);
   Warning::enableGUIWarnings();
   try {
+    QObject guard;
     checkTypes();
     setupAppStyle(app);
     setupParsAndConns();
@@ -456,7 +456,7 @@ int main(int argc, char **argv) {
     setupVSDTraces();
     CohImages *coi = setupCoherence();
     
-    Globals::videogui = new VideoGUI(VideoProg::find());
+    Globals::vprojector = new VProjector(&guard);
 
     Globals::trial = new Trial(&Globals::trove->trial());
     Globals::trial->prepare(Globals::ptree);

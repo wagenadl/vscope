@@ -15,7 +15,6 @@
 #include <daq/digitalout.h>
 #include <acq/ephysacq.h>
 #include "dutycyclelimit.h"
-#include <video/videoprog.h>
 #include <QTimer>
 #include <QSet>
 #include <acq/epho_ccd.h>
@@ -81,9 +80,6 @@ bool EPhysOut::prepare(ParamTree const *ptree,
   }
   adata->setSamplingFrequency(ptree->find(PAR_OUTRATE).toDouble());
   ddata->setSamplingFrequency(ptree->find(PAR_OUTRATE).toDouble());
-  
-  if (ptree->find("stimVideo/enable").toBool())
-    VideoProg::find().prepStim(ptree, timing.first(), adata, ddata);
   
   prep = true;
   

@@ -23,7 +23,6 @@
 #include <QSet>
 #include <xml/enumerator.h>
 #include <base/dbg.h>
-#include <video/videoprog.h>
 
 Trial::Trial(TrialData *d): dat(d) {
   ephysacq = 0;

@@ -16,8 +16,7 @@
 #include <toplevel/exptlog.h>
 #include <toplevel/vscopegui.h>
 #include <toplevel/panelhistory.h>
-#include <video/videolight.h>
-#include <gui/videogui.h>
+#include <video/vprojector.h>
 #include <gfx/roiimages.h>
 #include <gfx/cohmaps.h>
 #include <gfx/cohgraph.h>
@@ -80,7 +79,6 @@ void gt_slots::setRefTrace() {
 }
 
 void gt_slots::everythingChanged() {
-  Globals::videogui->reset(Globals::gui, ptree());
   Globals::trial->prepare(ptree());
   Globals::mgintra->rebuild();
   Globals::mgextra->rebuild();
@@ -141,13 +139,15 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::panelHistory->newSelection("Right");
     } else if (p=="stimVideo/enable") {
       OverrideCursor oc(Qt::WaitCursor);
-      Globals::videogui->changeEnable(Globals::gui,ptree());
-    } else if (p=="stimVideo/prog") {
-      OverrideCursor oc(Qt::WaitCursor);
-      Globals::videogui->changeProgram(Globals::gui,ptree());
-    } else if (p.startsWith("stimVideo/par")) {
-      OverrideCursor oc(Qt::WaitCursor);
-      Globals::videogui->changeParam(Globals::gui,ptree(),p.mid(10));
+      if (ptree()->find(p).toBool()) {
+        Dbg() << "trying to enable stimvideo";
+        if (!Globals::vprojector->activate()) {
+          Dbg() << "  unsuccessful";
+          ptree()->find(p).setBool(false);
+          Globals::gui->findButton("stimVideo/enable").setText("Unavailable");
+          Globals::gui->findPage("stimVideo").open();
+        }
+      }
     } else if (QRegExp("acqCCD/camera:.*/master").exactMatch(p)) {
       ensureMasterOK(p);
     }
@@ -195,8 +195,6 @@ void gt_slots::paramchanged(QString p, QString val) {
       else
         Globals::exptlog->addNote("Auto run: Disabled");
       Globals::acquire->setAutoRun();
-    } else if (p=="stimVideo/lightOn") {
-      VideoLight::set(ptree()->find(p).toBool());
     } else if (p=="scripts/run") {
       Globals::scripts->setRunning(ptree()->find(p).toBool());
     } else if (p.startsWith("panel")) {

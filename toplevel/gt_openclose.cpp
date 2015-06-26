@@ -12,7 +12,6 @@
 #include <base/exception.h>
 #include <toplevel/savedsettings.h>
 #include <gui/timebutton.h>
-#include <gui/videogui.h>
 #include <gui/overridecursor.h>
 #include <xml/paramtree.h>
 #include <acq/datatrove.h>
@@ -97,8 +96,6 @@ void gt_slots::pgopen(QString p, QWidget *w) {
       checkcam(w);
     else if (p=="maintenance/checkMEA")
       checkmea(w);
-    else if (p=="maintenance/checkVideo")
-      checkvid(w);
     else if (p=="maintenance/focus") {
       hideTop();
       if (Globals::focus) {
@@ -130,9 +127,6 @@ void gt_slots::pgopen(QString p, QWidget *w) {
       Globals::walltime->show();
       Globals::exptelapsed->show();
       Globals::trialelapsed->show();
-    } else if (p=="stimVideo") {
-      OverrideCursor oc(Qt::WaitCursor);
-      Globals::videogui->openPage(Globals::gui, Globals::ptree);
     }
   } catch (Exception const &e) {
     report(e,"open page");

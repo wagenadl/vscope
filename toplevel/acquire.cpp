@@ -24,7 +24,7 @@
 #include <base/roiset.h>
 #include <xml/connections.h>
 #include <xml/enumerator.h>
-#include <video/videoprog.h>
+#include <video/vprojector.h>
 #include <acq/datatrove.h>
 #include <QDir>
 #include <toplevel/mainwindow.h>
@@ -99,11 +99,13 @@ void Acquire::acqTrial() {
   
   type = TRIAL;
   Globals::trial->prepare(Globals::ptree);
+  Globals::vprojector->prepare(Globals::ptree);
   if (!dummy) {
     Globals::exptlog->markTrial();
     Globals::contacq->markTrial(ExptLog::trialID());
   }
   Globals::trial->start();
+  Globals::vprojector->start();
   if (dummy)
     Globals::blackout->setText("Acquiring *DUMMY* Trial...");
   else

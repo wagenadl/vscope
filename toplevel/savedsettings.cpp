@@ -14,7 +14,6 @@
 #include <toplevel/exptlog.h>
 #include <QDateTime>
 #include <acq/datatrove.h>
-#include <gui/videogui.h>
 #include <toplevel/gt_slots.h>
 #include <gui/guiexc.h>
 #include <xml/settingsfile.h>

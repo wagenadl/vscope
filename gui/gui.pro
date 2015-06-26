@@ -11,8 +11,6 @@ SOURCES += guibutton.cpp guipage.cpp guiroot.cpp guigeom.cpp
 HEADERS += timebutton.h   guiexc.h   overridecursor.h  
 SOURCES += timebutton.cpp guiexc.cpp overridecursor.cpp
 
-HEADERS += videogui.h  
-SOURCES += videogui.cpp
 HEADERS += abstractpage.h   pagebuildgeom.h  
 SOURCES += abstractpage.cpp pagebuildgeom.cpp
 

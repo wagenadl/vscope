@@ -20,7 +20,6 @@
 #include <QSet>
 #include <xml/enumerator.h>
 #include <base/dbg.h>
-#include <video/videoprog.h>
 #include <base/progressdialog.h>
 #include "trialdata.h"
 #include <base/keyagg.h>
@@ -328,7 +327,6 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   
   // the following ensures that we have stimulus data prepared
   // and that the xdataIn have the right sizes
-  VideoProg::find().reset(mypartree);
   if (info.attribute("type")=="snapshot")
     prepareSnapshot(false);
   else

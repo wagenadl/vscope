@@ -24,7 +24,7 @@ Focus *Globals::focus;
 Trial *Globals::trial;
 ContAcq *Globals::contacq;
 Acquire *Globals::acquire;
-VideoGUI *Globals::videogui;
+VProjector *Globals::vprojector;
 
 SavedSettings *Globals::savedSettings;
 

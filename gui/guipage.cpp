@@ -247,8 +247,8 @@ void guiPage::open() {
   emit opening(pathInstantiate(myPath), (QWidget*)(this));
 
   Param *p = ptree->findp("enable");
-  setPageEnabled(p ? p->toBool() : true);
   prepForOpening();
+  setPageEnabled(p ? p->toBool() : true);
 
   if (neverOpened) {
     foreach (guiRadioGroup *bg, groups) 
@@ -278,7 +278,7 @@ void guiPage::openChildren() {
 void guiPage::prepForOpening() {
   foreach (guiRadioGroup *g, groups)
     g->rebuild();
-  
+
   foreach (QString id, buttons.keys()) {
     guiButton *b = buttons[id];
     Param *p = ptree ? ptree->findp(id) : 0;

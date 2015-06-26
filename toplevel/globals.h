@@ -29,7 +29,7 @@ public:
   
   static class LiveEPhys *liveephys; 
   static class Focus *focus; 
-  static class VideoGUI *videogui; 
+  static class VProjector *vprojector; 
   static class ContAcq *contacq; 
 
   static class Trial *trial; 
