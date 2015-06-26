@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd /home/Wagenaar/progs/build-leechprojector-Desktop_Qt_5_3_MSVC2013_32bit-Release/release
+PATH=/cygdrive/c/Qt5/5.3/msvc2013/bin:$PATH
+export PATH
+./leechprojector.exe -server
+

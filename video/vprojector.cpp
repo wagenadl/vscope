@@ -25,8 +25,8 @@ bool VProjector::activate() {
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), SLOT(readyReadStdout()));
   connect(proc, SIGNAL(readyReadStandardError()), SLOT(readyReadStderr()));
-  QStringList args; args << "-server";
-  proc->start("leechprojector", args);
+  QStringList args; args << "leechprojector" << "-server";
+  proc->start("bash", args);
   if (proc->waitForStarted()) {
     Dbg() << "  activated";
     return true;
