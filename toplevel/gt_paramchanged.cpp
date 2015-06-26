@@ -142,7 +142,9 @@ void gt_slots::paramchanged(QString p, QString val) {
       OverrideCursor oc(Qt::WaitCursor);
       if (ptree()->find(p).toBool()) {
         Dbg() << "trying to enable stimvideo";
-        if (!Globals::vprojector->activate()) {
+        if (Globals::vprojector->activate()) {
+          Globals::vprojector->prepare(Globals::ptree);
+        } else {
           Dbg() << "  unsuccessful";
           ptree()->find(p).setBool(false);
           Globals::gui->findButton("stimVideo/enable").setText("Unavailable");
@@ -153,6 +155,8 @@ void gt_slots::paramchanged(QString p, QString val) {
                + " Video stimulation not available.");
         }
       }
+    } else if (p.startsWith("stimVideo/")) {
+      Globals::vprojector->prepare(Globals::ptree);
     } else if (QRegExp("acqCCD/camera:.*/master").exactMatch(p)) {
       ensureMasterOK(p);
     }
