@@ -17,9 +17,13 @@ function vscope_cohplotsignals(coh, varargin)
 %               3: phase 90 on top, phase 270 on bottom
 %               4: phase 0 on top, phase 359 on bottom
 %       nmax - maximum number of signals to plot (default: all)
+%       tbar - 0: plot x-axis for time
+%              1: plot scale bar for time
+%       sbar - 0: label dF scale next to x-axis
+%              1: label dF scale next to scale bar
 
 kv = getopt([ 'qpt=''/tmp/vscope_coh_signals'' width=5 height=5 ' ...
-      'threshold=[] color=0 uniform=0 order=0 nmax=[]' ], ...
+      'threshold=[] color=0 uniform=0 order=0 nmax=[] tbar=0 sbar=1' ], ...
     varargin);
 
 if isempty(kv.threshold)
@@ -65,6 +69,9 @@ N = length(idx);
 if N > kv.nmax
   idx = idx(N-kv.nmax+1:N);
   N = length(idx);
+elseif N==0
+  warning('vscope_cohplotsignals: nothing to plot');
+  return
 end
 
 sig = bsxfun(@rdivide, coh.extra.sig0(2:end,:), mean(coh.extra.sig0)) - 1;
@@ -110,22 +117,45 @@ for n=1:N
     qpen 2 flatcap
     qgline({'absdata', t1, n+dy/scl(n)/2, 'relpaper', 10, 0}, ...
 	{'absdata', t1, n-dy/scl(n)/2, 'relpaper', 10, 0});
+    if kv.sbar==1
+      qat(t1, n);
+      qalign left middle
+      qtext(15, 0, sprintf('%g %%', dy*100));
+    end
     qpen 1 roundcap
   end
 end
 
-dx = sensiblestep((t1-coh.extra.tt0(1)) / 3);
-rng = [ceil(coh.extra.tt0(1)/dx)*dx : dx : floor(t1/dx)*dx];
-qpen k 0
-qxaxis(0, [coh.extra.tt0(1) t1], rng, 'Time (s)');
-qat(t1, 'bottom');
-qalign right bottom
-qtext(10, 0, sprintf('Scale: %g %%', dy*100));
+if kv.tbar==0
+  dx = sensiblestep((t1-coh.extra.tt0(1)) / 3);
+  rng = [ceil(coh.extra.tt0(1)/dx)*dx : dx : floor(t1/dx)*dx];
+  qpen k 0
+  qxaxis(0.25, [coh.extra.tt0(1) t1], rng, 'Time (s)');
+else
+  dx = sensiblestep((t1-coh.extra.tt0(1)) / 5);
+  qpen k 2 flatcap
+  qplot([t1-dx t1], [0 0]+.25);
+  qat(t1-dx/2, 0+.25);
+  qalign center top 
+  qtext(0, 5, sprintf('%g s', dx));
+end
+
+if kv.sbar==0
+  qat(t1, 'bottom');
+  qalign right bottom
+  qtext(0, 0, sprintf('Scale: %g %%', dy*100));
+end
 
 if kv.uniform
+  dy = sensiblestepup(dy*1.2);
   qpen k 2 flatcap
   qgline({'absdata', t1, N+dy/scl(1)/4, 'relpaper', 10, 0}, ...
       {'absdata', t1, N-3*dy/scl(1)/4, 'relpaper', 10, 0});
+  if kv.sbar==1
+    qat(t1, N-dy/scl(1)/4);
+    qalign left middle
+    qtext(15, 0, sprintf('%g %%', dy*100));
+  end
 end
 
 qshrink 1

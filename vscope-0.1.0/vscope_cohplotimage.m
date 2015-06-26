@@ -9,8 +9,9 @@ function vscope_cohplotimage(x, coh, varargin)
 %       width - width of QPlot figure (inch)
 %       height - height of QPlot figure
 %       alpha - transparency (1=solid, 0=invisible) of ROIs
+%       ns - mark nonsignificant cells (1=dots, 2=id, 0=none, 3=ROI)
 
-kv = getopt('qpt=''/tmp/vscope_coh_image'' width=5 height=5, alpha=1', ...
+kv = getopt('qpt=''/tmp/vscope_coh_image'' width=5 height=5 alpha=1 ns=0', ...
     varargin);
 if ~isempty(kv.qpt)
   qfigure(kv.qpt, kv.width, kv.height);
@@ -21,6 +22,29 @@ idx = find(coh.mag >= coh.thr);
 
 % Draw image
 qimsc(coh.extra.xx, -coh.extra.yy, coh.extra.img);
+
+if kv.ns==1
+  % Draw dots in n.s. cells
+  idns = find(coh.mag < coh.thr);
+  qpen k
+  qmarker o 3 solid
+  for k = idns
+    if ~isempty(xx{k})
+      qmark(mean(xx{k}), -mean(yy{k}));
+    end
+  end
+elseif kv.ns==3
+  % Draw ROIs in n.s. cells
+  idns = find(coh.mag < coh.thr);
+  qpen none
+  qbrush 777
+  qbrush(kv.alpha);
+  for k = idns
+    if ~isempty(xx{k})
+      qpatch(xx{k}, -yy{k});
+    end
+  end
+end
 
 % Draw ROIs
 qpen none
@@ -33,11 +57,14 @@ for k = idx
 end
 
 % Draw labels
+if kv.ns==2
+  idx = [1:length(coh.mag)];
+end
 qbrush none
 qpen k
 for k = idx
   if ~isempty(xx{k})
-    qat(mean(xx{k}), mean(-yy{k}));
+    qat(mean(xx{k}), -mean(yy{k}));
     qalign center middle
     qtext(0, 0, vscope_roiid(k));
   end
