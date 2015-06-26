@@ -181,6 +181,7 @@ void Param::set(QString s) {
       throw Exception("Param","Current must be expressed in pA, nA, uA, or mA");
     }
   } else if (valueType=="length") {
+    Dbg() << "param length '" << s << "'";
     QRegExp re("^([0-9-.]+)\\s*(|um|mm|cm|m)$");
     if (re.indexIn(s)>-1) {
       double val = re.cap(1).toDouble(&ok);
@@ -376,7 +377,7 @@ QString Param::toString() const {
     double v = value.toDouble();
     if (fabs(v)>=180*1000) 
       return QString("%1 min").arg(v/60/1000);
-    else if (fabs(v)>=1000)
+    else if (fabs(v)>=1000 || v==0)
       return QString("%1 s").arg(v/1000);
     else if (fabs(v)>=1)
       return QString("%1 ms").arg(v);
@@ -390,7 +391,7 @@ QString Param::toString() const {
       return QString("%1 Hz").arg(v);
   } else if (valueType=="voltage") {
     double v = value.toDouble();
-    if (fabs(v)>=1000) 
+    if (fabs(v)>=1000 || v==0) 
       return QString("%1 V").arg(v/1000);
     else if (fabs(v)>=1)
       return QString("%1 mV").arg(v);
@@ -402,7 +403,7 @@ QString Param::toString() const {
       return QString("%1 mA").arg(v/1000000);
     if (fabs(v)>=200) 
       return QString("%1 uA").arg(v/1000);
-    else if (fabs(v)>=0.2)
+    else if (fabs(v)>=0.2 || v==0)
       return QString("%1 nA").arg(v);
     else
       return QString("%1 pA").arg(v*1000);      
@@ -410,7 +411,7 @@ QString Param::toString() const {
     double v = value.toDouble();
     if (fabs(v)>=200) 
       return QString("%1 m").arg(v/1000);
-    else if (fabs(v)>=0.2)
+    else if (fabs(v)>=0.2 || v==0)
       return QString("%1 mm").arg(v);
     else
       return QString("%1 um").arg(v*1000);      

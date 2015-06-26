@@ -5,6 +5,7 @@
 
 OverrideCursor::OverrideCursor() {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  actv = true;
 }
 
 OverrideCursor::OverrideCursor(QCursor const &c) {
@@ -12,5 +13,11 @@ OverrideCursor::OverrideCursor(QCursor const &c) {
 }
 
 OverrideCursor::~OverrideCursor() {
-  QApplication::restoreOverrideCursor();
+  restore();
+}
+
+void OverrideCursor::restore() {
+  if (actv)
+    QApplication::restoreOverrideCursor();
+  actv = false;
 }

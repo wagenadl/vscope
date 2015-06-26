@@ -30,6 +30,7 @@
 #include <acq/focus.h>
 #include <acq/ccdmaster.h>
 #include <xml/definestimulus.h>
+#include <QMessageBox>
 
 void gt_slots::ensureMasterOK(QString p) {
   QRegExp re("camera:([^/]*)/");
@@ -146,6 +147,10 @@ void gt_slots::paramchanged(QString p, QString val) {
           ptree()->find(p).setBool(false);
           Globals::gui->findButton("stimVideo/enable").setText("Unavailable");
           Globals::gui->findPage("stimVideo").open();
+          oc.restore();
+          QMessageBox::warning(0, "vscope",
+               QString::fromUtf8("Could not start “leechprojector”.")
+               + " Video stimulation not available.");
         }
       }
     } else if (QRegExp("acqCCD/camera:.*/master").exactMatch(p)) {

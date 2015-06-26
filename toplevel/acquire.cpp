@@ -105,7 +105,9 @@ void Acquire::acqTrial() {
     Globals::contacq->markTrial(ExptLog::trialID());
   }
   Globals::trial->start();
-  Globals::vprojector->start();
+  if (Globals::ptree->find("stimVideo/enable").toBool())
+    Globals::vprojector->start();
+  
   if (dummy)
     Globals::blackout->setText("Acquiring *DUMMY* Trial...");
   else

@@ -180,18 +180,6 @@ void EPhysOut::setupAData_stim(ParamTree const *ptree) {
     }
   }
 
-  if (ptree->find("stimVideo/enable").toBool()) {
-    QStringList vidChs = QString("VidX VidY").split(" ");
-    foreach (QString id, vidChs) {
-      Connections::AOChannel const *aoc = Connections::findpAO(id);
-      if (aoc)
-	useChannel[aoc->line] = id;
-      else
-	Dbg() << "ephysout surprise: stimvideo enabled but did not find line "
-	      << id;
-    }
-  }
-
   channelList = useChannel.values();
   
   if (channelList.isEmpty()) {

@@ -13,6 +13,9 @@ public:
   OverrideCursor();
   OverrideCursor(QCursor const &c);
   virtual ~OverrideCursor();
+  void restore();
+private:
+  bool actv;
 };
 
 #endif
