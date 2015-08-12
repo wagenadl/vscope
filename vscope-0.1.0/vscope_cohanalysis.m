@@ -53,6 +53,7 @@ function coh = vscope_cohanalysis(x, varargin)
 %       extra.xx and extra.yy - transformed coordinates for that image. (Use
 %                               these if you want to overlay the image with
 %                               VSCOPE_ROIOUTLINE results.)
+%       extra.rois - original rois
 %
 %    Since we usually do multiple comparisons, either pthresh should be 
 %    chosen conservatively, or, more clever, put in pthresh=-0.05 (or -p in
@@ -86,6 +87,8 @@ if length(kv.camera)>1
   error('Cannot analyze multiple cameras at once');
 end
 [t_on, t_off] = vscope_ccdtime(x, kv.camera);
+
+extra.rois = x.rois;
 
 % Extract reference image
 [Y X C T] = size(x.ccd.dat);

@@ -10,11 +10,23 @@ function vscope_cohplotimage(x, coh, varargin)
 %       height - height of QPlot figure
 %       alpha - transparency (1=solid, 0=invisible) of ROIs
 %       ns - mark nonsignificant cells (1=dots, 2=id, 0=none, 3=ROI)
+%    VSCOPE_COHPLOTIMAGE(coh, key, value, ...) also works since 8/11/15, because
+%    the only thing we actually needed from the X structure, the ROIS field,
+%    is now also stored in the COH structure.
+
+if isfield(x, 'extra')
+  vscope_cohplotimage([], coh, varargin{:});
+end
 
 kv = getopt('qpt=''/tmp/vscope_coh_image'' width=5 height=5 alpha=1 ns=0', ...
     varargin);
 if ~isempty(kv.qpt)
   qfigure(kv.qpt, kv.width, kv.height);
+end
+
+if isempty(x)
+  clear x
+  x.rois = coh.extra.rois;
 end
 
 [xx,yy] = vscope_roioutline(x.rois);
