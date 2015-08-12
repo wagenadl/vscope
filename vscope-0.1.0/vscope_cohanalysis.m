@@ -6,7 +6,9 @@ function coh = vscope_cohanalysis(x, varargin)
 %    parameters:
 %
 %       camera - camera name or number. Defaults to first active camera.
-%       frequency - use sine wave with given frequency in Hz as reference.
+%       sine - use sine wave with given frequency in Hz as reference. (For
+%                compatibility with old code, "frequency" is still accepted
+%                as a synonym for "sine.")
 %       analog - use named or numbered analog channel as reference.
 %       optical - use named or numbered ROI as reference
 %       direct - use directly specified reference (value must be a vector
@@ -61,7 +63,8 @@ function coh = vscope_cohanalysis(x, varargin)
 %    that there are  N signals significant at |pthresh|/N. In this
 %    case, coh.pthr will end up being the p-value ultimately used.
 
-kv = getopt([ 'camera=[] frequency=[] analog=[] direct=[] optical=[] ' ...
+kv = getopt([ 'camera=[] ' ...
+      'sine=[] frequency=[] analog=[] direct=[] optical=[] ' ...
       'df_psd=1/3 df_coh=2/3 f_star=[] ci=1 pthresh=0.01 ' ...
       't0=[] t1=[] sig=[] debleach=2 func=''mean'''], varargin);
 
@@ -88,7 +91,7 @@ if length(kv.camera)>1
 end
 [t_on, t_off] = vscope_ccdtime(x, kv.camera);
 
-extra.rois = x.rois;
+coh.extra.rois = x.rois;
 
 % Extract reference image
 [Y X C T] = size(x.ccd.dat);
@@ -135,11 +138,15 @@ elseif ~isempty(kv.optical)
   end
   ref = sig(:, kv.optical);
 else 
-  if isempty(kv.frequency)
-    kv.frequency = 1;
+  if isempty(kv.sine)
+    if isempty(kv.frequency)
+      kv.sine = 1;
+    else
+      kv.sine = kv.frequency;
+    end
   end
-  ref = sin(2*pi*kv.frequency*(t_on+t_off)/2);
-  kv.f_star = kv.frequency;
+  ref = sin(2*pi*kv.sine*(t_on+t_off)/2);
+  kv.f_star = kv.sine;
 end
 
 % Clip signals to specified time window and store results
