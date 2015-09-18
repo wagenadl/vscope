@@ -238,7 +238,7 @@
       <param id="name" type="string" default="Default" save="false"/>
     </category>
     <category id="scripts">
-      <param id="run" type="bool" default="off" save="false"/>
+      <param id="_run" type="bool" default="off" save="false"/>
       <param id="name" type="string" default="" save="false"/>
     </category>
   </params>

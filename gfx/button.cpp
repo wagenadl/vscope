@@ -272,7 +272,9 @@ void Button::setID(QString id) {
 
 void Button::setText(QString txt, bool noemit) {
   QString t = txt;
-  t.replace(QRegExp("_([^ _]+)_?"), "<sub>\\1</sub>");
+  QString t1 = txt.mid(1);
+  t1.replace(QRegExp("_([^ _]+)_?"), "<sub>\\1</sub>");
+  t = t.left(1) + t1;
   QLabel::setText(t);
   if (!noemit)
     emit textChanged(myID, txt);

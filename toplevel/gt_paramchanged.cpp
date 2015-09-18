@@ -204,7 +204,7 @@ void gt_slots::paramchanged(QString p, QString val) {
       else
         Globals::exptlog->addNote("Auto run: Disabled");
       Globals::acquire->setAutoRun();
-    } else if (p=="scripts/run") {
+    } else if (p=="scripts/_run") {
       Globals::scripts->setRunning(ptree()->find(p).toBool());
     } else if (p.startsWith("panel")) {
       ;

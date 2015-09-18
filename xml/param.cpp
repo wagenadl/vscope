@@ -181,7 +181,6 @@ void Param::set(QString s) {
       throw Exception("Param","Current must be expressed in pA, nA, uA, or mA");
     }
   } else if (valueType=="length") {
-    Dbg() << "param length '" << s << "'";
     QRegExp re("^([0-9-.]+)\\s*(|um|mm|cm|m)$");
     if (re.indexIn(s)>-1) {
       double val = re.cap(1).toDouble(&ok);

@@ -35,7 +35,7 @@ public:
 private:
   void runSome();
 private:
-  class QTextEdit *editor;
+  class TextEdit *editor;
   class QLabel *statusLabel;
   class QLabel *nameLabel;
   class FileDlgKey *loaddlg;

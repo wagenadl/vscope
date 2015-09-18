@@ -4,7 +4,7 @@
 #include <gui/guiexc.h>
 #include "globals.h"
 #include <base/dbg.h>
-#include <QTextEdit>
+#include <gfx/textedit.h>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QFile>
@@ -26,7 +26,7 @@ Scripts::Scripts(QWidget *parent): QWidget(parent) {
   resize(s.width()*4/5-4,s.height());
   QVBoxLayout *lay = new QVBoxLayout(this);
   QHBoxLayout *hlay = new QHBoxLayout;
-  editor = new QTextEdit(this);
+  editor = new TextEdit(this);
   lay->addWidget(editor);
   statusLabel = new QLabel(this);
   hlay->addWidget(statusLabel);
@@ -77,8 +77,9 @@ void Scripts::prepareLoad() {
     connect(loaddlg,SIGNAL(canceled()),
 	    loadframe,SLOT(hide()));
   }
-  if (true || lastdir.isEmpty())
+  if (true || lastdir.isEmpty()) {
     lastdir = Globals::filePath() + "/_scripts";
+  }
   loaddlg->goDir(lastdir);
   loaddlg->show();
   loadframe->show();  
@@ -110,8 +111,12 @@ void Scripts::prepareSave() {
 	    saveframe,SLOT(hide()));
   }
 
-  if (true || lastdir.isEmpty())
+  if (true || lastdir.isEmpty()) {
     lastdir = Globals::filePath() + "/_scripts";
+    QDir root(Globals::filePath());
+    root.mkpath("_scripts");
+    Dbg() << "mkpath _scripts";
+  }
   savedlg->goDir(lastdir);
   savedlg->show();
   saveframe->show();
@@ -151,7 +156,7 @@ void Scripts::doLoad(QString fn) {
     return;
   }
   QTextStream ts(&f);
-  editor->setText(ts.readAll());
+  editor->setPlainText(ts.readAll());
   check();
 }
 
@@ -214,7 +219,7 @@ void Scripts::timeout() {
 void Scripts::run() {
   if (!status()) {
     Warning() << "Cannot run script with errors";
-    Globals::ptree->find("scripts/run").set("off");
+    Globals::ptree->find("scripts/_run").set("off");
     Globals::gui->findPage("scripts").open();
     return;
   }
@@ -248,10 +253,14 @@ void Scripts::runSome() {
       break;
     case Script::KW_TRIAL:
       Globals::acquire->acqTrial();
+      if (it==script.contents().end())
+	break; // end script and do not wait for trial to finish
       timer.start(ival_ms);
       return;
     case Script::KW_SNAP:
       Globals::acquire->acqFrame();
+      if (it==script.contents().end())
+	break; // end script and do not wait for trial to finish
       timer.start(ival_ms);
       return;
     case Script::KW_IVAL:
@@ -261,6 +270,7 @@ void Scripts::runSome() {
       Globals::savedSettings->loadSettings(c.arg1);
       break;
     case Script::KW_LOOP:
+      // start from start, or N lines from start
       it=script.contents().begin();
       loopno++;
       lineno=0;
@@ -282,7 +292,7 @@ void Scripts::stop() {
   statusLabel->setText(QString("Stopped (at line %1; iteration %2)")
 		       .arg(lineno).arg(loopno));
   active = false;
-  Globals::ptree->find("scripts/run").set("off");
+  Globals::ptree->find("scripts/_run").set("off");
   Globals::gui->findPage("scripts").open();
 }
 
