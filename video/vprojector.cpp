@@ -28,8 +28,14 @@ bool VProjector::activate() {
   QStringList args; args << "leechprojector" << "-server";
   proc->start("bash", args);
   if (proc->waitForStarted()) {
-    Dbg() << "  activated";
-    return true;
+    if (proc->waitForFinished(100)) {
+      // this is a problem
+      Dbg() << "  instantly quit";
+      return false;
+    } else {
+      Dbg() << "  activated";
+      return true;
+    }
   } else {
     Dbg() << "  failed to activate";
     return false;

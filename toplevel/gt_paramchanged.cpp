@@ -139,17 +139,18 @@ void gt_slots::paramchanged(QString p, QString val) {
     } else if (p=="panelRight") {
       Globals::panelHistory->newSelection("Right");
     } else if (p=="stimVideo/enable") {
-      OverrideCursor oc(Qt::WaitCursor);
       if (ptree()->find(p).toBool()) {
         Dbg() << "trying to enable stimvideo";
-        if (Globals::vprojector->activate()) {
+	OverrideCursor oc(Qt::WaitCursor);
+	bool ok = Globals::vprojector->activate();
+	oc.restore();
+	if (ok) {
           Globals::vprojector->prepare(Globals::ptree);
         } else {
           Dbg() << "  unsuccessful";
           ptree()->find(p).setBool(false);
           Globals::gui->findButton("stimVideo/enable").setText("Unavailable");
           Globals::gui->findPage("stimVideo").open();
-          oc.restore();
           QMessageBox::warning(0, "vscope",
                QString::fromUtf8("Could not start “leechprojector”.")
                + " Video stimulation not available.");
