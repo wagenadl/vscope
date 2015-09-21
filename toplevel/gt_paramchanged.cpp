@@ -141,12 +141,12 @@ void gt_slots::paramchanged(QString p, QString val) {
     } else if (p=="stimVideo/enable") {
       if (ptree()->find(p).toBool()) {
         Dbg() << "trying to enable stimvideo";
-	OverrideCursor oc(Qt::WaitCursor);
+	OverrideCursor oc;
 	bool ok = Globals::vprojector->activate();
-	oc.restore();
 	if (ok) {
           Globals::vprojector->prepare(Globals::ptree);
         } else {
+	  oc.restore();
           Dbg() << "  unsuccessful";
           ptree()->find(p).setBool(false);
           Globals::gui->findButton("stimVideo/enable").setText("Unavailable");
