@@ -360,11 +360,11 @@
       <auto enum="VIDEOSTIMTYPE"/>
     </menu>
 
-    <menu id="angle"  cols="5.8">
+    <menu id="angle"  cols="2">
       <items>
         HT, RL, TH, LR
       </items>
-      <item custom="1"  editcaption="Parameter value"/>
+      <item custom="1"  editcaption="Direction (0=H→T, 90=R→L, …)"/>
     </menu>
 
     <menu id="wavelength"  cols="4">
@@ -685,10 +685,10 @@
   <alias id="Difference" label="Diff. and Zoom"/>
 
   <!-- For directions -->
-  <alias id="HT" label="H→T"/>
-  <alias id="TH" label="T→H"/>
-  <alias id="RL" label="R→L"/>
-  <alias id="LR" label="L→R"/>
+  <alias id="HT" label="Head to tail"/>
+  <alias id="TH" label="Tail to head"/>
+  <alias id="RL" label="Right to left"/>
+  <alias id="LR" label="Left to right"/>
 </aliases>
 
 <colors>
