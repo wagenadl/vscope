@@ -10,6 +10,7 @@ OverrideCursor::OverrideCursor() {
 
 OverrideCursor::OverrideCursor(QCursor const &c) {
   QApplication::setOverrideCursor(c);
+  actv = true;
 }
 
 OverrideCursor::~OverrideCursor() {
