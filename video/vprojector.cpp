@@ -40,6 +40,19 @@ bool VProjector::isOk() const {
   return proc && proc->state()==QProcess::Running;
 }
 
+static double angleFromString(QString s) {
+  if (s=="HT")
+    return 0;
+  else if (s=="TH")
+    return 180;
+  else if (s=="RL")
+    return 90;
+  else if (s=="LR")
+    return 270;
+  else
+    return s.toDouble();
+}
+
 void VProjector::prepare(class ParamTree const *p) {
   if (!isOk())
     return;
@@ -50,7 +63,8 @@ void VProjector::prepare(class ParamTree const *p) {
   proc->write(QString("set type %1\n")
               .arg(p->find("stimVideo/type").toString()).toAscii());
   proc->write(QString("set angledeg %1\n")
-              .arg(p->find("stimVideo/angle").toDouble()).toAscii());
+              .arg(angleFromString(p->find("stimVideo/angle").toString()))
+	      .toAscii());
   proc->write(QString("set wavelengthmm %1\n")
               .arg(p->find("stimVideo/wavelength").toDouble()).toAscii());
   proc->write(QString("set frequencyhz %1\n")
@@ -83,6 +97,7 @@ void VProjector::start() {
     return;
   Dbg() << "vprojector::start";
   proc->write("start\n");
+  proc->waitForBytesWritten(); // hmmm
 }
 
 void VProjector::readyReadStderr() {

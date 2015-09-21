@@ -329,7 +329,7 @@
       <button id="delay" label="Onset delay" y="2" bg="#dddd66"/>
       <button id="dur" label="Duration" bg="#bbbb44"/>
       <button id="type" label="Type" x="1" y="0" bg="#bbbb44"/>
-      <button id="angle" label="Angle" bg="#ffff88"/>
+      <button id="angle" label="Direction" bg="#ffff88"/>
       <button id="wavelength" label="Wavelength" bg="#ffff55"/>
       <button id="frequency" label="Frequency" bg="#ffff22"/>
       <button id="xscale" label="H-T Scale" x="2" y="0" bg="#dddd99"/>
@@ -362,7 +362,7 @@
 
     <menu id="angle"  cols="5.8">
       <items>
-        0, 90, 180, 270
+        HT, RL, TH, LR
       </items>
       <item custom="1"  editcaption="Parameter value"/>
     </menu>
@@ -683,6 +683,12 @@
   <alias id="BZoom" label="B and Zoom"/>
   <alias id="TwoZoom" label="A and B Zoom"/>
   <alias id="Difference" label="Diff. and Zoom"/>
+
+  <!-- For directions -->
+  <alias id="HT" label="H→T"/>
+  <alias id="TH" label="T→H"/>
+  <alias id="RL" label="R→L"/>
+  <alias id="LR" label="L→R"/>
 </aliases>
 
 <colors>

@@ -112,7 +112,7 @@
     <category id="stimVideo">
       <param id="enable" type="bool" default="false"/>
       <param id="type" type="enum" enum="VIDEOSTIMTYPE" default="Waves"/>
-      <param id="angle" type="double" default="0"/>
+      <param id="angle" type="string" default="H→T"/>
       <param id="wavelength" type="length" default="50 mm"/>
       <param id="frequency" type="freq" default="2 Hz"/>
       <param id="delay" type="time" default="100 ms" min="10 ms" max="1 h"/>
@@ -219,7 +219,7 @@
       <category id="stimVideo">
         <param id="delay-1" type="time" default="1.0 s"/>
         <param id="dur-1" type="time" default="5 min"/>
-        <param id="angle-1" type="double" default="0"/>
+        <param id="angle-1" type="string" default="H→T"/>
         <param id="wavelength-1" type="length" default="10 mm"/>
         <param id="frequency-1" type="freq" default="1 Hz"/>
         <param id="xscale-1" type="length" default="90 mm"/>
