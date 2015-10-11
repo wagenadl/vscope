@@ -68,6 +68,8 @@ void VProjector::prepare(class ParamTree const *p) {
 
   proc->write(QString("set type %1\n")
               .arg(p->find("stimVideo/type").toString()).toAscii());
+  proc->write(QString("set target %1\n")
+              .arg(p->find("stimVideo/target").toString()).toAscii());
   proc->write(QString("set angledeg %1\n")
               .arg(angleFromString(p->find("stimVideo/angle").toString()))
 	      .toAscii());

@@ -121,6 +121,7 @@
       <param id="yscale" type="length" default="52.5 mm"/>
       <param id="xhome" type="length" default="0 mm"/>
       <param id="yhome" type="length" default="0 mm"/>
+      <param id="target" type="enum" enum="VIDEOSTIMTARGET" default="All"/>
     </category>
   
     <category id="acquisition">

@@ -15,7 +15,12 @@ function vscope_cohplotimage(x, coh, varargin)
 %    is now also stored in the COH structure.
 
 if isfield(x, 'extra')
-  vscope_cohplotimage([], coh, varargin{:});
+  if nargin>1
+    vscope_cohplotimage([], x, coh, varargin{:});
+  else
+    vscope_cohplotimage([], x);
+  end
+  return
 end
 
 kv = getopt('qpt=''/tmp/vscope_coh_image'' width=5 height=5 alpha=1 ns=0', ...

@@ -82,6 +82,12 @@
       <item tag="Calibrate"/>
     </enum>
 
+    <enum id="VIDEOSTIMTARGET" prefix="VTGT">
+      <item tag="All"/>
+      <item tag="Anterior"/>
+      <item tag="Posterior"/>
+    </enum>
+    
     <enum id="STIMCHS">
     </enum>
   </enums>

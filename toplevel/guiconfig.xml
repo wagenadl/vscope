@@ -330,9 +330,10 @@
       <button id="dur" label="Duration" bg="#bbbb44"/>
       <button id="type" label="Type" x="1" y="0" bg="#bbbb44"/>
       <button id="angle" label="Direction" bg="#ffff88"/>
-      <button id="wavelength" label="Wavelength" bg="#ffff55"/>
+      <button id="target" label="Target" bg="#bbbb00"/>
+      <button id="wavelength" label="Wavelength" x="2" y="0" bg="#ffff55"/>
       <button id="frequency" label="Frequency" bg="#ffff22"/>
-      <button id="xscale" label="H-T Scale" x="2" y="0" bg="#dddd99"/>
+      <button id="xscale" label="H-T Scale" y="3" bg="#dddd99"/>
       <button id="yscale" label="L-R Scale"  bg="#dddd99"/>
       <!--button id="xhome" label="H-T Home" bg="#bb99ff"/-->
       <!--button id="yhome" label="L-R Home"  bg="#bb99ff"/-->
@@ -360,6 +361,10 @@
       <auto enum="VIDEOSTIMTYPE"/>
     </menu>
 
+    <menu id="target"  cols="1">
+      <auto enum="VIDEOSTIMTARGET"/>
+    </menu>
+    
     <menu id="angle"  cols="2">
       <items>
         HT, RL, TH, LR
