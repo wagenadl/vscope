@@ -214,6 +214,7 @@ void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
   readInt16(ifn, scales, pd);
   if (nscans != scans)
     throw Exception("AnalogData", "Scan count mismatch between data and xml");
+  Dbg() << "analogdata::read" << fs_hz;
 }
 
 void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
@@ -273,6 +274,7 @@ int AnalogData::whereIsChannel(QString ch) const {
 void AnalogData::setSamplingFrequency(double f) {
   KeyGuard guard(*this);
   fs_hz = f;
+  Dbg() << "AnalogData: f=" << fs_hz;
 }
 
 double const *AnalogData::allData() const {

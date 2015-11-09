@@ -317,7 +317,7 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
     mypartree = new ParamTree(*partree);
   
   mypartree->read(settings);
-  Dbg() << "  read paramtree";
+  Dbg() << "  read paramtree freq" << mypartree->find("acqEphys/acqFreq").toInt();
 
   mypartree->find("filePath").set(fpath);
   mypartree->find("acquisition/exptname").set(exptname);

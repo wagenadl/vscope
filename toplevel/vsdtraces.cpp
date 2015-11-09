@@ -82,7 +82,9 @@ void VSDTraces::updateEPhysData() {
   if (adata->contains(refchn)) {
     DataPtr dp(adata->channelData(refchn));
     int idx = adata->whereIsChannel(refchn);
-    reftrace->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
+    double fshz = Globals::trove->trial().paramTree()
+      ->find("acqEphys/acqFreq").toDouble();
+    reftrace->setData(0, 1/fshz,
 		      dp,
 		      adata->getNumScans(),
 		      adata->getNumChannels());

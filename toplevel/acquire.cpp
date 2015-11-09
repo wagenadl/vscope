@@ -302,6 +302,7 @@ void Acquire::loadData(QString xmlfn) {
 
   ParamTree *ptree = Globals::trove->trial().myParamTree();
   dlg.progress(91);
+  Dbg() << "  ptree freq " << ptree->find("acqEphys/acqFreq").toInt();
 
   Globals::panelHistory->setTree(ptree);
   Globals::gui->setTree(ptree);

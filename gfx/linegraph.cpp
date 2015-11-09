@@ -58,6 +58,7 @@ void LineGraph::setXRange(Range const &xx, bool nextAuto) {
     xrangeFromAuto = nextAuto;
     perhapsRepaint();
   }
+  Dbg() << "linegraphs xrange " << x0 << x1;
 }
 
 void LineGraph::setYRange(Range const &yy) {

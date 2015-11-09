@@ -151,7 +151,10 @@ void MGAuto::newtraces() {
   DigitalData const *dacq = Globals::trove->trial().digitalData();
   AnalogData const *astim = Globals::trove->trial().analogStimuli();
   DigitalData const *dstim = Globals::trove->trial().digitalStimuli();
-  double outrate_hz = Globals::ptree->find(PAR_OUTRATE).toDouble();
+  double outrate_hz = Globals::trove->trial().paramTree()
+    ->find(PAR_OUTRATE).toDouble();
+  double inrate_hz = Globals::trove->trial().paramTree()
+    ->find("acqEphys/acqFreq").toDouble();
 
   foreach (QString id, actual) {
     LineGraph *g = findp(id);
@@ -179,12 +182,12 @@ void MGAuto::newtraces() {
       // input
       if (digiSet.contains(id)) {
 	// digital input
-	tr->setData(0,1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
+	tr->setData(0,1/inrate_hz,
 		    DataPtr(dacq->allData(),dacq->findLine(id)),
 		    dacq->getNumScans());
       } else {
 	// analog input
-	tr->setData(0, 1/Globals::ptree->find("acqEphys/acqFreq").toDouble(),
+	tr->setData(0, 1/inrate_hz,
 		    DataPtr(aacq->channelData(id)),
 		    aacq->getNumScans(),
 		    aacq->getNumChannels());
