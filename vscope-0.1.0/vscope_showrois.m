@@ -1,16 +1,23 @@
-function ff = vscope_showrois(x)
+function ff = vscope_showrois(x, ff)
 % VSCOPE_SHOWROIS - Show ROIs overlaid on camera images
 %    VSCOPE_SHOWROIS(x) where X comes directly from VSCOPE_LOAD creates
 %    a figure for each camera and displays the first frame of CCD data
 %    with ROIs overlaid.
+%    VSCOPE_SHOWROIS(x, ff) reuses figures FF.
 %    ff = VSCOPE_SHOWROIS(...) returns a vector of figure handles.
 
 ids = x.ccd.info.camid;
-ff = zeros(size(ids));
+if nargin<2
+  ff = zeros(size(ids));
+end
 for c=1:length(ids);
   cid = ids{c};
   xform = x.ccd.info.xform{c};
-  ff(c) = figure;
+  if ff(c)==0
+    ff(c) = figure;
+  else
+    figure(ff(c)); clf;
+  end
   imagesc(x.ccd.dat(:,:,c,1));
   colormap(gray);
   hold on

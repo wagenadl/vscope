@@ -30,12 +30,15 @@
 #include <toplevel/mainwindow.h>
 #include <base/roidata3set.h>
 #include <toplevel/panelhistory.h>
+#include <QMessageBox>
 
 Acquire::Acquire() {
   connect(Globals::trial,SIGNAL(ended(QString,QString)),
 	  this,SLOT(trialDone()));
   loaddlg = 0;
   loadframe = 0;
+  importdlg = 0;
+  importframe = 0;
   lastdir = "";
   blockout = false;
   connect(&autoRunner,SIGNAL(timeout()),this,SLOT(autoRunEvent()));
@@ -277,11 +280,42 @@ void Acquire::doneTrial() {
   //  updateVSDTraces();
 }
 
+void Acquire::importROIs(QString xmlfn) {
+  QStringList path = xmlfn.split("/");
+  QString trialbit = path.takeLast();
+  QString exptbit = path.takeLast();
+  QString dirbit = path.join("/");
+  trialbit.replace("-rois.xml","");
+  trialbit.replace(".xml","");
+  trialbit.replace("-analog.dat","");
+  trialbit.replace("-digital.dat","");
+  trialbit.replace("-ccd.dat","");
+  if (importframe)
+      importframe->hide();
+  try {
+    QString roifn = QString("%1/%2/%3-rois.xml")
+      .arg(dirbit).arg(exptbit).arg(trialbit);
+    if (!QFile(roifn).exists()) {
+      QMessageBox::warning(importframe, "VScope",
+			   "Failed to import ROIs: " + roifn
+			   + " could not be loaded");
+      return;
+    }
+    Globals::trove->rois().load(roifn);
+    Globals::trove->saveROIs();
+  } catch (Exception const &e) {
+    GUIExc::report(e,"import rois");
+    unlock();
+    return;
+  }
+}
+
 void Acquire::loadData(QString xmlfn) {
   QStringList path = xmlfn.split("/");
   QString trialbit = path.takeLast();
   QString exptbit = path.takeLast();
   QString dirbit = path.join("/");
+  trialbit.replace("-rois.xml","");
   trialbit.replace(".xml","");
   trialbit.replace("-analog.dat","");
   trialbit.replace("-digital.dat","");
@@ -392,6 +426,41 @@ void Acquire::prepareLoad() {
   loaddlg->goDir(lastdir);
   loaddlg->show();
   loadframe->show();
+}
+
+void Acquire::prepareImportROIs() {
+  if (!importdlg) {
+    dbg("prepareimportrois: creating dialog");
+    importframe = new QFrame(Globals::mainwindow);
+    importframe->setGeometry(50,30,924,700);
+    importframe->setFrameStyle(QFrame::Raised|QFrame::Panel);
+    importframe->setLineWidth(2);
+    importframe->setAutoFillBackground(true);
+    QPalette p = importframe->palette();
+    p.setColor(QPalette::Window,"#ddeeee");
+    importframe->setPalette(p);
+    
+    importdlg = new FileDlgKey(importframe, true);
+    QRect r(importframe->contentsRect());
+    r.adjust(2,2,-2,-2);
+    importdlg->setGeometry(r);
+    importdlg->setLabel("Import ROIs from Other Trial...");
+    importdlg->setExtn("xml");
+    connect(importdlg,SIGNAL(chosenFile(QString)),
+	    this, SLOT(importROIs(QString)));
+    connect(importdlg, SIGNAL(changedDir(QString)),
+	    this, SLOT(chgDir(QString)));
+    connect(importdlg,SIGNAL(canceled()),
+	    importframe, SLOT(hide()));
+  }
+
+  dbg("lastdir = [%s]",qPrintable(lastdir));
+
+  if (lastdir.isEmpty())
+    lastdir = Globals::filePath();
+  importdlg->goDir(lastdir);
+  importdlg->show();
+  importframe->show();
 }
 
 void Acquire::chgDir(QString dir) {

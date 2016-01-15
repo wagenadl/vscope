@@ -16,6 +16,7 @@ public:
   void acqFrame();
   void acqTrial();
   void prepareLoad();
+  void prepareImportROIs();
   void unlock();
   void setContEphys(); // reads from ptree whether or not to enable cont ephys
   void setAutoRun(); // reads from ptree whether or not to enable auto run
@@ -23,6 +24,7 @@ public:
   static int maxTrial(); // returns the highest existing trial no for current expt
 public slots:
   void loadData(QString fn); // usu. "/PATH/EXPT/TRIAL.xml"
+  void importROIs(QString fn); // usu. "/PATH/EXPT/TRIAL.xml"
   void trialDone();
   void abort();
 private slots:
@@ -44,8 +46,8 @@ public:
 private:
   enum TrialType { NONE, FRAME, TRIAL };
   TrialType type;
-  class FileDlgKey *loaddlg;
-  class QFrame *loadframe;
+  class FileDlgKey *loaddlg, *importdlg;
+  class QFrame *loadframe, *importframe;
   QString lastdir;
   QTimer autoRunner;
   bool blockout;

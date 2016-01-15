@@ -490,7 +490,10 @@
       <immune id="showROIs" label="ROIs" x="2.1" y="3" bg="#66eedd"/>
       <immune id="debleach" label="Debleach" x="2.1" y="4" bg="#66ddff"/>
     </group>
-    <immune id="roiDeleteAll" label="Delete All ROIs" x="4.1" y="4" bg="#ff4411"/>
+    <ungroup id="roirep" x="4.1" y="4" spanrows="1" spancols="1" cols="2">
+      <immune id="roiDeleteAll" label="Delete All" bg="#ff4411"/>
+      <immune id="roiImport" label="Import ROIs" bg="#ff4411"/>
+    </ungroup>
     <ungroup id="zoomer" x="4.1" y="1" spanrows="1" spancols="1" cols="2">
       <immune id="zoomIn" label="Zoom In" bg="#55eecc"/>
       <immune id="zoomOut" label="Zoom Out" bg="#22ddcc"/>

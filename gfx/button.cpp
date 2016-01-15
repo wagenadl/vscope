@@ -138,7 +138,7 @@ void Button::toggleSelected() {
     setSelected(!isSelected);
 }
 
-void Button::mousePressEvent(class QMouseEvent *) {
+void Button::mousePressEvent(class QMouseEvent *e) {
   if (readonly && !immune)
     return;
   lastClick.start();
@@ -149,9 +149,10 @@ void Button::mousePressEvent(class QMouseEvent *) {
     emit activated(myID,text());
   else
     toggleSelected();
+  QLabel::mousePressEvent(e);
 }
 
-void Button::mouseReleaseEvent(class QMouseEvent *) {
+void Button::mouseReleaseEvent(class QMouseEvent *e) {
   if (true) { // vtype==VT_Action) {
     int dt = lastClick.elapsed();
     if (dt>=100)
@@ -159,6 +160,7 @@ void Button::mouseReleaseEvent(class QMouseEvent *) {
     else 
       QTimer::singleShot(100-dt, this, SLOT(restoreActionFrame()));
   }
+  QLabel::mouseReleaseEvent(e);
 }
 
 void Button::restoreActionFrame() {

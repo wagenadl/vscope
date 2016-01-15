@@ -61,6 +61,8 @@ void gt_slots::clicked(QString p) {
     } else if (p=="analysis/roiDelete") {
       int id = Globals::ccdw->first()->currentROI();
       Globals::trove->rois().remove(id);
+    } else if (p=="analysis/roiImport") {
+      Globals::acquire->prepareImportROIs();
     } else if (p=="maintenance/liveEphys/autoRange") {
       if (Globals::liveephys)
         Globals::liveephys->autoRange();

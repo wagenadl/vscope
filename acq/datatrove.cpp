@@ -109,7 +109,11 @@ void DataTrove::setAutoSaveROIs(bool a) {
 
 void DataTrove::saveROIs() {
   if (!asr) {
-    Dbg() << "DataTrove::saveROIs: not saving";
+    Dbg() << "DataTrove::saveROIs: saving not enabled";
+    return;
+  }
+  if (trial_->trialID().toInt()==0) {
+    Dbg() << "DataTrove::saveROIs: no trial - not saving";
     return;
   }
   
