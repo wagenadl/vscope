@@ -66,6 +66,21 @@ void StimulusDef::instantiateAnalog(double *data, int len, int stride,
       } break;
       }
     }
+    if (pulseType==PT_Sine) {
+      // create onset and offset envelopes
+      int s11 = s00 + nPulses*pulsePeriod_scans;
+      int s1 = mini(s11, len);
+      for (int s=s00; s<s1; s++) {
+	int ds = s - s00;
+	int DS = pulseDur_scans;
+	if (ds<DS)
+	  data[s*stride] *= .5-.5*cos(M_PI*ds/DS);
+	ds = s11 - s;
+	DS = pulseDur2_scans;
+	if (ds<DS)
+	  data[s*stride] *= .5-.5*cos(M_PI*ds/DS);
+      }
+    }
   }
   data[(len-1)*stride] = 0;
 }

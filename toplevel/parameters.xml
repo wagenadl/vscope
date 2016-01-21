@@ -64,10 +64,10 @@
 	       cond="pulseType" enable_if="Biphasic Ramp"/>
         <param id="pulseDur" type="time"
 	       default="10 ms" min="50 us" max="1 h"
-	       cond="pulseType" enable_if="Square Biphasic Ramp"/>
+	       cond="pulseType" enable_if="Square Biphasic Ramp Sine"/>
         <param id="pulseDur2" type="time"
 	       default="10 ms" min="50 us" max="1 h"
-	       cond="pulseType" enable_if="Biphasic"/>
+	       cond="pulseType" enable_if="Biphasic Sine"/>
       </array>
     </category>
   
