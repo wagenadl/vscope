@@ -123,12 +123,7 @@ QString ScrollButtonBar::getAsPath(int idx) {
   QString r="";
   for (int i=1; i<=idx; i++) {
     QString t = buttons[i]->text();
-#ifdef vsdWIN32
-    if (i>1)
-      r+="/";
-#else
     r+="/";
-#endif
     r+=t;
   }
   r.replace("//","/");
