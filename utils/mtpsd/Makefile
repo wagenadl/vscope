@@ -29,8 +29,9 @@ ifneq "x$(OS_CHECK)" "x"
 else
 	CC=g++
 endif
-
-CFLAGS=-c -g -O3 -W -Wall -Iinclude -Isrc/dpss -Isrc/mtpsd -Isrc/common -I/usr/include/octave-3.8.1 -I/usr/include/octave-3.8.1/octave -fPIC
+OCT_BASE=`octave-config -p INCLUDEDIR`
+OCT_VER=`octave-config -p VERSION`
+CFLAGS=-c -g -O3 -W -Wall -Iinclude -Isrc/dpss -Isrc/mtpsd -Isrc/common -I$(OCT_BASE) -I$(OCT_BASE)/octave-$(OCT_VER) -I$(OCT_BASE)/octave-$(OCT_VER)/octave -fPIC
 LDFLAGS:= -llapack -lfftw3 $(LDFLAGS)
 
 OCT_CC=mkoctfile

@@ -3,9 +3,11 @@ function tapers = dpss0(N,nw,K)
 %    tapers = DPSS0(N,nw,K). 
 %    See matlab's DPSS.
 
-if exist('dpss')
+try
   tapers = dpss(N, nw, K);
   return;
+catch
+  printf('Failure to use dpss directly\n');
 end
 
 if ~isempty(ver('Octave'))

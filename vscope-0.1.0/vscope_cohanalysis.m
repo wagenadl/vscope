@@ -28,6 +28,7 @@ function coh = vscope_cohanalysis(x, varargin)
 %       debleach - order VSCOPE_DEBLEACH. Default is 2. Use [] for no 
 %                  debleaching. Debleaching is never done on override signals.
 %                  Use -tau for SALPA debleaching.
+%       trend - trend data to subtract, from VSCOPE_GLOBALTREND.
 %       func - function to apply to the named analog channel to average
 %              its values for each frame. Default is "mean".
 %
@@ -66,7 +67,7 @@ function coh = vscope_cohanalysis(x, varargin)
 kv = getopt([ 'camera=[] ' ...
       'sine=[] frequency=[] analog=[] direct=[] optical=[] ' ...
       'df_psd=1/3 df_coh=2/3 f_star=[] ci=1 pthresh=0.01 ' ...
-      't0=[] t1=[] sig=[] debleach=2 func=''mean'''], varargin);
+      't0=[] t1=[] sig=[] debleach=2 func=''mean'' trend=[]'], varargin);
 
 % Determine camera ID and frame times
 if isempty(kv.camera)
@@ -89,6 +90,15 @@ end
 if length(kv.camera)>1
   error('Cannot analyze multiple cameras at once');
 end
+
+if ~isempty(kv.trend)
+  if size(kv.trend,2)>1
+    kv.trend = kv.trend(:,kv.camera);
+    kv.trend = kv.trend - 1000;
+    kv.trend = kv.trend / mean(kv.trend);
+  end
+end
+
 [t_on, t_off] = vscope_ccdtime(x, kv.camera);
 
 coh.extra.rois = x.rois;
@@ -108,6 +118,11 @@ coh.extra.yy = [0:Y-1]*xform.ay + xform.by; % (ditto)
 if isempty(kv.sig)
   sig = vscope_extractrois(x);
   sig = sig(:, :, kv.camera);
+  
+  if ~isempty(kv.trend)  
+    sig = bsxfun(@rdivide, sig - 1000, kv.trend) + 1000;
+  end
+  
   if ~isempty(kv.debleach)
     if isempty(kv.t0) || isempty(kv.t1)
       sig = vscope_debleach(sig, kv.debleach, 2, 1);
