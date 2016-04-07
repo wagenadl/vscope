@@ -3,8 +3,10 @@ function [vsd, dd, ee] = microcorrectrois(vsd, rois)
 %    out = MICROCORRECTROIS(vsd, rois) performs one iteration of 
 %    microshifting, for each of the ROIs in ROIS, which much be a 
 %    struct array from VSCOPE_ROICOORDS_CAM.
-%    [out, dd, ee] = MICROCORRECT(vsd, rois) returns the changes 
+%    [out, dd, ee] = MICROCORRECTROIS(vsd, rois) returns the changes 
 %    applied and the errors at all moments.
+%    This only corrects x and y shifts, not scale or perspective.
+%    See also MICROCORRECT.
 %
 %    Example:
 %       cam = find(strcmp('Bot', x.ccd.info.camid));
@@ -17,7 +19,7 @@ SX = 1; % * round(X/128);
 SY = 0.25; % * round(Y/128);
 T0 = ceil(T/2);
 
-ref = vsd(:,:,T0);
+ref = double(vsd(:,:,T0));
 
 N = length(rois);
 idx = cell(N,1);
@@ -30,7 +32,7 @@ end
 
 ee.e0 = zeros(T,N);
 for t=1:T
-  v0 = vsd(:,:,t);
+  v0 = double(vsd(:,:,t));
   for n=1:N
     if ~isempty(idx{n})
       ee.e0(t,n) = sqrt(mean((v0(idx{n}) - ref(idx{n})).^2));
@@ -54,7 +56,7 @@ for t=1:T
   if t==T0
     continue;
   end
-  img = vsd(:,:,t);
+  img = double(vsd(:,:,t));
   er0 = ee.e0(t,:);
   
   dx = bestshiftrois(img, rfx1, rfx2, rois)*SX/0.5;

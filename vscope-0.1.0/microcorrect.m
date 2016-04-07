@@ -1,4 +1,4 @@
-function [vsd, dd, ee, ff] = microcorrect(vsd, msk)
+function [vsd, dd, ee, ff] = microcorrect(vsd, msk, opts)
 % MICROCORRECT - One step microcorrection
 %    out = MICROCORRECT(vsd) performs one iteration of microshifting,
 %    scaling, and perspective correction.
@@ -6,11 +6,36 @@ function [vsd, dd, ee, ff] = microcorrect(vsd, msk)
 %    using the pixels in the mask only. 
 %    [out, dd, ee] = MICROCORRECT(vsd) returns the changes applied and 
 %    the errors at all moments.
+%    MICROCORRECT(vsd, opts) or MICROCORRECT(vsd, msk, opts) specifies
+%    which of the steps are performed:
+%      x = x-shift
+%      y = y-shift
+%      s = scale
+%      X = x-perspective
+%      Y = y-perspective
+%    Default is all steps.
+%    See also MICROCORRECTROIS.
 %
 %    Example:
 %       vsd = x.ccd.dat(:,:,find(strcmp('Bot', x.ccd.info.camid)),:);
 %       msk = ~allroimask(x, 'Bot', 2);
-%       [out, dd, ee] = microcorrect(vsd, msk);
+%       [out, dd, ee] = microcorrect(vsd, msk, 'xys');
+
+if nargin==1
+  msk = [];
+  opts = 'xysXY';
+elseif nargin==2
+  if ischar(msk)
+    opts = msk;
+    msk = [];
+  else
+    opts = 'xysXY';
+  end
+elseif nargin==3
+  ;
+else
+  error('microcorrect needs one to three arguments');
+end    
 
 [Y X T] = size(vsd);
 T0 = ceil(T/2);
@@ -18,11 +43,11 @@ SX = 1; % * max(1, round(X/128));
 SY = 0.25; % * max(1, round(Y/128));
 SS = 0.25;
 
-ref = vsd(:,:,T0);
-if nargin>=2
-  bri0 = mean(ref(msk));
-else
+ref = double(vsd(:,:,T0));
+if isempty(msk)
   bri0 = 0;
+else
+  bri0 = mean(ref(msk));
 end
  
 margx = 4*max(1, round(X/128));
@@ -31,7 +56,7 @@ refbri = mean(mean(ref(margy+1:end-margy, margx+1:end-margx), 1), 2);
 
 ee.e0 = zeros(T,1);
 for t=1:T
-  img = vsd(:,:,t);
+  img = double(vsd(:,:,t));
   imbri = mean(mean(img(margy+1:end-margy, margx+1:end-margx), 1), 2);
   fac(t) = refbri / imbri;
   ee.e0(t) = marginlessdiff(fac(t)*img, ref);
@@ -55,78 +80,105 @@ for t=1:T
   if t==T0
     continue;
   end
-  img = fac(t) * vsd(:,:,t);
+  img = fac(t) * double(vsd(:,:,t));
   er0 = ee.e0(t);
   
-  dx = bestshift(img, rfx1, rfx2)*SX/0.5;
-  out = microshift(img, dx, 0);
-  err = marginlessdiff(out, ref);
-  ee.dx(t) = err;
-  ff.dx(t) = dx;
-  if err<er0
-    img = out;
-    er0 = err;
-    dd.dx(t) = dx;
+  if any(opts=='x')
+    dx = bestshift(img, rfx1, rfx2)*SX/0.5;
+    out = microshift(img, dx, 0);
+    err = marginlessdiff(out, ref);
+    ee.dx(t) = err;
+    ff.dx(t) = dx;
+    if err<er0
+      img = out;
+      er0 = err;
+      dd.dx(t) = dx;
+    else
+      dd.dx(t) = 0;
+    end
   else
-    dd.dx(t) = 0;
+    dd.dx(t) = nan;
+    ee.dx(t) = nan;
   end
 
-  dy = bestshift(img, rfy1, rfy2)*SY/0.5;
-  out = microshift(img, 0, dy);
-  err = marginlessdiff(out, ref);
-  ee.dy(t) = err;
-  ff.dy(t) = dy;
-  if err<er0
-    img = out;
-    er0 = err;
-    dd.dy(t) = dy;  
+  if any(opts=='y')
+    dy = bestshift(img, rfy1, rfy2)*SY/0.5;
+    out = microshift(img, 0, dy);
+    err = marginlessdiff(out, ref);
+    ee.dy(t) = err;
+    ff.dy(t) = dy;
+    if err<er0
+      img = out;
+      er0 = err;
+      dd.dy(t) = dy;  
+    else
+      dd.dy(t) = 0;
+    end
   else
-    dd.dy(t) = 0;
+    dd.dy(t) = nan;
+    ee.dy(t) = nan;
   end
 
   if bri0>0
     bri = mean(img(msk))/fac(t);
     img = img .* bri0/bri;
     dd.dbri(t) = 100*(bri0/bri-1);
+  else
+    dd.dbri(t) = nan;
   end
   
-  ds = bestshift(img, rfs1, rfs2)*SS/0.5;
-  out = microscale(img, ds);
-  err = marginlessdiff(out, ref);
-  ee.ds(t) = err;
-  ff.ds(t) = ds;
-  if err<er0
-    img = out;
-    er0 = err;
-    dd.ds(t) = ds;
+  if any(opts=='s')
+    ds = bestshift(img, rfs1, rfs2)*SS/0.5;
+    out = microscale(img, ds);
+    err = marginlessdiff(out, ref);
+    ee.ds(t) = err;
+    ff.ds(t) = ds;
+    if err<er0
+      img = out;
+      er0 = err;
+      dd.ds(t) = ds;
+    else
+      dd.ds(t) = 0;
+    end
   else
-    dd.ds(t) = 0;
+    dd.ds(t) = nan;
+    ee.ds(t) = nan;
   end
 
-  dx = bestshift(img, rfpx1, rfpx2)*SX/0.5;
-  out = microperspective(img, dx, 0);
-  err = marginlessdiff(out, ref);
-  ee.dpx(t) = err;
-  ff.dpx(t) = dx;
-  if err<er0
-    img = out;
-    er0 = err;
-    dd.dpx(t) = dx;
+  if any(opts=='X')
+    dx = bestshift(img, rfpx1, rfpx2)*SX/0.5;
+    out = microperspective(img, dx, 0);
+    err = marginlessdiff(out, ref);
+    ee.dpx(t) = err;
+    ff.dpx(t) = dx;
+    if err<er0
+      img = out;
+      er0 = err;
+      dd.dpx(t) = dx;
+    else
+      dd.dpx(t) = 0;
+    end
   else
-    dd.dpx(t) = 0;
+    dd.dpx(t) = nan;
+    ee.dpx(t) = nan;
   end
   
-  dy = bestshift(img, rfpy1, rfpy2)*SY/0.5;
-  out = microperspective(img, 0, dy);
-  err = marginlessdiff(out, ref);
-  ee.dpy(t) = err;
-  ff.dpy(t) = dy;
-  if err<er0
-    img = out;
-    er0 = err;
-    dd.dpy(t) = dy;
+  if any(opts=='Y')
+    dy = bestshift(img, rfpy1, rfpy2)*SY/0.5;
+    out = microperspective(img, 0, dy);
+    err = marginlessdiff(out, ref);
+    ee.dpy(t) = err;
+    ff.dpy(t) = dy;
+    if err<er0
+      img = out;
+      er0 = err;
+      dd.dpy(t) = dy;
+    else
+      dd.dpy(t) = 0;
+    end
   else
-    dd.dpy(t) = 0;
+    dd.dpy(t) = nan;
+    ee.dpy(t) = nan;
   end
 
   % Rotate?
