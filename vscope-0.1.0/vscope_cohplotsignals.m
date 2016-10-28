@@ -19,6 +19,7 @@ function vscope_cohplotsignals(coh, varargin)
 %       nmax - maximum number of signals to plot (default: all)
 %       tbar - 0: plot x-axis for time
 %              1: plot scale bar for time
+%              nan: plot nothing for time
 %       sbar - 0: label dF scale next to x-axis
 %              1: label dF scale next to scale bar
 
@@ -131,7 +132,7 @@ if kv.tbar==0
   rng = [ceil(coh.extra.tt0(1)/dx)*dx : dx : floor(t1/dx)*dx];
   qpen k 0
   qxaxis(0.25, [coh.extra.tt0(1) t1], rng, 'Time (s)');
-else
+elseif kv.tbar==1
   dx = sensiblestep((t1-coh.extra.tt0(1)) / 5);
   qpen k 2 flatcap
   qplot([t1-dx t1], [0 0]+.25);

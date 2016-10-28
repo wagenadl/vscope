@@ -120,7 +120,7 @@ if isempty(kv.sig)
   sig = sig(:, :, kv.camera);
   
   if ~isempty(kv.trend)  
-    sig = bsxfun(@rdivide, sig - 1000, kv.trend) + 1000;
+    sig = bsxfun(@rdivide, sig, kv.trend);
   end
   
   if ~isempty(kv.debleach)
