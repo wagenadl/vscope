@@ -15,8 +15,9 @@
 #include <QMessageBox>
 
 Dbg::Dbg(QObject const *x) throw() {
+  static QTime t0(QTime::currentTime());
   try {
-    txt = "[" + QTime::currentTime().toString("hhmmss.zzz") + "] ";
+    txt = QString("[%1] ").arg(t0.msecsTo(QTime::currentTime()) / 1e3);
     setString(&txt);
     if (x) 
       *this << objName(x) << ": ";

@@ -194,9 +194,6 @@ void TraceInfo::setData(double datax0_, double datadx_,
   dataptr = dp_;
   N = dataptr.ptr.dp_none ? N_ : 0;
   step = step_;
-  Dbg() << "TraceInfo::setData. x0="<<datax0<< " dx="<<datadx
-  	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
-    	<<" N="<<N<<" step="<<step;
 }
 
 void TraceInfo::setScaleFactor(double sf) {

@@ -48,16 +48,21 @@ bool MGAuto::useOutputChannel(QString id) const {
     return false;
   if (myname!="stim")
     return false;
+
+  ParamTree *ptree = Globals::trove->trial().myParamTree();
+  if (!ptree)
+    ptree = Globals::ptree;
+  
   if (id.contains("Vid"))
-    return Globals::ptree->enabled("stimVideo");
+    return ptree->enabled("stimVideo");
   if (id.startsWith("Lamp:"))
-    return Globals::ptree->enabled("acqCCD");
+    return ptree->enabled("acqCCD");
   if (id.startsWith("Shutter:") || id.startsWith("Trigger:")) {
     QStringList bits = id.split(":");
     QString camid = bits.last();
-    return Globals::ptree->enabled("acqCCD/camera:" + camid);
+    return ptree->enabled("acqCCD/camera:" + camid);
   }
-  return Globals::ptree->enabled("stimEphys/channel:" + id);
+  return ptree->enabled("stimEphys/channel:" + id);
 }
 
 void MGAuto::rebuild() {
@@ -86,9 +91,11 @@ void MGAuto::rebuild() {
   }
 
   AnalogData const *as = Globals::trove->trial().analogStimuli();
+  Dbg() << "mgauto as=" << as;
   if (as) {
     for (int i=0; i<as->getNumChannels(); i++) {
       QString id = as->getChannelAtIndex(i);
+      Dbg() << "mgauto as:" << i << ": " << id << ": " << useOutputChannel(id);
       if (useOutputChannel(id)) {
 	newlist << id;
 	outp << id;
@@ -107,6 +114,11 @@ void MGAuto::rebuild() {
       }
     }
   }
+  
+  Dbg() << "mgauto:" << myname << " newlist=" << QStringList(newlist).join(",")
+	<< " digi=" << QStringList(digi.toList()).join(",")
+	<< " outp=" << QStringList(outp.toList()).join(",")
+	<< " actual=" << QStringList(actual).join(",");
   
   if (newlist!=actual) {
     actual = newlist;
