@@ -18,6 +18,7 @@
 #include <gui/guiexc.h>
 #include <xml/settingsfile.h>
 #include <toplevel/mainwindow.h>
+#include <acq/trialdata.h>
 
 SavedSettings::SavedSettings(QWidget *parent): FileChooser(parent) {
   savedlg = 0;
@@ -150,7 +151,10 @@ void SavedSettings::saveSettings(QString fn) {
 
   saveframe->hide();
   try {
-    SettingsFile::save(fn, Globals::ptree);
+    ParamTree *ptree = Globals::trove->trial().myParamTree();
+  if (!ptree)
+    ptree = Globals::ptree;
+  SettingsFile::save(fn, ptree);
   } catch (Exception const &e) {
     dbg("SavedSettings::saveSettings: Caught exception");
   }
