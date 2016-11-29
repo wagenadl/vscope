@@ -11,7 +11,6 @@
 class AnalogOut: public daqTask {
   Q_OBJECT;
 public:
-  static const double AO_RANGE_V = 10.0;
   class Channel {
   public:
     explicit Channel(unsigned int c=0);

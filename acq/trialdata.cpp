@@ -299,7 +299,8 @@ void TrialData::write() const {
 
 void TrialData::read(QString dir, QString exptname0, QString trialid0,
                      ProgressDialog *pd) {
-  pd->push(5, "Loading trial metadata");
+  if (pd)
+    pd->push(5, "Loading trial metadata");
   KeyGuard guard(*this);
   prep=false;
 
@@ -331,32 +332,41 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
     prepareSnapshot(false);
   else
     prepare(false);
-
-  pd->pop();
+  if (pd)
+    pd->pop();
 
   if (xml)
     delete xml;
   xml = new XML(myxml);
 
-  pd->push(95, "Loading trial data");
+  if (pd)
+    pd->push(95, "Loading trial data");
   if (snap || contEphys) {
     clearAnalog();
     clearDigital();
   } else {
-    pd->push(do_ccd ? 25 : 100);
-    pd->push(75, "Loading analog data");
+    if (pd) {
+      pd->push(do_ccd ? 25 : 100);
+      pd->push(75, "Loading analog data");
+    }
     readAnalog(myxml, base, pd);
-    pd->pop();
-    pd->push(25, "Loading digital data");
+    if (pd) {
+      pd->pop();
+      pd->push(25, "Loading digital data");
+    }
     readDigital(myxml, base, pd);
-    pd->pop();
-    pd->pop();
+    if (pd) {
+      pd->pop();
+      pd->pop();
+    }
   }
 
   if (do_ccd) {
-    pd->push((snap||contEphys) ? 100 : 75, "Loading CCD data");
+    if (pd)
+      pd->push((snap||contEphys) ? 100 : 75, "Loading CCD data");
     readCCD(myxml, base, pd);
-    pd->pop();
+    if (pd)
+      pd->pop();
   } else {
     clearCCD();
   }
@@ -469,9 +479,11 @@ void TrialData::readDigital(XML &myxml, QString base, ProgressDialog *pd) {
       ccddata[id] = new CCDData;
       add(ccddata[id]); // to the keyagg
     }
-    pd->push(90.0/ncams, QString("Loading CCD data: %1").arg(id));
+    if (pd)
+      pd->push(90.0/ncams, QString("Loading CCD data: %1").arg(id));
     ccddata[id]->read(ccdf, cam, pd);
-    pd->pop();
+    if (pd)
+      pd->pop();
   }
   ccdf.close();
 
@@ -502,7 +514,8 @@ void TrialData::readDigital(XML &myxml, QString base, ProgressDialog *pd) {
       campairs[id] = campairs[did] = CamPair(did, id);
     }
   }
-  pd->progress(100);
+  if (pd)
+    pd->progress(100);
 
   if (newset!=oldset)
     emit newCameras();

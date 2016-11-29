@@ -7,6 +7,8 @@
 #include <daq/dwNIDAQmx.h>
 #include <base/dbg.h>
 
+#define AO_RANGE_V 10.0
+
 AnalogOut::Channel::Channel(unsigned int c): chn(c) {
 }
 

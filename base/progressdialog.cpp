@@ -27,8 +27,6 @@ QWidget *&ProgressDialog::root() {
 }
 
 void ProgressDialog::push(float percentile, QString txt) {
-  if (!this)
-    return;
   float now = ends.last() - starts.last();
   starts << current;
   ends << current + now*percentile/100;
@@ -41,8 +39,6 @@ void ProgressDialog::push(float percentile, QString txt) {
 }
 
 void ProgressDialog::pop() {
-  if (!this)
-    return;
   progress(100);
   if (ends.size()>1) {
     ends.removeLast();
@@ -53,8 +49,6 @@ void ProgressDialog::pop() {
 }
 
 void ProgressDialog::progress(float c) {
-  if (!this)
-    return;
   current = starts.last() + c/100*(ends.last()-starts.last());
   setValue(current);
 }
