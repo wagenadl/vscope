@@ -56,7 +56,7 @@
   <page id="acqEphys" subdxl="1.1">
     <group id="a">
       <button id="acqTime" label="Trial dur." bg="#88ffff"/>
-      <button id="aiChannels" label="Input channels" bg="#88ffcc"/>
+      <immune id="aiChannels" label="Input channels" bg="#88ffcc"/>
       <button id="acqFreq" label="Sample rate" bg="#88ddff"/>
     </group>
 

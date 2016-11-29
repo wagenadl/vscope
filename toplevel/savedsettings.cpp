@@ -152,9 +152,9 @@ void SavedSettings::saveSettings(QString fn) {
   saveframe->hide();
   try {
     ParamTree *ptree = Globals::trove->trial().myParamTree();
-  if (!ptree)
-    ptree = Globals::ptree;
-  SettingsFile::save(fn, ptree);
+    if (!ptree)
+      ptree = Globals::ptree;
+    SettingsFile::save(fn, ptree);
   } catch (Exception const &e) {
     dbg("SavedSettings::saveSettings: Caught exception");
   }
