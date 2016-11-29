@@ -19,6 +19,7 @@ guiMenu::guiMenu(class QWidget *parent,
 		 class QRect const &geom):
   guiPage(parent, ptree, id, master, geom) {
   autoItems = 0;
+  overridden = false;
   itemgroup = new RadioGroup(this);
 }
 
@@ -85,8 +86,11 @@ void guiMenu::prepForOpening() {
   Param *pp = ptree ? ptree->leafp() : 0;
   if (!pp)
     throw Exception("guiMenu", "openSelf failed because paramtree has no leaf");
-  
-  if (autoItems)
+
+  Dbg() << "prepforopening:" << path() << "autoi="<<autoItems
+        << " over="<<overridden
+        << " ids="<<(autoItems?autoItems->allIDs().join(",") : QString("-"));
+  if (autoItems && !overridden)
     autoItems->rebuild();
 
   Param copy(*pp);
@@ -143,6 +147,15 @@ bool guiMenu::mayResize() {
 }
 
 void guiMenu::updateAuto() {
+  Dbg() << "guimenu:" << path() << ": updateauto";
+  overridden = false;
   if (autoItems)
     autoItems->rebuild();
+}
+
+void guiMenu::overrideAuto(QStringList ids) {
+  Dbg() << "guimenu:" << path() << ": overrideauto: " << ids.join(",");
+  overridden = true;
+  if (autoItems)
+    autoItems->override(ids);
 }

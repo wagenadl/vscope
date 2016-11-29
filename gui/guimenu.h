@@ -18,6 +18,7 @@ public:
   virtual class guiButton *addItem(PageBuildGeom &g, QDomElement elt);
 public slots:
   virtual void updateAuto();
+  virtual void overrideAuto(QStringList ids);
   void setNonExclusive();
 protected:
   virtual VISUALTYPE visualTypeForParentButton() const;
@@ -29,6 +30,7 @@ protected:
 protected:
   class AutoItems *autoItems;
   class RadioGroup *itemgroup;
+  bool overridden;
 };
 
 #endif

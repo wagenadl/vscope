@@ -32,7 +32,7 @@ void guiChecklist::prepForOpening() {
     throw Exception("guiCheckList",
 		    "openSelf failed because I am not a leaf of type set");
 
-  if (autoItems)
+  if (autoItems && !overridden)
     autoItems->rebuild();
 
   QSet<QString> ss = pp->toStrings();

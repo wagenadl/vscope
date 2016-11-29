@@ -31,6 +31,7 @@
 #include <base/roidata3set.h>
 #include <toplevel/panelhistory.h>
 #include <QMessageBox>
+#include <gui/guimenu.h>
 
 Acquire::Acquire() {
   connect(Globals::trial,SIGNAL(ended(QString,QString)),
@@ -357,6 +358,7 @@ void Acquire::loadData(QString xmlfn) {
   Globals::trove->roidata().
     setDebleach((DEBLEACH)ptree->find("analysis/debleach").toInt());
   Globals::gui->updateAuto();
+  overrideAuto(ptree);
   displayCCD();
   dlg.progress(98);
   displayEPhys();
@@ -535,4 +537,14 @@ int Acquire::maxTrial() {
     return n;
   else
     return 0;
+}
+
+void Acquire::overrideAuto(ParamTree *ptree) {
+  guiPage *aic = Globals::gui->findpPage("acqEphys/aiChannels");
+  guiMenu *aicm = dynamic_cast<guiMenu*>(aic);
+  Dbg() << "overrideauto: aic=" << aic << " -> " << aicm;
+  if (aicm) {
+    QSet<QString> cc = ptree->find("acqEphys/aiChannels").toStrings();
+    aicm->overrideAuto(QStringList(cc.toList()));
+  }
 }

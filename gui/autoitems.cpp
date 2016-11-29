@@ -56,6 +56,10 @@ QStringList AutoItems::selectIDs(QStringList inlist) {
 
 void AutoItems::rebuild(PageBuildGeom *g_out) {
   QStringList newids = selectIDs(enumerator->getNonnegativeTags());
+  override(newids, g_out);
+}
+
+void AutoItems::override(QStringList newids, PageBuildGeom *g_out) {
   if (newids == ids)
     return;
   
@@ -63,6 +67,7 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
   if (!p)
     throw Exception("AutoItems", "Parent is not a page");
   foreach (QString id, items.keys()) {
+    Dbg() << "AI: deleting " << id;
     p->deleteButton(id);
   }
 
@@ -75,8 +80,9 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
   foreach (QString id, ids) {
-    if (enumerator->lookup(id)>=0) {
+    if (!enumerator->has(id) || enumerator->lookup(id)>=0) {
       // let's build an item
+      Dbg() << "AI: building " << id;
       xml.setContent(hd1 + "\n" + hd2 + "\n"
 		     + "<item value=\""
 		     + id
@@ -95,5 +101,6 @@ void AutoItems::rebuild(PageBuildGeom *g_out) {
     *g_out = g;
 }
  
-
-    
+QStringList AutoItems::allIDs() const {
+  return ids;
+}

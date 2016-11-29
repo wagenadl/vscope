@@ -57,9 +57,10 @@ ROICoords::ROICoords(QDomElement doc) {
 }
 
 void ROICoords::makeBlob(int log2n) {
-  if (dataXYRRA)
+  if (dataXYRRA) {
     delete dataXYRRA;
     dataXYRRA=0;
+  }
   if (dataBlob && dataBlob->log2nPoints()!=log2n) {
     delete dataBlob;
     dataBlob = 0;

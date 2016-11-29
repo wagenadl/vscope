@@ -44,6 +44,8 @@ private:
 public:
   void redisplayCCD();
 private:
+  void overrideAuto(class ParamTree *);
+private:
   enum TrialType { NONE, FRAME, TRIAL };
   TrialType type;
   class FileDlgKey *loaddlg, *importdlg;
