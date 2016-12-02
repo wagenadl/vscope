@@ -135,7 +135,7 @@ void polyblob_rphi::set(double x_, double y_, double x0, double y0) {
   r = sqrt(dx*dx+dy*dy);
   phi = atan2(dy,dx);
   if (phi<0)
-    phi += 2*numbers.pi;
+    phi += 2*Numbers::pi();
 }
 
 int polyblob_rphi_less(polyblob_rphi const &a, polyblob_rphi const &b) {
@@ -160,15 +160,15 @@ void PolyBlob::build(int k, double const *xx, double const *yy) {
     src[j].set(xx[j], yy[j], x0, y0);
   qSort(src.begin(), src.end()-1, polyblob_rphi_less);
   src[k] = src[0];
-  src[k].phi += 2*numbers.pi;
+  src[k].phi += 2*Numbers::pi();
   
   for (int j=0; j<k; j++) {
     double phi0 = src[j].phi;
     double phi1 = src[j+1].phi;
-    int i0 = ceili(phi0*n/(2*numbers.pi));
-    int i1 = ceili(phi1*n/(2*numbers.pi));
+    int i0 = ceili(phi0*n/(2*Numbers::pi()));
+    int i1 = ceili(phi1*n/(2*Numbers::pi()));
     for (int i=i0; i<i1; i++) {
-      double phi = i*2*numbers.pi/n;
+      double phi = i*2*Numbers::pi()/n;
       double a = (phi-phi0) / (phi1-phi0+1e-20);
       double x = src[j].x*(1-a) + src[j+1].x*a;
       double y = src[j].y*(1-a) + src[j+1].y*a;
@@ -237,7 +237,7 @@ double PolyBlob::distToCenter(double x, double y) const {
 
 double PolyBlob::distToEdge(double x, double y) const {
   double phi = atan2(y-y0(),x-x0());
-  int k = int(phi*n / (2*numbers.pi) + 0.5) & msk;
+  int k = int(phi*n / (2*Numbers::pi()) + 0.5) & msk;
   double dx = x - this->x(k);
   double dy = y - this->y(k);
   return sqrt(dx*dx+dy*dy);
@@ -246,7 +246,7 @@ double PolyBlob::distToEdge(double x, double y) const {
 bool PolyBlob::inside(double x, double y, double margin) const {
   double dr0 = distToCenter(x,y);
   double phi = atan2(y-y0(),x-x0());
-  int k = int(phi*n / (2*numbers.pi) + 0.5) & msk;
+  int k = int(phi*n / (2*Numbers::pi()) + 0.5) & msk;
   double dr1 = distToCenter(this->x(k), this->y(k));
   return dr0 <= dr1 + margin;
 }
@@ -254,7 +254,7 @@ bool PolyBlob::inside(double x, double y, double margin) const {
 double PolyBlob::weight(double x, double y, double borderwidth) const {
   double dr0 = distToCenter(x,y);
   double phi = atan2(y-y0(),x-x0());
-  int k = int(phi*n / (2*numbers.pi) + 0.5) & msk;
+  int k = int(phi*n / (2*Numbers::pi()) + 0.5) & msk;
   double dr1 = distToCenter(this->x(k), this->y(k));
   return 1/(1+exp((dr0-dr1)/borderwidth));
 }
@@ -264,7 +264,7 @@ void PolyBlob::adjust(double x, double y, bool first) {
   double dy = y-y0();
   double r = sqrt(dx*dx+dy*dy);
   double phi = atan2(dy,dx);
-  int k = floori(n*phi/(2*numbers.pi)+.5);
+  int k = floori(n*phi/(2*Numbers::pi())+.5);
   if (first) {
     set(k,x,y);
   } else {
@@ -307,7 +307,7 @@ void PolyBlob::reshape(double x1, double y1, double x2, double y2) {
   //    x1,y1,x2,y2,phi1*180/3.1415,phi2*180/3.1415);
   
   // should we work from phi1 to phi2, or the other way around?
-  if (fmod(4*numbers.pi + phi2 - phi1,2*numbers.pi) > numbers.pi) {
+  if (fmod(4*Numbers::pi() + phi2 - phi1, 2*Numbers::pi()) > Numbers::pi()) {
     /* above funky fmod returns a number between 0 and 2*pi */
     double phi = phi1;
     phi1 = phi2;
@@ -320,8 +320,8 @@ void PolyBlob::reshape(double x1, double y1, double x2, double y2) {
     y2 = y;
   }
   // We're working from phi1 to phi2.
-  int k1 = ceili(phi1*n/(2*numbers.pi));
-  int k2 = ceili(phi2*n/(2*numbers.pi));
+  int k1 = ceili(phi1*n/(2*Numbers::pi()));
+  int k2 = ceili(phi2*n/(2*Numbers::pi()));
   // Must include both k1 and k2.
   // Make sure the range is >=0 but not >=2*pi:
   // dbg("  -> (%.0f,%.0f)-(%.0f,%.0f) phi=%.4f:%.4f k=%i:%i",
@@ -332,11 +332,11 @@ void PolyBlob::reshape(double x1, double y1, double x2, double y2) {
     k2+=n;
   if (k2==k1)
     k2++;
-  double dphi = fmod(4*numbers.pi+phi2-phi1,2*numbers.pi);
+  double dphi = fmod(4*Numbers::pi()+phi2-phi1, 2*Numbers::pi());
   // dbg("    -> k=%i:%i dphi=%.4f",k1,k2,dphi*180/3.1415);
   for (int k=k1; k<k2; k++) {
-    double phi = k*2*numbers.pi/n;
-    double a = fmod(4*numbers.pi+phi-phi1,2*numbers.pi) / dphi;
+    double phi = k*2*Numbers::pi()/n;
+    double a = fmod(4*Numbers::pi()+phi-phi1,2*Numbers::pi()) / dphi;
     if (a<0)
       a=0;
     else if (a>1)

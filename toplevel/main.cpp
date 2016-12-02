@@ -79,12 +79,12 @@ QWidget *makeBanner1(QWidget *parent) {
   XML vsndoc(":/version.xml");
   QDomElement vsn = vsndoc.root();
   QString txt = "<html><body><h1>VScope ";
-  txt += vsn.attribute("branch");
+  txt += vsn.attribute("version");
   txt += ":" + vsn.attribute("rev") + "</h1>";
   txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" + vsn.attribute("year");
   txt += "<p>Last commit: " + vsn.attribute("date") + "<br>";
   txt += "Build date: " + vsn.attribute("builddate");
-  txt += "<p>For more info: wagenadl@uc.edu";
+  txt += "<p>For more info: daw@caltech.edu";
 
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();

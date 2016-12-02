@@ -67,7 +67,7 @@ void CohEstCI::compute(rvec const &xx, rvec const &yy,
       cvec w; w.resize(length_in);
       double phistar = fstar/fs;
       for (int n=0; n<length_in; n++) {
-	double phi = -2*numbers.pi*phistar*n;
+	double phi = -2*Numbers::pi()*phistar*n;
 	w[n].re = cos(phi);
 	w[n].im = sin(phi);
       }

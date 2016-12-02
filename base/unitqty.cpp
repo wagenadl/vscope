@@ -45,7 +45,7 @@ void UnitQty::set(QString v) {
   if (ok) {
     set(q, u);
   } else {
-    qty = numbers.nan;
+    qty = Numbers::nan();
     uni="";
   }
 }
@@ -78,7 +78,7 @@ void UnitQty::set(double q, QString u) {
 }
 
 bool UnitQty::ok() const {
-  return !numbers.isNaN(qty);
+  return !Numbers::isNaN(qty);
 }
 
 QString UnitQty::unitSI() const {
@@ -128,7 +128,7 @@ QString UnitQty::pretty(int prec) const {
 
 double UnitQty::toDouble(QString u) const {
   if (!u.endsWith(uni)) 
-    return numbers.nan;
+    return Numbers::nan();
 
   if (u==uni)
     return qty;
@@ -157,13 +157,13 @@ double UnitQty::toDouble(QString u) const {
     return q;
   }
 
-  return numbers.nan;
+  return Numbers::nan();
 }
 
 double UnitQty::str2num(QString qty, QString unit) {
   UnitQty x(qty);
   double y = x.toDouble(unit);
-  if (isnan(y))
+  if (Numbers::isNaN(y))
     throw Exception("UnitQty", "Cannot convert " + qty + " to " + unit);
   return y;
 }

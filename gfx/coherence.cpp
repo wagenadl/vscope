@@ -55,7 +55,7 @@ void Coherence::paintEvent(QPaintEvent *e) {
     QPointF xy = canvasToScreen()(roi.center());
     double pha = data->phase(id);
     double mag = data->magnitude(id);
-    if (isnan(mag)) 
+    if (Numbers::isNaN(mag)) 
       mag = pha = 0;
     int hue = int(pha*180/3.141592);
     if (hue<0)

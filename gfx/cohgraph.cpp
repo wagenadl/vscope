@@ -54,7 +54,7 @@ void CohGraph::paintEvent(QPaintEvent *e) {
 
   p.setPen(QColor("yellow"));
   for (int deg=0; deg<360; deg+=90) {
-    double phi = numbers.pi*deg/180;
+    double phi = Numbers::pi()*deg/180;
     double x = toScreenX(cos(phi));
     double y = toScreenX(-sin(phi));
     p.drawText(QRectF(x-1,y-1,2,2),
@@ -70,7 +70,7 @@ void CohGraph::paintEvent(QPaintEvent *e) {
       continue;
     double pha = data->phase(id);
     double mag = data->magnitude(id);
-    if (isnan(mag)) 
+    if (Numbers::isNaN(mag)) 
       mag = pha = 0;
     int hue = int(pha*180/3.141592);
     if (hue<0)

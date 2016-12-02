@@ -3,16 +3,15 @@
 #ifndef Numbers_H
 #define Numbers_H
 
+#include <limits>
+#include <cmath>
+
 class Numbers {
 public:
-  Numbers();
-public:
-  double pi;
-  double nan;
-  double inf;
-  bool isNaN(double x);
+  static double pi() { static double p=2*std::acos(0); return p; }
+  static double nan() { static double n = std::nan(""); return n; }
+  static double inf() { return std::numeric_limits<double>::infinity(); }
+  static bool isNaN(double x) { return std::isnan(x); }
 };
-
-extern Numbers numbers;
 
 #endif

@@ -12,7 +12,7 @@ class Range {
        variables min and max.
    */
 public:
-  Range(): min(numbers.inf), max(-numbers.inf) {
+  Range(): min(Numbers::inf()), max(-Numbers::inf()) {
     /*:F constructor
      *:D The default constructor creates an empty interval by setting the
          low end of the range to infinity and the high end to negative
@@ -25,8 +25,8 @@ public:
      */
   }
   void reset() {
-    min = numbers.inf;
-    max = -numbers.inf;
+    min = Numbers::inf();
+    max = -Numbers::inf();
   }
   void include(double x) {
     /*:F include

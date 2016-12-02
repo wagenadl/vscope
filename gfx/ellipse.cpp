@@ -69,9 +69,9 @@ void Ellipse::startMove(QMouseEvent *e) {
 
 void Ellipse::startResize(QMouseEvent *e) {
   omega = xyrra.findNearest(Transform::pixelCenter(e->pos()));
-  theta = xyrra.parallel(omega) - numbers.pi/2;
+  theta = xyrra.parallel(omega) - Numbers::pi()/2;
   // dbg("ellipse:resize omega=%5.2g (%4.0f) theta=%5.2g (%4.0f)",omega,
-  //     180*omega/numbers.pi,theta,180*theta/numbers.pi);
+  //     180*omega/Numbers::pi(),theta,180*theta/Numbers::pi());
   startDrag(e,Resize);
 }
 
@@ -83,9 +83,9 @@ void Ellipse::startRotate(QMouseEvent *e, bool far0) {
 
 void Ellipse::startRotSize(QMouseEvent *e) {
   omega = xyrra.findNearest(Transform::pixelCenter(e->pos()));
-  theta = xyrra.parallel(omega) - numbers.pi/2;
+  theta = xyrra.parallel(omega) - Numbers::pi()/2;
   // dbg("ellipse:rotsize omega=%5.2g (%4.0f) theta=%5.2g (%4.0f)",omega,
-  //     180*omega/numbers.pi,theta,180*theta/numbers.pi);
+  //     180*omega/Numbers::pi(),theta,180*theta/Numbers::pi());
   startDrag(e,RotSize);
 }
 
@@ -123,7 +123,7 @@ void Ellipse::drag(QMouseEvent *e) {
     xyrra.y0 = y;
     xyrra.R = fmax(a,b)*sqrt(2);
     xyrra.r = fmin(a,b)*sqrt(2);
-    xyrra.a = (a>b) ? 0 : numbers.pi/2;
+    xyrra.a = (a>b) ? 0 : Numbers::pi()/2;
   } break;
 
   case Move: { // translated from eldrag_center.m
@@ -177,9 +177,9 @@ void Ellipse::drag(QMouseEvent *e) {
     double r = 1/sqrt(alpha*sn*sn + beta*cs*cs - 2*gamma*cs*sn);
     if (R<r) {
       double rr = r; r=R; R=rr;
-      a = a + numbers.pi/2;
-      if (a>=numbers.pi)
-	a -= 2*numbers.pi;
+      a = a + Numbers::pi()/2;
+      if (a>=Numbers::pi())
+	a -= 2*Numbers::pi();
     }
     // end of elabc2rra snippet
     xyrra.x0 += dx/2;
@@ -282,9 +282,9 @@ void Ellipse::drag(QMouseEvent *e) {
     // double a_ = a;
     if (R<r) {
       double rr = r; r=R; R=rr;
-      a = a + numbers.pi/2;
-      if (a>=numbers.pi)
-	a -= 2*numbers.pi;
+      a = a + Numbers::pi()/2;
+      if (a>=Numbers::pi())
+	a -= 2*Numbers::pi();
     }
     // end of elabc2rra snippet
     xyrra.R = R;

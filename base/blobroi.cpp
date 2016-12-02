@@ -87,8 +87,8 @@ BlobROI::Result::Result() {
   mean_=0;
   std_=0;
   npix_=0;
-  min_=numbers.inf;
-  max_=-numbers.inf;
+  min_=Numbers::inf();
+  max_=-Numbers::inf();
 }
 
 int BlobROI::nPixels() const {

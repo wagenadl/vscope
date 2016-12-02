@@ -108,7 +108,7 @@ void xyrra_force_instantiate_do_not_call() {
 double XYRRA::maxY() const {
   // translated from elmaxy.m
   double om1 = ratan2(r*cos(a), R*rsin(a));
-  double om2 = om1+numbers.pi;
+  double om2 = om1+Numbers::pi();
   double y1 = y0 + R*rsin(a)*cos(om1) + r*cos(a)*rsin(om1);
   double y2 = y0 + R*rsin(a)*cos(om2) + r*cos(a)*rsin(om2);
   return fmax(y1,y2);
@@ -120,7 +120,7 @@ double XYRRA::maxX() const {
   alt.y0 = x0;
   alt.R = R;
   alt.r = r;
-  alt.a = a+numbers.pi/2;
+  alt.a = a+Numbers::pi()/2;
   return alt.maxY();
 }
 
@@ -199,11 +199,11 @@ double XYRRA::findNearest(double x, double y) const {
   for (QList<double>::iterator i=rsinomega.begin(); i!=rsinomega.end(); ++i) {
     double om = arsin(*i);
     omeg.push_back(om);
-    omeg.push_back(numbers.pi-om);
+    omeg.push_back(Numbers::pi()-om);
     // printf("%g %g ",om,numbers.pi-om);
   }
   // printf("];\n");
-  double dd = numbers.inf;
+  double dd = Numbers::inf();
   double om=0;
   // printf("xy1 = [");
   for (QList<double>::iterator i=omeg.begin(); i!=omeg.end(); ++i) {
@@ -230,7 +230,7 @@ void XYRRA::paint(QPainter *pntr, int nPoints) const {
   double cs = cos(a);
   double sn = rsin(a);
   for (int i=0; i<nPoints; i++) {
-    double omega = i*2*numbers.pi/nPoints;
+    double omega = i*2*Numbers::pi()/nPoints;
     double xi = R*cos(omega);
     double eta = r*rsin(omega);
     double x = x0 + cs*xi - sn*eta;

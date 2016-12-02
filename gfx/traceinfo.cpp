@@ -75,8 +75,8 @@ template <class X> void ti_trueblue(X const *data,
 				    double *outmin, double *outmax) {
   if (dataN==0 || !data) {
     for (int m=0; m<M; m++) {
-      outmin[m]=numbers.inf;
-      outmax[m]=-numbers.inf;
+      outmin[m]=Numbers::inf();
+      outmax[m]=-Numbers::inf();
     }
   } else {
     for (int m=0; m<M; m++) {
@@ -114,8 +114,8 @@ void ti_trueblue_binary(uint32_t const *data, uint32_t bit,
 
   if (dataN==0 || !data) {
     for (int m=0; m<M; m++) {
-      outmin[m]=numbers.inf;
-      outmax[m]=-numbers.inf;
+      outmin[m]=Numbers::inf();
+      outmax[m]=-Numbers::inf();
     }
   } else {
     for (int m=0; m<M; m++) {
@@ -373,8 +373,8 @@ void TraceInfo::trueBlue(double x0, double dx, int M,
     break;
   case DataPtr::dataNone:
     for (int m=0; m<M; m++) {
-      outmin[m]=numbers.inf;
-      outmax[m]=-numbers.inf;
+      outmin[m]=Numbers::inf();
+      outmax[m]=-Numbers::inf();
     }
     return;
   case DataPtr::dataInt8:
@@ -417,8 +417,8 @@ void TraceInfo::trueBlue(double x0, double dx, int M,
   default:
     fprintf(stderr,"Warning: TraceInfo::trueBlue: unknown data type\n");
     for (int m=0; m<M; m++) {
-      outmin[m]=numbers.inf;
-      outmax[m]=-numbers.inf;
+      outmin[m]=Numbers::inf();
+      outmax[m]=-Numbers::inf();
     }
     return;
   }

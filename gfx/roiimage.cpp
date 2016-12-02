@@ -313,12 +313,12 @@ int ROIImage::findNearestROI(QPoint xy, double marg) {
   Transform tinv = canvasToScreen().inverse();
   QPointF xy_ = tinv(Transform::pixelCenter(xy));
   int bestid=0;
-  double dd;
+  double dd = Numbers::inf();
   foreach (int id, roiset->ids()) {
     if (!campair.looseMatch(roiset->cam(id)))
       continue; // we won't select ROIs that are not on this camera (pair)
     double d = euclideanDist2(xy_, roiset->get(id).center());
-    if (bestid==0 || d<dd) {
+    if (d<dd) {
       bestid = id;
       dd = d;
     }
