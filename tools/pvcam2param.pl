@@ -34,13 +34,17 @@ my %TYPENAMES = (
 		 "BOOLEAN" => "bool",
 		 "INT8" => "signed char",
 		 "UNS8" => "unsigned char",
-		 "INT16" => "short",
-		 "UNS16" => "unsigned short",
-		 "INT32" => "long",
-		 "UNS32" => "unsigned long",
-		 "FLT64" => "float",
+		 "INT16" => "int16_t",
+		 "UNS16" => "uint16_t",
+		 "INT32" => "int32_t",
+		 "UNS32" => "uint32_t",
+		 "INT64" => "int64_t",
+		 "UNS64" => "uint64_t",
+		 "FLT32" => "double",
+		 "FLT64" => "double",
 		 "VOID_PTR" => "void *",
 		 "VOID_PTR_PTR" => "void **",
+                 "CHAR_PTR" => "char *",
 		);
 
 # Read input
@@ -69,17 +73,35 @@ my $primer="";
 my $enum=0;
 my %currentenum;
 my $nextenumvalue=0;
+my %enumvalues;
+
+$enums{BINNING_SER} = binning_enum();
+$enums{BINNING_PAR} = binning_enum();
+
 for (@pvclines) {
-  $primer=$1 if /used with.*PARAM_([A-Z_]+)/;
+  if (/#define\s+([A-Z_]+)\s+(\d+)/) {
+    $enumvalues{$1} = $2;
+  }
+  $primer=$1 if /sed with.*PARAM_([A-Z_]+)/;
   if ($primer ne "") {
     $enum=1 if /enum/;
   }
   if ($enum==1) {
     $enum=2 if s/\{//;
   }
+  if ($enum==3) {
+    if (s/.*?\*\///) {
+      $enum=2;
+    }
+  }
   if ($enum==2) {
     # Let's get stuff
     chomp;
+    s/\/\/.*//;
+    s/\/\*.*?\*\///g;
+    if (s/\/\*.*//) {
+      $enum=3;
+    }
     s/\/\*.*\*\///g;
     s/\r/ /;
     s/\}.*// and $enum=0;
@@ -87,10 +109,12 @@ for (@pvclines) {
     s/ +$//;
     my @words = split(/, */,$_);
     for (@words) {
-      if (/([A-Za-z0-9_]+)\s*=\s*([A-Z0-9a-z_]+)/) {
-	$currentenum{$1} = $2;
-	$nextenumvalue = $2 + 1;
+      if (/([A-Za-z0-9_]+)\s*=\s*(.+)/) {
+        $nextenumvalue = evaluateenum($2);
+        $enumvalues{$1} = $nextenumvalue;
+	$currentenum{$1} = $nextenumvalue++;
       } elsif (/[A-Za-z0-9_]/) {
+        $enumvalues{$_} = $nextenumvalue;
 	$currentenum{$_} = $nextenumvalue++;
       }
     }
@@ -125,7 +149,7 @@ for (keys %CLASSNAMES) {
 for (@pvclines) {
   chomp;
   /define PARAM/ or next;
-  /PARAM_([A-Z_]+).*CLASS(\d+).*TYPE_([A-Z0-9]+)/ or next;
+  /PARAM_([A-Z_]+).*CLASS(\d+).*TYPE_([A-Z0-9_]+)/ or next;
   my $pname = $1;
   my $pclass = $2;
   my $ptype = $3;
@@ -169,13 +193,13 @@ sub stripenum {
     $l = join("",map(ucfirst(lc($_)),split(/_/,$l)));
     $newenum{$l} = $enump->{$k};
   }
-#print "enum '$ename'. base = '$base'\n";
+  print "enum '$ename'. base = '$base'\n";
   return \%newenum;
 }
 
 sub handleparam {
   my ($nicename, $pname, $pclass, $ptype) = @_;
-  #print "Working on '$nicename' ($pname) in class '$pclass' (type '$ptype')\n";
+  print "Working on '$nicename' ($pname) in class '$pclass' (type '$ptype')\n";
   if ($ptype eq "ENUM") {
     outputenum($pname, $pclass);
   }
@@ -428,3 +452,27 @@ EOF
 EOF
 }
 
+sub evaluateenum {
+  my $str = shift;
+  # Evalue STR as C code that may contain enum values
+  my $cp = $str;
+  while ($cp =~ s/([A-Z_]+)//) {
+    unless (exists $enumvalues{$1}) {
+      print join(":", keys %enumvalues), "\n";
+      die "Unknown enum value $1\n";
+    }
+  }
+  $cp = $str;
+  $str =~ s/([A-Z_]+)/$enumvalues{$1}/g;
+  print "evaluating $cp: $str\n";
+  return eval($str);
+}
+
+sub binning_enum {
+  my %en;
+  $en{ONE} = 1;
+  $en{TWO} = 2;
+  $en{THREE} = 3;
+  $en{FOUR} = 4;
+  return \%en;
+}

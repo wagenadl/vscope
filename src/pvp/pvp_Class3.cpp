@@ -29,7 +29,7 @@ int pvpCamera::countExpTime() throw(pvpException) {
   return count;
 }
 
-unsigned short pvpCamera::getExpTime() throw(pvpException) {
+uint16_t pvpCamera::getExpTime() throw(pvpException) {
   pvpAccess a = accessExpTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns16 x;
@@ -41,7 +41,7 @@ unsigned short pvpCamera::getExpTime() throw(pvpException) {
   }
 }
 
-unsigned short pvpCamera::defaultExpTime() throw(pvpException) {
+uint16_t pvpCamera::defaultExpTime() throw(pvpException) {
   pvpAccess a = accessExpTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns16 x;
@@ -53,7 +53,7 @@ unsigned short pvpCamera::defaultExpTime() throw(pvpException) {
   }
 }
 
-unsigned short pvpCamera::minExpTime() throw(pvpException) {
+uint16_t pvpCamera::minExpTime() throw(pvpException) {
   pvpAccess a = accessExpTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns16 x;
@@ -65,7 +65,7 @@ unsigned short pvpCamera::minExpTime() throw(pvpException) {
   }
 }
 
-unsigned short pvpCamera::maxExpTime() throw(pvpException) {
+uint16_t pvpCamera::maxExpTime() throw(pvpException) {
   pvpAccess a = accessExpTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns16 x;
@@ -77,7 +77,7 @@ unsigned short pvpCamera::maxExpTime() throw(pvpException) {
   }
 }
 
-void pvpCamera::setExpTime(unsigned short x) throw(pvpException) {
+void pvpCamera::setExpTime(uint16_t x) throw(pvpException) {
   pvpAccess a = accessExpTime();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns16 y = x;
@@ -217,108 +217,6 @@ void pvpCamera::reportExpRes() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availExpMinTime() throw(pvpException) {
-  rs_bool avail;
-  if (!pl_get_param(camh,PARAM_EXP_MIN_TIME,ATTR_AVAIL,&avail))
-    throw pvpException("Cannot get EXP_MIN_TIME availability");
-  return avail;
-}
-
-pvpAccess pvpCamera::accessExpMinTime() throw(pvpException) {
-  uns16 access;
-  if (!availExpMinTime())
-    throw pvpException("EXP_MIN_TIME not available");
-  if (!pl_get_param(camh,PARAM_EXP_MIN_TIME,ATTR_ACCESS,&access))
-    throw pvpException("Cannot get EXP_MIN_TIME accessibility");
-  return pvpAccess(access);
-}
-
-int pvpCamera::countExpMinTime() throw(pvpException) {
-  uns32 count;
-  if (!availExpMinTime())
-    throw pvpException("EXP_MIN_TIME not available");
-  if (!pl_get_param(camh,PARAM_EXP_MIN_TIME,ATTR_COUNT,&count))
-    throw pvpException("Cannot get EXP_MIN_TIME count");
-  return count;
-}
-
-float pvpCamera::getExpMinTime() throw(pvpException) {
-  pvpAccess a = accessExpMinTime();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
-    if (!pl_get_param(camh,PARAM_EXP_MIN_TIME,ATTR_CURRENT,&x))
-      throw pvpException("Cannot read EXP_MIN_TIME");
-    return x;
-  } else {
-    throw pvpException("EXP_MIN_TIME not accessible for reading");
-  }
-}
-
-float pvpCamera::defaultExpMinTime() throw(pvpException) {
-  pvpAccess a = accessExpMinTime();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
-    if (!pl_get_param(camh,PARAM_EXP_MIN_TIME,ATTR_DEFAULT,&x))
-      throw pvpException("Cannot read default of EXP_MIN_TIME");
-    return x;
-  } else {
-    throw pvpException("EXP_MIN_TIME not accessible for reading");
-  }
-}
-
-float pvpCamera::minExpMinTime() throw(pvpException) {
-  pvpAccess a = accessExpMinTime();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
-    if (!pl_get_param(camh,PARAM_EXP_MIN_TIME,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of EXP_MIN_TIME");
-    return x;
-  } else {
-    throw pvpException("EXP_MIN_TIME not accessible for reading");
-  }
-}
-
-float pvpCamera::maxExpMinTime() throw(pvpException) {
-  pvpAccess a = accessExpMinTime();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
-    if (!pl_get_param(camh,PARAM_EXP_MIN_TIME,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of EXP_MIN_TIME");
-    return x;
-  } else {
-    throw pvpException("EXP_MIN_TIME not accessible for reading");
-  }
-}
-
-void pvpCamera::setExpMinTime(float x) throw(pvpException) {
-  pvpAccess a = accessExpMinTime();
-  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    flt64 y = x;
-    if (!pl_set_param(camh,PARAM_EXP_MIN_TIME,(void*)(&y)))
-      throw pvpException("Cannot set EXP_MIN_TIME");
-  }
-}
-
-void pvpCamera::reportExpMinTime() throw(pvpException) {
-  if (availExpMinTime()) {
-    pvpAccess a = accessExpMinTime();
-    printf("ExpMinTime: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getExpMinTime() <<"\n";
-        ss << "  min value: " << minExpMinTime() <<"\n";
-        ss << "  max value: " << maxExpMinTime() <<"\n";
-        ss << "  default value: " << defaultExpMinTime() <<"\n";
-      }
-      printf("%s",s.toUtf8().data());
-    }
-    printf("  count: %i\n",countExpMinTime());
-  } else {
-    printf("ExpMinTime is not available.\n");
-  }
-}
-
 bool pvpCamera::availExpResIndex() throw(pvpException) {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_EXP_RES_INDEX,ATTR_AVAIL,&avail))
@@ -344,7 +242,7 @@ int pvpCamera::countExpResIndex() throw(pvpException) {
   return count;
 }
 
-unsigned short pvpCamera::getExpResIndex() throw(pvpException) {
+uint16_t pvpCamera::getExpResIndex() throw(pvpException) {
   pvpAccess a = accessExpResIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns16 x;
@@ -356,7 +254,7 @@ unsigned short pvpCamera::getExpResIndex() throw(pvpException) {
   }
 }
 
-unsigned short pvpCamera::defaultExpResIndex() throw(pvpException) {
+uint16_t pvpCamera::defaultExpResIndex() throw(pvpException) {
   pvpAccess a = accessExpResIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns16 x;
@@ -368,7 +266,7 @@ unsigned short pvpCamera::defaultExpResIndex() throw(pvpException) {
   }
 }
 
-unsigned short pvpCamera::minExpResIndex() throw(pvpException) {
+uint16_t pvpCamera::minExpResIndex() throw(pvpException) {
   pvpAccess a = accessExpResIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns16 x;
@@ -380,7 +278,7 @@ unsigned short pvpCamera::minExpResIndex() throw(pvpException) {
   }
 }
 
-unsigned short pvpCamera::maxExpResIndex() throw(pvpException) {
+uint16_t pvpCamera::maxExpResIndex() throw(pvpException) {
   pvpAccess a = accessExpResIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns16 x;
@@ -392,7 +290,7 @@ unsigned short pvpCamera::maxExpResIndex() throw(pvpException) {
   }
 }
 
-void pvpCamera::setExpResIndex(unsigned short x) throw(pvpException) {
+void pvpCamera::setExpResIndex(uint16_t x) throw(pvpException) {
   pvpAccess a = accessExpResIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns16 y = x;
@@ -418,6 +316,108 @@ void pvpCamera::reportExpResIndex() throw(pvpException) {
     printf("  count: %i\n",countExpResIndex());
   } else {
     printf("ExpResIndex is not available.\n");
+  }
+}
+
+bool pvpCamera::availExposureTime() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_EXPOSURE_TIME,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get EXPOSURE_TIME availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessExposureTime() throw(pvpException) {
+  uns16 access;
+  if (!availExposureTime())
+    throw pvpException("EXPOSURE_TIME not available");
+  if (!pl_get_param(camh,PARAM_EXPOSURE_TIME,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get EXPOSURE_TIME accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countExposureTime() throw(pvpException) {
+  uns32 count;
+  if (!availExposureTime())
+    throw pvpException("EXPOSURE_TIME not available");
+  if (!pl_get_param(camh,PARAM_EXPOSURE_TIME,ATTR_COUNT,&count))
+    throw pvpException("Cannot get EXPOSURE_TIME count");
+  return count;
+}
+
+uint64_t pvpCamera::getExposureTime() throw(pvpException) {
+  pvpAccess a = accessExposureTime();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns64 x;
+    if (!pl_get_param(camh,PARAM_EXPOSURE_TIME,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read EXPOSURE_TIME");
+    return x;
+  } else {
+    throw pvpException("EXPOSURE_TIME not accessible for reading");
+  }
+}
+
+uint64_t pvpCamera::defaultExposureTime() throw(pvpException) {
+  pvpAccess a = accessExposureTime();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns64 x;
+    if (!pl_get_param(camh,PARAM_EXPOSURE_TIME,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of EXPOSURE_TIME");
+    return x;
+  } else {
+    throw pvpException("EXPOSURE_TIME not accessible for reading");
+  }
+}
+
+uint64_t pvpCamera::minExposureTime() throw(pvpException) {
+  pvpAccess a = accessExposureTime();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns64 x;
+    if (!pl_get_param(camh,PARAM_EXPOSURE_TIME,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of EXPOSURE_TIME");
+    return x;
+  } else {
+    throw pvpException("EXPOSURE_TIME not accessible for reading");
+  }
+}
+
+uint64_t pvpCamera::maxExposureTime() throw(pvpException) {
+  pvpAccess a = accessExposureTime();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns64 x;
+    if (!pl_get_param(camh,PARAM_EXPOSURE_TIME,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of EXPOSURE_TIME");
+    return x;
+  } else {
+    throw pvpException("EXPOSURE_TIME not accessible for reading");
+  }
+}
+
+void pvpCamera::setExposureTime(uint64_t x) throw(pvpException) {
+  pvpAccess a = accessExposureTime();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    uns64 y = x;
+    if (!pl_set_param(camh,PARAM_EXPOSURE_TIME,(void*)(&y)))
+      throw pvpException("Cannot set EXPOSURE_TIME");
+  }
+}
+
+void pvpCamera::reportExposureTime() throw(pvpException) {
+  if (availExposureTime()) {
+    pvpAccess a = accessExposureTime();
+    printf("ExposureTime: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getExposureTime() <<"\n";
+        ss << "  min value: " << minExposureTime() <<"\n";
+        ss << "  max value: " << maxExposureTime() <<"\n";
+        ss << "  default value: " << defaultExposureTime() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countExposureTime());
+  } else {
+    printf("ExposureTime is not available.\n");
   }
 }
 
@@ -558,7 +558,7 @@ int pvpCamera::countBofEofCount() throw(pvpException) {
   return count;
 }
 
-unsigned long pvpCamera::getBofEofCount() throw(pvpException) {
+uint32_t pvpCamera::getBofEofCount() throw(pvpException) {
   pvpAccess a = accessBofEofCount();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -570,7 +570,7 @@ unsigned long pvpCamera::getBofEofCount() throw(pvpException) {
   }
 }
 
-unsigned long pvpCamera::defaultBofEofCount() throw(pvpException) {
+uint32_t pvpCamera::defaultBofEofCount() throw(pvpException) {
   pvpAccess a = accessBofEofCount();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -582,7 +582,7 @@ unsigned long pvpCamera::defaultBofEofCount() throw(pvpException) {
   }
 }
 
-unsigned long pvpCamera::minBofEofCount() throw(pvpException) {
+uint32_t pvpCamera::minBofEofCount() throw(pvpException) {
   pvpAccess a = accessBofEofCount();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -594,7 +594,7 @@ unsigned long pvpCamera::minBofEofCount() throw(pvpException) {
   }
 }
 
-unsigned long pvpCamera::maxBofEofCount() throw(pvpException) {
+uint32_t pvpCamera::maxBofEofCount() throw(pvpException) {
   pvpAccess a = accessBofEofCount();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -606,7 +606,7 @@ unsigned long pvpCamera::maxBofEofCount() throw(pvpException) {
   }
 }
 
-void pvpCamera::setBofEofCount(unsigned long x) throw(pvpException) {
+void pvpCamera::setBofEofCount(uint32_t x) throw(pvpException) {
   pvpAccess a = accessBofEofCount();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -839,117 +839,1071 @@ void pvpCamera::reportCircBuffer() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availHwAutostop() throw(pvpException) {
+bool pvpCamera::availFrameBufferSize() throw(pvpException) {
   rs_bool avail;
-  if (!pl_get_param(camh,PARAM_HW_AUTOSTOP,ATTR_AVAIL,&avail))
-    throw pvpException("Cannot get HW_AUTOSTOP availability");
+  if (!pl_get_param(camh,PARAM_FRAME_BUFFER_SIZE,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get FRAME_BUFFER_SIZE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessHwAutostop() throw(pvpException) {
+pvpAccess pvpCamera::accessFrameBufferSize() throw(pvpException) {
   uns16 access;
-  if (!availHwAutostop())
-    throw pvpException("HW_AUTOSTOP not available");
-  if (!pl_get_param(camh,PARAM_HW_AUTOSTOP,ATTR_ACCESS,&access))
-    throw pvpException("Cannot get HW_AUTOSTOP accessibility");
+  if (!availFrameBufferSize())
+    throw pvpException("FRAME_BUFFER_SIZE not available");
+  if (!pl_get_param(camh,PARAM_FRAME_BUFFER_SIZE,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get FRAME_BUFFER_SIZE accessibility");
   return pvpAccess(access);
 }
 
-int pvpCamera::countHwAutostop() throw(pvpException) {
+int pvpCamera::countFrameBufferSize() throw(pvpException) {
   uns32 count;
-  if (!availHwAutostop())
-    throw pvpException("HW_AUTOSTOP not available");
-  if (!pl_get_param(camh,PARAM_HW_AUTOSTOP,ATTR_COUNT,&count))
-    throw pvpException("Cannot get HW_AUTOSTOP count");
+  if (!availFrameBufferSize())
+    throw pvpException("FRAME_BUFFER_SIZE not available");
+  if (!pl_get_param(camh,PARAM_FRAME_BUFFER_SIZE,ATTR_COUNT,&count))
+    throw pvpException("Cannot get FRAME_BUFFER_SIZE count");
   return count;
 }
 
-short pvpCamera::getHwAutostop() throw(pvpException) {
-  pvpAccess a = accessHwAutostop();
+uint64_t pvpCamera::getFrameBufferSize() throw(pvpException) {
+  pvpAccess a = accessFrameBufferSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
-    if (!pl_get_param(camh,PARAM_HW_AUTOSTOP,ATTR_CURRENT,&x))
-      throw pvpException("Cannot read HW_AUTOSTOP");
+    uns64 x;
+    if (!pl_get_param(camh,PARAM_FRAME_BUFFER_SIZE,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read FRAME_BUFFER_SIZE");
     return x;
   } else {
-    throw pvpException("HW_AUTOSTOP not accessible for reading");
+    throw pvpException("FRAME_BUFFER_SIZE not accessible for reading");
   }
 }
 
-short pvpCamera::defaultHwAutostop() throw(pvpException) {
-  pvpAccess a = accessHwAutostop();
+uint64_t pvpCamera::defaultFrameBufferSize() throw(pvpException) {
+  pvpAccess a = accessFrameBufferSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
-    if (!pl_get_param(camh,PARAM_HW_AUTOSTOP,ATTR_DEFAULT,&x))
-      throw pvpException("Cannot read default of HW_AUTOSTOP");
+    uns64 x;
+    if (!pl_get_param(camh,PARAM_FRAME_BUFFER_SIZE,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of FRAME_BUFFER_SIZE");
     return x;
   } else {
-    throw pvpException("HW_AUTOSTOP not accessible for reading");
+    throw pvpException("FRAME_BUFFER_SIZE not accessible for reading");
   }
 }
 
-short pvpCamera::minHwAutostop() throw(pvpException) {
-  pvpAccess a = accessHwAutostop();
+uint64_t pvpCamera::minFrameBufferSize() throw(pvpException) {
+  pvpAccess a = accessFrameBufferSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
-    if (!pl_get_param(camh,PARAM_HW_AUTOSTOP,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of HW_AUTOSTOP");
+    uns64 x;
+    if (!pl_get_param(camh,PARAM_FRAME_BUFFER_SIZE,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of FRAME_BUFFER_SIZE");
     return x;
   } else {
-    throw pvpException("HW_AUTOSTOP not accessible for reading");
+    throw pvpException("FRAME_BUFFER_SIZE not accessible for reading");
   }
 }
 
-short pvpCamera::maxHwAutostop() throw(pvpException) {
-  pvpAccess a = accessHwAutostop();
+uint64_t pvpCamera::maxFrameBufferSize() throw(pvpException) {
+  pvpAccess a = accessFrameBufferSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
-    if (!pl_get_param(camh,PARAM_HW_AUTOSTOP,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of HW_AUTOSTOP");
+    uns64 x;
+    if (!pl_get_param(camh,PARAM_FRAME_BUFFER_SIZE,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of FRAME_BUFFER_SIZE");
     return x;
   } else {
-    throw pvpException("HW_AUTOSTOP not accessible for reading");
+    throw pvpException("FRAME_BUFFER_SIZE not accessible for reading");
   }
 }
 
-void pvpCamera::setHwAutostop(short x) throw(pvpException) {
-  pvpAccess a = accessHwAutostop();
+void pvpCamera::setFrameBufferSize(uint64_t x) throw(pvpException) {
+  pvpAccess a = accessFrameBufferSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
-    if (!pl_set_param(camh,PARAM_HW_AUTOSTOP,(void*)(&y)))
-      throw pvpException("Cannot set HW_AUTOSTOP");
+    uns64 y = x;
+    if (!pl_set_param(camh,PARAM_FRAME_BUFFER_SIZE,(void*)(&y)))
+      throw pvpException("Cannot set FRAME_BUFFER_SIZE");
   }
 }
 
-void pvpCamera::reportHwAutostop() throw(pvpException) {
-  if (availHwAutostop()) {
-    pvpAccess a = accessHwAutostop();
-    printf("HwAutostop: %s\n",a.decode());
+void pvpCamera::reportFrameBufferSize() throw(pvpException) {
+  if (availFrameBufferSize()) {
+    pvpAccess a = accessFrameBufferSize();
+    printf("FrameBufferSize: %s\n",a.decode());
     if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
       QString s;
       { QTextStream ss(&s);
-        ss << "  current value: " << getHwAutostop() <<"\n";
-        ss << "  min value: " << minHwAutostop() <<"\n";
-        ss << "  max value: " << maxHwAutostop() <<"\n";
-        ss << "  default value: " << defaultHwAutostop() <<"\n";
+        ss << "  current value: " << getFrameBufferSize() <<"\n";
+        ss << "  min value: " << minFrameBufferSize() <<"\n";
+        ss << "  max value: " << maxFrameBufferSize() <<"\n";
+        ss << "  default value: " << defaultFrameBufferSize() <<"\n";
       }
       printf("%s",s.toUtf8().data());
     }
-    printf("  count: %i\n",countHwAutostop());
+    printf("  count: %i\n",countFrameBufferSize());
   } else {
-    printf("HwAutostop is not available.\n");
+    printf("FrameBufferSize is not available.\n");
+  }
+}
+
+char const *pvpCamera::BinningSer::decode() const {
+  switch (x) {
+    case One: return "One";
+    case Two: return "Two";
+    case Three: return "Three";
+    case Four: return "Four";
+    default: return "UNKNOWN";
+  }
+}
+
+bool pvpCamera::availBinningSer() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_BINNING_SER,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get BINNING_SER availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessBinningSer() throw(pvpException) {
+  uns16 access;
+  if (!availBinningSer())
+    throw pvpException("BINNING_SER not available");
+  if (!pl_get_param(camh,PARAM_BINNING_SER,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get BINNING_SER accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countBinningSer() throw(pvpException) {
+  uns32 count;
+  if (!availBinningSer())
+    throw pvpException("BINNING_SER not available");
+  if (!pl_get_param(camh,PARAM_BINNING_SER,ATTR_COUNT,&count))
+    throw pvpException("Cannot get BINNING_SER count");
+  return count;
+}
+
+pvpCamera::BinningSer pvpCamera::getBinningSer() throw(pvpException) {
+  pvpAccess a = accessBinningSer();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_BINNING_SER,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read BINNING_SER");
+    return x;
+  } else {
+    throw pvpException("BINNING_SER not accessible for reading");
+  }
+}
+
+pvpCamera::BinningSer pvpCamera::defaultBinningSer() throw(pvpException) {
+  pvpAccess a = accessBinningSer();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_BINNING_SER,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of BINNING_SER");
+    return x;
+  } else {
+    throw pvpException("BINNING_SER not accessible for reading");
+  }
+}
+
+pvpCamera::BinningSer pvpCamera::minBinningSer() throw(pvpException) {
+  pvpAccess a = accessBinningSer();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_BINNING_SER,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of BINNING_SER");
+    return x;
+  } else {
+    throw pvpException("BINNING_SER not accessible for reading");
+  }
+}
+
+pvpCamera::BinningSer pvpCamera::maxBinningSer() throw(pvpException) {
+  pvpAccess a = accessBinningSer();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_BINNING_SER,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of BINNING_SER");
+    return x;
+  } else {
+    throw pvpException("BINNING_SER not accessible for reading");
+  }
+}
+
+void pvpCamera::setBinningSer(pvpCamera::BinningSer x) throw(pvpException) {
+  pvpAccess a = accessBinningSer();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    uns32 y = x;
+    if (!pl_set_param(camh,PARAM_BINNING_SER,(void*)(&y)))
+      throw pvpException("Cannot set BINNING_SER");
+  }
+}
+
+void pvpCamera::reportBinningSer() throw(pvpException) {
+  if (availBinningSer()) {
+    pvpAccess a = accessBinningSer();
+    printf("BinningSer: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getBinningSer().decode() <<"\n";
+        ss << "  min value: " << minBinningSer().decode() <<"\n";
+        ss << "  max value: " << maxBinningSer().decode() <<"\n";
+        ss << "  default value: " << defaultBinningSer().decode() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countBinningSer());
+  } else {
+    printf("BinningSer is not available.\n");
+  }
+}
+
+char const *pvpCamera::BinningPar::decode() const {
+  switch (x) {
+    case One: return "One";
+    case Two: return "Two";
+    case Three: return "Three";
+    case Four: return "Four";
+    default: return "UNKNOWN";
+  }
+}
+
+bool pvpCamera::availBinningPar() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_BINNING_PAR,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get BINNING_PAR availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessBinningPar() throw(pvpException) {
+  uns16 access;
+  if (!availBinningPar())
+    throw pvpException("BINNING_PAR not available");
+  if (!pl_get_param(camh,PARAM_BINNING_PAR,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get BINNING_PAR accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countBinningPar() throw(pvpException) {
+  uns32 count;
+  if (!availBinningPar())
+    throw pvpException("BINNING_PAR not available");
+  if (!pl_get_param(camh,PARAM_BINNING_PAR,ATTR_COUNT,&count))
+    throw pvpException("Cannot get BINNING_PAR count");
+  return count;
+}
+
+pvpCamera::BinningPar pvpCamera::getBinningPar() throw(pvpException) {
+  pvpAccess a = accessBinningPar();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_BINNING_PAR,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read BINNING_PAR");
+    return x;
+  } else {
+    throw pvpException("BINNING_PAR not accessible for reading");
+  }
+}
+
+pvpCamera::BinningPar pvpCamera::defaultBinningPar() throw(pvpException) {
+  pvpAccess a = accessBinningPar();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_BINNING_PAR,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of BINNING_PAR");
+    return x;
+  } else {
+    throw pvpException("BINNING_PAR not accessible for reading");
+  }
+}
+
+pvpCamera::BinningPar pvpCamera::minBinningPar() throw(pvpException) {
+  pvpAccess a = accessBinningPar();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_BINNING_PAR,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of BINNING_PAR");
+    return x;
+  } else {
+    throw pvpException("BINNING_PAR not accessible for reading");
+  }
+}
+
+pvpCamera::BinningPar pvpCamera::maxBinningPar() throw(pvpException) {
+  pvpAccess a = accessBinningPar();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_BINNING_PAR,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of BINNING_PAR");
+    return x;
+  } else {
+    throw pvpException("BINNING_PAR not accessible for reading");
+  }
+}
+
+void pvpCamera::setBinningPar(pvpCamera::BinningPar x) throw(pvpException) {
+  pvpAccess a = accessBinningPar();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    uns32 y = x;
+    if (!pl_set_param(camh,PARAM_BINNING_PAR,(void*)(&y)))
+      throw pvpException("Cannot set BINNING_PAR");
+  }
+}
+
+void pvpCamera::reportBinningPar() throw(pvpException) {
+  if (availBinningPar()) {
+    pvpAccess a = accessBinningPar();
+    printf("BinningPar: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getBinningPar().decode() <<"\n";
+        ss << "  min value: " << minBinningPar().decode() <<"\n";
+        ss << "  max value: " << maxBinningPar().decode() <<"\n";
+        ss << "  default value: " << defaultBinningPar().decode() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countBinningPar());
+  } else {
+    printf("BinningPar is not available.\n");
+  }
+}
+
+bool pvpCamera::availMetadataEnabled() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get METADATA_ENABLED availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessMetadataEnabled() throw(pvpException) {
+  uns16 access;
+  if (!availMetadataEnabled())
+    throw pvpException("METADATA_ENABLED not available");
+  if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get METADATA_ENABLED accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countMetadataEnabled() throw(pvpException) {
+  uns32 count;
+  if (!availMetadataEnabled())
+    throw pvpException("METADATA_ENABLED not available");
+  if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_COUNT,&count))
+    throw pvpException("Cannot get METADATA_ENABLED count");
+  return count;
+}
+
+bool pvpCamera::getMetadataEnabled() throw(pvpException) {
+  pvpAccess a = accessMetadataEnabled();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    boolean x;
+    if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read METADATA_ENABLED");
+    return x;
+  } else {
+    throw pvpException("METADATA_ENABLED not accessible for reading");
+  }
+}
+
+bool pvpCamera::defaultMetadataEnabled() throw(pvpException) {
+  pvpAccess a = accessMetadataEnabled();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    boolean x;
+    if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of METADATA_ENABLED");
+    return x;
+  } else {
+    throw pvpException("METADATA_ENABLED not accessible for reading");
+  }
+}
+
+bool pvpCamera::minMetadataEnabled() throw(pvpException) {
+  pvpAccess a = accessMetadataEnabled();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    boolean x;
+    if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of METADATA_ENABLED");
+    return x;
+  } else {
+    throw pvpException("METADATA_ENABLED not accessible for reading");
+  }
+}
+
+bool pvpCamera::maxMetadataEnabled() throw(pvpException) {
+  pvpAccess a = accessMetadataEnabled();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    boolean x;
+    if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of METADATA_ENABLED");
+    return x;
+  } else {
+    throw pvpException("METADATA_ENABLED not accessible for reading");
+  }
+}
+
+void pvpCamera::setMetadataEnabled(bool x) throw(pvpException) {
+  pvpAccess a = accessMetadataEnabled();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    boolean y = x;
+    if (!pl_set_param(camh,PARAM_METADATA_ENABLED,(void*)(&y)))
+      throw pvpException("Cannot set METADATA_ENABLED");
+  }
+}
+
+void pvpCamera::reportMetadataEnabled() throw(pvpException) {
+  if (availMetadataEnabled()) {
+    pvpAccess a = accessMetadataEnabled();
+    printf("MetadataEnabled: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getMetadataEnabled() <<"\n";
+        ss << "  min value: " << minMetadataEnabled() <<"\n";
+        ss << "  max value: " << maxMetadataEnabled() <<"\n";
+        ss << "  default value: " << defaultMetadataEnabled() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countMetadataEnabled());
+  } else {
+    printf("MetadataEnabled is not available.\n");
+  }
+}
+
+bool pvpCamera::availRoiCount() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_ROI_COUNT,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get ROI_COUNT availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessRoiCount() throw(pvpException) {
+  uns16 access;
+  if (!availRoiCount())
+    throw pvpException("ROI_COUNT not available");
+  if (!pl_get_param(camh,PARAM_ROI_COUNT,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get ROI_COUNT accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countRoiCount() throw(pvpException) {
+  uns32 count;
+  if (!availRoiCount())
+    throw pvpException("ROI_COUNT not available");
+  if (!pl_get_param(camh,PARAM_ROI_COUNT,ATTR_COUNT,&count))
+    throw pvpException("Cannot get ROI_COUNT count");
+  return count;
+}
+
+uint16_t pvpCamera::getRoiCount() throw(pvpException) {
+  pvpAccess a = accessRoiCount();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_ROI_COUNT,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read ROI_COUNT");
+    return x;
+  } else {
+    throw pvpException("ROI_COUNT not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::defaultRoiCount() throw(pvpException) {
+  pvpAccess a = accessRoiCount();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_ROI_COUNT,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of ROI_COUNT");
+    return x;
+  } else {
+    throw pvpException("ROI_COUNT not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::minRoiCount() throw(pvpException) {
+  pvpAccess a = accessRoiCount();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_ROI_COUNT,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of ROI_COUNT");
+    return x;
+  } else {
+    throw pvpException("ROI_COUNT not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::maxRoiCount() throw(pvpException) {
+  pvpAccess a = accessRoiCount();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_ROI_COUNT,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of ROI_COUNT");
+    return x;
+  } else {
+    throw pvpException("ROI_COUNT not accessible for reading");
+  }
+}
+
+void pvpCamera::setRoiCount(uint16_t x) throw(pvpException) {
+  pvpAccess a = accessRoiCount();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    uns16 y = x;
+    if (!pl_set_param(camh,PARAM_ROI_COUNT,(void*)(&y)))
+      throw pvpException("Cannot set ROI_COUNT");
+  }
+}
+
+void pvpCamera::reportRoiCount() throw(pvpException) {
+  if (availRoiCount()) {
+    pvpAccess a = accessRoiCount();
+    printf("RoiCount: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getRoiCount() <<"\n";
+        ss << "  min value: " << minRoiCount() <<"\n";
+        ss << "  max value: " << maxRoiCount() <<"\n";
+        ss << "  default value: " << defaultRoiCount() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countRoiCount());
+  } else {
+    printf("RoiCount is not available.\n");
+  }
+}
+
+bool pvpCamera::availCentroidsEnabled() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get CENTROIDS_ENABLED availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessCentroidsEnabled() throw(pvpException) {
+  uns16 access;
+  if (!availCentroidsEnabled())
+    throw pvpException("CENTROIDS_ENABLED not available");
+  if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get CENTROIDS_ENABLED accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countCentroidsEnabled() throw(pvpException) {
+  uns32 count;
+  if (!availCentroidsEnabled())
+    throw pvpException("CENTROIDS_ENABLED not available");
+  if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_COUNT,&count))
+    throw pvpException("Cannot get CENTROIDS_ENABLED count");
+  return count;
+}
+
+bool pvpCamera::getCentroidsEnabled() throw(pvpException) {
+  pvpAccess a = accessCentroidsEnabled();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    boolean x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read CENTROIDS_ENABLED");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_ENABLED not accessible for reading");
+  }
+}
+
+bool pvpCamera::defaultCentroidsEnabled() throw(pvpException) {
+  pvpAccess a = accessCentroidsEnabled();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    boolean x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of CENTROIDS_ENABLED");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_ENABLED not accessible for reading");
+  }
+}
+
+bool pvpCamera::minCentroidsEnabled() throw(pvpException) {
+  pvpAccess a = accessCentroidsEnabled();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    boolean x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of CENTROIDS_ENABLED");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_ENABLED not accessible for reading");
+  }
+}
+
+bool pvpCamera::maxCentroidsEnabled() throw(pvpException) {
+  pvpAccess a = accessCentroidsEnabled();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    boolean x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of CENTROIDS_ENABLED");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_ENABLED not accessible for reading");
+  }
+}
+
+void pvpCamera::setCentroidsEnabled(bool x) throw(pvpException) {
+  pvpAccess a = accessCentroidsEnabled();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    boolean y = x;
+    if (!pl_set_param(camh,PARAM_CENTROIDS_ENABLED,(void*)(&y)))
+      throw pvpException("Cannot set CENTROIDS_ENABLED");
+  }
+}
+
+void pvpCamera::reportCentroidsEnabled() throw(pvpException) {
+  if (availCentroidsEnabled()) {
+    pvpAccess a = accessCentroidsEnabled();
+    printf("CentroidsEnabled: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getCentroidsEnabled() <<"\n";
+        ss << "  min value: " << minCentroidsEnabled() <<"\n";
+        ss << "  max value: " << maxCentroidsEnabled() <<"\n";
+        ss << "  default value: " << defaultCentroidsEnabled() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countCentroidsEnabled());
+  } else {
+    printf("CentroidsEnabled is not available.\n");
+  }
+}
+
+bool pvpCamera::availCentroidsRadius() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_CENTROIDS_RADIUS,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get CENTROIDS_RADIUS availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessCentroidsRadius() throw(pvpException) {
+  uns16 access;
+  if (!availCentroidsRadius())
+    throw pvpException("CENTROIDS_RADIUS not available");
+  if (!pl_get_param(camh,PARAM_CENTROIDS_RADIUS,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get CENTROIDS_RADIUS accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countCentroidsRadius() throw(pvpException) {
+  uns32 count;
+  if (!availCentroidsRadius())
+    throw pvpException("CENTROIDS_RADIUS not available");
+  if (!pl_get_param(camh,PARAM_CENTROIDS_RADIUS,ATTR_COUNT,&count))
+    throw pvpException("Cannot get CENTROIDS_RADIUS count");
+  return count;
+}
+
+uint16_t pvpCamera::getCentroidsRadius() throw(pvpException) {
+  pvpAccess a = accessCentroidsRadius();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_RADIUS,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read CENTROIDS_RADIUS");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_RADIUS not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::defaultCentroidsRadius() throw(pvpException) {
+  pvpAccess a = accessCentroidsRadius();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_RADIUS,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of CENTROIDS_RADIUS");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_RADIUS not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::minCentroidsRadius() throw(pvpException) {
+  pvpAccess a = accessCentroidsRadius();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_RADIUS,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of CENTROIDS_RADIUS");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_RADIUS not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::maxCentroidsRadius() throw(pvpException) {
+  pvpAccess a = accessCentroidsRadius();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_RADIUS,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of CENTROIDS_RADIUS");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_RADIUS not accessible for reading");
+  }
+}
+
+void pvpCamera::setCentroidsRadius(uint16_t x) throw(pvpException) {
+  pvpAccess a = accessCentroidsRadius();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    uns16 y = x;
+    if (!pl_set_param(camh,PARAM_CENTROIDS_RADIUS,(void*)(&y)))
+      throw pvpException("Cannot set CENTROIDS_RADIUS");
+  }
+}
+
+void pvpCamera::reportCentroidsRadius() throw(pvpException) {
+  if (availCentroidsRadius()) {
+    pvpAccess a = accessCentroidsRadius();
+    printf("CentroidsRadius: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getCentroidsRadius() <<"\n";
+        ss << "  min value: " << minCentroidsRadius() <<"\n";
+        ss << "  max value: " << maxCentroidsRadius() <<"\n";
+        ss << "  default value: " << defaultCentroidsRadius() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countCentroidsRadius());
+  } else {
+    printf("CentroidsRadius is not available.\n");
+  }
+}
+
+bool pvpCamera::availCentroidsCount() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_CENTROIDS_COUNT,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get CENTROIDS_COUNT availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessCentroidsCount() throw(pvpException) {
+  uns16 access;
+  if (!availCentroidsCount())
+    throw pvpException("CENTROIDS_COUNT not available");
+  if (!pl_get_param(camh,PARAM_CENTROIDS_COUNT,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get CENTROIDS_COUNT accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countCentroidsCount() throw(pvpException) {
+  uns32 count;
+  if (!availCentroidsCount())
+    throw pvpException("CENTROIDS_COUNT not available");
+  if (!pl_get_param(camh,PARAM_CENTROIDS_COUNT,ATTR_COUNT,&count))
+    throw pvpException("Cannot get CENTROIDS_COUNT count");
+  return count;
+}
+
+uint16_t pvpCamera::getCentroidsCount() throw(pvpException) {
+  pvpAccess a = accessCentroidsCount();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_COUNT,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read CENTROIDS_COUNT");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_COUNT not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::defaultCentroidsCount() throw(pvpException) {
+  pvpAccess a = accessCentroidsCount();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_COUNT,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of CENTROIDS_COUNT");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_COUNT not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::minCentroidsCount() throw(pvpException) {
+  pvpAccess a = accessCentroidsCount();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_COUNT,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of CENTROIDS_COUNT");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_COUNT not accessible for reading");
+  }
+}
+
+uint16_t pvpCamera::maxCentroidsCount() throw(pvpException) {
+  pvpAccess a = accessCentroidsCount();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns16 x;
+    if (!pl_get_param(camh,PARAM_CENTROIDS_COUNT,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of CENTROIDS_COUNT");
+    return x;
+  } else {
+    throw pvpException("CENTROIDS_COUNT not accessible for reading");
+  }
+}
+
+void pvpCamera::setCentroidsCount(uint16_t x) throw(pvpException) {
+  pvpAccess a = accessCentroidsCount();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    uns16 y = x;
+    if (!pl_set_param(camh,PARAM_CENTROIDS_COUNT,(void*)(&y)))
+      throw pvpException("Cannot set CENTROIDS_COUNT");
+  }
+}
+
+void pvpCamera::reportCentroidsCount() throw(pvpException) {
+  if (availCentroidsCount()) {
+    pvpAccess a = accessCentroidsCount();
+    printf("CentroidsCount: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getCentroidsCount() <<"\n";
+        ss << "  min value: " << minCentroidsCount() <<"\n";
+        ss << "  max value: " << maxCentroidsCount() <<"\n";
+        ss << "  default value: " << defaultCentroidsCount() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countCentroidsCount());
+  } else {
+    printf("CentroidsCount is not available.\n");
+  }
+}
+
+char const *pvpCamera::TrigtabSignal::decode() const {
+  switch (x) {
+    case Out: return "Out";
+    default: return "UNKNOWN";
+  }
+}
+
+bool pvpCamera::availTrigtabSignal() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_TRIGTAB_SIGNAL,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get TRIGTAB_SIGNAL availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessTrigtabSignal() throw(pvpException) {
+  uns16 access;
+  if (!availTrigtabSignal())
+    throw pvpException("TRIGTAB_SIGNAL not available");
+  if (!pl_get_param(camh,PARAM_TRIGTAB_SIGNAL,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get TRIGTAB_SIGNAL accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countTrigtabSignal() throw(pvpException) {
+  uns32 count;
+  if (!availTrigtabSignal())
+    throw pvpException("TRIGTAB_SIGNAL not available");
+  if (!pl_get_param(camh,PARAM_TRIGTAB_SIGNAL,ATTR_COUNT,&count))
+    throw pvpException("Cannot get TRIGTAB_SIGNAL count");
+  return count;
+}
+
+pvpCamera::TrigtabSignal pvpCamera::getTrigtabSignal() throw(pvpException) {
+  pvpAccess a = accessTrigtabSignal();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_TRIGTAB_SIGNAL,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read TRIGTAB_SIGNAL");
+    return x;
+  } else {
+    throw pvpException("TRIGTAB_SIGNAL not accessible for reading");
+  }
+}
+
+pvpCamera::TrigtabSignal pvpCamera::defaultTrigtabSignal() throw(pvpException) {
+  pvpAccess a = accessTrigtabSignal();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_TRIGTAB_SIGNAL,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of TRIGTAB_SIGNAL");
+    return x;
+  } else {
+    throw pvpException("TRIGTAB_SIGNAL not accessible for reading");
+  }
+}
+
+pvpCamera::TrigtabSignal pvpCamera::minTrigtabSignal() throw(pvpException) {
+  pvpAccess a = accessTrigtabSignal();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_TRIGTAB_SIGNAL,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of TRIGTAB_SIGNAL");
+    return x;
+  } else {
+    throw pvpException("TRIGTAB_SIGNAL not accessible for reading");
+  }
+}
+
+pvpCamera::TrigtabSignal pvpCamera::maxTrigtabSignal() throw(pvpException) {
+  pvpAccess a = accessTrigtabSignal();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns32 x;
+    if (!pl_get_param(camh,PARAM_TRIGTAB_SIGNAL,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of TRIGTAB_SIGNAL");
+    return x;
+  } else {
+    throw pvpException("TRIGTAB_SIGNAL not accessible for reading");
+  }
+}
+
+void pvpCamera::setTrigtabSignal(pvpCamera::TrigtabSignal x) throw(pvpException) {
+  pvpAccess a = accessTrigtabSignal();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    uns32 y = x;
+    if (!pl_set_param(camh,PARAM_TRIGTAB_SIGNAL,(void*)(&y)))
+      throw pvpException("Cannot set TRIGTAB_SIGNAL");
+  }
+}
+
+void pvpCamera::reportTrigtabSignal() throw(pvpException) {
+  if (availTrigtabSignal()) {
+    pvpAccess a = accessTrigtabSignal();
+    printf("TrigtabSignal: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getTrigtabSignal().decode() <<"\n";
+        ss << "  min value: " << minTrigtabSignal().decode() <<"\n";
+        ss << "  max value: " << maxTrigtabSignal().decode() <<"\n";
+        ss << "  default value: " << defaultTrigtabSignal().decode() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countTrigtabSignal());
+  } else {
+    printf("TrigtabSignal is not available.\n");
+  }
+}
+
+bool pvpCamera::availLastMuxedSignal() throw(pvpException) {
+  rs_bool avail;
+  if (!pl_get_param(camh,PARAM_LAST_MUXED_SIGNAL,ATTR_AVAIL,&avail))
+    throw pvpException("Cannot get LAST_MUXED_SIGNAL availability");
+  return avail;
+}
+
+pvpAccess pvpCamera::accessLastMuxedSignal() throw(pvpException) {
+  uns16 access;
+  if (!availLastMuxedSignal())
+    throw pvpException("LAST_MUXED_SIGNAL not available");
+  if (!pl_get_param(camh,PARAM_LAST_MUXED_SIGNAL,ATTR_ACCESS,&access))
+    throw pvpException("Cannot get LAST_MUXED_SIGNAL accessibility");
+  return pvpAccess(access);
+}
+
+int pvpCamera::countLastMuxedSignal() throw(pvpException) {
+  uns32 count;
+  if (!availLastMuxedSignal())
+    throw pvpException("LAST_MUXED_SIGNAL not available");
+  if (!pl_get_param(camh,PARAM_LAST_MUXED_SIGNAL,ATTR_COUNT,&count))
+    throw pvpException("Cannot get LAST_MUXED_SIGNAL count");
+  return count;
+}
+
+unsigned char pvpCamera::getLastMuxedSignal() throw(pvpException) {
+  pvpAccess a = accessLastMuxedSignal();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns8 x;
+    if (!pl_get_param(camh,PARAM_LAST_MUXED_SIGNAL,ATTR_CURRENT,&x))
+      throw pvpException("Cannot read LAST_MUXED_SIGNAL");
+    return x;
+  } else {
+    throw pvpException("LAST_MUXED_SIGNAL not accessible for reading");
+  }
+}
+
+unsigned char pvpCamera::defaultLastMuxedSignal() throw(pvpException) {
+  pvpAccess a = accessLastMuxedSignal();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns8 x;
+    if (!pl_get_param(camh,PARAM_LAST_MUXED_SIGNAL,ATTR_DEFAULT,&x))
+      throw pvpException("Cannot read default of LAST_MUXED_SIGNAL");
+    return x;
+  } else {
+    throw pvpException("LAST_MUXED_SIGNAL not accessible for reading");
+  }
+}
+
+unsigned char pvpCamera::minLastMuxedSignal() throw(pvpException) {
+  pvpAccess a = accessLastMuxedSignal();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns8 x;
+    if (!pl_get_param(camh,PARAM_LAST_MUXED_SIGNAL,ATTR_MIN,&x))
+      throw pvpException("Cannot read min of LAST_MUXED_SIGNAL");
+    return x;
+  } else {
+    throw pvpException("LAST_MUXED_SIGNAL not accessible for reading");
+  }
+}
+
+unsigned char pvpCamera::maxLastMuxedSignal() throw(pvpException) {
+  pvpAccess a = accessLastMuxedSignal();
+  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+    uns8 x;
+    if (!pl_get_param(camh,PARAM_LAST_MUXED_SIGNAL,ATTR_MAX,&x))
+      throw pvpException("Cannot read max of LAST_MUXED_SIGNAL");
+    return x;
+  } else {
+    throw pvpException("LAST_MUXED_SIGNAL not accessible for reading");
+  }
+}
+
+void pvpCamera::setLastMuxedSignal(unsigned char x) throw(pvpException) {
+  pvpAccess a = accessLastMuxedSignal();
+  if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
+    uns8 y = x;
+    if (!pl_set_param(camh,PARAM_LAST_MUXED_SIGNAL,(void*)(&y)))
+      throw pvpException("Cannot set LAST_MUXED_SIGNAL");
+  }
+}
+
+void pvpCamera::reportLastMuxedSignal() throw(pvpException) {
+  if (availLastMuxedSignal()) {
+    pvpAccess a = accessLastMuxedSignal();
+    printf("LastMuxedSignal: %s\n",a.decode());
+    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+      QString s;
+      { QTextStream ss(&s);
+        ss << "  current value: " << getLastMuxedSignal() <<"\n";
+        ss << "  min value: " << minLastMuxedSignal() <<"\n";
+        ss << "  max value: " << maxLastMuxedSignal() <<"\n";
+        ss << "  default value: " << defaultLastMuxedSignal() <<"\n";
+      }
+      printf("%s",s.toUtf8().data());
+    }
+    printf("  count: %i\n",countLastMuxedSignal());
+  } else {
+    printf("LastMuxedSignal is not available.\n");
   }
 }
 
 void pvpCamera::reportClass3() throw(pvpException) {
   reportExpTime();
   reportExpRes();
-  reportExpMinTime();
   reportExpResIndex();
+  reportExposureTime();
   reportBofEofEnable();
   reportBofEofCount();
   reportBofEofClr();
   reportCircBuffer();
-  reportHwAutostop();
+  reportFrameBufferSize();
+  reportBinningSer();
+  reportBinningPar();
+  reportMetadataEnabled();
+  reportRoiCount();
+  reportCentroidsEnabled();
+  reportCentroidsRadius();
+  reportCentroidsCount();
+  reportTrigtabSignal();
+  reportLastMuxedSignal();
 }
 

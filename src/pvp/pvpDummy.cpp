@@ -3,7 +3,7 @@
 
 #include <pvp/dwpvcam.h>
 
-rs_bool PV_DECL pl_pvcam_get_ver(uns16_ptr) {
+rs_bool PV_DECL pl_pvcam_get_ver(uns16*) {
   return false;
 }
 
@@ -15,7 +15,7 @@ rs_bool PV_DECL pl_pvcam_uninit(void) {
   return false;
 }
 
-rs_bool PV_DECL pl_cam_check(int16) {
+DEPRECATED rs_bool PV_DECL pl_cam_check(int16) {
   return false;
 }
 
@@ -23,23 +23,35 @@ rs_bool PV_DECL pl_cam_close(int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_cam_get_diags(int16) {
+rs_bool PV_DECL pl_cam_get_name(int16, char*) {
   return false;
 }
 
-rs_bool PV_DECL pl_cam_get_name(int16, char_ptr) {
+rs_bool PV_DECL pl_cam_get_total(int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_cam_get_total(int16_ptr) {
+rs_bool PV_DECL pl_cam_open(char*, int16*, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_cam_open(char_ptr, int16_ptr, int16) {
+rs_bool PV_DECL pl_cam_register_callback(int16, int32, void*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ddi_get_ver(uns16_ptr) {
+rs_bool PV_DECL pl_cam_register_callback_ex(int16, int32, void*, void*) {
+  return false;
+}
+
+rs_bool PV_DECL pl_cam_register_callback_ex2(int16, int32, void*) {
+  return false;
+}
+
+rs_bool PV_DECL pl_cam_register_callback_ex3(int16, int32, void*, void*) {
+  return false;
+}
+
+rs_bool PV_DECL pl_cam_deregister_callback(int16, int32) {
   return false;
 }
 
@@ -47,67 +59,87 @@ int16 PV_DECL pl_error_code(void) {
   return false;
 }
 
-rs_bool PV_DECL pl_error_message(int16, char_ptr) {
+rs_bool PV_DECL pl_error_message(int16, char*) {
   return false;
 }
 
-rs_bool PV_DECL pl_get_param(int16, uns32, int16, void_ptr) {
+rs_bool PV_DECL pl_get_param(int16, uns32, int16, void*) {
   return false;
 }
 
-rs_bool PV_DECL pl_set_param(int16, uns32, void_ptr) {
+rs_bool PV_DECL pl_set_param(int16, uns32, void*) {
   return false;
 }
 
-rs_bool PV_DECL pl_get_enum_param(int16, uns32, uns32, int32_ptr, char_ptr, uns32) {
+rs_bool PV_DECL pl_get_enum_param(int16, uns32, uns32, int32*, char*, uns32) {
   return false;
 }
 
-rs_bool PV_DECL pl_enum_str_length(int16, uns32, uns32, uns32_ptr) {
+rs_bool PV_DECL pl_enum_str_length(int16, uns32, uns32, uns32*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_init_seq(void) {
+rs_bool PV_DECL pl_pp_reset(int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_uninit_seq(void) {
+rs_bool PV_DECL pl_create_smart_stream_struct(smart_stream_type**, uns16) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_get_driver_buffer(int16, void_ptr_ptr, uns32_ptr) {
+rs_bool PV_DECL pl_release_smart_stream_struct(smart_stream_type**) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_setup_seq(int16, uns16, uns16, rgn_const_ptr, int16, uns32, uns32_ptr) {
+rs_bool PV_DECL pl_create_frame_info_struct(FRAME_INFO**) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_start_seq(int16, void_ptr) {
+rs_bool PV_DECL pl_release_frame_info_struct(FRAME_INFO*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_setup_cont(int16, uns16, rgn_const_ptr, int16, uns32, uns32_ptr, int16) {
+rs_bool PV_DECL pl_exp_setup_seq(int16, uns16, uns16, const, int16, uns32, uns32*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_start_cont(int16, void_ptr, uns32) {
+rs_bool PV_DECL pl_exp_start_seq(int16, void*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_check_status(int16, int16_ptr, uns32_ptr) {
+rs_bool PV_DECL pl_exp_setup_cont(int16, uns16, const, int16, uns32, uns32*, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_check_cont_status(int16, int16_ptr, uns32_ptr, uns32_ptr) {
+rs_bool PV_DECL pl_exp_start_cont(int16, void*, uns32) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_get_latest_frame(int16, void_ptr_ptr) {
+rs_bool PV_DECL pl_exp_check_status(int16, int16*, uns32*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_get_oldest_frame(int16, void_ptr_ptr) {
+rs_bool PV_DECL pl_exp_check_cont_status(int16, int16*, uns32*, uns32*) {
+  return false;
+}
+
+rs_bool PV_DECL pl_exp_check_cont_status_ex(int16, int16*, uns32*, uns32*, FRAME_INFO*) {
+  return false;
+}
+
+rs_bool PV_DECL pl_exp_get_latest_frame(int16, void**) {
+  return false;
+}
+
+rs_bool PV_DECL pl_exp_get_latest_frame_ex(int16, void**, FRAME_INFO*) {
+  return false;
+}
+
+rs_bool PV_DECL pl_exp_get_oldest_frame(int16, void**) {
+  return false;
+}
+
+rs_bool PV_DECL pl_exp_get_oldest_frame_ex(int16, void**, FRAME_INFO*) {
   return false;
 }
 
@@ -123,19 +155,7 @@ rs_bool PV_DECL pl_exp_abort(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_finish_seq(int16, void_ptr, int16) {
-  return false;
-}
-
-rs_bool PV_DECL pl_exp_unravel(int16, uns16, void_ptr, uns16, rgn_const_ptr, uns16_ptr) {
-  return false;
-}
-
-rs_bool PV_DECL pl_exp_wait_start_xfer(int16, uns32) {
-  return false;
-}
-
-rs_bool PV_DECL pl_exp_wait_end_xfer(int16, uns32) {
+rs_bool PV_DECL pl_exp_finish_seq(int16, void*, int16) {
   return false;
 }
 
@@ -147,335 +167,475 @@ rs_bool PV_DECL pl_io_clear_script_control(int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_init(void) {
+DEPRECATED rs_bool PV_DECL pl_exp_init_seq(void) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_uninit(void) {
+DEPRECATED rs_bool PV_DECL pl_exp_uninit_seq(void) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_alloc(int16_ptr, int16, int16, int16, rgn_const_ptr) {
+DEPRECATED rs_bool PV_DECL pl_dd_get_info(int16, int16, char*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_bits(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_dd_get_info_length(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_exp_date(int16, int16, int16_ptr, uns8_ptr, uns8_ptr, uns8_ptr, uns8_ptr, uns8_ptr, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_dd_get_ver(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_set_exp_date(int16, int16, int16, uns8, uns8, uns8, uns8, uns8, uns16) {
+DEPRECATED rs_bool PV_DECL pl_dd_get_retries(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_exp_time(int16, int16, uns32_ptr) {
+DEPRECATED rs_bool PV_DECL pl_dd_set_retries(int16, uns16) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_exp_total(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_dd_get_timeout(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_img_bin(int16, int16_ptr, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_dd_set_timeout(int16, uns16) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_img_handle(int16, int16, int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_adc_offset(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_img_ofs(int16, int16_ptr, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_set_adc_offset(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_img_ptr(int16, void_ptr_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_chip_name(int16, char*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_img_size(int16, int16_ptr, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_clear_cycles(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_img_total(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_set_clear_cycles(int16, uns16) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_get_size(int16, int32_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_clear_mode(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_buf_free(int16) {
+DEPRECATED rs_bool PV_DECL pl_ccd_set_clear_mode(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_dd_get_info(int16, int16, char_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_color_mode(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_dd_get_info_length(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_cooling_mode(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_dd_get_ver(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_frame_capable(int16, rs_bool*) {
   return false;
 }
 
-rs_bool PV_DECL pl_dd_get_retries(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_fwell_capacity(int16, uns32*) {
   return false;
 }
 
-rs_bool PV_DECL pl_dd_set_retries(int16, uns16) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_mpp_capable(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_dd_get_timeout(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_preamp_dly(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_dd_set_timeout(int16, uns16) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_preamp_off_control(int16, uns32*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_adc_offset(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_set_preamp_off_control(int16, uns32) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_set_adc_offset(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_preflash(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_chip_name(int16, char_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_pmode(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_clear_cycles(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_set_pmode(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_set_clear_cycles(int16, uns16) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_premask(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_clear_mode(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_prescan(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_set_clear_mode(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_postmask(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_color_mode(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_postscan(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_cooling_mode(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_par_size(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_frame_capable(int16, rs_bool_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_ser_size(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_fwell_capacity(int16, uns32_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_serial_num(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_mpp_capable(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccs_get_status(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_preamp_dly(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_summing_well(int16, rs_bool*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_preamp_off_control(int16, uns32_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_tmp(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_set_preamp_off_control(int16, uns32) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_tmp_range(int16, int16*, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_preflash(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_tmp_setpoint(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_pmode(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_set_tmp_setpoint(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_set_pmode(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_ccd_set_readout_port(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_premask(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_pix_par_dist(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_prescan(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_pix_par_size(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_postmask(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_pix_ser_dist(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_postscan(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_ccd_get_pix_ser_size(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_par_size(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_get_bits(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_ser_size(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_get_gain(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_serial_num(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_set_gain(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccs_get_status(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_get_max_gain(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_summing_well(int16, rs_bool_ptr) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_get_num(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_tmp(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_set_num(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_tmp_range(int16, int16_ptr, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_get_entries(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_tmp_setpoint(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_get_port(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_set_tmp_setpoint(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_get_port_total(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_set_readout_port(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_spdtab_get_time(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_pix_par_dist(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_shtr_get_close_dly(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_pix_par_size(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_shtr_set_close_dly(int16, uns16) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_pix_ser_dist(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_shtr_get_open_dly(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_ccd_get_pix_ser_size(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_shtr_set_open_dly(int16, uns16) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_get_bits(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_shtr_get_open_mode(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_get_gain(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_shtr_set_open_mode(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_set_gain(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_shtr_get_status(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_get_max_gain(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_exp_get_time_seq(int16, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_get_num(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_exp_set_time_seq(int16, uns16) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_set_num(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_exp_check_progress(int16, int16*, uns32*) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_get_entries(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_exp_set_cont_mode(int16, int16) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_get_port(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_subsys_do_diag(int16, uns8, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_get_port_total(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_subsys_get_id(int16, uns8, uns16*, uns8*) {
   return false;
 }
 
-rs_bool PV_DECL pl_spdtab_get_time(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_subsys_get_name(int16, uns8, char*) {
   return false;
 }
 
-rs_bool PV_DECL pl_shtr_get_close_dly(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_exp_get_driver_buffer(int16, void**, uns32*) {
   return false;
 }
 
-rs_bool PV_DECL pl_shtr_set_close_dly(int16, uns16) {
+DEPRECATED rs_bool PV_DECL pl_buf_init(void) {
   return false;
 }
 
-rs_bool PV_DECL pl_shtr_get_open_dly(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_buf_uninit(void) {
   return false;
 }
 
-rs_bool PV_DECL pl_shtr_set_open_dly(int16, uns16) {
+DEPRECATED rs_bool PV_DECL pl_buf_alloc(int16*, int16, int16, int16, const) {
   return false;
 }
 
-rs_bool PV_DECL pl_shtr_get_open_mode(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_exp_date(int16, int16, int16*, uns8*, uns8*, uns8*, uns8*, uns8*, uns16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_shtr_set_open_mode(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_buf_set_exp_date(int16, int16, int16, uns8, uns8, uns8, uns8, uns8, uns16) {
   return false;
 }
 
-rs_bool PV_DECL pl_shtr_get_status(int16, int16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_exp_time(int16, int16, uns32*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_get_time_seq(int16, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_exp_total(int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_set_time_seq(int16, uns16) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_img_bin(int16, int16*, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_check_progress(int16, int16_ptr, uns32_ptr) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_img_handle(int16, int16, int16, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_exp_set_cont_mode(int16, int16) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_img_ofs(int16, int16*, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_subsys_do_diag(int16, uns8, uns16_ptr) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_img_ptr(int16, void**) {
   return false;
 }
 
-rs_bool PV_DECL pl_subsys_get_id(int16, uns8, uns16_ptr, uns8_ptr) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_img_size(int16, int16*, int16*) {
   return false;
 }
 
-rs_bool PV_DECL pl_subsys_get_name(int16, uns8, char_ptr) {
+DEPRECATED rs_bool PV_DECL pl_buf_get_img_total(int16, int16*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pl_buf_get_size(int16, int32*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pl_buf_free(int16) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pl_buf_get_bits(int16, int16*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pl_exp_unravel(int16, uns16, void*, uns16, const, uns16**) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pl_exp_wait_start_xfer(int16, uns32) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pl_exp_wait_end_xfer(int16, uns32) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_cam_get_ccs_mem(int16, uns16*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_cam_send_debug(int16, char*, uns16, char*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_cam_write_read(int16, uns8, uns16, uns8*, uns8*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_dd_active(int16, void*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_get_bytes(int16, uns32*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_get_script(int16, rs_bool*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_get_status(int16, int16*, uns32*, uns32*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_set_bytes(int16, uns32, uns32, void*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_set_script(int16, rs_bool) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_set_error_code(int16, int16) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_cam_do_reads(int16) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_free(void*, int16) {
+  return false;
+}
+
+DEPRECATED void* PV_DECL pv_malloc(uns32, int16) {
+  return false;
+}
+
+DEPRECATED void* PV_DECL pv_realloc(void*, uns32, int16) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_script_set_hook(pm_script_hook*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_ccd_get_accum_capable(int16, rs_bool*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_get_frames(int16, uns32*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_set_frames(int16, uns32) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_set_no_readout_timeout(int16) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pv_exp_reset_no_readout_timeout(int16) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pm_cam_write_read(int16, uns8, uns16, uns8*, uns8*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pl_ddi_get_ver(uns16*) {
+  return false;
+}
+
+DEPRECATED rs_bool PV_DECL pl_cam_get_diags(int16) {
+  return false;
+}
+
+rs_bool PV_DECL pl_md_frame_decode(md_frame*, void*, uns32) {
+  return false;
+}
+
+rs_bool PV_DECL pl_md_frame_recompose(void*, uns16, uns16, uns16, uns16, md_frame*) {
+  return false;
+}
+
+rs_bool PV_DECL pl_md_create_frame_struct_cont(md_frame**, uns16) {
+  return false;
+}
+
+rs_bool PV_DECL pl_md_create_frame_struct(md_frame**, void*, uns32) {
+  return false;
+}
+
+rs_bool PV_DECL pl_md_release_frame_struct(md_frame*) {
+  return false;
+}
+
+rs_bool PV_DECL pl_md_read_extended(md_ext_item_collection*, void*, uns32) {
   return false;
 }
 
