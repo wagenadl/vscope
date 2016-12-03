@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SUBDIRS="acq  base  daq  gfx  gui  math  pvp  toplevel  utils  video  xml"
+SUBDIRS="acq  base  daq  gfx  gui  math  pvp  toplevel   video  xml"
 
 cd `dirname $0`
 cd ../src

@@ -32,7 +32,7 @@ int pvpCamera::countAdcOffset() throw(pvpException) {
 int16_t pvpCamera::getAdcOffset() throw(pvpException) {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_ADC_OFFSET,ATTR_CURRENT,&x))
       throw pvpException("Cannot read ADC_OFFSET");
     return x;
@@ -44,7 +44,7 @@ int16_t pvpCamera::getAdcOffset() throw(pvpException) {
 int16_t pvpCamera::defaultAdcOffset() throw(pvpException) {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_ADC_OFFSET,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of ADC_OFFSET");
     return x;
@@ -56,7 +56,7 @@ int16_t pvpCamera::defaultAdcOffset() throw(pvpException) {
 int16_t pvpCamera::minAdcOffset() throw(pvpException) {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_ADC_OFFSET,ATTR_MIN,&x))
       throw pvpException("Cannot read min of ADC_OFFSET");
     return x;
@@ -68,7 +68,7 @@ int16_t pvpCamera::minAdcOffset() throw(pvpException) {
 int16_t pvpCamera::maxAdcOffset() throw(pvpException) {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_ADC_OFFSET,ATTR_MAX,&x))
       throw pvpException("Cannot read max of ADC_OFFSET");
     return x;
@@ -80,7 +80,7 @@ int16_t pvpCamera::maxAdcOffset() throw(pvpException) {
 void pvpCamera::setAdcOffset(int16_t x) throw(pvpException) {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_ADC_OFFSET,(void*)(&y)))
       throw pvpException("Cannot set ADC_OFFSET");
   }
@@ -131,23 +131,24 @@ int pvpCamera::countChipName() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getChipName() throw(pvpException) {
+QString pvpCamera::getChipName() throw(pvpException) {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_CURRENT,&x))
+    QByteArray ar(countChipName(), 0);
+    if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read CHIP_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("CHIP_NAME not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultChipName() throw(pvpException) {
+QString pvpCamera::defaultChipName() throw(pvpException) {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_DEFAULT,&x))
+    char x[countChipName()];
+    if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of CHIP_NAME");
     return x;
   } else {
@@ -155,35 +156,18 @@ char * pvpCamera::defaultChipName() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minChipName() throw(pvpException) {
-  pvpAccess a = accessChipName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of CHIP_NAME");
-    return x;
-  } else {
-    throw pvpException("CHIP_NAME not accessible for reading");
-  }
+QString pvpCamera::minChipName() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxChipName() throw(pvpException) {
-  pvpAccess a = accessChipName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of CHIP_NAME");
-    return x;
-  } else {
-    throw pvpException("CHIP_NAME not accessible for reading");
-  }
+QString pvpCamera::maxChipName() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setChipName(char * x) throw(pvpException) {
+void pvpCamera::setChipName(QString x) throw(pvpException) {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_CHIP_NAME,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_CHIP_NAME,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set CHIP_NAME");
   }
 }
@@ -233,23 +217,24 @@ int pvpCamera::countSystemName() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getSystemName() throw(pvpException) {
+QString pvpCamera::getSystemName() throw(pvpException) {
   pvpAccess a = accessSystemName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_CURRENT,&x))
+    QByteArray ar(countSystemName(), 0);
+    if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read SYSTEM_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("SYSTEM_NAME not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultSystemName() throw(pvpException) {
+QString pvpCamera::defaultSystemName() throw(pvpException) {
   pvpAccess a = accessSystemName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_DEFAULT,&x))
+    char x[countSystemName()];
+    if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of SYSTEM_NAME");
     return x;
   } else {
@@ -257,35 +242,18 @@ char * pvpCamera::defaultSystemName() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minSystemName() throw(pvpException) {
-  pvpAccess a = accessSystemName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of SYSTEM_NAME");
-    return x;
-  } else {
-    throw pvpException("SYSTEM_NAME not accessible for reading");
-  }
+QString pvpCamera::minSystemName() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxSystemName() throw(pvpException) {
-  pvpAccess a = accessSystemName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of SYSTEM_NAME");
-    return x;
-  } else {
-    throw pvpException("SYSTEM_NAME not accessible for reading");
-  }
+QString pvpCamera::maxSystemName() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setSystemName(char * x) throw(pvpException) {
+void pvpCamera::setSystemName(QString x) throw(pvpException) {
   pvpAccess a = accessSystemName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_SYSTEM_NAME,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_SYSTEM_NAME,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set SYSTEM_NAME");
   }
 }
@@ -335,23 +303,24 @@ int pvpCamera::countVendorName() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getVendorName() throw(pvpException) {
+QString pvpCamera::getVendorName() throw(pvpException) {
   pvpAccess a = accessVendorName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_CURRENT,&x))
+    QByteArray ar(countVendorName(), 0);
+    if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read VENDOR_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("VENDOR_NAME not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultVendorName() throw(pvpException) {
+QString pvpCamera::defaultVendorName() throw(pvpException) {
   pvpAccess a = accessVendorName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_DEFAULT,&x))
+    char x[countVendorName()];
+    if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of VENDOR_NAME");
     return x;
   } else {
@@ -359,35 +328,18 @@ char * pvpCamera::defaultVendorName() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minVendorName() throw(pvpException) {
-  pvpAccess a = accessVendorName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of VENDOR_NAME");
-    return x;
-  } else {
-    throw pvpException("VENDOR_NAME not accessible for reading");
-  }
+QString pvpCamera::minVendorName() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxVendorName() throw(pvpException) {
-  pvpAccess a = accessVendorName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of VENDOR_NAME");
-    return x;
-  } else {
-    throw pvpException("VENDOR_NAME not accessible for reading");
-  }
+QString pvpCamera::maxVendorName() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setVendorName(char * x) throw(pvpException) {
+void pvpCamera::setVendorName(QString x) throw(pvpException) {
   pvpAccess a = accessVendorName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_VENDOR_NAME,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_VENDOR_NAME,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set VENDOR_NAME");
   }
 }
@@ -437,23 +389,24 @@ int pvpCamera::countProductName() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getProductName() throw(pvpException) {
+QString pvpCamera::getProductName() throw(pvpException) {
   pvpAccess a = accessProductName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_CURRENT,&x))
+    QByteArray ar(countProductName(), 0);
+    if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read PRODUCT_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("PRODUCT_NAME not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultProductName() throw(pvpException) {
+QString pvpCamera::defaultProductName() throw(pvpException) {
   pvpAccess a = accessProductName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_DEFAULT,&x))
+    char x[countProductName()];
+    if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of PRODUCT_NAME");
     return x;
   } else {
@@ -461,35 +414,18 @@ char * pvpCamera::defaultProductName() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minProductName() throw(pvpException) {
-  pvpAccess a = accessProductName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of PRODUCT_NAME");
-    return x;
-  } else {
-    throw pvpException("PRODUCT_NAME not accessible for reading");
-  }
+QString pvpCamera::minProductName() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxProductName() throw(pvpException) {
-  pvpAccess a = accessProductName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of PRODUCT_NAME");
-    return x;
-  } else {
-    throw pvpException("PRODUCT_NAME not accessible for reading");
-  }
+QString pvpCamera::maxProductName() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setProductName(char * x) throw(pvpException) {
+void pvpCamera::setProductName(QString x) throw(pvpException) {
   pvpAccess a = accessProductName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_PRODUCT_NAME,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_PRODUCT_NAME,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set PRODUCT_NAME");
   }
 }
@@ -539,23 +475,24 @@ int pvpCamera::countCameraPartNumber() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getCameraPartNumber() throw(pvpException) {
+QString pvpCamera::getCameraPartNumber() throw(pvpException) {
   pvpAccess a = accessCameraPartNumber();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_CURRENT,&x))
+    QByteArray ar(countCameraPartNumber(), 0);
+    if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read CAMERA_PART_NUMBER");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("CAMERA_PART_NUMBER not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultCameraPartNumber() throw(pvpException) {
+QString pvpCamera::defaultCameraPartNumber() throw(pvpException) {
   pvpAccess a = accessCameraPartNumber();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_DEFAULT,&x))
+    char x[countCameraPartNumber()];
+    if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of CAMERA_PART_NUMBER");
     return x;
   } else {
@@ -563,35 +500,18 @@ char * pvpCamera::defaultCameraPartNumber() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minCameraPartNumber() throw(pvpException) {
-  pvpAccess a = accessCameraPartNumber();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of CAMERA_PART_NUMBER");
-    return x;
-  } else {
-    throw pvpException("CAMERA_PART_NUMBER not accessible for reading");
-  }
+QString pvpCamera::minCameraPartNumber() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxCameraPartNumber() throw(pvpException) {
-  pvpAccess a = accessCameraPartNumber();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of CAMERA_PART_NUMBER");
-    return x;
-  } else {
-    throw pvpException("CAMERA_PART_NUMBER not accessible for reading");
-  }
+QString pvpCamera::maxCameraPartNumber() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setCameraPartNumber(char * x) throw(pvpException) {
+void pvpCamera::setCameraPartNumber(QString x) throw(pvpException) {
   pvpAccess a = accessCameraPartNumber();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_CAMERA_PART_NUMBER,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_CAMERA_PART_NUMBER,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set CAMERA_PART_NUMBER");
   }
 }
@@ -754,7 +674,7 @@ int pvpCamera::countPreampDelay() throw(pvpException) {
 uint16_t pvpCamera::getPreampDelay() throw(pvpException) {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PREAMP_DELAY,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PREAMP_DELAY");
     return x;
@@ -766,7 +686,7 @@ uint16_t pvpCamera::getPreampDelay() throw(pvpException) {
 uint16_t pvpCamera::defaultPreampDelay() throw(pvpException) {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PREAMP_DELAY,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PREAMP_DELAY");
     return x;
@@ -778,7 +698,7 @@ uint16_t pvpCamera::defaultPreampDelay() throw(pvpException) {
 uint16_t pvpCamera::minPreampDelay() throw(pvpException) {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PREAMP_DELAY,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PREAMP_DELAY");
     return x;
@@ -790,7 +710,7 @@ uint16_t pvpCamera::minPreampDelay() throw(pvpException) {
 uint16_t pvpCamera::maxPreampDelay() throw(pvpException) {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PREAMP_DELAY,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PREAMP_DELAY");
     return x;
@@ -802,7 +722,7 @@ uint16_t pvpCamera::maxPreampDelay() throw(pvpException) {
 void pvpCamera::setPreampDelay(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PREAMP_DELAY,(void*)(&y)))
       throw pvpException("Cannot set PREAMP_DELAY");
   }
@@ -1082,7 +1002,7 @@ int pvpCamera::countPreampOffControl() throw(pvpException) {
 uint32_t pvpCamera::getPreampOffControl() throw(pvpException) {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_PREAMP_OFF_CONTROL,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PREAMP_OFF_CONTROL");
     return x;
@@ -1094,7 +1014,7 @@ uint32_t pvpCamera::getPreampOffControl() throw(pvpException) {
 uint32_t pvpCamera::defaultPreampOffControl() throw(pvpException) {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_PREAMP_OFF_CONTROL,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PREAMP_OFF_CONTROL");
     return x;
@@ -1106,7 +1026,7 @@ uint32_t pvpCamera::defaultPreampOffControl() throw(pvpException) {
 uint32_t pvpCamera::minPreampOffControl() throw(pvpException) {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_PREAMP_OFF_CONTROL,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PREAMP_OFF_CONTROL");
     return x;
@@ -1118,7 +1038,7 @@ uint32_t pvpCamera::minPreampOffControl() throw(pvpException) {
 uint32_t pvpCamera::maxPreampOffControl() throw(pvpException) {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_PREAMP_OFF_CONTROL,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PREAMP_OFF_CONTROL");
     return x;
@@ -1130,7 +1050,7 @@ uint32_t pvpCamera::maxPreampOffControl() throw(pvpException) {
 void pvpCamera::setPreampOffControl(uint32_t x) throw(pvpException) {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns32 y = x;
+    uint32_t y = x;
     if (!pl_set_param(camh,PARAM_PREAMP_OFF_CONTROL,(void*)(&y)))
       throw pvpException("Cannot set PREAMP_OFF_CONTROL");
   }
@@ -1184,7 +1104,7 @@ int pvpCamera::countPremask() throw(pvpException) {
 uint16_t pvpCamera::getPremask() throw(pvpException) {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PREMASK,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PREMASK");
     return x;
@@ -1196,7 +1116,7 @@ uint16_t pvpCamera::getPremask() throw(pvpException) {
 uint16_t pvpCamera::defaultPremask() throw(pvpException) {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PREMASK,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PREMASK");
     return x;
@@ -1208,7 +1128,7 @@ uint16_t pvpCamera::defaultPremask() throw(pvpException) {
 uint16_t pvpCamera::minPremask() throw(pvpException) {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PREMASK,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PREMASK");
     return x;
@@ -1220,7 +1140,7 @@ uint16_t pvpCamera::minPremask() throw(pvpException) {
 uint16_t pvpCamera::maxPremask() throw(pvpException) {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PREMASK,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PREMASK");
     return x;
@@ -1232,7 +1152,7 @@ uint16_t pvpCamera::maxPremask() throw(pvpException) {
 void pvpCamera::setPremask(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PREMASK,(void*)(&y)))
       throw pvpException("Cannot set PREMASK");
   }
@@ -1286,7 +1206,7 @@ int pvpCamera::countPrescan() throw(pvpException) {
 uint16_t pvpCamera::getPrescan() throw(pvpException) {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PRESCAN,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PRESCAN");
     return x;
@@ -1298,7 +1218,7 @@ uint16_t pvpCamera::getPrescan() throw(pvpException) {
 uint16_t pvpCamera::defaultPrescan() throw(pvpException) {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PRESCAN,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PRESCAN");
     return x;
@@ -1310,7 +1230,7 @@ uint16_t pvpCamera::defaultPrescan() throw(pvpException) {
 uint16_t pvpCamera::minPrescan() throw(pvpException) {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PRESCAN,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PRESCAN");
     return x;
@@ -1322,7 +1242,7 @@ uint16_t pvpCamera::minPrescan() throw(pvpException) {
 uint16_t pvpCamera::maxPrescan() throw(pvpException) {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PRESCAN,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PRESCAN");
     return x;
@@ -1334,7 +1254,7 @@ uint16_t pvpCamera::maxPrescan() throw(pvpException) {
 void pvpCamera::setPrescan(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PRESCAN,(void*)(&y)))
       throw pvpException("Cannot set PRESCAN");
   }
@@ -1388,7 +1308,7 @@ int pvpCamera::countPostmask() throw(pvpException) {
 uint16_t pvpCamera::getPostmask() throw(pvpException) {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_POSTMASK,ATTR_CURRENT,&x))
       throw pvpException("Cannot read POSTMASK");
     return x;
@@ -1400,7 +1320,7 @@ uint16_t pvpCamera::getPostmask() throw(pvpException) {
 uint16_t pvpCamera::defaultPostmask() throw(pvpException) {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_POSTMASK,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of POSTMASK");
     return x;
@@ -1412,7 +1332,7 @@ uint16_t pvpCamera::defaultPostmask() throw(pvpException) {
 uint16_t pvpCamera::minPostmask() throw(pvpException) {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_POSTMASK,ATTR_MIN,&x))
       throw pvpException("Cannot read min of POSTMASK");
     return x;
@@ -1424,7 +1344,7 @@ uint16_t pvpCamera::minPostmask() throw(pvpException) {
 uint16_t pvpCamera::maxPostmask() throw(pvpException) {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_POSTMASK,ATTR_MAX,&x))
       throw pvpException("Cannot read max of POSTMASK");
     return x;
@@ -1436,7 +1356,7 @@ uint16_t pvpCamera::maxPostmask() throw(pvpException) {
 void pvpCamera::setPostmask(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_POSTMASK,(void*)(&y)))
       throw pvpException("Cannot set POSTMASK");
   }
@@ -1490,7 +1410,7 @@ int pvpCamera::countPostscan() throw(pvpException) {
 uint16_t pvpCamera::getPostscan() throw(pvpException) {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_POSTSCAN,ATTR_CURRENT,&x))
       throw pvpException("Cannot read POSTSCAN");
     return x;
@@ -1502,7 +1422,7 @@ uint16_t pvpCamera::getPostscan() throw(pvpException) {
 uint16_t pvpCamera::defaultPostscan() throw(pvpException) {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_POSTSCAN,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of POSTSCAN");
     return x;
@@ -1514,7 +1434,7 @@ uint16_t pvpCamera::defaultPostscan() throw(pvpException) {
 uint16_t pvpCamera::minPostscan() throw(pvpException) {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_POSTSCAN,ATTR_MIN,&x))
       throw pvpException("Cannot read min of POSTSCAN");
     return x;
@@ -1526,7 +1446,7 @@ uint16_t pvpCamera::minPostscan() throw(pvpException) {
 uint16_t pvpCamera::maxPostscan() throw(pvpException) {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_POSTSCAN,ATTR_MAX,&x))
       throw pvpException("Cannot read max of POSTSCAN");
     return x;
@@ -1538,7 +1458,7 @@ uint16_t pvpCamera::maxPostscan() throw(pvpException) {
 void pvpCamera::setPostscan(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_POSTSCAN,(void*)(&y)))
       throw pvpException("Cannot set POSTSCAN");
   }
@@ -1592,7 +1512,7 @@ int pvpCamera::countPixParDist() throw(pvpException) {
 uint16_t pvpCamera::getPixParDist() throw(pvpException) {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_PAR_DIST,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PIX_PAR_DIST");
     return x;
@@ -1604,7 +1524,7 @@ uint16_t pvpCamera::getPixParDist() throw(pvpException) {
 uint16_t pvpCamera::defaultPixParDist() throw(pvpException) {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_PAR_DIST,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PIX_PAR_DIST");
     return x;
@@ -1616,7 +1536,7 @@ uint16_t pvpCamera::defaultPixParDist() throw(pvpException) {
 uint16_t pvpCamera::minPixParDist() throw(pvpException) {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_PAR_DIST,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PIX_PAR_DIST");
     return x;
@@ -1628,7 +1548,7 @@ uint16_t pvpCamera::minPixParDist() throw(pvpException) {
 uint16_t pvpCamera::maxPixParDist() throw(pvpException) {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_PAR_DIST,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PIX_PAR_DIST");
     return x;
@@ -1640,7 +1560,7 @@ uint16_t pvpCamera::maxPixParDist() throw(pvpException) {
 void pvpCamera::setPixParDist(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PIX_PAR_DIST,(void*)(&y)))
       throw pvpException("Cannot set PIX_PAR_DIST");
   }
@@ -1694,7 +1614,7 @@ int pvpCamera::countPixParSize() throw(pvpException) {
 uint16_t pvpCamera::getPixParSize() throw(pvpException) {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_PAR_SIZE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PIX_PAR_SIZE");
     return x;
@@ -1706,7 +1626,7 @@ uint16_t pvpCamera::getPixParSize() throw(pvpException) {
 uint16_t pvpCamera::defaultPixParSize() throw(pvpException) {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_PAR_SIZE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PIX_PAR_SIZE");
     return x;
@@ -1718,7 +1638,7 @@ uint16_t pvpCamera::defaultPixParSize() throw(pvpException) {
 uint16_t pvpCamera::minPixParSize() throw(pvpException) {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_PAR_SIZE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PIX_PAR_SIZE");
     return x;
@@ -1730,7 +1650,7 @@ uint16_t pvpCamera::minPixParSize() throw(pvpException) {
 uint16_t pvpCamera::maxPixParSize() throw(pvpException) {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_PAR_SIZE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PIX_PAR_SIZE");
     return x;
@@ -1742,7 +1662,7 @@ uint16_t pvpCamera::maxPixParSize() throw(pvpException) {
 void pvpCamera::setPixParSize(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PIX_PAR_SIZE,(void*)(&y)))
       throw pvpException("Cannot set PIX_PAR_SIZE");
   }
@@ -1796,7 +1716,7 @@ int pvpCamera::countPixSerDist() throw(pvpException) {
 uint16_t pvpCamera::getPixSerDist() throw(pvpException) {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_SER_DIST,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PIX_SER_DIST");
     return x;
@@ -1808,7 +1728,7 @@ uint16_t pvpCamera::getPixSerDist() throw(pvpException) {
 uint16_t pvpCamera::defaultPixSerDist() throw(pvpException) {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_SER_DIST,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PIX_SER_DIST");
     return x;
@@ -1820,7 +1740,7 @@ uint16_t pvpCamera::defaultPixSerDist() throw(pvpException) {
 uint16_t pvpCamera::minPixSerDist() throw(pvpException) {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_SER_DIST,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PIX_SER_DIST");
     return x;
@@ -1832,7 +1752,7 @@ uint16_t pvpCamera::minPixSerDist() throw(pvpException) {
 uint16_t pvpCamera::maxPixSerDist() throw(pvpException) {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_SER_DIST,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PIX_SER_DIST");
     return x;
@@ -1844,7 +1764,7 @@ uint16_t pvpCamera::maxPixSerDist() throw(pvpException) {
 void pvpCamera::setPixSerDist(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PIX_SER_DIST,(void*)(&y)))
       throw pvpException("Cannot set PIX_SER_DIST");
   }
@@ -1898,7 +1818,7 @@ int pvpCamera::countPixSerSize() throw(pvpException) {
 uint16_t pvpCamera::getPixSerSize() throw(pvpException) {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_SER_SIZE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PIX_SER_SIZE");
     return x;
@@ -1910,7 +1830,7 @@ uint16_t pvpCamera::getPixSerSize() throw(pvpException) {
 uint16_t pvpCamera::defaultPixSerSize() throw(pvpException) {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_SER_SIZE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PIX_SER_SIZE");
     return x;
@@ -1922,7 +1842,7 @@ uint16_t pvpCamera::defaultPixSerSize() throw(pvpException) {
 uint16_t pvpCamera::minPixSerSize() throw(pvpException) {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_SER_SIZE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PIX_SER_SIZE");
     return x;
@@ -1934,7 +1854,7 @@ uint16_t pvpCamera::minPixSerSize() throw(pvpException) {
 uint16_t pvpCamera::maxPixSerSize() throw(pvpException) {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_SER_SIZE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PIX_SER_SIZE");
     return x;
@@ -1946,7 +1866,7 @@ uint16_t pvpCamera::maxPixSerSize() throw(pvpException) {
 void pvpCamera::setPixSerSize(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PIX_SER_SIZE,(void*)(&y)))
       throw pvpException("Cannot set PIX_SER_SIZE");
   }
@@ -2000,7 +1920,7 @@ int pvpCamera::countSummingWell() throw(pvpException) {
 bool pvpCamera::getSummingWell() throw(pvpException) {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_SUMMING_WELL,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SUMMING_WELL");
     return x;
@@ -2012,7 +1932,7 @@ bool pvpCamera::getSummingWell() throw(pvpException) {
 bool pvpCamera::defaultSummingWell() throw(pvpException) {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_SUMMING_WELL,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SUMMING_WELL");
     return x;
@@ -2024,7 +1944,7 @@ bool pvpCamera::defaultSummingWell() throw(pvpException) {
 bool pvpCamera::minSummingWell() throw(pvpException) {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_SUMMING_WELL,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SUMMING_WELL");
     return x;
@@ -2036,7 +1956,7 @@ bool pvpCamera::minSummingWell() throw(pvpException) {
 bool pvpCamera::maxSummingWell() throw(pvpException) {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_SUMMING_WELL,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SUMMING_WELL");
     return x;
@@ -2048,7 +1968,7 @@ bool pvpCamera::maxSummingWell() throw(pvpException) {
 void pvpCamera::setSummingWell(bool x) throw(pvpException) {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    boolean y = x;
+    bool y = x;
     if (!pl_set_param(camh,PARAM_SUMMING_WELL,(void*)(&y)))
       throw pvpException("Cannot set SUMMING_WELL");
   }
@@ -2102,7 +2022,7 @@ int pvpCamera::countFwellCapacity() throw(pvpException) {
 uint32_t pvpCamera::getFwellCapacity() throw(pvpException) {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_FWELL_CAPACITY,ATTR_CURRENT,&x))
       throw pvpException("Cannot read FWELL_CAPACITY");
     return x;
@@ -2114,7 +2034,7 @@ uint32_t pvpCamera::getFwellCapacity() throw(pvpException) {
 uint32_t pvpCamera::defaultFwellCapacity() throw(pvpException) {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_FWELL_CAPACITY,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of FWELL_CAPACITY");
     return x;
@@ -2126,7 +2046,7 @@ uint32_t pvpCamera::defaultFwellCapacity() throw(pvpException) {
 uint32_t pvpCamera::minFwellCapacity() throw(pvpException) {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_FWELL_CAPACITY,ATTR_MIN,&x))
       throw pvpException("Cannot read min of FWELL_CAPACITY");
     return x;
@@ -2138,7 +2058,7 @@ uint32_t pvpCamera::minFwellCapacity() throw(pvpException) {
 uint32_t pvpCamera::maxFwellCapacity() throw(pvpException) {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_FWELL_CAPACITY,ATTR_MAX,&x))
       throw pvpException("Cannot read max of FWELL_CAPACITY");
     return x;
@@ -2150,7 +2070,7 @@ uint32_t pvpCamera::maxFwellCapacity() throw(pvpException) {
 void pvpCamera::setFwellCapacity(uint32_t x) throw(pvpException) {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns32 y = x;
+    uint32_t y = x;
     if (!pl_set_param(camh,PARAM_FWELL_CAPACITY,(void*)(&y)))
       throw pvpException("Cannot set FWELL_CAPACITY");
   }
@@ -2204,7 +2124,7 @@ int pvpCamera::countParSize() throw(pvpException) {
 uint16_t pvpCamera::getParSize() throw(pvpException) {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PAR_SIZE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PAR_SIZE");
     return x;
@@ -2216,7 +2136,7 @@ uint16_t pvpCamera::getParSize() throw(pvpException) {
 uint16_t pvpCamera::defaultParSize() throw(pvpException) {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PAR_SIZE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PAR_SIZE");
     return x;
@@ -2228,7 +2148,7 @@ uint16_t pvpCamera::defaultParSize() throw(pvpException) {
 uint16_t pvpCamera::minParSize() throw(pvpException) {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PAR_SIZE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PAR_SIZE");
     return x;
@@ -2240,7 +2160,7 @@ uint16_t pvpCamera::minParSize() throw(pvpException) {
 uint16_t pvpCamera::maxParSize() throw(pvpException) {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PAR_SIZE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PAR_SIZE");
     return x;
@@ -2252,7 +2172,7 @@ uint16_t pvpCamera::maxParSize() throw(pvpException) {
 void pvpCamera::setParSize(uint16_t x) throw(pvpException) {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PAR_SIZE,(void*)(&y)))
       throw pvpException("Cannot set PAR_SIZE");
   }
@@ -2306,7 +2226,7 @@ int pvpCamera::countSerSize() throw(pvpException) {
 uint16_t pvpCamera::getSerSize() throw(pvpException) {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SER_SIZE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SER_SIZE");
     return x;
@@ -2318,7 +2238,7 @@ uint16_t pvpCamera::getSerSize() throw(pvpException) {
 uint16_t pvpCamera::defaultSerSize() throw(pvpException) {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SER_SIZE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SER_SIZE");
     return x;
@@ -2330,7 +2250,7 @@ uint16_t pvpCamera::defaultSerSize() throw(pvpException) {
 uint16_t pvpCamera::minSerSize() throw(pvpException) {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SER_SIZE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SER_SIZE");
     return x;
@@ -2342,7 +2262,7 @@ uint16_t pvpCamera::minSerSize() throw(pvpException) {
 uint16_t pvpCamera::maxSerSize() throw(pvpException) {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SER_SIZE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SER_SIZE");
     return x;
@@ -2354,7 +2274,7 @@ uint16_t pvpCamera::maxSerSize() throw(pvpException) {
 void pvpCamera::setSerSize(uint16_t x) throw(pvpException) {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_SER_SIZE,(void*)(&y)))
       throw pvpException("Cannot set SER_SIZE");
   }
@@ -2408,7 +2328,7 @@ int pvpCamera::countAccumCapable() throw(pvpException) {
 bool pvpCamera::getAccumCapable() throw(pvpException) {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_ACCUM_CAPABLE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read ACCUM_CAPABLE");
     return x;
@@ -2420,7 +2340,7 @@ bool pvpCamera::getAccumCapable() throw(pvpException) {
 bool pvpCamera::defaultAccumCapable() throw(pvpException) {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_ACCUM_CAPABLE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of ACCUM_CAPABLE");
     return x;
@@ -2432,7 +2352,7 @@ bool pvpCamera::defaultAccumCapable() throw(pvpException) {
 bool pvpCamera::minAccumCapable() throw(pvpException) {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_ACCUM_CAPABLE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of ACCUM_CAPABLE");
     return x;
@@ -2444,7 +2364,7 @@ bool pvpCamera::minAccumCapable() throw(pvpException) {
 bool pvpCamera::maxAccumCapable() throw(pvpException) {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_ACCUM_CAPABLE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of ACCUM_CAPABLE");
     return x;
@@ -2456,7 +2376,7 @@ bool pvpCamera::maxAccumCapable() throw(pvpException) {
 void pvpCamera::setAccumCapable(bool x) throw(pvpException) {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    boolean y = x;
+    bool y = x;
     if (!pl_set_param(camh,PARAM_ACCUM_CAPABLE,(void*)(&y)))
       throw pvpException("Cannot set ACCUM_CAPABLE");
   }
@@ -2510,7 +2430,7 @@ int pvpCamera::countFlashDwnldCapable() throw(pvpException) {
 bool pvpCamera::getFlashDwnldCapable() throw(pvpException) {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_FLASH_DWNLD_CAPABLE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read FLASH_DWNLD_CAPABLE");
     return x;
@@ -2522,7 +2442,7 @@ bool pvpCamera::getFlashDwnldCapable() throw(pvpException) {
 bool pvpCamera::defaultFlashDwnldCapable() throw(pvpException) {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_FLASH_DWNLD_CAPABLE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of FLASH_DWNLD_CAPABLE");
     return x;
@@ -2534,7 +2454,7 @@ bool pvpCamera::defaultFlashDwnldCapable() throw(pvpException) {
 bool pvpCamera::minFlashDwnldCapable() throw(pvpException) {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_FLASH_DWNLD_CAPABLE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of FLASH_DWNLD_CAPABLE");
     return x;
@@ -2546,7 +2466,7 @@ bool pvpCamera::minFlashDwnldCapable() throw(pvpException) {
 bool pvpCamera::maxFlashDwnldCapable() throw(pvpException) {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_FLASH_DWNLD_CAPABLE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of FLASH_DWNLD_CAPABLE");
     return x;
@@ -2558,7 +2478,7 @@ bool pvpCamera::maxFlashDwnldCapable() throw(pvpException) {
 void pvpCamera::setFlashDwnldCapable(bool x) throw(pvpException) {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    boolean y = x;
+    bool y = x;
     if (!pl_set_param(camh,PARAM_FLASH_DWNLD_CAPABLE,(void*)(&y)))
       throw pvpException("Cannot set FLASH_DWNLD_CAPABLE");
   }
@@ -2612,7 +2532,7 @@ int pvpCamera::countReadoutTime() throw(pvpException) {
 double pvpCamera::getReadoutTime() throw(pvpException) {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
+    double x;
     if (!pl_get_param(camh,PARAM_READOUT_TIME,ATTR_CURRENT,&x))
       throw pvpException("Cannot read READOUT_TIME");
     return x;
@@ -2624,7 +2544,7 @@ double pvpCamera::getReadoutTime() throw(pvpException) {
 double pvpCamera::defaultReadoutTime() throw(pvpException) {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
+    double x;
     if (!pl_get_param(camh,PARAM_READOUT_TIME,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of READOUT_TIME");
     return x;
@@ -2636,7 +2556,7 @@ double pvpCamera::defaultReadoutTime() throw(pvpException) {
 double pvpCamera::minReadoutTime() throw(pvpException) {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
+    double x;
     if (!pl_get_param(camh,PARAM_READOUT_TIME,ATTR_MIN,&x))
       throw pvpException("Cannot read min of READOUT_TIME");
     return x;
@@ -2648,7 +2568,7 @@ double pvpCamera::minReadoutTime() throw(pvpException) {
 double pvpCamera::maxReadoutTime() throw(pvpException) {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
+    double x;
     if (!pl_get_param(camh,PARAM_READOUT_TIME,ATTR_MAX,&x))
       throw pvpException("Cannot read max of READOUT_TIME");
     return x;
@@ -2660,7 +2580,7 @@ double pvpCamera::maxReadoutTime() throw(pvpException) {
 void pvpCamera::setReadoutTime(double x) throw(pvpException) {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    flt64 y = x;
+    double y = x;
     if (!pl_set_param(camh,PARAM_READOUT_TIME,(void*)(&y)))
       throw pvpException("Cannot set READOUT_TIME");
   }
@@ -2714,7 +2634,7 @@ int pvpCamera::countClearCycles() throw(pvpException) {
 uint16_t pvpCamera::getClearCycles() throw(pvpException) {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_CLEAR_CYCLES,ATTR_CURRENT,&x))
       throw pvpException("Cannot read CLEAR_CYCLES");
     return x;
@@ -2726,7 +2646,7 @@ uint16_t pvpCamera::getClearCycles() throw(pvpException) {
 uint16_t pvpCamera::defaultClearCycles() throw(pvpException) {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_CLEAR_CYCLES,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of CLEAR_CYCLES");
     return x;
@@ -2738,7 +2658,7 @@ uint16_t pvpCamera::defaultClearCycles() throw(pvpException) {
 uint16_t pvpCamera::minClearCycles() throw(pvpException) {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_CLEAR_CYCLES,ATTR_MIN,&x))
       throw pvpException("Cannot read min of CLEAR_CYCLES");
     return x;
@@ -2750,7 +2670,7 @@ uint16_t pvpCamera::minClearCycles() throw(pvpException) {
 uint16_t pvpCamera::maxClearCycles() throw(pvpException) {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_CLEAR_CYCLES,ATTR_MAX,&x))
       throw pvpException("Cannot read max of CLEAR_CYCLES");
     return x;
@@ -2762,7 +2682,7 @@ uint16_t pvpCamera::maxClearCycles() throw(pvpException) {
 void pvpCamera::setClearCycles(uint16_t x) throw(pvpException) {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_CLEAR_CYCLES,(void*)(&y)))
       throw pvpException("Cannot set CLEAR_CYCLES");
   }
@@ -2931,7 +2851,7 @@ int pvpCamera::countFrameCapable() throw(pvpException) {
 bool pvpCamera::getFrameCapable() throw(pvpException) {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_FRAME_CAPABLE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read FRAME_CAPABLE");
     return x;
@@ -2943,7 +2863,7 @@ bool pvpCamera::getFrameCapable() throw(pvpException) {
 bool pvpCamera::defaultFrameCapable() throw(pvpException) {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_FRAME_CAPABLE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of FRAME_CAPABLE");
     return x;
@@ -2955,7 +2875,7 @@ bool pvpCamera::defaultFrameCapable() throw(pvpException) {
 bool pvpCamera::minFrameCapable() throw(pvpException) {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_FRAME_CAPABLE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of FRAME_CAPABLE");
     return x;
@@ -2967,7 +2887,7 @@ bool pvpCamera::minFrameCapable() throw(pvpException) {
 bool pvpCamera::maxFrameCapable() throw(pvpException) {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_FRAME_CAPABLE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of FRAME_CAPABLE");
     return x;
@@ -2979,7 +2899,7 @@ bool pvpCamera::maxFrameCapable() throw(pvpException) {
 void pvpCamera::setFrameCapable(bool x) throw(pvpException) {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    boolean y = x;
+    bool y = x;
     if (!pl_set_param(camh,PARAM_FRAME_CAPABLE,(void*)(&y)))
       throw pvpException("Cannot set FRAME_CAPABLE");
   }
@@ -3149,7 +3069,7 @@ int pvpCamera::countTemp() throw(pvpException) {
 int16_t pvpCamera::getTemp() throw(pvpException) {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_TEMP,ATTR_CURRENT,&x))
       throw pvpException("Cannot read TEMP");
     return x;
@@ -3161,7 +3081,7 @@ int16_t pvpCamera::getTemp() throw(pvpException) {
 int16_t pvpCamera::defaultTemp() throw(pvpException) {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_TEMP,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of TEMP");
     return x;
@@ -3173,7 +3093,7 @@ int16_t pvpCamera::defaultTemp() throw(pvpException) {
 int16_t pvpCamera::minTemp() throw(pvpException) {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_TEMP,ATTR_MIN,&x))
       throw pvpException("Cannot read min of TEMP");
     return x;
@@ -3185,7 +3105,7 @@ int16_t pvpCamera::minTemp() throw(pvpException) {
 int16_t pvpCamera::maxTemp() throw(pvpException) {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_TEMP,ATTR_MAX,&x))
       throw pvpException("Cannot read max of TEMP");
     return x;
@@ -3197,7 +3117,7 @@ int16_t pvpCamera::maxTemp() throw(pvpException) {
 void pvpCamera::setTemp(int16_t x) throw(pvpException) {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_TEMP,(void*)(&y)))
       throw pvpException("Cannot set TEMP");
   }
@@ -3251,7 +3171,7 @@ int pvpCamera::countTempSetpoint() throw(pvpException) {
 int16_t pvpCamera::getTempSetpoint() throw(pvpException) {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_TEMP_SETPOINT,ATTR_CURRENT,&x))
       throw pvpException("Cannot read TEMP_SETPOINT");
     return x;
@@ -3263,7 +3183,7 @@ int16_t pvpCamera::getTempSetpoint() throw(pvpException) {
 int16_t pvpCamera::defaultTempSetpoint() throw(pvpException) {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_TEMP_SETPOINT,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of TEMP_SETPOINT");
     return x;
@@ -3275,7 +3195,7 @@ int16_t pvpCamera::defaultTempSetpoint() throw(pvpException) {
 int16_t pvpCamera::minTempSetpoint() throw(pvpException) {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_TEMP_SETPOINT,ATTR_MIN,&x))
       throw pvpException("Cannot read min of TEMP_SETPOINT");
     return x;
@@ -3287,7 +3207,7 @@ int16_t pvpCamera::minTempSetpoint() throw(pvpException) {
 int16_t pvpCamera::maxTempSetpoint() throw(pvpException) {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_TEMP_SETPOINT,ATTR_MAX,&x))
       throw pvpException("Cannot read max of TEMP_SETPOINT");
     return x;
@@ -3299,7 +3219,7 @@ int16_t pvpCamera::maxTempSetpoint() throw(pvpException) {
 void pvpCamera::setTempSetpoint(int16_t x) throw(pvpException) {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_TEMP_SETPOINT,(void*)(&y)))
       throw pvpException("Cannot set TEMP_SETPOINT");
   }
@@ -3353,7 +3273,7 @@ int pvpCamera::countCamFwVersion() throw(pvpException) {
 uint16_t pvpCamera::getCamFwVersion() throw(pvpException) {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_CAM_FW_VERSION,ATTR_CURRENT,&x))
       throw pvpException("Cannot read CAM_FW_VERSION");
     return x;
@@ -3365,7 +3285,7 @@ uint16_t pvpCamera::getCamFwVersion() throw(pvpException) {
 uint16_t pvpCamera::defaultCamFwVersion() throw(pvpException) {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_CAM_FW_VERSION,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of CAM_FW_VERSION");
     return x;
@@ -3377,7 +3297,7 @@ uint16_t pvpCamera::defaultCamFwVersion() throw(pvpException) {
 uint16_t pvpCamera::minCamFwVersion() throw(pvpException) {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_CAM_FW_VERSION,ATTR_MIN,&x))
       throw pvpException("Cannot read min of CAM_FW_VERSION");
     return x;
@@ -3389,7 +3309,7 @@ uint16_t pvpCamera::minCamFwVersion() throw(pvpException) {
 uint16_t pvpCamera::maxCamFwVersion() throw(pvpException) {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_CAM_FW_VERSION,ATTR_MAX,&x))
       throw pvpException("Cannot read max of CAM_FW_VERSION");
     return x;
@@ -3401,7 +3321,7 @@ uint16_t pvpCamera::maxCamFwVersion() throw(pvpException) {
 void pvpCamera::setCamFwVersion(uint16_t x) throw(pvpException) {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_CAM_FW_VERSION,(void*)(&y)))
       throw pvpException("Cannot set CAM_FW_VERSION");
   }
@@ -3452,23 +3372,24 @@ int pvpCamera::countHeadSerNumAlpha() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getHeadSerNumAlpha() throw(pvpException) {
+QString pvpCamera::getHeadSerNumAlpha() throw(pvpException) {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_CURRENT,&x))
+    QByteArray ar(countHeadSerNumAlpha(), 0);
+    if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read HEAD_SER_NUM_ALPHA");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("HEAD_SER_NUM_ALPHA not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultHeadSerNumAlpha() throw(pvpException) {
+QString pvpCamera::defaultHeadSerNumAlpha() throw(pvpException) {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_DEFAULT,&x))
+    char x[countHeadSerNumAlpha()];
+    if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of HEAD_SER_NUM_ALPHA");
     return x;
   } else {
@@ -3476,35 +3397,18 @@ char * pvpCamera::defaultHeadSerNumAlpha() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minHeadSerNumAlpha() throw(pvpException) {
-  pvpAccess a = accessHeadSerNumAlpha();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of HEAD_SER_NUM_ALPHA");
-    return x;
-  } else {
-    throw pvpException("HEAD_SER_NUM_ALPHA not accessible for reading");
-  }
+QString pvpCamera::minHeadSerNumAlpha() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxHeadSerNumAlpha() throw(pvpException) {
-  pvpAccess a = accessHeadSerNumAlpha();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of HEAD_SER_NUM_ALPHA");
-    return x;
-  } else {
-    throw pvpException("HEAD_SER_NUM_ALPHA not accessible for reading");
-  }
+QString pvpCamera::maxHeadSerNumAlpha() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setHeadSerNumAlpha(char * x) throw(pvpException) {
+void pvpCamera::setHeadSerNumAlpha(QString x) throw(pvpException) {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_HEAD_SER_NUM_ALPHA,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_HEAD_SER_NUM_ALPHA,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set HEAD_SER_NUM_ALPHA");
   }
 }
@@ -3557,7 +3461,7 @@ int pvpCamera::countPciFwVersion() throw(pvpException) {
 uint16_t pvpCamera::getPciFwVersion() throw(pvpException) {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PCI_FW_VERSION,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PCI_FW_VERSION");
     return x;
@@ -3569,7 +3473,7 @@ uint16_t pvpCamera::getPciFwVersion() throw(pvpException) {
 uint16_t pvpCamera::defaultPciFwVersion() throw(pvpException) {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PCI_FW_VERSION,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PCI_FW_VERSION");
     return x;
@@ -3581,7 +3485,7 @@ uint16_t pvpCamera::defaultPciFwVersion() throw(pvpException) {
 uint16_t pvpCamera::minPciFwVersion() throw(pvpException) {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PCI_FW_VERSION,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PCI_FW_VERSION");
     return x;
@@ -3593,7 +3497,7 @@ uint16_t pvpCamera::minPciFwVersion() throw(pvpException) {
 uint16_t pvpCamera::maxPciFwVersion() throw(pvpException) {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PCI_FW_VERSION,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PCI_FW_VERSION");
     return x;
@@ -3605,7 +3509,7 @@ uint16_t pvpCamera::maxPciFwVersion() throw(pvpException) {
 void pvpCamera::setPciFwVersion(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PCI_FW_VERSION,(void*)(&y)))
       throw pvpException("Cannot set PCI_FW_VERSION");
   }
@@ -4002,7 +3906,7 @@ int pvpCamera::countBitDepth() throw(pvpException) {
 int16_t pvpCamera::getBitDepth() throw(pvpException) {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_BIT_DEPTH,ATTR_CURRENT,&x))
       throw pvpException("Cannot read BIT_DEPTH");
     return x;
@@ -4014,7 +3918,7 @@ int16_t pvpCamera::getBitDepth() throw(pvpException) {
 int16_t pvpCamera::defaultBitDepth() throw(pvpException) {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_BIT_DEPTH,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of BIT_DEPTH");
     return x;
@@ -4026,7 +3930,7 @@ int16_t pvpCamera::defaultBitDepth() throw(pvpException) {
 int16_t pvpCamera::minBitDepth() throw(pvpException) {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_BIT_DEPTH,ATTR_MIN,&x))
       throw pvpException("Cannot read min of BIT_DEPTH");
     return x;
@@ -4038,7 +3942,7 @@ int16_t pvpCamera::minBitDepth() throw(pvpException) {
 int16_t pvpCamera::maxBitDepth() throw(pvpException) {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_BIT_DEPTH,ATTR_MAX,&x))
       throw pvpException("Cannot read max of BIT_DEPTH");
     return x;
@@ -4050,7 +3954,7 @@ int16_t pvpCamera::maxBitDepth() throw(pvpException) {
 void pvpCamera::setBitDepth(int16_t x) throw(pvpException) {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_BIT_DEPTH,(void*)(&y)))
       throw pvpException("Cannot set BIT_DEPTH");
   }
@@ -4104,7 +4008,7 @@ int pvpCamera::countGainIndex() throw(pvpException) {
 int16_t pvpCamera::getGainIndex() throw(pvpException) {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_GAIN_INDEX,ATTR_CURRENT,&x))
       throw pvpException("Cannot read GAIN_INDEX");
     return x;
@@ -4116,7 +4020,7 @@ int16_t pvpCamera::getGainIndex() throw(pvpException) {
 int16_t pvpCamera::defaultGainIndex() throw(pvpException) {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_GAIN_INDEX,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of GAIN_INDEX");
     return x;
@@ -4128,7 +4032,7 @@ int16_t pvpCamera::defaultGainIndex() throw(pvpException) {
 int16_t pvpCamera::minGainIndex() throw(pvpException) {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_GAIN_INDEX,ATTR_MIN,&x))
       throw pvpException("Cannot read min of GAIN_INDEX");
     return x;
@@ -4140,7 +4044,7 @@ int16_t pvpCamera::minGainIndex() throw(pvpException) {
 int16_t pvpCamera::maxGainIndex() throw(pvpException) {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_GAIN_INDEX,ATTR_MAX,&x))
       throw pvpException("Cannot read max of GAIN_INDEX");
     return x;
@@ -4152,7 +4056,7 @@ int16_t pvpCamera::maxGainIndex() throw(pvpException) {
 void pvpCamera::setGainIndex(int16_t x) throw(pvpException) {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_GAIN_INDEX,(void*)(&y)))
       throw pvpException("Cannot set GAIN_INDEX");
   }
@@ -4206,7 +4110,7 @@ int pvpCamera::countSpdtabIndex() throw(pvpException) {
 int16_t pvpCamera::getSpdtabIndex() throw(pvpException) {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_SPDTAB_INDEX,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SPDTAB_INDEX");
     return x;
@@ -4218,7 +4122,7 @@ int16_t pvpCamera::getSpdtabIndex() throw(pvpException) {
 int16_t pvpCamera::defaultSpdtabIndex() throw(pvpException) {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_SPDTAB_INDEX,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SPDTAB_INDEX");
     return x;
@@ -4230,7 +4134,7 @@ int16_t pvpCamera::defaultSpdtabIndex() throw(pvpException) {
 int16_t pvpCamera::minSpdtabIndex() throw(pvpException) {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_SPDTAB_INDEX,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SPDTAB_INDEX");
     return x;
@@ -4242,7 +4146,7 @@ int16_t pvpCamera::minSpdtabIndex() throw(pvpException) {
 int16_t pvpCamera::maxSpdtabIndex() throw(pvpException) {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_SPDTAB_INDEX,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SPDTAB_INDEX");
     return x;
@@ -4254,7 +4158,7 @@ int16_t pvpCamera::maxSpdtabIndex() throw(pvpException) {
 void pvpCamera::setSpdtabIndex(int16_t x) throw(pvpException) {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_SPDTAB_INDEX,(void*)(&y)))
       throw pvpException("Cannot set SPDTAB_INDEX");
   }
@@ -4305,23 +4209,24 @@ int pvpCamera::countGainName() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getGainName() throw(pvpException) {
+QString pvpCamera::getGainName() throw(pvpException) {
   pvpAccess a = accessGainName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_CURRENT,&x))
+    QByteArray ar(countGainName(), 0);
+    if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read GAIN_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("GAIN_NAME not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultGainName() throw(pvpException) {
+QString pvpCamera::defaultGainName() throw(pvpException) {
   pvpAccess a = accessGainName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_DEFAULT,&x))
+    char x[countGainName()];
+    if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of GAIN_NAME");
     return x;
   } else {
@@ -4329,35 +4234,18 @@ char * pvpCamera::defaultGainName() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minGainName() throw(pvpException) {
-  pvpAccess a = accessGainName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of GAIN_NAME");
-    return x;
-  } else {
-    throw pvpException("GAIN_NAME not accessible for reading");
-  }
+QString pvpCamera::minGainName() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxGainName() throw(pvpException) {
-  pvpAccess a = accessGainName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of GAIN_NAME");
-    return x;
-  } else {
-    throw pvpException("GAIN_NAME not accessible for reading");
-  }
+QString pvpCamera::maxGainName() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setGainName(char * x) throw(pvpException) {
+void pvpCamera::setGainName(QString x) throw(pvpException) {
   pvpAccess a = accessGainName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_GAIN_NAME,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_GAIN_NAME,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set GAIN_NAME");
   }
 }
@@ -4384,8 +4272,8 @@ void pvpCamera::reportGainName() throw(pvpException) {
 
 char const *pvpCamera::ReadoutPort::decode() const {
   switch (x) {
-    case 0: return "0";
-    case 1: return "1";
+    case X0: return "X0";
+    case X1: return "X1";
     default: return "UNKNOWN";
   }
 }
@@ -4520,7 +4408,7 @@ int pvpCamera::countPixTime() throw(pvpException) {
 uint16_t pvpCamera::getPixTime() throw(pvpException) {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_TIME,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PIX_TIME");
     return x;
@@ -4532,7 +4420,7 @@ uint16_t pvpCamera::getPixTime() throw(pvpException) {
 uint16_t pvpCamera::defaultPixTime() throw(pvpException) {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_TIME,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PIX_TIME");
     return x;
@@ -4544,7 +4432,7 @@ uint16_t pvpCamera::defaultPixTime() throw(pvpException) {
 uint16_t pvpCamera::minPixTime() throw(pvpException) {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_TIME,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PIX_TIME");
     return x;
@@ -4556,7 +4444,7 @@ uint16_t pvpCamera::minPixTime() throw(pvpException) {
 uint16_t pvpCamera::maxPixTime() throw(pvpException) {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PIX_TIME,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PIX_TIME");
     return x;
@@ -4568,7 +4456,7 @@ uint16_t pvpCamera::maxPixTime() throw(pvpException) {
 void pvpCamera::setPixTime(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PIX_TIME,(void*)(&y)))
       throw pvpException("Cannot set PIX_TIME");
   }
@@ -4622,7 +4510,7 @@ int pvpCamera::countShtrCloseDelay() throw(pvpException) {
 uint16_t pvpCamera::getShtrCloseDelay() throw(pvpException) {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SHTR_CLOSE_DELAY,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SHTR_CLOSE_DELAY");
     return x;
@@ -4634,7 +4522,7 @@ uint16_t pvpCamera::getShtrCloseDelay() throw(pvpException) {
 uint16_t pvpCamera::defaultShtrCloseDelay() throw(pvpException) {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SHTR_CLOSE_DELAY,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SHTR_CLOSE_DELAY");
     return x;
@@ -4646,7 +4534,7 @@ uint16_t pvpCamera::defaultShtrCloseDelay() throw(pvpException) {
 uint16_t pvpCamera::minShtrCloseDelay() throw(pvpException) {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SHTR_CLOSE_DELAY,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SHTR_CLOSE_DELAY");
     return x;
@@ -4658,7 +4546,7 @@ uint16_t pvpCamera::minShtrCloseDelay() throw(pvpException) {
 uint16_t pvpCamera::maxShtrCloseDelay() throw(pvpException) {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SHTR_CLOSE_DELAY,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SHTR_CLOSE_DELAY");
     return x;
@@ -4670,7 +4558,7 @@ uint16_t pvpCamera::maxShtrCloseDelay() throw(pvpException) {
 void pvpCamera::setShtrCloseDelay(uint16_t x) throw(pvpException) {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_SHTR_CLOSE_DELAY,(void*)(&y)))
       throw pvpException("Cannot set SHTR_CLOSE_DELAY");
   }
@@ -4724,7 +4612,7 @@ int pvpCamera::countShtrOpenDelay() throw(pvpException) {
 uint16_t pvpCamera::getShtrOpenDelay() throw(pvpException) {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SHTR_OPEN_DELAY,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SHTR_OPEN_DELAY");
     return x;
@@ -4736,7 +4624,7 @@ uint16_t pvpCamera::getShtrOpenDelay() throw(pvpException) {
 uint16_t pvpCamera::defaultShtrOpenDelay() throw(pvpException) {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SHTR_OPEN_DELAY,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SHTR_OPEN_DELAY");
     return x;
@@ -4748,7 +4636,7 @@ uint16_t pvpCamera::defaultShtrOpenDelay() throw(pvpException) {
 uint16_t pvpCamera::minShtrOpenDelay() throw(pvpException) {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SHTR_OPEN_DELAY,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SHTR_OPEN_DELAY");
     return x;
@@ -4760,7 +4648,7 @@ uint16_t pvpCamera::minShtrOpenDelay() throw(pvpException) {
 uint16_t pvpCamera::maxShtrOpenDelay() throw(pvpException) {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SHTR_OPEN_DELAY,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SHTR_OPEN_DELAY");
     return x;
@@ -4772,7 +4660,7 @@ uint16_t pvpCamera::maxShtrOpenDelay() throw(pvpException) {
 void pvpCamera::setShtrOpenDelay(uint16_t x) throw(pvpException) {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_SHTR_OPEN_DELAY,(void*)(&y)))
       throw pvpException("Cannot set SHTR_OPEN_DELAY");
   }
@@ -5053,7 +4941,7 @@ int pvpCamera::countIoAddr() throw(pvpException) {
 uint16_t pvpCamera::getIoAddr() throw(pvpException) {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_IO_ADDR,ATTR_CURRENT,&x))
       throw pvpException("Cannot read IO_ADDR");
     return x;
@@ -5065,7 +4953,7 @@ uint16_t pvpCamera::getIoAddr() throw(pvpException) {
 uint16_t pvpCamera::defaultIoAddr() throw(pvpException) {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_IO_ADDR,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of IO_ADDR");
     return x;
@@ -5077,7 +4965,7 @@ uint16_t pvpCamera::defaultIoAddr() throw(pvpException) {
 uint16_t pvpCamera::minIoAddr() throw(pvpException) {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_IO_ADDR,ATTR_MIN,&x))
       throw pvpException("Cannot read min of IO_ADDR");
     return x;
@@ -5089,7 +4977,7 @@ uint16_t pvpCamera::minIoAddr() throw(pvpException) {
 uint16_t pvpCamera::maxIoAddr() throw(pvpException) {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_IO_ADDR,ATTR_MAX,&x))
       throw pvpException("Cannot read max of IO_ADDR");
     return x;
@@ -5101,7 +4989,7 @@ uint16_t pvpCamera::maxIoAddr() throw(pvpException) {
 void pvpCamera::setIoAddr(uint16_t x) throw(pvpException) {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_IO_ADDR,(void*)(&y)))
       throw pvpException("Cannot set IO_ADDR");
   }
@@ -5376,7 +5264,7 @@ int pvpCamera::countIoState() throw(pvpException) {
 double pvpCamera::getIoState() throw(pvpException) {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
+    double x;
     if (!pl_get_param(camh,PARAM_IO_STATE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read IO_STATE");
     return x;
@@ -5388,7 +5276,7 @@ double pvpCamera::getIoState() throw(pvpException) {
 double pvpCamera::defaultIoState() throw(pvpException) {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
+    double x;
     if (!pl_get_param(camh,PARAM_IO_STATE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of IO_STATE");
     return x;
@@ -5400,7 +5288,7 @@ double pvpCamera::defaultIoState() throw(pvpException) {
 double pvpCamera::minIoState() throw(pvpException) {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
+    double x;
     if (!pl_get_param(camh,PARAM_IO_STATE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of IO_STATE");
     return x;
@@ -5412,7 +5300,7 @@ double pvpCamera::minIoState() throw(pvpException) {
 double pvpCamera::maxIoState() throw(pvpException) {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    flt64 x;
+    double x;
     if (!pl_get_param(camh,PARAM_IO_STATE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of IO_STATE");
     return x;
@@ -5424,7 +5312,7 @@ double pvpCamera::maxIoState() throw(pvpException) {
 void pvpCamera::setIoState(double x) throw(pvpException) {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    flt64 y = x;
+    double y = x;
     if (!pl_set_param(camh,PARAM_IO_STATE,(void*)(&y)))
       throw pvpException("Cannot set IO_STATE");
   }
@@ -5478,7 +5366,7 @@ int pvpCamera::countIoBitdepth() throw(pvpException) {
 uint16_t pvpCamera::getIoBitdepth() throw(pvpException) {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_IO_BITDEPTH,ATTR_CURRENT,&x))
       throw pvpException("Cannot read IO_BITDEPTH");
     return x;
@@ -5490,7 +5378,7 @@ uint16_t pvpCamera::getIoBitdepth() throw(pvpException) {
 uint16_t pvpCamera::defaultIoBitdepth() throw(pvpException) {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_IO_BITDEPTH,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of IO_BITDEPTH");
     return x;
@@ -5502,7 +5390,7 @@ uint16_t pvpCamera::defaultIoBitdepth() throw(pvpException) {
 uint16_t pvpCamera::minIoBitdepth() throw(pvpException) {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_IO_BITDEPTH,ATTR_MIN,&x))
       throw pvpException("Cannot read min of IO_BITDEPTH");
     return x;
@@ -5514,7 +5402,7 @@ uint16_t pvpCamera::minIoBitdepth() throw(pvpException) {
 uint16_t pvpCamera::maxIoBitdepth() throw(pvpException) {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_IO_BITDEPTH,ATTR_MAX,&x))
       throw pvpException("Cannot read max of IO_BITDEPTH");
     return x;
@@ -5526,7 +5414,7 @@ uint16_t pvpCamera::maxIoBitdepth() throw(pvpException) {
 void pvpCamera::setIoBitdepth(uint16_t x) throw(pvpException) {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_IO_BITDEPTH,(void*)(&y)))
       throw pvpException("Cannot set IO_BITDEPTH");
   }
@@ -5580,7 +5468,7 @@ int pvpCamera::countGainMultFactor() throw(pvpException) {
 uint16_t pvpCamera::getGainMultFactor() throw(pvpException) {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_GAIN_MULT_FACTOR,ATTR_CURRENT,&x))
       throw pvpException("Cannot read GAIN_MULT_FACTOR");
     return x;
@@ -5592,7 +5480,7 @@ uint16_t pvpCamera::getGainMultFactor() throw(pvpException) {
 uint16_t pvpCamera::defaultGainMultFactor() throw(pvpException) {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_GAIN_MULT_FACTOR,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of GAIN_MULT_FACTOR");
     return x;
@@ -5604,7 +5492,7 @@ uint16_t pvpCamera::defaultGainMultFactor() throw(pvpException) {
 uint16_t pvpCamera::minGainMultFactor() throw(pvpException) {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_GAIN_MULT_FACTOR,ATTR_MIN,&x))
       throw pvpException("Cannot read min of GAIN_MULT_FACTOR");
     return x;
@@ -5616,7 +5504,7 @@ uint16_t pvpCamera::minGainMultFactor() throw(pvpException) {
 uint16_t pvpCamera::maxGainMultFactor() throw(pvpException) {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_GAIN_MULT_FACTOR,ATTR_MAX,&x))
       throw pvpException("Cannot read max of GAIN_MULT_FACTOR");
     return x;
@@ -5628,7 +5516,7 @@ uint16_t pvpCamera::maxGainMultFactor() throw(pvpException) {
 void pvpCamera::setGainMultFactor(uint16_t x) throw(pvpException) {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_GAIN_MULT_FACTOR,(void*)(&y)))
       throw pvpException("Cannot set GAIN_MULT_FACTOR");
   }
@@ -5682,7 +5570,7 @@ int pvpCamera::countGainMultEnable() throw(pvpException) {
 bool pvpCamera::getGainMultEnable() throw(pvpException) {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_GAIN_MULT_ENABLE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read GAIN_MULT_ENABLE");
     return x;
@@ -5694,7 +5582,7 @@ bool pvpCamera::getGainMultEnable() throw(pvpException) {
 bool pvpCamera::defaultGainMultEnable() throw(pvpException) {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_GAIN_MULT_ENABLE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of GAIN_MULT_ENABLE");
     return x;
@@ -5706,7 +5594,7 @@ bool pvpCamera::defaultGainMultEnable() throw(pvpException) {
 bool pvpCamera::minGainMultEnable() throw(pvpException) {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_GAIN_MULT_ENABLE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of GAIN_MULT_ENABLE");
     return x;
@@ -5718,7 +5606,7 @@ bool pvpCamera::minGainMultEnable() throw(pvpException) {
 bool pvpCamera::maxGainMultEnable() throw(pvpException) {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_GAIN_MULT_ENABLE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of GAIN_MULT_ENABLE");
     return x;
@@ -5730,7 +5618,7 @@ bool pvpCamera::maxGainMultEnable() throw(pvpException) {
 void pvpCamera::setGainMultEnable(bool x) throw(pvpException) {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    boolean y = x;
+    bool y = x;
     if (!pl_set_param(camh,PARAM_GAIN_MULT_ENABLE,(void*)(&y)))
       throw pvpException("Cannot set GAIN_MULT_ENABLE");
   }
@@ -5781,23 +5669,24 @@ int pvpCamera::countPpFeatName() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getPpFeatName() throw(pvpException) {
+QString pvpCamera::getPpFeatName() throw(pvpException) {
   pvpAccess a = accessPpFeatName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_CURRENT,&x))
+    QByteArray ar(countPpFeatName(), 0);
+    if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read PP_FEAT_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("PP_FEAT_NAME not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultPpFeatName() throw(pvpException) {
+QString pvpCamera::defaultPpFeatName() throw(pvpException) {
   pvpAccess a = accessPpFeatName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_DEFAULT,&x))
+    char x[countPpFeatName()];
+    if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of PP_FEAT_NAME");
     return x;
   } else {
@@ -5805,35 +5694,18 @@ char * pvpCamera::defaultPpFeatName() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minPpFeatName() throw(pvpException) {
-  pvpAccess a = accessPpFeatName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of PP_FEAT_NAME");
-    return x;
-  } else {
-    throw pvpException("PP_FEAT_NAME not accessible for reading");
-  }
+QString pvpCamera::minPpFeatName() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxPpFeatName() throw(pvpException) {
-  pvpAccess a = accessPpFeatName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of PP_FEAT_NAME");
-    return x;
-  } else {
-    throw pvpException("PP_FEAT_NAME not accessible for reading");
-  }
+QString pvpCamera::maxPpFeatName() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setPpFeatName(char * x) throw(pvpException) {
+void pvpCamera::setPpFeatName(QString x) throw(pvpException) {
   pvpAccess a = accessPpFeatName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_PP_FEAT_NAME,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_PP_FEAT_NAME,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set PP_FEAT_NAME");
   }
 }
@@ -5886,7 +5758,7 @@ int pvpCamera::countPpIndex() throw(pvpException) {
 int16_t pvpCamera::getPpIndex() throw(pvpException) {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_PP_INDEX,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PP_INDEX");
     return x;
@@ -5898,7 +5770,7 @@ int16_t pvpCamera::getPpIndex() throw(pvpException) {
 int16_t pvpCamera::defaultPpIndex() throw(pvpException) {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_PP_INDEX,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PP_INDEX");
     return x;
@@ -5910,7 +5782,7 @@ int16_t pvpCamera::defaultPpIndex() throw(pvpException) {
 int16_t pvpCamera::minPpIndex() throw(pvpException) {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_PP_INDEX,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PP_INDEX");
     return x;
@@ -5922,7 +5794,7 @@ int16_t pvpCamera::minPpIndex() throw(pvpException) {
 int16_t pvpCamera::maxPpIndex() throw(pvpException) {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_PP_INDEX,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PP_INDEX");
     return x;
@@ -5934,7 +5806,7 @@ int16_t pvpCamera::maxPpIndex() throw(pvpException) {
 void pvpCamera::setPpIndex(int16_t x) throw(pvpException) {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_PP_INDEX,(void*)(&y)))
       throw pvpException("Cannot set PP_INDEX");
   }
@@ -5988,7 +5860,7 @@ int pvpCamera::countActualGain() throw(pvpException) {
 uint16_t pvpCamera::getActualGain() throw(pvpException) {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_ACTUAL_GAIN,ATTR_CURRENT,&x))
       throw pvpException("Cannot read ACTUAL_GAIN");
     return x;
@@ -6000,7 +5872,7 @@ uint16_t pvpCamera::getActualGain() throw(pvpException) {
 uint16_t pvpCamera::defaultActualGain() throw(pvpException) {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_ACTUAL_GAIN,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of ACTUAL_GAIN");
     return x;
@@ -6012,7 +5884,7 @@ uint16_t pvpCamera::defaultActualGain() throw(pvpException) {
 uint16_t pvpCamera::minActualGain() throw(pvpException) {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_ACTUAL_GAIN,ATTR_MIN,&x))
       throw pvpException("Cannot read min of ACTUAL_GAIN");
     return x;
@@ -6024,7 +5896,7 @@ uint16_t pvpCamera::minActualGain() throw(pvpException) {
 uint16_t pvpCamera::maxActualGain() throw(pvpException) {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_ACTUAL_GAIN,ATTR_MAX,&x))
       throw pvpException("Cannot read max of ACTUAL_GAIN");
     return x;
@@ -6036,7 +5908,7 @@ uint16_t pvpCamera::maxActualGain() throw(pvpException) {
 void pvpCamera::setActualGain(uint16_t x) throw(pvpException) {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_ACTUAL_GAIN,(void*)(&y)))
       throw pvpException("Cannot set ACTUAL_GAIN");
   }
@@ -6090,7 +5962,7 @@ int pvpCamera::countPpParamIndex() throw(pvpException) {
 int16_t pvpCamera::getPpParamIndex() throw(pvpException) {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM_INDEX,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PP_PARAM_INDEX");
     return x;
@@ -6102,7 +5974,7 @@ int16_t pvpCamera::getPpParamIndex() throw(pvpException) {
 int16_t pvpCamera::defaultPpParamIndex() throw(pvpException) {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM_INDEX,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PP_PARAM_INDEX");
     return x;
@@ -6114,7 +5986,7 @@ int16_t pvpCamera::defaultPpParamIndex() throw(pvpException) {
 int16_t pvpCamera::minPpParamIndex() throw(pvpException) {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM_INDEX,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PP_PARAM_INDEX");
     return x;
@@ -6126,7 +5998,7 @@ int16_t pvpCamera::minPpParamIndex() throw(pvpException) {
 int16_t pvpCamera::maxPpParamIndex() throw(pvpException) {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM_INDEX,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PP_PARAM_INDEX");
     return x;
@@ -6138,7 +6010,7 @@ int16_t pvpCamera::maxPpParamIndex() throw(pvpException) {
 void pvpCamera::setPpParamIndex(int16_t x) throw(pvpException) {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_PP_PARAM_INDEX,(void*)(&y)))
       throw pvpException("Cannot set PP_PARAM_INDEX");
   }
@@ -6189,23 +6061,24 @@ int pvpCamera::countPpParamName() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getPpParamName() throw(pvpException) {
+QString pvpCamera::getPpParamName() throw(pvpException) {
   pvpAccess a = accessPpParamName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_CURRENT,&x))
+    QByteArray ar(countPpParamName(), 0);
+    if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read PP_PARAM_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("PP_PARAM_NAME not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultPpParamName() throw(pvpException) {
+QString pvpCamera::defaultPpParamName() throw(pvpException) {
   pvpAccess a = accessPpParamName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_DEFAULT,&x))
+    char x[countPpParamName()];
+    if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of PP_PARAM_NAME");
     return x;
   } else {
@@ -6213,35 +6086,18 @@ char * pvpCamera::defaultPpParamName() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minPpParamName() throw(pvpException) {
-  pvpAccess a = accessPpParamName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of PP_PARAM_NAME");
-    return x;
-  } else {
-    throw pvpException("PP_PARAM_NAME not accessible for reading");
-  }
+QString pvpCamera::minPpParamName() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxPpParamName() throw(pvpException) {
-  pvpAccess a = accessPpParamName();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of PP_PARAM_NAME");
-    return x;
-  } else {
-    throw pvpException("PP_PARAM_NAME not accessible for reading");
-  }
+QString pvpCamera::maxPpParamName() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setPpParamName(char * x) throw(pvpException) {
+void pvpCamera::setPpParamName(QString x) throw(pvpException) {
   pvpAccess a = accessPpParamName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_PP_PARAM_NAME,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_PP_PARAM_NAME,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set PP_PARAM_NAME");
   }
 }
@@ -6294,7 +6150,7 @@ int pvpCamera::countPpParam() throw(pvpException) {
 uint32_t pvpCamera::getPpParam() throw(pvpException) {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PP_PARAM");
     return x;
@@ -6306,7 +6162,7 @@ uint32_t pvpCamera::getPpParam() throw(pvpException) {
 uint32_t pvpCamera::defaultPpParam() throw(pvpException) {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PP_PARAM");
     return x;
@@ -6318,7 +6174,7 @@ uint32_t pvpCamera::defaultPpParam() throw(pvpException) {
 uint32_t pvpCamera::minPpParam() throw(pvpException) {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PP_PARAM");
     return x;
@@ -6330,7 +6186,7 @@ uint32_t pvpCamera::minPpParam() throw(pvpException) {
 uint32_t pvpCamera::maxPpParam() throw(pvpException) {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns32 x;
+    uint32_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PP_PARAM");
     return x;
@@ -6342,7 +6198,7 @@ uint32_t pvpCamera::maxPpParam() throw(pvpException) {
 void pvpCamera::setPpParam(uint32_t x) throw(pvpException) {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns32 y = x;
+    uint32_t y = x;
     if (!pl_set_param(camh,PARAM_PP_PARAM,(void*)(&y)))
       throw pvpException("Cannot set PP_PARAM");
   }
@@ -6396,7 +6252,7 @@ int pvpCamera::countReadNoise() throw(pvpException) {
 uint16_t pvpCamera::getReadNoise() throw(pvpException) {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_READ_NOISE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read READ_NOISE");
     return x;
@@ -6408,7 +6264,7 @@ uint16_t pvpCamera::getReadNoise() throw(pvpException) {
 uint16_t pvpCamera::defaultReadNoise() throw(pvpException) {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_READ_NOISE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of READ_NOISE");
     return x;
@@ -6420,7 +6276,7 @@ uint16_t pvpCamera::defaultReadNoise() throw(pvpException) {
 uint16_t pvpCamera::minReadNoise() throw(pvpException) {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_READ_NOISE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of READ_NOISE");
     return x;
@@ -6432,7 +6288,7 @@ uint16_t pvpCamera::minReadNoise() throw(pvpException) {
 uint16_t pvpCamera::maxReadNoise() throw(pvpException) {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_READ_NOISE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of READ_NOISE");
     return x;
@@ -6444,7 +6300,7 @@ uint16_t pvpCamera::maxReadNoise() throw(pvpException) {
 void pvpCamera::setReadNoise(uint16_t x) throw(pvpException) {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_READ_NOISE,(void*)(&y)))
       throw pvpException("Cannot set READ_NOISE");
   }
@@ -6498,7 +6354,7 @@ int pvpCamera::countPpFeatId() throw(pvpException) {
 uint16_t pvpCamera::getPpFeatId() throw(pvpException) {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PP_FEAT_ID,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PP_FEAT_ID");
     return x;
@@ -6510,7 +6366,7 @@ uint16_t pvpCamera::getPpFeatId() throw(pvpException) {
 uint16_t pvpCamera::defaultPpFeatId() throw(pvpException) {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PP_FEAT_ID,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PP_FEAT_ID");
     return x;
@@ -6522,7 +6378,7 @@ uint16_t pvpCamera::defaultPpFeatId() throw(pvpException) {
 uint16_t pvpCamera::minPpFeatId() throw(pvpException) {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PP_FEAT_ID,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PP_FEAT_ID");
     return x;
@@ -6534,7 +6390,7 @@ uint16_t pvpCamera::minPpFeatId() throw(pvpException) {
 uint16_t pvpCamera::maxPpFeatId() throw(pvpException) {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PP_FEAT_ID,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PP_FEAT_ID");
     return x;
@@ -6546,7 +6402,7 @@ uint16_t pvpCamera::maxPpFeatId() throw(pvpException) {
 void pvpCamera::setPpFeatId(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PP_FEAT_ID,(void*)(&y)))
       throw pvpException("Cannot set PP_FEAT_ID");
   }
@@ -6600,7 +6456,7 @@ int pvpCamera::countPpParamId() throw(pvpException) {
 uint16_t pvpCamera::getPpParamId() throw(pvpException) {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM_ID,ATTR_CURRENT,&x))
       throw pvpException("Cannot read PP_PARAM_ID");
     return x;
@@ -6612,7 +6468,7 @@ uint16_t pvpCamera::getPpParamId() throw(pvpException) {
 uint16_t pvpCamera::defaultPpParamId() throw(pvpException) {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM_ID,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of PP_PARAM_ID");
     return x;
@@ -6624,7 +6480,7 @@ uint16_t pvpCamera::defaultPpParamId() throw(pvpException) {
 uint16_t pvpCamera::minPpParamId() throw(pvpException) {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM_ID,ATTR_MIN,&x))
       throw pvpException("Cannot read min of PP_PARAM_ID");
     return x;
@@ -6636,7 +6492,7 @@ uint16_t pvpCamera::minPpParamId() throw(pvpException) {
 uint16_t pvpCamera::maxPpParamId() throw(pvpException) {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_PP_PARAM_ID,ATTR_MAX,&x))
       throw pvpException("Cannot read max of PP_PARAM_ID");
     return x;
@@ -6648,7 +6504,7 @@ uint16_t pvpCamera::maxPpParamId() throw(pvpException) {
 void pvpCamera::setPpParamId(uint16_t x) throw(pvpException) {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_PP_PARAM_ID,(void*)(&y)))
       throw pvpException("Cannot set PP_PARAM_ID");
   }
@@ -6702,7 +6558,7 @@ int pvpCamera::countSmartStreamModeEnabled() throw(pvpException) {
 bool pvpCamera::getSmartStreamModeEnabled() throw(pvpException) {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE_ENABLED,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SMART_STREAM_MODE_ENABLED");
     return x;
@@ -6714,7 +6570,7 @@ bool pvpCamera::getSmartStreamModeEnabled() throw(pvpException) {
 bool pvpCamera::defaultSmartStreamModeEnabled() throw(pvpException) {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE_ENABLED,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SMART_STREAM_MODE_ENABLED");
     return x;
@@ -6726,7 +6582,7 @@ bool pvpCamera::defaultSmartStreamModeEnabled() throw(pvpException) {
 bool pvpCamera::minSmartStreamModeEnabled() throw(pvpException) {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE_ENABLED,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SMART_STREAM_MODE_ENABLED");
     return x;
@@ -6738,7 +6594,7 @@ bool pvpCamera::minSmartStreamModeEnabled() throw(pvpException) {
 bool pvpCamera::maxSmartStreamModeEnabled() throw(pvpException) {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    boolean x;
+    bool x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE_ENABLED,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SMART_STREAM_MODE_ENABLED");
     return x;
@@ -6750,7 +6606,7 @@ bool pvpCamera::maxSmartStreamModeEnabled() throw(pvpException) {
 void pvpCamera::setSmartStreamModeEnabled(bool x) throw(pvpException) {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    boolean y = x;
+    bool y = x;
     if (!pl_set_param(camh,PARAM_SMART_STREAM_MODE_ENABLED,(void*)(&y)))
       throw pvpException("Cannot set SMART_STREAM_MODE_ENABLED");
   }
@@ -6804,7 +6660,7 @@ int pvpCamera::countSmartStreamMode() throw(pvpException) {
 uint16_t pvpCamera::getSmartStreamMode() throw(pvpException) {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SMART_STREAM_MODE");
     return x;
@@ -6816,7 +6672,7 @@ uint16_t pvpCamera::getSmartStreamMode() throw(pvpException) {
 uint16_t pvpCamera::defaultSmartStreamMode() throw(pvpException) {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SMART_STREAM_MODE");
     return x;
@@ -6828,7 +6684,7 @@ uint16_t pvpCamera::defaultSmartStreamMode() throw(pvpException) {
 uint16_t pvpCamera::minSmartStreamMode() throw(pvpException) {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SMART_STREAM_MODE");
     return x;
@@ -6840,7 +6696,7 @@ uint16_t pvpCamera::minSmartStreamMode() throw(pvpException) {
 uint16_t pvpCamera::maxSmartStreamMode() throw(pvpException) {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SMART_STREAM_MODE");
     return x;
@@ -6852,7 +6708,7 @@ uint16_t pvpCamera::maxSmartStreamMode() throw(pvpException) {
 void pvpCamera::setSmartStreamMode(uint16_t x) throw(pvpException) {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_SMART_STREAM_MODE,(void*)(&y)))
       throw pvpException("Cannot set SMART_STREAM_MODE");
   }
@@ -6906,7 +6762,7 @@ int pvpCamera::countSmartStreamExpParams() throw(pvpException) {
 void * pvpCamera::getSmartStreamExpParams() throw(pvpException) {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    void_ptr x;
+    void * x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_EXP_PARAMS,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SMART_STREAM_EXP_PARAMS");
     return x;
@@ -6918,7 +6774,7 @@ void * pvpCamera::getSmartStreamExpParams() throw(pvpException) {
 void * pvpCamera::defaultSmartStreamExpParams() throw(pvpException) {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    void_ptr x;
+    void * x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_EXP_PARAMS,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SMART_STREAM_EXP_PARAMS");
     return x;
@@ -6930,7 +6786,7 @@ void * pvpCamera::defaultSmartStreamExpParams() throw(pvpException) {
 void * pvpCamera::minSmartStreamExpParams() throw(pvpException) {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    void_ptr x;
+    void * x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_EXP_PARAMS,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SMART_STREAM_EXP_PARAMS");
     return x;
@@ -6942,7 +6798,7 @@ void * pvpCamera::minSmartStreamExpParams() throw(pvpException) {
 void * pvpCamera::maxSmartStreamExpParams() throw(pvpException) {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    void_ptr x;
+    void * x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_EXP_PARAMS,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SMART_STREAM_EXP_PARAMS");
     return x;
@@ -6954,7 +6810,7 @@ void * pvpCamera::maxSmartStreamExpParams() throw(pvpException) {
 void pvpCamera::setSmartStreamExpParams(void * x) throw(pvpException) {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    void_ptr y = x;
+    void * y = x;
     if (!pl_set_param(camh,PARAM_SMART_STREAM_EXP_PARAMS,(void*)(&y)))
       throw pvpException("Cannot set SMART_STREAM_EXP_PARAMS");
   }
@@ -7008,7 +6864,7 @@ int pvpCamera::countSmartStreamDlyParams() throw(pvpException) {
 void * pvpCamera::getSmartStreamDlyParams() throw(pvpException) {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    void_ptr x;
+    void * x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_DLY_PARAMS,ATTR_CURRENT,&x))
       throw pvpException("Cannot read SMART_STREAM_DLY_PARAMS");
     return x;
@@ -7020,7 +6876,7 @@ void * pvpCamera::getSmartStreamDlyParams() throw(pvpException) {
 void * pvpCamera::defaultSmartStreamDlyParams() throw(pvpException) {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    void_ptr x;
+    void * x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_DLY_PARAMS,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of SMART_STREAM_DLY_PARAMS");
     return x;
@@ -7032,7 +6888,7 @@ void * pvpCamera::defaultSmartStreamDlyParams() throw(pvpException) {
 void * pvpCamera::minSmartStreamDlyParams() throw(pvpException) {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    void_ptr x;
+    void * x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_DLY_PARAMS,ATTR_MIN,&x))
       throw pvpException("Cannot read min of SMART_STREAM_DLY_PARAMS");
     return x;
@@ -7044,7 +6900,7 @@ void * pvpCamera::minSmartStreamDlyParams() throw(pvpException) {
 void * pvpCamera::maxSmartStreamDlyParams() throw(pvpException) {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    void_ptr x;
+    void * x;
     if (!pl_get_param(camh,PARAM_SMART_STREAM_DLY_PARAMS,ATTR_MAX,&x))
       throw pvpException("Cannot read max of SMART_STREAM_DLY_PARAMS");
     return x;
@@ -7056,7 +6912,7 @@ void * pvpCamera::maxSmartStreamDlyParams() throw(pvpException) {
 void pvpCamera::setSmartStreamDlyParams(void * x) throw(pvpException) {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    void_ptr y = x;
+    void * y = x;
     if (!pl_set_param(camh,PARAM_SMART_STREAM_DLY_PARAMS,(void*)(&y)))
       throw pvpException("Cannot set SMART_STREAM_DLY_PARAMS");
   }

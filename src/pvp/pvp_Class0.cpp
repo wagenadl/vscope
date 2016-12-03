@@ -32,7 +32,7 @@ int pvpCamera::countDdInfoLength() throw(pvpException) {
 int16_t pvpCamera::getDdInfoLength() throw(pvpException) {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_DD_INFO_LENGTH,ATTR_CURRENT,&x))
       throw pvpException("Cannot read DD_INFO_LENGTH");
     return x;
@@ -44,7 +44,7 @@ int16_t pvpCamera::getDdInfoLength() throw(pvpException) {
 int16_t pvpCamera::defaultDdInfoLength() throw(pvpException) {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_DD_INFO_LENGTH,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of DD_INFO_LENGTH");
     return x;
@@ -56,7 +56,7 @@ int16_t pvpCamera::defaultDdInfoLength() throw(pvpException) {
 int16_t pvpCamera::minDdInfoLength() throw(pvpException) {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_DD_INFO_LENGTH,ATTR_MIN,&x))
       throw pvpException("Cannot read min of DD_INFO_LENGTH");
     return x;
@@ -68,7 +68,7 @@ int16_t pvpCamera::minDdInfoLength() throw(pvpException) {
 int16_t pvpCamera::maxDdInfoLength() throw(pvpException) {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    int16 x;
+    int16_t x;
     if (!pl_get_param(camh,PARAM_DD_INFO_LENGTH,ATTR_MAX,&x))
       throw pvpException("Cannot read max of DD_INFO_LENGTH");
     return x;
@@ -80,7 +80,7 @@ int16_t pvpCamera::maxDdInfoLength() throw(pvpException) {
 void pvpCamera::setDdInfoLength(int16_t x) throw(pvpException) {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    int16 y = x;
+    int16_t y = x;
     if (!pl_set_param(camh,PARAM_DD_INFO_LENGTH,(void*)(&y)))
       throw pvpException("Cannot set DD_INFO_LENGTH");
   }
@@ -134,7 +134,7 @@ int pvpCamera::countDdVersion() throw(pvpException) {
 uint16_t pvpCamera::getDdVersion() throw(pvpException) {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_VERSION,ATTR_CURRENT,&x))
       throw pvpException("Cannot read DD_VERSION");
     return x;
@@ -146,7 +146,7 @@ uint16_t pvpCamera::getDdVersion() throw(pvpException) {
 uint16_t pvpCamera::defaultDdVersion() throw(pvpException) {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_VERSION,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of DD_VERSION");
     return x;
@@ -158,7 +158,7 @@ uint16_t pvpCamera::defaultDdVersion() throw(pvpException) {
 uint16_t pvpCamera::minDdVersion() throw(pvpException) {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_VERSION,ATTR_MIN,&x))
       throw pvpException("Cannot read min of DD_VERSION");
     return x;
@@ -170,7 +170,7 @@ uint16_t pvpCamera::minDdVersion() throw(pvpException) {
 uint16_t pvpCamera::maxDdVersion() throw(pvpException) {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_VERSION,ATTR_MAX,&x))
       throw pvpException("Cannot read max of DD_VERSION");
     return x;
@@ -182,7 +182,7 @@ uint16_t pvpCamera::maxDdVersion() throw(pvpException) {
 void pvpCamera::setDdVersion(uint16_t x) throw(pvpException) {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_DD_VERSION,(void*)(&y)))
       throw pvpException("Cannot set DD_VERSION");
   }
@@ -236,7 +236,7 @@ int pvpCamera::countDdRetries() throw(pvpException) {
 uint16_t pvpCamera::getDdRetries() throw(pvpException) {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_RETRIES,ATTR_CURRENT,&x))
       throw pvpException("Cannot read DD_RETRIES");
     return x;
@@ -248,7 +248,7 @@ uint16_t pvpCamera::getDdRetries() throw(pvpException) {
 uint16_t pvpCamera::defaultDdRetries() throw(pvpException) {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_RETRIES,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of DD_RETRIES");
     return x;
@@ -260,7 +260,7 @@ uint16_t pvpCamera::defaultDdRetries() throw(pvpException) {
 uint16_t pvpCamera::minDdRetries() throw(pvpException) {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_RETRIES,ATTR_MIN,&x))
       throw pvpException("Cannot read min of DD_RETRIES");
     return x;
@@ -272,7 +272,7 @@ uint16_t pvpCamera::minDdRetries() throw(pvpException) {
 uint16_t pvpCamera::maxDdRetries() throw(pvpException) {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_RETRIES,ATTR_MAX,&x))
       throw pvpException("Cannot read max of DD_RETRIES");
     return x;
@@ -284,7 +284,7 @@ uint16_t pvpCamera::maxDdRetries() throw(pvpException) {
 void pvpCamera::setDdRetries(uint16_t x) throw(pvpException) {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_DD_RETRIES,(void*)(&y)))
       throw pvpException("Cannot set DD_RETRIES");
   }
@@ -338,7 +338,7 @@ int pvpCamera::countDdTimeout() throw(pvpException) {
 uint16_t pvpCamera::getDdTimeout() throw(pvpException) {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_TIMEOUT,ATTR_CURRENT,&x))
       throw pvpException("Cannot read DD_TIMEOUT");
     return x;
@@ -350,7 +350,7 @@ uint16_t pvpCamera::getDdTimeout() throw(pvpException) {
 uint16_t pvpCamera::defaultDdTimeout() throw(pvpException) {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_TIMEOUT,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of DD_TIMEOUT");
     return x;
@@ -362,7 +362,7 @@ uint16_t pvpCamera::defaultDdTimeout() throw(pvpException) {
 uint16_t pvpCamera::minDdTimeout() throw(pvpException) {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_TIMEOUT,ATTR_MIN,&x))
       throw pvpException("Cannot read min of DD_TIMEOUT");
     return x;
@@ -374,7 +374,7 @@ uint16_t pvpCamera::minDdTimeout() throw(pvpException) {
 uint16_t pvpCamera::maxDdTimeout() throw(pvpException) {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    uns16 x;
+    uint16_t x;
     if (!pl_get_param(camh,PARAM_DD_TIMEOUT,ATTR_MAX,&x))
       throw pvpException("Cannot read max of DD_TIMEOUT");
     return x;
@@ -386,7 +386,7 @@ uint16_t pvpCamera::maxDdTimeout() throw(pvpException) {
 void pvpCamera::setDdTimeout(uint16_t x) throw(pvpException) {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    uns16 y = x;
+    uint16_t y = x;
     if (!pl_set_param(camh,PARAM_DD_TIMEOUT,(void*)(&y)))
       throw pvpException("Cannot set DD_TIMEOUT");
   }
@@ -437,23 +437,24 @@ int pvpCamera::countDdInfo() throw(pvpException) {
   return count;
 }
 
-char * pvpCamera::getDdInfo() throw(pvpException) {
+QString pvpCamera::getDdInfo() throw(pvpException) {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_CURRENT,&x))
+    QByteArray ar(getDdInfoLength(), 0);
+    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_CURRENT,ar.data()))
       throw pvpException("Cannot read DD_INFO");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("DD_INFO not accessible for reading");
   }
 }
 
-char * pvpCamera::defaultDdInfo() throw(pvpException) {
+QString pvpCamera::defaultDdInfo() throw(pvpException) {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_DEFAULT,&x))
+    char x[getDdInfoLength()];
+    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_DEFAULT,x))
       throw pvpException("Cannot read default of DD_INFO");
     return x;
   } else {
@@ -461,35 +462,18 @@ char * pvpCamera::defaultDdInfo() throw(pvpException) {
   }
 }
 
-char * pvpCamera::minDdInfo() throw(pvpException) {
-  pvpAccess a = accessDdInfo();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_MIN,&x))
-      throw pvpException("Cannot read min of DD_INFO");
-    return x;
-  } else {
-    throw pvpException("DD_INFO not accessible for reading");
-  }
+QString pvpCamera::minDdInfo() throw(pvpException) {
+    return "";
 }
 
-char * pvpCamera::maxDdInfo() throw(pvpException) {
-  pvpAccess a = accessDdInfo();
-  if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char_ptr x;
-    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_MAX,&x))
-      throw pvpException("Cannot read max of DD_INFO");
-    return x;
-  } else {
-    throw pvpException("DD_INFO not accessible for reading");
-  }
+QString pvpCamera::maxDdInfo() throw(pvpException) {
+    return "";
 }
 
-void pvpCamera::setDdInfo(char * x) throw(pvpException) {
+void pvpCamera::setDdInfo(QString x) throw(pvpException) {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    char_ptr y = x;
-    if (!pl_set_param(camh,PARAM_DD_INFO,(void*)(&y)))
+    if (!pl_set_param(camh,PARAM_DD_INFO,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set DD_INFO");
   }
 }

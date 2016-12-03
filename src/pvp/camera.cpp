@@ -46,8 +46,8 @@ void Camera::setConfig(CCDConfig const &cfg0) {
   expose_ms = expotime * (expores_us / 1000.0);
 
   pvpcam->setClearMode(cfg.clear_every_frame
-		       ? pvpCamera::ClearMode::PreExposure
-		       : pvpCamera::ClearMode::PreSequence);
+		       ? pvpCamera::ClearMode::ClearPreExposure
+		       : pvpCamera::ClearMode::ClearPreSequence);
 
   npixels_for_seq = cfg.iscont
     ? pvpcam->configContinuous(rgn,trigmode,expotime)

@@ -46,13 +46,13 @@
 
   bool availDdInfo() throw(pvpException);
   pvpAccess accessDdInfo() throw(pvpException);
-  char * getDdInfo() throw(pvpException);
-  char * minDdInfo() throw(pvpException);
-  char * maxDdInfo() throw(pvpException);
-  char * defaultDdInfo() throw(pvpException);
-  char * stepDdInfo() throw(pvpException);
+  QString getDdInfo() throw(pvpException);
+  QString minDdInfo() throw(pvpException);
+  QString maxDdInfo() throw(pvpException);
+  QString defaultDdInfo() throw(pvpException);
+  QString stepDdInfo() throw(pvpException);
   int countDdInfo() throw(pvpException);
-  void setDdInfo(char *) throw(pvpException);
+  void setDdInfo(QString) throw(pvpException);
   void reportDdInfo() throw(pvpException);
 
   void reportClass0() throw(pvpException);

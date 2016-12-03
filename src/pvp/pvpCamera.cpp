@@ -24,7 +24,7 @@ pvpCamera::pvpCamera(QString camname) throw(pvpException):
   serno = getHeadSerNumAlpha();
 
   setSpdtabIndex(0);
-  setReadoutPort(ReadoutPort::Port2);
+  setReadoutPort(ReadoutPort::X1); // was Port2
   setGainIndex(1);
 
   int N = countExpResIndex();

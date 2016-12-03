@@ -13,57 +13,57 @@
 
   bool availChipName() throw(pvpException);
   pvpAccess accessChipName() throw(pvpException);
-  char * getChipName() throw(pvpException);
-  char * minChipName() throw(pvpException);
-  char * maxChipName() throw(pvpException);
-  char * defaultChipName() throw(pvpException);
-  char * stepChipName() throw(pvpException);
+  QString getChipName() throw(pvpException);
+  QString minChipName() throw(pvpException);
+  QString maxChipName() throw(pvpException);
+  QString defaultChipName() throw(pvpException);
+  QString stepChipName() throw(pvpException);
   int countChipName() throw(pvpException);
-  void setChipName(char *) throw(pvpException);
+  void setChipName(QString) throw(pvpException);
   void reportChipName() throw(pvpException);
 
   bool availSystemName() throw(pvpException);
   pvpAccess accessSystemName() throw(pvpException);
-  char * getSystemName() throw(pvpException);
-  char * minSystemName() throw(pvpException);
-  char * maxSystemName() throw(pvpException);
-  char * defaultSystemName() throw(pvpException);
-  char * stepSystemName() throw(pvpException);
+  QString getSystemName() throw(pvpException);
+  QString minSystemName() throw(pvpException);
+  QString maxSystemName() throw(pvpException);
+  QString defaultSystemName() throw(pvpException);
+  QString stepSystemName() throw(pvpException);
   int countSystemName() throw(pvpException);
-  void setSystemName(char *) throw(pvpException);
+  void setSystemName(QString) throw(pvpException);
   void reportSystemName() throw(pvpException);
 
   bool availVendorName() throw(pvpException);
   pvpAccess accessVendorName() throw(pvpException);
-  char * getVendorName() throw(pvpException);
-  char * minVendorName() throw(pvpException);
-  char * maxVendorName() throw(pvpException);
-  char * defaultVendorName() throw(pvpException);
-  char * stepVendorName() throw(pvpException);
+  QString getVendorName() throw(pvpException);
+  QString minVendorName() throw(pvpException);
+  QString maxVendorName() throw(pvpException);
+  QString defaultVendorName() throw(pvpException);
+  QString stepVendorName() throw(pvpException);
   int countVendorName() throw(pvpException);
-  void setVendorName(char *) throw(pvpException);
+  void setVendorName(QString) throw(pvpException);
   void reportVendorName() throw(pvpException);
 
   bool availProductName() throw(pvpException);
   pvpAccess accessProductName() throw(pvpException);
-  char * getProductName() throw(pvpException);
-  char * minProductName() throw(pvpException);
-  char * maxProductName() throw(pvpException);
-  char * defaultProductName() throw(pvpException);
-  char * stepProductName() throw(pvpException);
+  QString getProductName() throw(pvpException);
+  QString minProductName() throw(pvpException);
+  QString maxProductName() throw(pvpException);
+  QString defaultProductName() throw(pvpException);
+  QString stepProductName() throw(pvpException);
   int countProductName() throw(pvpException);
-  void setProductName(char *) throw(pvpException);
+  void setProductName(QString) throw(pvpException);
   void reportProductName() throw(pvpException);
 
   bool availCameraPartNumber() throw(pvpException);
   pvpAccess accessCameraPartNumber() throw(pvpException);
-  char * getCameraPartNumber() throw(pvpException);
-  char * minCameraPartNumber() throw(pvpException);
-  char * maxCameraPartNumber() throw(pvpException);
-  char * defaultCameraPartNumber() throw(pvpException);
-  char * stepCameraPartNumber() throw(pvpException);
+  QString getCameraPartNumber() throw(pvpException);
+  QString minCameraPartNumber() throw(pvpException);
+  QString maxCameraPartNumber() throw(pvpException);
+  QString defaultCameraPartNumber() throw(pvpException);
+  QString stepCameraPartNumber() throw(pvpException);
   int countCameraPartNumber() throw(pvpException);
-  void setCameraPartNumber(char *) throw(pvpException);
+  void setCameraPartNumber(QString) throw(pvpException);
   void reportCameraPartNumber() throw(pvpException);
 
   class CoolingMode {
@@ -452,13 +452,13 @@
 
   bool availHeadSerNumAlpha() throw(pvpException);
   pvpAccess accessHeadSerNumAlpha() throw(pvpException);
-  char * getHeadSerNumAlpha() throw(pvpException);
-  char * minHeadSerNumAlpha() throw(pvpException);
-  char * maxHeadSerNumAlpha() throw(pvpException);
-  char * defaultHeadSerNumAlpha() throw(pvpException);
-  char * stepHeadSerNumAlpha() throw(pvpException);
+  QString getHeadSerNumAlpha() throw(pvpException);
+  QString minHeadSerNumAlpha() throw(pvpException);
+  QString maxHeadSerNumAlpha() throw(pvpException);
+  QString defaultHeadSerNumAlpha() throw(pvpException);
+  QString stepHeadSerNumAlpha() throw(pvpException);
   int countHeadSerNumAlpha() throw(pvpException);
-  void setHeadSerNumAlpha(char *) throw(pvpException);
+  void setHeadSerNumAlpha(QString) throw(pvpException);
   void reportHeadSerNumAlpha() throw(pvpException);
 
   bool availPciFwVersion() throw(pvpException);
@@ -595,20 +595,20 @@
 
   bool availGainName() throw(pvpException);
   pvpAccess accessGainName() throw(pvpException);
-  char * getGainName() throw(pvpException);
-  char * minGainName() throw(pvpException);
-  char * maxGainName() throw(pvpException);
-  char * defaultGainName() throw(pvpException);
-  char * stepGainName() throw(pvpException);
+  QString getGainName() throw(pvpException);
+  QString minGainName() throw(pvpException);
+  QString maxGainName() throw(pvpException);
+  QString defaultGainName() throw(pvpException);
+  QString stepGainName() throw(pvpException);
   int countGainName() throw(pvpException);
-  void setGainName(char *) throw(pvpException);
+  void setGainName(QString) throw(pvpException);
   void reportGainName() throw(pvpException);
 
   class ReadoutPort {
   public:
     enum V {
-      0,
-      1,
+      X0,
+      X1,
     };
     ReadoutPort(ReadoutPort::V x): x(x) {}
     ReadoutPort(int x0=0) { x=(V)(x0); }
@@ -827,13 +827,13 @@
 
   bool availPpFeatName() throw(pvpException);
   pvpAccess accessPpFeatName() throw(pvpException);
-  char * getPpFeatName() throw(pvpException);
-  char * minPpFeatName() throw(pvpException);
-  char * maxPpFeatName() throw(pvpException);
-  char * defaultPpFeatName() throw(pvpException);
-  char * stepPpFeatName() throw(pvpException);
+  QString getPpFeatName() throw(pvpException);
+  QString minPpFeatName() throw(pvpException);
+  QString maxPpFeatName() throw(pvpException);
+  QString defaultPpFeatName() throw(pvpException);
+  QString stepPpFeatName() throw(pvpException);
   int countPpFeatName() throw(pvpException);
-  void setPpFeatName(char *) throw(pvpException);
+  void setPpFeatName(QString) throw(pvpException);
   void reportPpFeatName() throw(pvpException);
 
   bool availPpIndex() throw(pvpException);
@@ -871,13 +871,13 @@
 
   bool availPpParamName() throw(pvpException);
   pvpAccess accessPpParamName() throw(pvpException);
-  char * getPpParamName() throw(pvpException);
-  char * minPpParamName() throw(pvpException);
-  char * maxPpParamName() throw(pvpException);
-  char * defaultPpParamName() throw(pvpException);
-  char * stepPpParamName() throw(pvpException);
+  QString getPpParamName() throw(pvpException);
+  QString minPpParamName() throw(pvpException);
+  QString maxPpParamName() throw(pvpException);
+  QString defaultPpParamName() throw(pvpException);
+  QString stepPpParamName() throw(pvpException);
   int countPpParamName() throw(pvpException);
-  void setPpParamName(char *) throw(pvpException);
+  void setPpParamName(QString) throw(pvpException);
   void reportPpParamName() throw(pvpException);
 
   bool availPpParam() throw(pvpException);
