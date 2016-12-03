@@ -1,1 +1,0 @@
-rm -rf .moc .obj */.moc */.obj Makefile* */Makefile* *.so* */*.a */*.dll */object_script.* */release */debug vsdscope-*.dll *.exe */*.exe *vsdscope-*.a object_script.* */object_script.* vsdscope vscope.bin */*.so* utils/mtpsd/build utils/mtpsd/bin/*

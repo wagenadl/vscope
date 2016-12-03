@@ -409,7 +409,7 @@ void reportCameraSituation() {
 }
 
 void reportDAQSituation() {
-  if (!DAQDevice::find().ok()) {
+  if (!DAQDevice::find().isValid()) {
     QString msg = checkdaq();
 #ifdef vsdLINUX
     Dbg() << "DAQ not available.";
@@ -425,7 +425,7 @@ void reportDAQSituation() {
 int main(int argc, char **argv) {
   GUIExc::setArgs(argc, argv);
   QApplication app(argc, argv);
-  //  QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+  QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   Warning::enableGUIWarnings();
   try {
     QObject guard;

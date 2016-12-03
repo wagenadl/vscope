@@ -8,5 +8,5 @@ if [[ `uname` =~ "CYGWIN*" ]]; then
     ./vscope.exe
 else
     echo No Cygwin detected - Assuming Linux
-    $BASEDIR/build/vscope
+    QT_AUTO_SCREEN_SCALE_FACTOR=1 $BASEDIR/build/vscope
 fi

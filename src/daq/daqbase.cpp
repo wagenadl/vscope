@@ -47,37 +47,41 @@ DAQDevice::DAQDevice(QString id) {
 DAQDevice::~DAQDevice() {
 }
 
-bool DAQDevice::ok() {
-  return this && id_!="";
+bool DAQDevice::ok(DAQDevice const *dd) {
+  return dd && dd->isValid();
+}
+
+bool DAQDevice::isValid() const {
+  return !id_.isEmpty();
 }
 
 void DAQDevice::demand() {
-  if (!ok())
+  if (!ok(this))
     throw daqException("DAQDevice","Device not found");
 }
 
 QString DAQDevice::id() {
-  return ok() ? id_ : "none";
+  return ok(this) ? id_ : "none";
 }
 
 QString DAQDevice::serialNo() {
-  return ok() ? devSerialNo(id_) : "none";
+  return ok(this) ? devSerialNo(id_) : "none";
 }
 
 QString DAQDevice::typeName() {
-  return ok() ? devTypeName(id_) : "none";
+  return ok(this) ? devTypeName(id_) : "none";
 }
 
 unsigned int DAQDevice::typeCode() {
-  return ok() ? devTypeCode(id_) : 0;
+  return ok(this) ? devTypeCode(id_) : 0;
 }
 
 int DAQDevice::nAIChannels() {
-  return ok() ? devAIChannels(id_).size() : 0;
+  return ok(this) ? devAIChannels(id_).size() : 0;
 }
 
 int DAQDevice::nAOChannels() {
-  return ok() ? devAOChannels(id_).size() : 0;
+  return ok(this) ? devAOChannels(id_).size() : 0;
 }
 
 void DAQDevice::setDIOPort(int p) {
@@ -90,7 +94,7 @@ int DAQDevice::dioPort() {
 }
 
 int DAQDevice::nDIOLines() {
-  if (!ok())
+  if (!ok(this))
     return 0;
   if (ndiolines<0) 
     ndiolines = devDILines(id_, dioport).size();

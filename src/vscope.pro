@@ -31,6 +31,13 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QMAKE_CXXFLAGS += -std=c++11
 }
 
+
+win32 {
+  LIBS += -lnicaiu
+  SOURCES -= daq/daqdummy.cpp
+}
+
+
 win32 {
 #    RC_FILE = App/winicon.rc
 #    LIBS += -lSecur32

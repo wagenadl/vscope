@@ -12,7 +12,7 @@ QString checkdaq() {
   QString ltxt = "";
   QString confdev = "";
   DAQDevice *daqdev = &DAQDevice::find();
-  if (daqdev->ok()) {
+  if (DAQDevice::ok(daqdev)) {
     QString dev = daqdev->id();
     confdev = dev;
 

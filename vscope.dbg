@@ -1,11 +1,4 @@
 #!/bin/zsh
 
 BASEDIR=`dirname $0`
-
-MYPATH=""
-for a in $BASEDIR/*/; do
-  MYPATH=$a:$MYPATH
-done
-
-export LD_LIBRARY_PATH=$MYPATH$LD_LIBRARY_PATH
-gdb $BASEDIR/vscope.bin
+QT_AUTO_SCREEN_SCALE_FACTOR=1 gdb $BASEDIR/build/vscope_debug

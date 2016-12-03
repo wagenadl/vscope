@@ -156,11 +156,10 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
 bool EPhysAcq::createDAQ(ParamTree const *) {
   // perhaps we should use the ptree to figure out what device to use?
   QString devid = "";
-  if (!DAQDevice::find(devid).ok())
+  if (!DAQDevice::find(devid).isValid())
     return false;
 
-  if (!ain)
- {
+  if (!ain) {
     ain = new AnalogIn();
     connect(ain,SIGNAL(acquisitionEnded(AnalogIn*,bool)),
   	    this,SLOT(ainEnded()));

@@ -31,9 +31,10 @@ extern void daqTry(int errcode, char const *issuer=0,
 
 class DAQDevice {
 public:
+  static bool ok(DAQDevice const *);
+public:
   DAQDevice(QString id);
   ~DAQDevice();
-  bool ok();
   void demand();
   QString id();
   QString serialNo();
@@ -44,6 +45,7 @@ public:
   int nDIOLines();
   void setDIOPort(int portno);
   int dioPort();
+  bool isValid() const;
 private:
   QString id_;
   int dioport;

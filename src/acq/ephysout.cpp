@@ -107,7 +107,7 @@ bool EPhysOut::prepareSnap(ParamTree const *ptree,
 
 bool EPhysOut::createDAQ(ParamTree const *ptree) {
   QString devid = "";
-  if (!DAQDevice::find(devid).ok())
+  if (!DAQDevice::find(devid).isValid())
     return false;
   
   if (!aout) {

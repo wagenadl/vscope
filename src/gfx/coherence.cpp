@@ -178,7 +178,7 @@ int Coherence::insideROI(QPoint xy) {
   Transform tinv = canvasToScreen().inverse();
   QPointF xy_ = tinv(Transform::pixelCenter(xy));
   int bestid=0;
-  double dd;
+  double dd = Numbers::inf();
   foreach (int id, roiset->ids()) {
     double d = euclideanDist2(xy_, roiset->get(id).center());
     if (bestid==0 || d<dd) {
