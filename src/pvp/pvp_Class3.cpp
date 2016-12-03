@@ -98,7 +98,7 @@ void pvpCamera::reportExpTime() throw(pvpException) {
         ss << "  max value: " << maxExpTime() <<"\n";
         ss << "  default value: " << defaultExpTime() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countExpTime());
   } else {
@@ -209,7 +209,7 @@ void pvpCamera::reportExpRes() throw(pvpException) {
         ss << "  max value: " << maxExpRes().decode() <<"\n";
         ss << "  default value: " << defaultExpRes().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countExpRes());
   } else {
@@ -311,7 +311,7 @@ void pvpCamera::reportExpMinTime() throw(pvpException) {
         ss << "  max value: " << maxExpMinTime() <<"\n";
         ss << "  default value: " << defaultExpMinTime() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countExpMinTime());
   } else {
@@ -413,7 +413,7 @@ void pvpCamera::reportExpResIndex() throw(pvpException) {
         ss << "  max value: " << maxExpResIndex() <<"\n";
         ss << "  default value: " << defaultExpResIndex() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countExpResIndex());
   } else {
@@ -525,7 +525,7 @@ void pvpCamera::reportBofEofEnable() throw(pvpException) {
         ss << "  max value: " << maxBofEofEnable().decode() <<"\n";
         ss << "  default value: " << defaultBofEofEnable().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countBofEofEnable());
   } else {
@@ -627,7 +627,7 @@ void pvpCamera::reportBofEofCount() throw(pvpException) {
         ss << "  max value: " << maxBofEofCount() <<"\n";
         ss << "  default value: " << defaultBofEofCount() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countBofEofCount());
   } else {
@@ -729,7 +729,7 @@ void pvpCamera::reportBofEofClr() throw(pvpException) {
         ss << "  max value: " << maxBofEofClr() <<"\n";
         ss << "  default value: " << defaultBofEofClr() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countBofEofClr());
   } else {
@@ -831,7 +831,7 @@ void pvpCamera::reportCircBuffer() throw(pvpException) {
         ss << "  max value: " << maxCircBuffer() <<"\n";
         ss << "  default value: " << defaultCircBuffer() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countCircBuffer());
   } else {
@@ -933,7 +933,7 @@ void pvpCamera::reportHwAutostop() throw(pvpException) {
         ss << "  max value: " << maxHwAutostop() <<"\n";
         ss << "  default value: " << defaultHwAutostop() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countHwAutostop());
   } else {

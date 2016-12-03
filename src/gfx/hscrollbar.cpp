@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <base/dbg.h>
+#include <qdrawutil.h>
 
 HScrollBar::HScrollBar(QWidget *parent): QFrame(parent) {
   x0_range=0;

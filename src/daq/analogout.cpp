@@ -58,7 +58,7 @@ void AnalogOut::commit() {
   daqTask::preCommit();
 
   foreach (Channel c, channelmap) {
-    QByteArray chname = channelName(c).toAscii();
+    QByteArray chname = channelName(c).toUtf8();
     double range = AO_RANGE_V;
     daqTry(DAQmxCreateAOVoltageChan(th,chname.constData(),0,
 				    -range,range,
@@ -69,7 +69,7 @@ void AnalogOut::commit() {
   int bufsi = isCont ? dmabufsize : data->getNumScans();
 
   if (master) {
-    QByteArray clockname = ("/" + deviceID() + "/ai/SampleClock").toAscii();
+    QByteArray clockname = ("/" + deviceID() + "/ai/SampleClock").toUtf8();
     if (isCont)
       throw Exception("AnalogOut",
 		      "Continuous output not possible as slave");

@@ -332,7 +332,7 @@ void pvp$CLASSNAMES{$pclass}::set$nicename($nicetype x) throw(pvpException) {
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
 EOF
   if ($ptype eq "CHAR") {
-    $ref = "x.toAscii().data()";
+    $ref = "x.unicode().data()";
   } else {
     $ref = "&y";
     if ($ptype eq "ENUM") {
@@ -366,7 +366,7 @@ void pvp$CLASSNAMES{$pclass}::report$nicename() throw(pvpException) {
         ss << "  max value: " << max$nicename()$ref <<"\\n";
         ss << "  default value: " << default$nicename()$ref <<"\\n";
       }
-      printf("\%s",s.toAscii().data());
+      printf("\%s",s.toUtf8().data());
     }
     printf("  count: %i\\n",count$nicename());
   } else {

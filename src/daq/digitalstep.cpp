@@ -31,7 +31,7 @@ void DigitalStep::step(uint32_t value) {
     char chname[64];
     if (mask & (one<<c)) {
       sprintf(chname,"%s/port%i/line%i",
- 	      device.id().toAscii().constData(),
+ 	      device.id().toUtf8().constData(),
 	      device.dioPort(),
 	      c);
       if (empty) {

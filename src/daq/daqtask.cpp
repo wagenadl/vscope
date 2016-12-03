@@ -47,7 +47,7 @@ void daqTask::preCommit() {
 void daqTask::postCommit() {
   if (startTrig) {
     char chname[64];
-    sprintf(chname,"/%s/PFI0",deviceID().toAscii().constData());
+    sprintf(chname,"/%s/PFI0",deviceID().toUtf8().constData());
     daqTry(DAQmxCfgDigEdgeStartTrig(th,chname,DAQmx_Val_Rising),
 	   "daqTask","Set digital trigger");
   }

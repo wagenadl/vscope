@@ -77,7 +77,7 @@ void pvpSystem::reportStatus() throw(pvpException) {
   int N = countCameras();
   for (int n=0; n<N; n++) {
     QString s = getCamName(n);
-    fprintf(stdout, "Camera name #%i: %s\n",n,s.toAscii().data());
+    fprintf(stdout, "Camera name #%i: %s\n",n,s.toUtf8().data());
   }
   fprintf(stdout, "End of PVP System status report\n\n");
 }

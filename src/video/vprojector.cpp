@@ -67,19 +67,19 @@ void VProjector::prepare(class ParamTree const *p) {
     return;
 
   proc->write(QString("set type %1\n")
-              .arg(p->find("stimVideo/type").toString()).toAscii());
+              .arg(p->find("stimVideo/type").toString()).toUtf8());
   proc->write(QString("set target %1\n")
-              .arg(p->find("stimVideo/target").toString()).toAscii());
+              .arg(p->find("stimVideo/target").toString()).toUtf8());
   proc->write(QString("set angledeg %1\n")
               .arg(angleFromString(p->find("stimVideo/angle").toString()))
-	      .toAscii());
+	      .toUtf8());
   proc->write(QString("set wavelengthmm %1\n")
-              .arg(p->find("stimVideo/wavelength").toDouble()).toAscii());
+              .arg(p->find("stimVideo/wavelength").toDouble()).toUtf8());
   proc->write(QString("set frequencyhz %1\n")
-              .arg(p->find("stimVideo/frequency").toDouble()).toAscii());
+              .arg(p->find("stimVideo/frequency").toDouble()).toUtf8());
   double del = p->find("stimVideo/delay").toDouble();
   proc->write(QString("set delayms %1\n")
-              .arg(del).toAscii());
+              .arg(del).toUtf8());
   double dur = p->find("stimVideo/dur").toDouble();
   double acqt = p->find("acqEphys/acqTime").toDouble();
   if (del+dur>acqt)
@@ -87,15 +87,15 @@ void VProjector::prepare(class ParamTree const *p) {
   if (dur<0)
     dur = 0;
   proc->write(QString("set durms %1\n")
-              .arg(dur).toAscii());
+              .arg(dur).toUtf8());
   proc->write(QString("set xscalemm %1\n")
-              .arg(p->find("stimVideo/xscale").toDouble()).toAscii());
+              .arg(p->find("stimVideo/xscale").toDouble()).toUtf8());
   proc->write(QString("set yscalemm %1\n")
-              .arg(p->find("stimVideo/yscale").toDouble()).toAscii());
+              .arg(p->find("stimVideo/yscale").toDouble()).toUtf8());
   proc->write(QString("set xhomemm %1\n")
-              .arg(p->find("stimVideo/xhome").toDouble()).toAscii());
+              .arg(p->find("stimVideo/xhome").toDouble()).toUtf8());
   proc->write(QString("set yhomemm %1\n")
-              .arg(p->find("stimVideo/yhome").toDouble()).toAscii());
+              .arg(p->find("stimVideo/yhome").toDouble()).toUtf8());
   proc->waitForBytesWritten(); // hmmm
   Dbg() << "  vprojector prepared";
 }

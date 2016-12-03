@@ -55,10 +55,9 @@ QMAKE_EXTRA_TARGETS += tgt_ver alwaysrun
 
 win32 {
   DEFINES += WIN32 Q_OS_WIN32 vsdWIN32
-  include win.pri
+#  include win.pri
 }
 
 unix {
-  QMAKESPEC=g++
   DEFINES += vsdLINUX
 }

@@ -8,10 +8,5 @@ if [[ `uname` =~ "CYGWIN*" ]]; then
     ./vscope.exe
 else
     echo No Cygwin detected - Assuming Linux
-    MYPATH=""
-    for a in $BASEDIR/*/; do
-	MYPATH=$a:$MYPATH
-    done
-    
-    LD_LIBRARY_PATH=$MYPATH$LD_LIBRARY_PATH $BASEDIR/vscope.bin
+    $BASEDIR/build/vscope
 fi

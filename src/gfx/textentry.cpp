@@ -139,7 +139,7 @@ void TextEntry::enable_ok(bool b) {
 }
 
 void TextEntry::syntheticKeyPress(QChar asc) {
-  switch (asc.toAscii()) {
+  switch (asc.unicode()) {
   case 8: // backspace
     contents->backspace();
     break;

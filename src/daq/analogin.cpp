@@ -104,7 +104,7 @@ void AnalogIn::commit() {
     Channel ain = ai_channel_list[n];
     enum Ground ground = ai_ground_map[ain];
     double range = ai_range_map[ain];
-    QByteArray chname = channelName(ain).toAscii();
+    QByteArray chname = channelName(ain).toUtf8();
     daqTry(DAQmxCreateAIVoltageChan(th,chname.constData(),"",
 				    ground==NRSE ? DAQmx_Val_NRSE :
 				    ground==RSE ? DAQmx_Val_RSE :

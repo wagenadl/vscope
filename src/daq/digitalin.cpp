@@ -38,7 +38,7 @@ void DigitalIn::commit() throw(daqException) {
   for (int c=0; c<32; c++) {
     if (cmask & (one<<c)) {
       sprintf(chname,"%s/port%i/line%i",
-	      deviceID().toAscii().constData(),
+	      deviceID().toUtf8().constData(),
 	      device().dioPort(),
 	      c);
       if (empty) {
@@ -55,7 +55,7 @@ void DigitalIn::commit() throw(daqException) {
 			   DAQmx_Val_ChanForAllLines),
 	 "DigitalIn","Create DI channel");
 
-  sprintf(chname,"/%s/ai/SampleClock",deviceID().toAscii().constData());
+  sprintf(chname,"/%s/ai/SampleClock",deviceID().toUtf8().constData());
   if (nscans) {
     dmabufsize = nscans;
     daqTry(DAQmxCfgSampClkTiming(th,chname,

@@ -98,7 +98,7 @@ void pvpCamera::reportDdInfoLength() throw(pvpException) {
         ss << "  max value: " << maxDdInfoLength() <<"\n";
         ss << "  default value: " << defaultDdInfoLength() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countDdInfoLength());
   } else {
@@ -200,7 +200,7 @@ void pvpCamera::reportDdVersion() throw(pvpException) {
         ss << "  max value: " << maxDdVersion() <<"\n";
         ss << "  default value: " << defaultDdVersion() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countDdVersion());
   } else {
@@ -302,7 +302,7 @@ void pvpCamera::reportDdRetries() throw(pvpException) {
         ss << "  max value: " << maxDdRetries() <<"\n";
         ss << "  default value: " << defaultDdRetries() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countDdRetries());
   } else {
@@ -404,7 +404,7 @@ void pvpCamera::reportDdTimeout() throw(pvpException) {
         ss << "  max value: " << maxDdTimeout() <<"\n";
         ss << "  default value: " << defaultDdTimeout() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countDdTimeout());
   } else {
@@ -473,7 +473,7 @@ QString pvpCamera::maxDdInfo() throw(pvpException) {
 void pvpCamera::setDdInfo(QString x) throw(pvpException) {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    if (!pl_set_param(camh,PARAM_DD_INFO,(void*)(x.toAscii().data())))
+    if (!pl_set_param(camh,PARAM_DD_INFO,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set DD_INFO");
   }
 }
@@ -490,7 +490,7 @@ void pvpCamera::reportDdInfo() throw(pvpException) {
         ss << "  max value: " << maxDdInfo() <<"\n";
         ss << "  default value: " << defaultDdInfo() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countDdInfo());
   } else {

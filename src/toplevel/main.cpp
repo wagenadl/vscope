@@ -5,10 +5,9 @@
 #include "gt_slots.h"
 #include <base/progressdialog.h>
 #include <QWidget>
+#include <QGuiApplication>
 #include <QApplication>
 #include <QDesktopWidget>
-
-#include <QPlastiqueStyle>
 
 #include <QDateTime>
 
@@ -121,7 +120,7 @@ QWidget *makeBanner2(QWidget *parent) {
 }
 
 void setupAppStyle(QApplication &app) {
-  app.setStyle(new QPlastiqueStyle);
+  //  app.setStyle(new QPlastiqueStyle);
   
   QFont f = app.font();
   f.setFamily(BUTTON_FontFamily);
@@ -426,6 +425,7 @@ void reportDAQSituation() {
 int main(int argc, char **argv) {
   GUIExc::setArgs(argc, argv);
   QApplication app(argc, argv);
+  //  QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
   Warning::enableGUIWarnings();
   try {
     QObject guard;

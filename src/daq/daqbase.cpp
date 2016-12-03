@@ -112,21 +112,21 @@ QStringList DAQDevice::deviceList() {
 
 QString DAQDevice::devTypeName(QString id) {
   char typ[256];
-  daqTry(DAQmxGetDevProductType(id.toAscii().constData(), typ, 255),
+  daqTry(DAQmxGetDevProductType(id.toUtf8().constData(), typ, 255),
 	 "DAQDevice", "Cannot get product type name");
   return typ;
 }
 
 unsigned int DAQDevice::devTypeCode(QString id) {
   uInt32 prodnum;
-  daqTry(DAQmxGetDevProductNum(id.toAscii().constData(), &prodnum),
+  daqTry(DAQmxGetDevProductNum(id.toUtf8().constData(), &prodnum),
 	 "DAQDevice", "Cannot get product number");
   return prodnum;
 }
 
 QString DAQDevice::devSerialNo(QString id) {
   uInt32 serno;
-  daqTry(DAQmxGetDevSerialNum(id.toAscii().constData(), &serno),
+  daqTry(DAQmxGetDevSerialNum(id.toUtf8().constData(), &serno),
 	 "productSerNo", "Cannot read serial number");
   return QString::number(serno,16);
 }
@@ -134,7 +134,7 @@ QString DAQDevice::devSerialNo(QString id) {
 QStringList DAQDevice::devAIChannels(QString id) {
   QStringList ch;
   char buffer[2048];
-  daqTry(DAQmxGetDevAIPhysicalChans(id.toAscii().constData(),
+  daqTry(DAQmxGetDevAIPhysicalChans(id.toUtf8().constData(),
 				    buffer, 2048),
 	 "DAQDevice", "Cannot read channel names");
   char *cptr = buffer;
@@ -150,7 +150,7 @@ QStringList DAQDevice::devAIChannels(QString id) {
 QStringList DAQDevice::devAOChannels(QString id) {
   QStringList ch;
   char buffer[2048];
-  daqTry(DAQmxGetDevAOPhysicalChans(id.toAscii().constData(),
+  daqTry(DAQmxGetDevAOPhysicalChans(id.toUtf8().constData(),
 				    buffer, 2048),
 	 "DAQDevice", "Cannot read channel names");
   char *cptr = buffer;
@@ -167,7 +167,7 @@ QStringList DAQDevice::devDILines(QString devid, int portno) {
   QStringList ch;
   char buffer[2048];
   QString portname = QString("port%1/").arg(portno);
-  daqTry(DAQmxGetDevDILines(devid.toAscii().constData(),
+  daqTry(DAQmxGetDevDILines(devid.toUtf8().constData(),
 			    buffer, 2048),
 	 "DAQDevice", "Cannot read line names");
 

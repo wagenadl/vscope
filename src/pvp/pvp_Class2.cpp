@@ -98,7 +98,7 @@ void pvpCamera::reportMinBlock() throw(pvpException) {
         ss << "  max value: " << maxMinBlock() <<"\n";
         ss << "  default value: " << defaultMinBlock() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countMinBlock());
   } else {
@@ -200,7 +200,7 @@ void pvpCamera::reportNumMinBlock() throw(pvpException) {
         ss << "  max value: " << maxNumMinBlock() <<"\n";
         ss << "  default value: " << defaultNumMinBlock() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countNumMinBlock());
   } else {
@@ -302,7 +302,7 @@ void pvpCamera::reportSkipAtOnceBlk() throw(pvpException) {
         ss << "  max value: " << maxSkipAtOnceBlk() <<"\n";
         ss << "  default value: " << defaultSkipAtOnceBlk() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countSkipAtOnceBlk());
   } else {
@@ -404,7 +404,7 @@ void pvpCamera::reportNumOfStripsPerClr() throw(pvpException) {
         ss << "  max value: " << maxNumOfStripsPerClr() <<"\n";
         ss << "  default value: " << defaultNumOfStripsPerClr() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countNumOfStripsPerClr());
   } else {
@@ -506,7 +506,7 @@ void pvpCamera::reportContClears() throw(pvpException) {
         ss << "  max value: " << maxContClears() <<"\n";
         ss << "  default value: " << defaultContClears() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countContClears());
   } else {
@@ -617,7 +617,7 @@ void pvpCamera::reportAntiBlooming() throw(pvpException) {
         ss << "  max value: " << maxAntiBlooming().decode() <<"\n";
         ss << "  default value: " << defaultAntiBlooming().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countAntiBlooming());
   } else {
@@ -733,7 +733,7 @@ void pvpCamera::reportLogicOutput() throw(pvpException) {
         ss << "  max value: " << maxLogicOutput().decode() <<"\n";
         ss << "  default value: " << defaultLogicOutput().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countLogicOutput());
   } else {
@@ -843,7 +843,7 @@ void pvpCamera::reportEdgeTrigger() throw(pvpException) {
         ss << "  max value: " << maxEdgeTrigger().decode() <<"\n";
         ss << "  default value: " << defaultEdgeTrigger().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countEdgeTrigger());
   } else {
@@ -945,7 +945,7 @@ void pvpCamera::reportIntensifierGain() throw(pvpException) {
         ss << "  max value: " << maxIntensifierGain() <<"\n";
         ss << "  default value: " << defaultIntensifierGain() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countIntensifierGain());
   } else {
@@ -1056,7 +1056,7 @@ void pvpCamera::reportShtrGateMode() throw(pvpException) {
         ss << "  max value: " << maxShtrGateMode().decode() <<"\n";
         ss << "  default value: " << defaultShtrGateMode().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countShtrGateMode());
   } else {
@@ -1158,7 +1158,7 @@ void pvpCamera::reportAdcOffset() throw(pvpException) {
         ss << "  max value: " << maxAdcOffset() <<"\n";
         ss << "  default value: " << defaultAdcOffset() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countAdcOffset());
   } else {
@@ -1227,7 +1227,7 @@ QString pvpCamera::maxChipName() throw(pvpException) {
 void pvpCamera::setChipName(QString x) throw(pvpException) {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    if (!pl_set_param(camh,PARAM_CHIP_NAME,(void*)(x.toAscii().data())))
+    if (!pl_set_param(camh,PARAM_CHIP_NAME,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set CHIP_NAME");
   }
 }
@@ -1244,7 +1244,7 @@ void pvpCamera::reportChipName() throw(pvpException) {
         ss << "  max value: " << maxChipName() <<"\n";
         ss << "  default value: " << defaultChipName() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countChipName());
   } else {
@@ -1354,7 +1354,7 @@ void pvpCamera::reportCoolingMode() throw(pvpException) {
         ss << "  max value: " << maxCoolingMode().decode() <<"\n";
         ss << "  default value: " << defaultCoolingMode().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countCoolingMode());
   } else {
@@ -1456,7 +1456,7 @@ void pvpCamera::reportPreampDelay() throw(pvpException) {
         ss << "  max value: " << maxPreampDelay() <<"\n";
         ss << "  default value: " << defaultPreampDelay() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPreampDelay());
   } else {
@@ -1558,7 +1558,7 @@ void pvpCamera::reportPreflash() throw(pvpException) {
         ss << "  max value: " << maxPreflash() <<"\n";
         ss << "  default value: " << defaultPreflash() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPreflash());
   } else {
@@ -1668,7 +1668,7 @@ void pvpCamera::reportColorMode() throw(pvpException) {
         ss << "  max value: " << maxColorMode().decode() <<"\n";
         ss << "  default value: " << defaultColorMode().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countColorMode());
   } else {
@@ -1780,7 +1780,7 @@ void pvpCamera::reportMppCapable() throw(pvpException) {
         ss << "  max value: " << maxMppCapable().decode() <<"\n";
         ss << "  default value: " << defaultMppCapable().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countMppCapable());
   } else {
@@ -1882,7 +1882,7 @@ void pvpCamera::reportPreampOffControl() throw(pvpException) {
         ss << "  max value: " << maxPreampOffControl() <<"\n";
         ss << "  default value: " << defaultPreampOffControl() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPreampOffControl());
   } else {
@@ -1984,7 +1984,7 @@ void pvpCamera::reportSerialNum() throw(pvpException) {
         ss << "  max value: " << maxSerialNum() <<"\n";
         ss << "  default value: " << defaultSerialNum() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countSerialNum());
   } else {
@@ -2086,7 +2086,7 @@ void pvpCamera::reportPremask() throw(pvpException) {
         ss << "  max value: " << maxPremask() <<"\n";
         ss << "  default value: " << defaultPremask() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPremask());
   } else {
@@ -2188,7 +2188,7 @@ void pvpCamera::reportPrescan() throw(pvpException) {
         ss << "  max value: " << maxPrescan() <<"\n";
         ss << "  default value: " << defaultPrescan() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPrescan());
   } else {
@@ -2290,7 +2290,7 @@ void pvpCamera::reportPostmask() throw(pvpException) {
         ss << "  max value: " << maxPostmask() <<"\n";
         ss << "  default value: " << defaultPostmask() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPostmask());
   } else {
@@ -2392,7 +2392,7 @@ void pvpCamera::reportPostscan() throw(pvpException) {
         ss << "  max value: " << maxPostscan() <<"\n";
         ss << "  default value: " << defaultPostscan() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPostscan());
   } else {
@@ -2494,7 +2494,7 @@ void pvpCamera::reportPixParDist() throw(pvpException) {
         ss << "  max value: " << maxPixParDist() <<"\n";
         ss << "  default value: " << defaultPixParDist() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPixParDist());
   } else {
@@ -2596,7 +2596,7 @@ void pvpCamera::reportPixParSize() throw(pvpException) {
         ss << "  max value: " << maxPixParSize() <<"\n";
         ss << "  default value: " << defaultPixParSize() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPixParSize());
   } else {
@@ -2698,7 +2698,7 @@ void pvpCamera::reportPixSerDist() throw(pvpException) {
         ss << "  max value: " << maxPixSerDist() <<"\n";
         ss << "  default value: " << defaultPixSerDist() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPixSerDist());
   } else {
@@ -2800,7 +2800,7 @@ void pvpCamera::reportPixSerSize() throw(pvpException) {
         ss << "  max value: " << maxPixSerSize() <<"\n";
         ss << "  default value: " << defaultPixSerSize() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPixSerSize());
   } else {
@@ -2902,7 +2902,7 @@ void pvpCamera::reportSummingWell() throw(pvpException) {
         ss << "  max value: " << maxSummingWell() <<"\n";
         ss << "  default value: " << defaultSummingWell() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countSummingWell());
   } else {
@@ -3004,7 +3004,7 @@ void pvpCamera::reportFwellCapacity() throw(pvpException) {
         ss << "  max value: " << maxFwellCapacity() <<"\n";
         ss << "  default value: " << defaultFwellCapacity() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countFwellCapacity());
   } else {
@@ -3106,7 +3106,7 @@ void pvpCamera::reportParSize() throw(pvpException) {
         ss << "  max value: " << maxParSize() <<"\n";
         ss << "  default value: " << defaultParSize() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countParSize());
   } else {
@@ -3208,7 +3208,7 @@ void pvpCamera::reportSerSize() throw(pvpException) {
         ss << "  max value: " << maxSerSize() <<"\n";
         ss << "  default value: " << defaultSerSize() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countSerSize());
   } else {
@@ -3310,7 +3310,7 @@ void pvpCamera::reportAccumCapable() throw(pvpException) {
         ss << "  max value: " << maxAccumCapable() <<"\n";
         ss << "  default value: " << defaultAccumCapable() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countAccumCapable());
   } else {
@@ -3412,7 +3412,7 @@ void pvpCamera::reportFlashDwnldCapable() throw(pvpException) {
         ss << "  max value: " << maxFlashDwnldCapable() <<"\n";
         ss << "  default value: " << defaultFlashDwnldCapable() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countFlashDwnldCapable());
   } else {
@@ -3514,7 +3514,7 @@ void pvpCamera::reportControllerAlive() throw(pvpException) {
         ss << "  max value: " << maxControllerAlive() <<"\n";
         ss << "  default value: " << defaultControllerAlive() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countControllerAlive());
   } else {
@@ -3616,7 +3616,7 @@ void pvpCamera::reportReadoutTime() throw(pvpException) {
         ss << "  max value: " << maxReadoutTime() <<"\n";
         ss << "  default value: " << defaultReadoutTime() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countReadoutTime());
   } else {
@@ -3718,7 +3718,7 @@ void pvpCamera::reportClearCycles() throw(pvpException) {
         ss << "  max value: " << maxClearCycles() <<"\n";
         ss << "  default value: " << defaultClearCycles() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countClearCycles());
   } else {
@@ -3832,7 +3832,7 @@ void pvpCamera::reportClearMode() throw(pvpException) {
         ss << "  max value: " << maxClearMode().decode() <<"\n";
         ss << "  default value: " << defaultClearMode().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countClearMode());
   } else {
@@ -3934,7 +3934,7 @@ void pvpCamera::reportFrameCapable() throw(pvpException) {
         ss << "  max value: " << maxFrameCapable() <<"\n";
         ss << "  default value: " << defaultFrameCapable() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countFrameCapable());
   } else {
@@ -4051,7 +4051,7 @@ void pvpCamera::reportPmode() throw(pvpException) {
         ss << "  max value: " << maxPmode().decode() <<"\n";
         ss << "  default value: " << defaultPmode().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPmode());
   } else {
@@ -4153,7 +4153,7 @@ void pvpCamera::reportCcsStatus() throw(pvpException) {
         ss << "  max value: " << maxCcsStatus() <<"\n";
         ss << "  default value: " << defaultCcsStatus() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countCcsStatus());
   } else {
@@ -4255,7 +4255,7 @@ void pvpCamera::reportTemp() throw(pvpException) {
         ss << "  max value: " << maxTemp() <<"\n";
         ss << "  default value: " << defaultTemp() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countTemp());
   } else {
@@ -4357,7 +4357,7 @@ void pvpCamera::reportTempSetpoint() throw(pvpException) {
         ss << "  max value: " << maxTempSetpoint() <<"\n";
         ss << "  default value: " << defaultTempSetpoint() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countTempSetpoint());
   } else {
@@ -4459,7 +4459,7 @@ void pvpCamera::reportCamFwVersion() throw(pvpException) {
         ss << "  max value: " << maxCamFwVersion() <<"\n";
         ss << "  default value: " << defaultCamFwVersion() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countCamFwVersion());
   } else {
@@ -4528,7 +4528,7 @@ QString pvpCamera::maxHeadSerNumAlpha() throw(pvpException) {
 void pvpCamera::setHeadSerNumAlpha(QString x) throw(pvpException) {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    if (!pl_set_param(camh,PARAM_HEAD_SER_NUM_ALPHA,(void*)(x.toAscii().data())))
+    if (!pl_set_param(camh,PARAM_HEAD_SER_NUM_ALPHA,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set HEAD_SER_NUM_ALPHA");
   }
 }
@@ -4545,7 +4545,7 @@ void pvpCamera::reportHeadSerNumAlpha() throw(pvpException) {
         ss << "  max value: " << maxHeadSerNumAlpha() <<"\n";
         ss << "  default value: " << defaultHeadSerNumAlpha() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countHeadSerNumAlpha());
   } else {
@@ -4647,7 +4647,7 @@ void pvpCamera::reportPciFwVersion() throw(pvpException) {
         ss << "  max value: " << maxPciFwVersion() <<"\n";
         ss << "  default value: " << defaultPciFwVersion() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPciFwVersion());
   } else {
@@ -4716,7 +4716,7 @@ QString pvpCamera::maxCamFwFullVersion() throw(pvpException) {
 void pvpCamera::setCamFwFullVersion(QString x) throw(pvpException) {
   pvpAccess a = accessCamFwFullVersion();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    if (!pl_set_param(camh,PARAM_CAM_FW_FULL_VERSION,(void*)(x.toAscii().data())))
+    if (!pl_set_param(camh,PARAM_CAM_FW_FULL_VERSION,(void*)(x.toUtf8().data())))
       throw pvpException("Cannot set CAM_FW_FULL_VERSION");
   }
 }
@@ -4733,7 +4733,7 @@ void pvpCamera::reportCamFwFullVersion() throw(pvpException) {
         ss << "  max value: " << maxCamFwFullVersion() <<"\n";
         ss << "  default value: " << defaultCamFwFullVersion() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countCamFwFullVersion());
   } else {
@@ -4848,7 +4848,7 @@ void pvpCamera::reportExposureMode() throw(pvpException) {
         ss << "  max value: " << maxExposureMode().decode() <<"\n";
         ss << "  default value: " << defaultExposureMode().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countExposureMode());
   } else {
@@ -4950,7 +4950,7 @@ void pvpCamera::reportBitDepth() throw(pvpException) {
         ss << "  max value: " << maxBitDepth() <<"\n";
         ss << "  default value: " << defaultBitDepth() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countBitDepth());
   } else {
@@ -5052,7 +5052,7 @@ void pvpCamera::reportGainIndex() throw(pvpException) {
         ss << "  max value: " << maxGainIndex() <<"\n";
         ss << "  default value: " << defaultGainIndex() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countGainIndex());
   } else {
@@ -5154,7 +5154,7 @@ void pvpCamera::reportSpdtabIndex() throw(pvpException) {
         ss << "  max value: " << maxSpdtabIndex() <<"\n";
         ss << "  default value: " << defaultSpdtabIndex() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countSpdtabIndex());
   } else {
@@ -5266,7 +5266,7 @@ void pvpCamera::reportReadoutPort() throw(pvpException) {
         ss << "  max value: " << maxReadoutPort().decode() <<"\n";
         ss << "  default value: " << defaultReadoutPort().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countReadoutPort());
   } else {
@@ -5368,7 +5368,7 @@ void pvpCamera::reportPixTime() throw(pvpException) {
         ss << "  max value: " << maxPixTime() <<"\n";
         ss << "  default value: " << defaultPixTime() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countPixTime());
   } else {
@@ -5470,7 +5470,7 @@ void pvpCamera::reportShtrCloseDelay() throw(pvpException) {
         ss << "  max value: " << maxShtrCloseDelay() <<"\n";
         ss << "  default value: " << defaultShtrCloseDelay() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countShtrCloseDelay());
   } else {
@@ -5572,7 +5572,7 @@ void pvpCamera::reportShtrOpenDelay() throw(pvpException) {
         ss << "  max value: " << maxShtrOpenDelay() <<"\n";
         ss << "  default value: " << defaultShtrOpenDelay() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countShtrOpenDelay());
   } else {
@@ -5685,7 +5685,7 @@ void pvpCamera::reportShtrOpenMode() throw(pvpException) {
         ss << "  max value: " << maxShtrOpenMode().decode() <<"\n";
         ss << "  default value: " << defaultShtrOpenMode().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countShtrOpenMode());
   } else {
@@ -5799,7 +5799,7 @@ void pvpCamera::reportShtrStatus() throw(pvpException) {
         ss << "  max value: " << maxShtrStatus().decode() <<"\n";
         ss << "  default value: " << defaultShtrStatus().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countShtrStatus());
   } else {
@@ -5916,7 +5916,7 @@ void pvpCamera::reportShtrCloseDelayUnit() throw(pvpException) {
         ss << "  max value: " << maxShtrCloseDelayUnit().decode() <<"\n";
         ss << "  default value: " << defaultShtrCloseDelayUnit().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countShtrCloseDelayUnit());
   } else {
@@ -6018,7 +6018,7 @@ void pvpCamera::reportIoAddr() throw(pvpException) {
         ss << "  max value: " << maxIoAddr() <<"\n";
         ss << "  default value: " << defaultIoAddr() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countIoAddr());
   } else {
@@ -6128,7 +6128,7 @@ void pvpCamera::reportIoType() throw(pvpException) {
         ss << "  max value: " << maxIoType().decode() <<"\n";
         ss << "  default value: " << defaultIoType().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countIoType());
   } else {
@@ -6239,7 +6239,7 @@ void pvpCamera::reportIoDirection() throw(pvpException) {
         ss << "  max value: " << maxIoDirection().decode() <<"\n";
         ss << "  default value: " << defaultIoDirection().decode() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countIoDirection());
   } else {
@@ -6341,7 +6341,7 @@ void pvpCamera::reportIoState() throw(pvpException) {
         ss << "  max value: " << maxIoState() <<"\n";
         ss << "  default value: " << defaultIoState() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countIoState());
   } else {
@@ -6443,7 +6443,7 @@ void pvpCamera::reportIoBitdepth() throw(pvpException) {
         ss << "  max value: " << maxIoBitdepth() <<"\n";
         ss << "  default value: " << defaultIoBitdepth() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countIoBitdepth());
   } else {
@@ -6545,7 +6545,7 @@ void pvpCamera::reportGainMultFactor() throw(pvpException) {
         ss << "  max value: " << maxGainMultFactor() <<"\n";
         ss << "  default value: " << defaultGainMultFactor() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countGainMultFactor());
   } else {
@@ -6647,7 +6647,7 @@ void pvpCamera::reportGainMultEnable() throw(pvpException) {
         ss << "  max value: " << maxGainMultEnable() <<"\n";
         ss << "  default value: " << defaultGainMultEnable() <<"\n";
       }
-      printf("%s",s.toAscii().data());
+      printf("%s",s.toUtf8().data());
     }
     printf("  count: %i\n",countGainMultEnable());
   } else {

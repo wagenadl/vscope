@@ -14,7 +14,7 @@ pvpCamera::pvpCamera(QString camname) throw(pvpException):
   pvpSystem(); // ensure system is initialized
   
   int16 hcam;
-  if (!pl_cam_open(camname.toAscii().data(), &hcam, OPEN_EXCLUSIVE))
+  if (!pl_cam_open(camname.toUtf8().data(), &hcam, OPEN_EXCLUSIVE))
     throw pvpException("pvpCamera: Could not open camera",camname);
   camh = hcam;
 
@@ -55,7 +55,7 @@ QString pvpCamera::getSerialNumber() const {
 }
 
 void pvpCamera::reportStatus() throw(pvpException) {
-  printf("Status report for camera %s\n",camname.toAscii().data());
+  printf("Status report for camera %s\n",camname.toUtf8().data());
   printf("Camera handle: 0x%04x\n",camh);
   printf("Class 0 parameters:\n");
   reportClass0();

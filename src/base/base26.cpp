@@ -37,7 +37,7 @@ int az2num(QString s) {
   }
   mul=1;
   for (int l=0; l<L; l++) {
-    int digit = s[L-1-l].toAscii() - 'a';
+    int digit = s[L-1-l].unicode() - 'a';
     if (digit<0 || digit>=26)
       return -1;
     num += mul*digit;

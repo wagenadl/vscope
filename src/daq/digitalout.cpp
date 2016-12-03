@@ -40,7 +40,7 @@ void DigitalOut::commit() throw(daqException) {
   for (int c=0; c<32; c++) {
     if (cmask & (one<<c)) {
       sprintf(chname,"%s/port%i/line%i",
- 	      deviceID().toAscii().constData(),
+ 	      deviceID().toUtf8().constData(),
 	      device().dioPort(),
 	      c);
      if (empty) {
@@ -57,12 +57,12 @@ void DigitalOut::commit() throw(daqException) {
 	 "DigitalOut","Create DO channel");
   uInt32 nli = device().nDIOLines();
 //  sprintf(chname,"%s/port%i",
-//	  daqdev->id().toAscii().constData(),
+//	  daqdev->id().toUtf8().constData(),
 //	  daqdev->dioPort());
 //  daqTry(DAQmxGetDONumLines(th,chnames,&nli),"DigitalOut","Count DO lines");
   Dbg() << "DigitalOut: nlines: " << nli;
 
-  sprintf(chname,"/%s/ao/SampleClock",deviceID().toAscii().constData());
+  sprintf(chname,"/%s/ao/SampleClock",deviceID().toUtf8().constData());
   daqTry(DAQmxCfgSampClkTiming(th,chname,
 			       freqhz,
 			       DAQmx_Val_Rising,

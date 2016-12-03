@@ -243,7 +243,7 @@ void FileDialog::selectedPath(int idx, QString) {
 }
 
 void FileDialog::synthKeyPress(QChar asc) {
-  switch (asc.toAscii()) {
+  switch (asc.unicode()) {
   case 8: // backspace
     editor->backspace();
     break;
