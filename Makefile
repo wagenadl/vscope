@@ -12,6 +12,9 @@ release: $(COMMON) src/Makefile.Release build/release $(PVCAM_GENERATED)
 debug: $(COMMON) src/Makefile.Debug build/debug $(PVCAM_GENERATED)
 	+make -C src debug
 
+build/release:; mkdir -p $@
+build/debug:; mkdir -p $@
+
 clean:; rm -rf build/release build/debug
 
 src/Makefile src/Makefile.Debug src/Makefile.Release build/release build/debug: \
