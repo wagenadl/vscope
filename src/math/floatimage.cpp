@@ -489,7 +489,7 @@ FloatImage FloatImage::gaussian(float sigx, int rx, float sigy, int ry) {
 
 FloatImage FloatImage::ace(float sigx, int rx, float sigy, int ry,
                            bool showProgress) const {
-   ProgressDialog *pd;
+  ProgressDialog *pd = 0;
   if (showProgress) 
     pd = new ProgressDialog("Calculating ACE");
   FloatImage g = gaussian(sigx, rx, sigy, ry);
