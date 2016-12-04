@@ -663,7 +663,7 @@ int pvpCamera::countBofEofClr() throw(pvpException) {
 bool pvpCamera::getBofEofClr() throw(pvpException) {
   pvpAccess a = accessBofEofClr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_BOF_EOF_CLR,ATTR_CURRENT,&x))
       throw pvpException("Cannot read BOF_EOF_CLR");
     return x;
@@ -675,7 +675,7 @@ bool pvpCamera::getBofEofClr() throw(pvpException) {
 bool pvpCamera::defaultBofEofClr() throw(pvpException) {
   pvpAccess a = accessBofEofClr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_BOF_EOF_CLR,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of BOF_EOF_CLR");
     return x;
@@ -687,7 +687,7 @@ bool pvpCamera::defaultBofEofClr() throw(pvpException) {
 bool pvpCamera::minBofEofClr() throw(pvpException) {
   pvpAccess a = accessBofEofClr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_BOF_EOF_CLR,ATTR_MIN,&x))
       throw pvpException("Cannot read min of BOF_EOF_CLR");
     return x;
@@ -699,7 +699,7 @@ bool pvpCamera::minBofEofClr() throw(pvpException) {
 bool pvpCamera::maxBofEofClr() throw(pvpException) {
   pvpAccess a = accessBofEofClr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_BOF_EOF_CLR,ATTR_MAX,&x))
       throw pvpException("Cannot read max of BOF_EOF_CLR");
     return x;
@@ -711,7 +711,7 @@ bool pvpCamera::maxBofEofClr() throw(pvpException) {
 void pvpCamera::setBofEofClr(bool x) throw(pvpException) {
   pvpAccess a = accessBofEofClr();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    bool y = x;
+    rs_bool y = x;
     if (!pl_set_param(camh,PARAM_BOF_EOF_CLR,(void*)(&y)))
       throw pvpException("Cannot set BOF_EOF_CLR");
   }
@@ -765,7 +765,7 @@ int pvpCamera::countCircBuffer() throw(pvpException) {
 bool pvpCamera::getCircBuffer() throw(pvpException) {
   pvpAccess a = accessCircBuffer();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_CIRC_BUFFER,ATTR_CURRENT,&x))
       throw pvpException("Cannot read CIRC_BUFFER");
     return x;
@@ -777,7 +777,7 @@ bool pvpCamera::getCircBuffer() throw(pvpException) {
 bool pvpCamera::defaultCircBuffer() throw(pvpException) {
   pvpAccess a = accessCircBuffer();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_CIRC_BUFFER,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of CIRC_BUFFER");
     return x;
@@ -789,7 +789,7 @@ bool pvpCamera::defaultCircBuffer() throw(pvpException) {
 bool pvpCamera::minCircBuffer() throw(pvpException) {
   pvpAccess a = accessCircBuffer();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_CIRC_BUFFER,ATTR_MIN,&x))
       throw pvpException("Cannot read min of CIRC_BUFFER");
     return x;
@@ -801,7 +801,7 @@ bool pvpCamera::minCircBuffer() throw(pvpException) {
 bool pvpCamera::maxCircBuffer() throw(pvpException) {
   pvpAccess a = accessCircBuffer();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_CIRC_BUFFER,ATTR_MAX,&x))
       throw pvpException("Cannot read max of CIRC_BUFFER");
     return x;
@@ -813,7 +813,7 @@ bool pvpCamera::maxCircBuffer() throw(pvpException) {
 void pvpCamera::setCircBuffer(bool x) throw(pvpException) {
   pvpAccess a = accessCircBuffer();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    bool y = x;
+    rs_bool y = x;
     if (!pl_set_param(camh,PARAM_CIRC_BUFFER,(void*)(&y)))
       throw pvpException("Cannot set CIRC_BUFFER");
   }
@@ -1193,7 +1193,7 @@ int pvpCamera::countMetadataEnabled() throw(pvpException) {
 bool pvpCamera::getMetadataEnabled() throw(pvpException) {
   pvpAccess a = accessMetadataEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_CURRENT,&x))
       throw pvpException("Cannot read METADATA_ENABLED");
     return x;
@@ -1205,7 +1205,7 @@ bool pvpCamera::getMetadataEnabled() throw(pvpException) {
 bool pvpCamera::defaultMetadataEnabled() throw(pvpException) {
   pvpAccess a = accessMetadataEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of METADATA_ENABLED");
     return x;
@@ -1217,7 +1217,7 @@ bool pvpCamera::defaultMetadataEnabled() throw(pvpException) {
 bool pvpCamera::minMetadataEnabled() throw(pvpException) {
   pvpAccess a = accessMetadataEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_MIN,&x))
       throw pvpException("Cannot read min of METADATA_ENABLED");
     return x;
@@ -1229,7 +1229,7 @@ bool pvpCamera::minMetadataEnabled() throw(pvpException) {
 bool pvpCamera::maxMetadataEnabled() throw(pvpException) {
   pvpAccess a = accessMetadataEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_METADATA_ENABLED,ATTR_MAX,&x))
       throw pvpException("Cannot read max of METADATA_ENABLED");
     return x;
@@ -1241,7 +1241,7 @@ bool pvpCamera::maxMetadataEnabled() throw(pvpException) {
 void pvpCamera::setMetadataEnabled(bool x) throw(pvpException) {
   pvpAccess a = accessMetadataEnabled();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    bool y = x;
+    rs_bool y = x;
     if (!pl_set_param(camh,PARAM_METADATA_ENABLED,(void*)(&y)))
       throw pvpException("Cannot set METADATA_ENABLED");
   }
@@ -1397,7 +1397,7 @@ int pvpCamera::countCentroidsEnabled() throw(pvpException) {
 bool pvpCamera::getCentroidsEnabled() throw(pvpException) {
   pvpAccess a = accessCentroidsEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_CURRENT,&x))
       throw pvpException("Cannot read CENTROIDS_ENABLED");
     return x;
@@ -1409,7 +1409,7 @@ bool pvpCamera::getCentroidsEnabled() throw(pvpException) {
 bool pvpCamera::defaultCentroidsEnabled() throw(pvpException) {
   pvpAccess a = accessCentroidsEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_DEFAULT,&x))
       throw pvpException("Cannot read default of CENTROIDS_ENABLED");
     return x;
@@ -1421,7 +1421,7 @@ bool pvpCamera::defaultCentroidsEnabled() throw(pvpException) {
 bool pvpCamera::minCentroidsEnabled() throw(pvpException) {
   pvpAccess a = accessCentroidsEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_MIN,&x))
       throw pvpException("Cannot read min of CENTROIDS_ENABLED");
     return x;
@@ -1433,7 +1433,7 @@ bool pvpCamera::minCentroidsEnabled() throw(pvpException) {
 bool pvpCamera::maxCentroidsEnabled() throw(pvpException) {
   pvpAccess a = accessCentroidsEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    bool x;
+    rs_bool x;
     if (!pl_get_param(camh,PARAM_CENTROIDS_ENABLED,ATTR_MAX,&x))
       throw pvpException("Cannot read max of CENTROIDS_ENABLED");
     return x;
@@ -1445,7 +1445,7 @@ bool pvpCamera::maxCentroidsEnabled() throw(pvpException) {
 void pvpCamera::setCentroidsEnabled(bool x) throw(pvpException) {
   pvpAccess a = accessCentroidsEnabled();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
-    bool y = x;
+    rs_bool y = x;
     if (!pl_set_param(camh,PARAM_CENTROIDS_ENABLED,(void*)(&y)))
       throw pvpException("Cannot set CENTROIDS_ENABLED");
   }

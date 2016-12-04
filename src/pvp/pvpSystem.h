@@ -12,7 +12,6 @@ public:
   pvpSystem();
   static int countCameras() throw(pvpException);
   static QString getCamName(int n) throw(pvpException);
-  static int getDriverVersion() throw(pvpException);
   static int getPVCAMVersion() throw(pvpException);
   static void reportStatus() throw(pvpException);
 private:

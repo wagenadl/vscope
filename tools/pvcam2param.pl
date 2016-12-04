@@ -263,18 +263,29 @@ $nicetype pvp$CLASSNAMES{$pclass}::get$nicename() throw(pvpException) {
   pvpAccess a = access$nicename();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
 EOF
-  
+
   my $ref = "&x";
   my $lcptype = ($ptype eq "ENUM") ? "uns32"
     : ($ptype eq "CHAR_PTR") ? "char *"
+    : ($ptype eq "BOOLEAN") ? "rs_bool"
     : $TYPENAMES{$ptype};# was: lc($ptype);
   die "Unknown type $ptype" unless defined $lcptype;
   if ($ptype eq "CHAR_PTR") {
-    if ($pname eq "DD_INFO") {
-      $fcpp[$pclass]->print("    QByteArray ar(getDdInfoLength(), 0);\n");
-    } else {
-      $fcpp[$pclass]->print("    QByteArray ar(count$nicename(), 0);\n");
+    my %namelengths = ("DD_INFO" => "getDdInfoLength()",
+                       "CHIP_NAME" => "CCD_NAME_LEN",
+                       "SYSTEM_NAME" => "MAX_SYSTEM_NAME_LEN",
+                       "VENDOR_NAME" => "MAX_VENDOR_NAME_LEN",
+                       "PRODUCT_NAME" => "MAX_PRODUCT_NAME_LEN",
+                       "CAMERA_PART_NUMBER" => "MAX_CAM_PART_NUM_LEN",
+                       "HEAD_SER_NUM_ALPHA" => "MAX_ALPHA_SER_NUM_LEN",
+                       "GAIN_NAME" => "MAX_GAIN_NAME_LEN",
+                       "PP_FEAT_NAME" => "MAX_PP_NAME_LEN",
+                       "PP_PARAM_NAME" => "MAX_PP_NAME_LEN");
+    my $lentxt = $namelengths{$pname};
+    unless (defined $lentxt) {
+      die "Do not know how much space to allocate for $pname\n";
     }
+    $fcpp[$pclass]->print("    QByteArray ar($lentxt, 0);\n");
     $ref = "ar.data()";
   } else {
     $fcpp[$pclass]->print("    $lcptype x;\n");

@@ -73,11 +73,8 @@ QStringList CamPool::systemInfo() {
   QStringList res;
   res.append("Cameras");
   res.append(QString::number(pvpSystem::countCameras()));
-  res.append("Driver vsn");
-  int v = pvpSystem::getDriverVersion();
-  res.append(v>=0 ? QString::number(v) : "none");
   res.append("PVCam vsn");
-  v = pvpSystem::getPVCAMVersion();
+  int v = pvpSystem::getPVCAMVersion();
   res.append(v>=0 ? QString::number(v) : "none");
   return res;
 }

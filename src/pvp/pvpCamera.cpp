@@ -18,9 +18,7 @@ pvpCamera::pvpCamera(QString camname) throw(pvpException):
     throw pvpException("pvpCamera: Could not open camera",camname);
   camh = hcam;
 
-  if (!pl_cam_get_diags(camh))
-    throw pvpException("pvpCamera: Get diags failed");
-
+  camchipname = availChipName() ? getChipName() : "?";
   serno = getHeadSerNumAlpha();
 
   setSpdtabIndex(0);
@@ -54,8 +52,19 @@ QString pvpCamera::getSerialNumber() const {
   return serno;
 }
 
+QString pvpCamera::getDriverVersion() const {
+  return drivervsn;
+}
+
+QString pvpCamera::getCameraChipName() const {
+  return camchipname;
+}
+
 void pvpCamera::reportStatus() throw(pvpException) {
   printf("Status report for camera %s\n",camname.toUtf8().data());
+  printf("Chip: %s\n", camchipname.toUtf8().data());
+  printf("Ser no: %s\n", serno.toUtf8().data());
+  printf("Driver vsn: %s\n", drivervsn.toUtf8().data());
   printf("Camera handle: 0x%04x\n",camh);
   printf("Class 0 parameters:\n");
   reportClass0();
@@ -67,24 +76,37 @@ void pvpCamera::reportStatus() throw(pvpException) {
 }
 
 void pvpCamera::reportSpeeds() throw(pvpException) {
-  int N = countSpdtabIndex();
+  int K = countReadoutPort();
+  int k0 = getReadoutPort();
   int n0 = getSpdtabIndex();
-  printf("Camera %s: Number of speed tab values: %i\n",
-	 qPrintable(camname), N);
-  for (int n=0; n<N; n++) {
-    printf("Speed %i:\n",n);
-    setSpdtabIndex(n);
-    printf("  BitDepth:    %i\n",getBitDepth());
-    printf("  PixTime:     %i\n",getPixTime());
-    printf("  ReadoutPort: %s\n",getReadoutPort().decode());
-    printf("  MaxRdPorts:  %s\n",maxReadoutPort().decode());
-    printf("  CntRdPorts:  %i\n",countReadoutPort());
-    printf("  GainIndex:   %i\n",getGainIndex());
-    printf("  MaxGainIdx:  %i\n",maxGainIndex());
-    printf("  CntGainIdx:  %i\n",countGainIndex());
+  printf("Camera %s: Number of readout ports: %i. Current: %i\n",
+         qPrintable(camname), K, k0);
+  for (int k = 0; k<K; k++) {
+    printf("Readoutport %i:\n", k);
+    setReadoutPort(k);
+    printf("    ReadoutPort: %s\n",getReadoutPort().decode());
+    printf("    MaxRdPorts:  %s\n",maxReadoutPort().decode());
+    printf("    CntRdPorts:  %i\n",countReadoutPort());
+    int N = countSpdtabIndex();
+    int n0 = getSpdtabIndex();
+    printf("  Camera %s, port %i: Number of speed tab values: %i\n",
+           qPrintable(camname), k, N);
+    for (int n=0; n<N; n++) {
+      printf("  Speed %i:\n",n);
+      setSpdtabIndex(n);
+      printf("    BitDepth:    %i\n",getBitDepth());
+      printf("    PixTime:     %i\n",getPixTime());
+      printf("    GainIndex:   %i\n",getGainIndex());
+      printf("    MaxGainIdx:  %i\n",maxGainIndex());
+      printf("    CntGainIdx:  %i\n",countGainIndex());
+    }
+    setSpdtabIndex(n0);
+    printf("  Restored original speed: %i\n",n0);
   }
+  setReadoutPort(k0);
+  printf("Restored original port: %i\n",k0);
   setSpdtabIndex(n0);
-  printf("Restored original speed: %i\n",n0);
+  printf("  Restored original speed: %i\n",n0);
 }
 
 
