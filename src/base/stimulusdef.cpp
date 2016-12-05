@@ -3,6 +3,7 @@
 #include "stimulusdef.h"
 #include <base/minmax.h>
 #include <base/dbg.h>
+#include <base/numbers.h>
 
 StimulusDef::StimulusDef() {
   delay_ms = 0;
@@ -62,7 +63,7 @@ void StimulusDef::instantiateAnalog(double *data, int len, int stride,
 	if (ds<1)
 	  ds = 1;
 	for (int s=s0; s<s1; s++)
-	  data[s*stride] = pulseAmp_mV/1000 * sin((s-s0)*2*M_PI/ds);
+      data[s*stride] = pulseAmp_mV/1000 * sin((s-s0)*2*Numbers::pi()/ds);
       } break;
       }
     }
@@ -74,11 +75,11 @@ void StimulusDef::instantiateAnalog(double *data, int len, int stride,
 	int ds = s - s00;
 	int DS = pulseDur_scans;
 	if (ds<DS)
-	  data[s*stride] *= .5-.5*cos(M_PI*ds/DS);
+      data[s*stride] *= .5-.5*cos(Numbers::pi()*ds/DS);
 	ds = s11 - s;
 	DS = pulseDur2_scans;
 	if (ds<DS)
-	  data[s*stride] *= .5-.5*cos(M_PI*ds/DS);
+      data[s*stride] *= .5-.5*cos(Numbers::pi()*ds/DS);
       }
     }
   }

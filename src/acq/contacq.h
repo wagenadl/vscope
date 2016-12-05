@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QVector>
 #include <QDomElement>
+#include <stdint.h>
 
 class ContAcq: public QObject {
   Q_OBJECT;
