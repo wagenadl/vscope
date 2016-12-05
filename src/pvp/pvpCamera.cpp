@@ -18,7 +18,6 @@ pvpCamera::pvpCamera(QString camname) throw(pvpException):
     throw pvpException("pvpCamera: Could not open camera",camname);
   camh = hcam;
 
-  camchipname = availChipName() ? getChipName() : "?";
   serno = getHeadSerNumAlpha();
 
   setSpdtabIndex(0);
@@ -52,19 +51,22 @@ QString pvpCamera::getSerialNumber() const {
   return serno;
 }
 
-QString pvpCamera::getDriverVersion() const {
-  return drivervsn;
+QString pvpCamera::getDriverVersion() {
+  if (!availDdVersion())
+    return "?";
+  int v = getDdVersion();
+  return QString("%1.%2.%3").arg((v>>8)&0xff).arg((v>>4)&0x0f).arg(v&0x0f);
 }
 
-QString pvpCamera::getCameraChipName() const {
-  return camchipname;
+QString pvpCamera::getCameraChipName() {
+  return availChipName() ? getChipName() : "?";
 }
 
 void pvpCamera::reportStatus() throw(pvpException) {
   printf("Status report for camera %s\n",camname.toUtf8().data());
-  printf("Chip: %s\n", camchipname.toUtf8().data());
+  printf("Chip: %s\n", getCameraChipName().toUtf8().data());
   printf("Ser no: %s\n", serno.toUtf8().data());
-  printf("Driver vsn: %s\n", drivervsn.toUtf8().data());
+  printf("Driver vsn: %s\n", getDriverVersion().toUtf8().data());
   printf("Camera handle: 0x%04x\n",camh);
   printf("Class 0 parameters:\n");
   reportClass0();

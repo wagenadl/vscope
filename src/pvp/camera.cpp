@@ -138,9 +138,13 @@ uint16_t const *Camera::getLatestFrame() {
 QStringList Camera::cameraInfo() {
   QStringList res;
   res.append("Ser. no.");
-  res.append(pvpcam->getHeadSerNumAlpha());
+  res.append(pvpcam->getSerialNumber());
   res.append("Firmware vsn");
-  res.append(QString::number(pvpcam->getCamFwVersion()));
+  int v = pvpcam->getCamFwVersion();
+  res.append(QString("%1.%2.%3")
+             .arg((v>>8)&0xff).arg((v>>4)&0x0f).arg(v&0x0f));
+  res.append("Driver vsn");
+  res.append(pvpcam->getDriverVersion());
   res.append("Set T");
   res.append(QString("%1 C").arg(pvpcam->getTempSetpoint()/100.0));
   res.append("Actual T");

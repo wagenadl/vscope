@@ -15,8 +15,8 @@ public:
   pvpCamera(QString camname) throw(pvpException);
   ~pvpCamera();
   short getHandle() const { return camh; }
-  QString getDriverVersion() const;
-  QString getCameraChipName() const;
+  QString getDriverVersion();
+  QString getCameraChipName();
   QString getSerialNumber() const;
   void reportStatus() throw(pvpException); // writes to stdout
   void reportSpeeds() throw(pvpException);
@@ -68,7 +68,6 @@ private:
   QString camname;
   QString serno;
   QString camchipname;
-  QString drivervsn;
   short camh;
   
   QVector<int32> expres;
