@@ -147,10 +147,11 @@ QString pvpCamera::getChipName() throw(pvpException) {
 QString pvpCamera::defaultChipName() throw(pvpException) {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countChipName()];
-    if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_DEFAULT,x))
+    QByteArray ar(CCD_NAME_LEN, 0);
+    if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of CHIP_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("CHIP_NAME not accessible for reading");
   }
@@ -233,10 +234,11 @@ QString pvpCamera::getSystemName() throw(pvpException) {
 QString pvpCamera::defaultSystemName() throw(pvpException) {
   pvpAccess a = accessSystemName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countSystemName()];
-    if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_DEFAULT,x))
+    QByteArray ar(MAX_SYSTEM_NAME_LEN, 0);
+    if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of SYSTEM_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("SYSTEM_NAME not accessible for reading");
   }
@@ -319,10 +321,11 @@ QString pvpCamera::getVendorName() throw(pvpException) {
 QString pvpCamera::defaultVendorName() throw(pvpException) {
   pvpAccess a = accessVendorName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countVendorName()];
-    if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_DEFAULT,x))
+    QByteArray ar(MAX_VENDOR_NAME_LEN, 0);
+    if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of VENDOR_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("VENDOR_NAME not accessible for reading");
   }
@@ -405,10 +408,11 @@ QString pvpCamera::getProductName() throw(pvpException) {
 QString pvpCamera::defaultProductName() throw(pvpException) {
   pvpAccess a = accessProductName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countProductName()];
-    if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_DEFAULT,x))
+    QByteArray ar(MAX_PRODUCT_NAME_LEN, 0);
+    if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of PRODUCT_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("PRODUCT_NAME not accessible for reading");
   }
@@ -491,10 +495,11 @@ QString pvpCamera::getCameraPartNumber() throw(pvpException) {
 QString pvpCamera::defaultCameraPartNumber() throw(pvpException) {
   pvpAccess a = accessCameraPartNumber();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countCameraPartNumber()];
-    if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_DEFAULT,x))
+    QByteArray ar(MAX_CAM_PART_NUM_LEN, 0);
+    if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of CAMERA_PART_NUMBER");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("CAMERA_PART_NUMBER not accessible for reading");
   }
@@ -3388,10 +3393,11 @@ QString pvpCamera::getHeadSerNumAlpha() throw(pvpException) {
 QString pvpCamera::defaultHeadSerNumAlpha() throw(pvpException) {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countHeadSerNumAlpha()];
-    if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_DEFAULT,x))
+    QByteArray ar(MAX_ALPHA_SER_NUM_LEN, 0);
+    if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of HEAD_SER_NUM_ALPHA");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("HEAD_SER_NUM_ALPHA not accessible for reading");
   }
@@ -4225,10 +4231,11 @@ QString pvpCamera::getGainName() throw(pvpException) {
 QString pvpCamera::defaultGainName() throw(pvpException) {
   pvpAccess a = accessGainName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countGainName()];
-    if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_DEFAULT,x))
+    QByteArray ar(MAX_GAIN_NAME_LEN, 0);
+    if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of GAIN_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("GAIN_NAME not accessible for reading");
   }
@@ -5685,10 +5692,11 @@ QString pvpCamera::getPpFeatName() throw(pvpException) {
 QString pvpCamera::defaultPpFeatName() throw(pvpException) {
   pvpAccess a = accessPpFeatName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countPpFeatName()];
-    if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_DEFAULT,x))
+    QByteArray ar(MAX_PP_NAME_LEN, 0);
+    if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of PP_FEAT_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("PP_FEAT_NAME not accessible for reading");
   }
@@ -6077,10 +6085,11 @@ QString pvpCamera::getPpParamName() throw(pvpException) {
 QString pvpCamera::defaultPpParamName() throw(pvpException) {
   pvpAccess a = accessPpParamName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[countPpParamName()];
-    if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_DEFAULT,x))
+    QByteArray ar(MAX_PP_NAME_LEN, 0);
+    if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of PP_PARAM_NAME");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("PP_PARAM_NAME not accessible for reading");
   }

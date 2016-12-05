@@ -453,10 +453,11 @@ QString pvpCamera::getDdInfo() throw(pvpException) {
 QString pvpCamera::defaultDdInfo() throw(pvpException) {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-    char x[getDdInfoLength()];
-    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_DEFAULT,x))
+    QByteArray ar(getDdInfoLength(), 0);
+    if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_DEFAULT,ar.data()))
       throw pvpException("Cannot read default of DD_INFO");
-    return x;
+    QString y = ar.data();
+    return y;
   } else {
     throw pvpException("DD_INFO not accessible for reading");
   }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE vsdscopeVersion>
 <version 
- version='v0.99.2-9-gecc47cb'
- rev='381'
- date='2016-12-04 20:34:37 +0000'
- builddate='2016-12-05 09:19:52 -0800'
+ version='v0.99.2-13-ge5c037a'
+ rev='384'
+ date='2016-12-05 13:24:40 +0000'
+ builddate='2016-12-05 13:31:30 -0800'
  year='2016'
  />
