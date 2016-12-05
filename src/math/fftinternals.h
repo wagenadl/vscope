@@ -17,7 +17,7 @@ namespace FFT {
   template<unsigned M, unsigned N, unsigned B, unsigned A>
   struct SinCosSeries {
     static double value() {
-      return 1-(A*Numbers::pi()/B)*(A*M_PI/B)/M/(M+1)
+      return 1-(A*Numbers::pi()/B)*(A*Numbers::pi()/B)/M/(M+1)
 	*SinCosSeries<M+2,N,B,A>::value();
     }
   };
@@ -32,7 +32,7 @@ namespace FFT {
 
   template<unsigned B, unsigned A> struct Sin<B,A,float> {
     static float value() {
-      return (A*M_PI/B)*SinCosSeries<2,24,B,A>::value();
+      return (A*Numbers::pi()/B)*SinCosSeries<2,24,B,A>::value();
     }
   };
 
@@ -64,9 +64,9 @@ namespace FFT {
       next.apply(data+N);
       
       T wtemp,tempr,tempi,wr,wi,wpr,wpi;
-      wtemp = Sin<N,1,T>::value();      // wtemp = sin(M_PI/N);
+      wtemp = Sin<N,1,T>::value();      // wtemp = sin(Numbers::pi()/N);
       wpr = -2.0*wtemp*wtemp;
-      wpi = -Sin<N,2,T>::value(); // wpi = -sin(2*M_PI/N);
+      wpi = -Sin<N,2,T>::value(); // wpi = -sin(2*Numbers::pi()/N);
       wr = 1.0; wi = 0.0;
       for (unsigned i=0; i<N; i+=2) {
 	tempr = data[i+N]*wr - data[i+N+1]*wi;
