@@ -10,19 +10,19 @@ echo "" >> vscope.pri
 
 for DIR in $SUBDIRS; do
     echo "HEADERS += \\" >> vscope.pri
-    find $DIR -maxdepth 1 -name \*.h -exec echo "    " '{}' " \\" ';' >> vscope.pri
+    find $DIR -maxdepth 1 -name \*.h -exec echo "    " '{}' " \\" ';' | sort >> vscope.pri
     echo "" >> vscope.pri
 
     echo "SOURCES += \\" >> vscope.pri
-    find $DIR -maxdepth 1 -name \*.cpp -exec echo "    " '{}' " \\" ';' >> vscope.pri
+    find $DIR -maxdepth 1 -name \*.cpp -exec echo "    " '{}' " \\" ';' | sort  >> vscope.pri
     echo "" >> vscope.pri
 
     echo "RESOURCES += \\" >> vscope.pri
-    find $DIR -maxdepth 1 -name \*.qrc -exec echo "    " '{}' " \\" ';' >> vscope.pri
+    find $DIR -maxdepth 1 -name \*.qrc -exec echo "    " '{}' " \\" ';' | sort  >> vscope.pri
     echo "" >> vscope.pri
 
     echo "FORMS += \\" >> vscope.pri
-    find $DIR -maxdepth 1 -name \*.ui -exec echo "    " '{}' " \\" ';' >> vscope.pri
+    find $DIR -maxdepth 1 -name \*.ui -exec echo "    " '{}' " \\" ';' | sort  >> vscope.pri
     echo "" >> vscope.pri
 done
 
