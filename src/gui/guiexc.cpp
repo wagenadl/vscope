@@ -6,7 +6,9 @@
 #include <QApplication>
 #include <QPushButton>
 #include <stdlib.h>
+#ifdef vsdLINUX
 #include <unistd.h>
+#endif
 #include <xml/settingsfile.h>
 
 QString GUIExc::settingsdir;
@@ -55,9 +57,11 @@ void GUIExc::report(class Exception const &e, QString reporter) throw() {
     QMessageBox msg(QMessageBox::Critical, "VScope Exception", txt);
     QAbstractButton *b_quit =
       msg.addButton("Quit",QMessageBox::DestructiveRole);
+#ifdef vsdLINUX
     QAbstractButton *b_restart = argv 
       ? msg.addButton("Restart",QMessageBox::DestructiveRole)
       : 0;
+#endif
     QAbstractButton *b_ignore = reporter.isEmpty()
       ? 0
       : msg.addButton("Ignore",QMessageBox::RejectRole);
@@ -66,9 +70,11 @@ void GUIExc::report(class Exception const &e, QString reporter) throw() {
     QAbstractButton *clicked = msg.clickedButton();
     if (clicked == b_quit) {
       ::exit(1);
+#ifdef vsdLINUX
     } else if (clicked == b_restart) {
       ::execvp(argv[0],argv);
       ::exit(1); // this should never execute
+#endif
     } else if (clicked == b_ignore) {
       ;
     } else {

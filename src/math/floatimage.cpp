@@ -453,7 +453,7 @@ QImage FloatImage::toImage(float min, float max,
 
 QVector<uint8_t> FloatImage::sigmoidLUT(float alpha, int K) {
   QVector<uint8_t> lut(K);
-  uint8_t *tbl;
+  uint8_t *tbl = lut.data();
   float y0 = tanh(-.5*alpha);
   float y1 = tanh(.5*alpha);
   for (int k=0; k<K; k++) {

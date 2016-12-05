@@ -4,6 +4,8 @@
 
 #define FFTINTERNALS_H
 
+#include <base/numbers.h>
+
 namespace FFT {
   /* All of the following cleverness taken from a Dr. Dobbs article:
      Volodymyr Myrnyy: "A Simple and Efficient FFT Implementation in C++"
@@ -15,7 +17,7 @@ namespace FFT {
   template<unsigned M, unsigned N, unsigned B, unsigned A>
   struct SinCosSeries {
     static double value() {
-      return 1-(A*M_PI/B)*(A*M_PI/B)/M/(M+1)
+      return 1-(A*Numbers::pi()/B)*(A*M_PI/B)/M/(M+1)
 	*SinCosSeries<M+2,N,B,A>::value();
     }
   };
@@ -36,7 +38,7 @@ namespace FFT {
 
   template<unsigned B, unsigned A> struct Sin<B,A,double> {
     static double value() {
-      return (A*M_PI/B)*SinCosSeries<2,34,B,A>::value();
+      return (A*Numbers::pi()/B)*SinCosSeries<2,34,B,A>::value();
     }
   };
 
