@@ -16,7 +16,9 @@ AppUpdatesURL=http://www.danielwagenaar.net
 DefaultDirName={pf}\VScope
 DisableProgramGroupPage=yes
 LicenseFile=C:\Users\Daniel Wagenaar\Documents\Progs\vscope\gpl-3.0.txt
-OutputBaseFilename=setup
+OutputDir=../build
+OutputBaseFilename=vscope-0.99.2-setup
+SetupIconFile=C:\Users\Daniel Wagenaar\Documents\Progs\vscope\microscopeicon.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -27,18 +29,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\d3dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\Qt5Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\vcredist_x86.exe"; DestDir: "{app}"; Flags: ignoreversion
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\*"; DestDir: "{app}"; Flags: ignoreversion  recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{commonprograms}\VScope"; Filename: "{app}\vscope.exe"
