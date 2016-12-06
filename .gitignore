@@ -1,7 +1,8 @@
 Makefile
 Makefile.Debug
 Makefile.Release
-build
+build*
+*pro.user*
 *~
 
 src/toplevel/version.h
