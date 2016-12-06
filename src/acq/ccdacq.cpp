@@ -222,7 +222,7 @@ void CCDAcq::start() {
   }
 }
 
-int CCDAcq::nPixelsSoFar(QString id) {
+size_t CCDAcq::nPixelsSoFar(QString id) {
   if (cameras.contains(id) && cameras[id])
     return cameras[id]->nPixelsSoFar();
   else

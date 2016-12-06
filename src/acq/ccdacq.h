@@ -55,7 +55,7 @@ public:
    *:D If hasEnded() has indicated that acquisition has ended, use this
        function to check if it ended OK.
   */
-  int nPixelsSoFar(QString camid);
+  size_t nPixelsSoFar(QString camid);
   /*:F nPixelsSoFar
    *:D Returns number of pixels transferred so far by the given camera.
    */
