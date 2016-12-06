@@ -3,14 +3,15 @@
 # When adding source files, run tools/updatesources.sh to include them
 
 TEMPLATE = app
-TARGET = ../build/vscope
+unix: TARGET = ../build/vscope
 
 include(vscope.pri)
-SOURCSE -= 
 
 INCLUDEPATH+=utils/mtpsd/include
 
-CONFIG += debug_and_release warn_on resources
+unix: CONFIG += debug_and_release
+
+CONFIG += warn_on resources
 
 QT += xml
 
@@ -38,8 +39,11 @@ win32 {
   message("win32")
   LIBS += -L"C:\Program Files (x86)\National Instruments\NI-DAQ\DAQmx ANSI C Dev\lib\msvc"
   LIBS += -lNIDAQmx
+  LIBS += -L"..\pvcam\i386"
+  LIBS += -lpvcam32
   SOURCES -= daq/daqdummy.cpp
   SOURCES -= pvp/pvpDummy.cpp
+  message(Sources: $$SOURCES)
 }
 
 
@@ -48,9 +52,7 @@ win32 {
 #    LIBS += -lSecur32
 }
 
-for(sd, sourcedirs): include($${sd}/$${sd}.pri)
-
-CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
+unix: CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 
 win32 {
   DEFINES += WIN32
@@ -65,3 +67,6 @@ cygwin-g++ {
 linux-g++ {
   DEFINES += vsdLINUX
 }
+
+DISTFILES += \
+    ../pvcam/i386/pvcam32.Lib

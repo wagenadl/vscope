@@ -9,6 +9,7 @@
 static QLabel *lbl = 0;
 
 QString checkdaq() {
+  QString vsn = DAQDevice::nidaqVersion();
   QString ltxt = "";
   QString confdev = "";
   DAQDevice *daqdev = &DAQDevice::find();
@@ -51,7 +52,9 @@ QString checkdaq() {
     }
   }
   if (!haveany)
-    ltxt += "  none";
+    ltxt += "  none\n";
+
+  ltxt += "\nNI-DAQmx version: " + vsn + "\n";
   return ltxt;
 }
 

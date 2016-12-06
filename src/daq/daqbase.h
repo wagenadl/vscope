@@ -51,6 +51,7 @@ private:
   int dioport;
   int ndiolines;
 public:
+  static QString nidaqVersion();
   static QStringList deviceList();
   static QString search(QString prodtype, QString serno="");
   static QString search(unsigned int prodtype=0, unsigned int serno=0);

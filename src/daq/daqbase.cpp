@@ -262,3 +262,23 @@ void DAQDevice::initialize() {
   aliases[""] = 0;
 
 }
+
+QString DAQDevice::nidaqVersion() {
+    uInt32 maj, min, upd;
+    int e = DAQmxGetSysNIDAQMajorVersion(&maj);
+    if (e<0)
+        return "(no driver)";
+    else if (e>0)
+        return "(error)";
+    e = DAQmxGetSysNIDAQMinorVersion(&min);
+    if (e<0)
+        return "(no driver)";
+    else if (e>0)
+        return "(error)";
+    e = DAQmxGetSysNIDAQUpdateVersion(&upd);
+    if (e<0)
+        return "(no driver)";
+    else if (e>0)
+        return "(error)";
+    return QString("%1.%2.%3").arg(maj).arg(min).arg(upd);
+}

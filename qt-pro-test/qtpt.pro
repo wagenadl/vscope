@@ -13,3 +13,6 @@ win32 { message(Win32) }
 cygwin { message(Cygwin) }
 
 
+LIBS += -L..\pvcam\i386 -lpvcam32
+SOURCES += main.cpp \
+    main.cpp

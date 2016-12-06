@@ -73,7 +73,7 @@ QStringList CamPool::systemInfo() {
   QStringList res;
   res.append("Cameras");
   res.append(QString::number(pvpSystem::countCameras()));
-  res.append("PVCam vsn");
+  res.append("PVCam version");
   int v = pvpSystem::getPVCAMVersion();
   res.append(v>=0
              ? QString("%1.%2.%3").arg((v>>8)&0xff).arg((v>>4)&0x0f).arg(v&0x0f)
