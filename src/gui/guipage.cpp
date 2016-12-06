@@ -155,7 +155,7 @@ void guiPage::addItems(PageBuildGeom &g, QDomElement doc) {
   QDomDocument xml;
   QString hd1 = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone='yes'?>";
   QString hd2 = "<!DOCTYPE vscopeAuto>";
-  foreach (QString v, doc.text().split(QRegExp("[,\n]+\\s*"))) {
+  foreach (QString v, doc.text().split(QRegExp("[,\r\n\t]+[ ,\r\n\t]*"))) {
     if (v=="")
       continue;
     xml.setContent(hd1 + "\n" + hd2 + "\n"
