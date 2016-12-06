@@ -19,8 +19,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 DEPENDPATH +=  $$sourcedirs
 INCLUDEPATH += $$sourcedirs
 
-OBJECTS_DIR=../build/release
-CONFIG(debug, debug|release) { OBJECTS_DIR=../build/debug }
+unix {
+  OBJECTS_DIR=../build/release
+  CONFIG(debug, debug|release) { OBJECTS_DIR=../build/debug }
+}
 MOC_DIR = $${OBJECTS_DIR}
 RCC_DIR = $${OBJECTS_DIR}
 UI_DIR = $${OBJECTS_DIR}
@@ -33,8 +35,11 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 
 win32 {
-  LIBS += -lnicaiu
+message("win32")
+  LIBS += -L"C:\Program Files (x86)\National Instruments\NI-DAQ\DAQmx ANSI C Dev\lib\msvc"
+  LIBS += -lNIDAQmx
   SOURCES -= daq/daqdummy.cpp
+  SOURCES -= pvp/pvpDummy.cpp
 }
 
 
@@ -61,7 +66,9 @@ alwaysrun.commands =
 QMAKE_EXTRA_TARGETS += tgt_ver alwaysrun
 
 win32 {
-  DEFINES += WIN32 Q_OS_WIN32 vsdWIN32
+  DEFINES += WIN32
+# DEFINES += Q_OS_WIN32
+  DEFINES += vsdWIN32
 #  include win.pri
 }
 
