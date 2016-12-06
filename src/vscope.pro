@@ -18,7 +18,6 @@ QT += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets 
 
 DEPENDPATH +=  $$sourcedirs
-INCLUDEPATH += $$sourcedirs
 
 unix {
   OBJECTS_DIR=../build/release
@@ -36,14 +35,13 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 
 win32 {
-  message("win32")
+  INCLUDEPATH += "C:\Program Files (x86)\National Instruments\NI-DAQ\DAQmx ANSI C Dev\include"
   LIBS += -L"C:\Program Files (x86)\National Instruments\NI-DAQ\DAQmx ANSI C Dev\lib\msvc"
   LIBS += -lNIDAQmx
   LIBS += -L"..\pvcam\i386"
   LIBS += -lpvcam32
   SOURCES -= daq/daqdummy.cpp
   SOURCES -= pvp/pvpDummy.cpp
-  message(Sources: $$SOURCES)
 }
 
 
