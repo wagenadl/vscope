@@ -149,11 +149,12 @@ void setupParsAndConns() {
     fpath = envpath;
     Dbg() << "Got path from VSCOPEPATH: " << fpath;
   } else {
-    QDomElement e_path = pars.firstChildElement("filepath");
-    if (e_path.isNull())
-      fpath = QString(getenv("HOME")) + "/vsddata";
-    else
-      fpath = e_path.attribute("p");
+#ifdef vsdWIN32
+      fpath = QString(getenv("HOMEDRIVE")) + QString(getenv("HOMEPATH"))
+                + "\\Documents\\vsddata";
+#else
+    fpath = QString(getenv("HOME")) + "/vsddata";
+#endif
     fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
 	    qPrintable(fpath));
   }
