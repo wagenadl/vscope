@@ -33,7 +33,10 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 
 win32 {
-  LIBS += -lnicaiu
+  message($$QTDIR)
+  ##LIBS += -L"c:\Qt\Qt5.7.0\Tools\mingw530_32\i686-w64-mingw32\lib"
+  LIBS += -L"C:\Users\wagenaar\Documents\progs\NIDAQ Stuff\lib\msvc"
+  LIBS += -lnidaqmx
   SOURCES -= daq/daqdummy.cpp
 }
 
@@ -47,24 +50,14 @@ for(sd, sourcedirs): include($${sd}/$${sd}.pri)
 
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 
-# message("HEADERS: $$HEADERS" )
-# message("SOURCES: $$SOURCES" )
-# message("RESOURCES: $$RESOURCES" )
-# message("INCLUDEPATH: $$sourcedirs" )
-# message("TARGET: $$TARGET")
-
-tgt_ver.target = toplevel/version.xml
-tgt_ver.commands = ../tools/updateversion.sh $$tgt_ver.target
-tgt_ver.depends = alwaysrun
-alwaysrun.commands =
-
-QMAKE_EXTRA_TARGETS += tgt_ver alwaysrun
-
 win32 {
-  DEFINES += WIN32 Q_OS_WIN32 vsdWIN32
+  DEFINES += WIN32  vsdWIN32
 #  include win.pri
 }
+cygwin-g++ {
+  DEFINES += vsdWIN32
+}
 
-unix {
+linux-g++ {
   DEFINES += vsdLINUX
 }

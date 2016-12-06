@@ -9,3 +9,7 @@ src/toplevel/version.tmp
 src/toplevel/version.xml
 src/utils/mtpsd/bin
 src/utils/mtpsd/lib
+*stackdump
+object_script*
+.qmake.stash
+vscope.pro.user.*

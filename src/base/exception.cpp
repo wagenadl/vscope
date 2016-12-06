@@ -105,7 +105,7 @@ void Exception::report() const {
 	Dbg() << "    " << symbols[k];
     } else {
       for (int k=0; k<backtrace_count; k++) {
-	int status;
+    int status = -1;
 	char *begin_name=0, *begin_offset=0, *end_offset=0;
 	for (char *p=symbols[k]; *p; ++p) {
 	  if (*p=='(')

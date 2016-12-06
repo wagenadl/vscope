@@ -16,6 +16,8 @@
 	extern "C" {
 #endif
 
+#include <stdint.h>
+
 #ifdef __linux__
 #define __CFUNC
 #define __CFUNC_C
