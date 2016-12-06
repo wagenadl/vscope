@@ -69,4 +69,5 @@ linux-g++ {
 }
 
 DISTFILES += \
-    ../pvcam/i386/pvcam32.Lib
+    ../pvcam/i386/pvcam32.Lib \
+    ../tools/vscope-windeploy.pl
