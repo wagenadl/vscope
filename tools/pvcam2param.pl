@@ -46,6 +46,17 @@ my %TYPENAMES = (
                  "CHAR_PTR" => "QString",
 		);
 
+my %NAMELENGTHS = ("DD_INFO" => "getDdInfoLength()",
+		   "CHIP_NAME" => "CCD_NAME_LEN",
+		   "SYSTEM_NAME" => "MAX_SYSTEM_NAME_LEN",
+		   "VENDOR_NAME" => "MAX_VENDOR_NAME_LEN",
+		   "PRODUCT_NAME" => "MAX_PRODUCT_NAME_LEN",
+		   "CAMERA_PART_NUMBER" => "MAX_CAM_PART_NUM_LEN",
+		   "HEAD_SER_NUM_ALPHA" => "MAX_ALPHA_SER_NUM_LEN",
+		   "GAIN_NAME" => "MAX_GAIN_NAME_LEN",
+		   "PP_FEAT_NAME" => "MAX_PP_NAME_LEN",
+		   "PP_PARAM_NAME" => "MAX_PP_NAME_LEN");
+
 # Read input
 open PVC, "<pvcam/pvcam.h" or die "Cannot read pvcam.h\n";
 my @pvclines = <PVC>;
@@ -271,19 +282,9 @@ EOF
     : $TYPENAMES{$ptype};# was: lc($ptype);
   die "Unknown type $ptype" unless defined $lcptype;
   if ($ptype eq "CHAR_PTR") {
-    my %namelengths = ("DD_INFO" => "getDdInfoLength()",
-                       "CHIP_NAME" => "CCD_NAME_LEN",
-                       "SYSTEM_NAME" => "MAX_SYSTEM_NAME_LEN",
-                       "VENDOR_NAME" => "MAX_VENDOR_NAME_LEN",
-                       "PRODUCT_NAME" => "MAX_PRODUCT_NAME_LEN",
-                       "CAMERA_PART_NUMBER" => "MAX_CAM_PART_NUM_LEN",
-                       "HEAD_SER_NUM_ALPHA" => "MAX_ALPHA_SER_NUM_LEN",
-                       "GAIN_NAME" => "MAX_GAIN_NAME_LEN",
-                       "PP_FEAT_NAME" => "MAX_PP_NAME_LEN",
-                       "PP_PARAM_NAME" => "MAX_PP_NAME_LEN");
-    my $lentxt = $namelengths{$pname};
+    my $lentxt = $NAMELENGTHS{$pname};
     unless (defined $lentxt) {
-      die "Do not know how much space to allocate for $pname\n";
+      die "Do not know how much space to allocate for $pname in get\n";
     }
     $fcpp[$pclass]->print("    QByteArray ar($lentxt, 0);\n");
     $ref = "ar.data()";
@@ -316,19 +317,30 @@ $nicetype pvp$CLASSNAMES{$pclass}::default$nicename() throw(pvpException) {
 EOF
   $ref = "&x";
   if ($ptype eq "CHAR_PTR") {
-    if ($pname eq "DD_INFO") {
-      $fcpp[$pclass]->print("    char x[getDdInfoLength()];\n");
-    } else {
-      $fcpp[$pclass]->print("    char x[count$nicename()];\n");
+    my $lentxt = $NAMELENGTHS{$pname};
+    unless (defined $lentxt) {
+      die "Do not know how much space to allocate for $pname in default\n";
     }
-    $ref = "x";
+    $fcpp[$pclass]->print("    QByteArray ar($lentxt, 0);\n");
+    $ref = "ar.data()";
   } else {
     $fcpp[$pclass]->print("    $lcptype x;\n");
   }
   $fcpp[$pclass]->print(<<"EOF");
     if (!pl_get_param(camh,PARAM_$pname,ATTR_DEFAULT,$ref))
       throw pvpException("Cannot read default of $pname");
+EOF
+  if ($ptype eq "CHAR_PTR") {
+  $fcpp[$pclass]->print(<<"EOF");
+    QString y = $ref;
+    return y;
+EOF
+  } else {
+  $fcpp[$pclass]->print(<<"EOF");
     return x;
+EOF
+  }
+  $fcpp[$pclass]->print(<<"EOF");
   } else {
     throw pvpException("$pname not accessible for reading");
   }

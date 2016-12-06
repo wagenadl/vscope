@@ -1,3 +1,5 @@
+DEFAULT: release
+
 both: release debug
 
 PVCAM_GENERATED=src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \

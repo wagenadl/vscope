@@ -15,8 +15,9 @@
 #ifdef __cplusplus
 	extern "C" {
 #endif
+#include <stdint.h>
 
-#if defined(__linux__) || defined(__APPLE__)
+#ifdef __linux__
 #define __CFUNC
 #define __CFUNC_C
 #define __CFUNCPTRVAR

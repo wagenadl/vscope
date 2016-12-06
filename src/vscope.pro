@@ -35,7 +35,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 
 win32 {
-message("win32")
+  message("win32")
   LIBS += -L"C:\Program Files (x86)\National Instruments\NI-DAQ\DAQmx ANSI C Dev\lib\msvc"
   LIBS += -lNIDAQmx
   SOURCES -= daq/daqdummy.cpp
@@ -52,26 +52,16 @@ for(sd, sourcedirs): include($${sd}/$${sd}.pri)
 
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 
-# message("HEADERS: $$HEADERS" )
-# message("SOURCES: $$SOURCES" )
-# message("RESOURCES: $$RESOURCES" )
-# message("INCLUDEPATH: $$sourcedirs" )
-# message("TARGET: $$TARGET")
-
-tgt_ver.target = toplevel/version.xml
-tgt_ver.commands = ../tools/updateversion.sh $$tgt_ver.target
-tgt_ver.depends = alwaysrun
-alwaysrun.commands =
-
-QMAKE_EXTRA_TARGETS += tgt_ver alwaysrun
-
 win32 {
   DEFINES += WIN32
 # DEFINES += Q_OS_WIN32
   DEFINES += vsdWIN32
 #  include win.pri
 }
+cygwin-g++ {
+  DEFINES += vsdWIN32
+}
 
-unix {
+linux-g++ {
   DEFINES += vsdLINUX
 }
