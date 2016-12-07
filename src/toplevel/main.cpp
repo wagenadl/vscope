@@ -8,7 +8,7 @@
 #include <QGuiApplication>
 #include <QApplication>
 #include <QDesktopWidget>
-
+#include <QIcon>
 #include <QDateTime>
 
 #include <base/dbg.h>
@@ -126,6 +126,7 @@ void setupAppStyle(QApplication &app) {
   f.setFamily(BUTTON_FontFamily);
   f.setPixelSize(BUTTON_FontSize);
   app.setFont(f);
+  app.setWindowIcon(QIcon(":/vscope.png"));
 }  
 
 void setupAIChannels() {

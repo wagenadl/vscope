@@ -84,7 +84,7 @@ void DigitalOut::writeData() throw(daqException) {
 
   uint32_t const *srcptr = data->allData();
   int nscans=data->getNumScans();
-  long scanswritten;
+  int32_t scanswritten;
   int nli = device().nDIOLines();
   void const *useptr = 0;
   if (nli>=17 && nli<=32) {

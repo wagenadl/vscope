@@ -47,25 +47,21 @@ win32 {
 }
 
 
-win32 {
-#    RC_FILE = App/winicon.rc
-#    LIBS += -lSecur32
-}
+win32: RC_FILE = vscope.rc
 
 unix: CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 
 win32 {
   DEFINES += WIN32
-# DEFINES += Q_OS_WIN32
   DEFINES += vsdWIN32
-#  include win.pri
 }
+
 cygwin-g++ {
   DEFINES += vsdWIN32
 }
 
-linux-g++ {
-  DEFINES += vsdLINUX
+linux {
+    DEFINES += vsdLINUX
 }
 
 DISTFILES += \

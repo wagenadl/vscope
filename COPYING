@@ -1,0 +1,40 @@
+VScope - Data acquisition for voltage-sensitive dye imaging and electrophysiology
+Copyright (C) 2008-2016 Daniel A. Wagenaar <daw@caltech.edu>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Certain parts of this distribution do not belong to Daniel Wagenaar
+and are not covered by this license. These are:
+
+* microscopeicon.png (and vscope.png, vscope.ico) are derived from an
+  original photograph by Acagastya, licensed as CC BY-SA 4.0, obtained from
+  https://commons.wikimedia.org/w/index.php?curid=39763002.
+
+* The files in pvcam were obtained from Photometrics as part of their PVCam
+  SDK version 3.3.1.3, downloaded on 12/3/2016 from
+  http://www.photometrics.com/support/downloads/pvcam-sdk/. Licensing
+  information for these files is in pvcam/COPYING.png. Please note that
+  the files src/pvp/pvp_Class{N}.{h|cpp} and src/pvp/pvpDummy.cpp are
+  programmatically derived from the files supplied by Photometrics.
+
+* The files src/daq/dwNIDAQmx.h and src/daq/daqdummy.cpp are programmatically
+  derived from the file "NIDAQmx.h" from the National Instruments NI-DAQmx
+  driver package, version 16.1.0, downloaded on 12/3/2016 from
+  http://www.ni.com/download/ni-daqmx-16.1/6424/en/. VScope
+  is to be considered an Authorized Application for the purpose of
+  distributing this file. The following applies:
+
+  Copyright © 2016 National Instruments Corporation. All Rights Reserved.
+  Further details are at http://www.ni.com/legal/license/.
+  
