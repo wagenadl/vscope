@@ -6,8 +6,10 @@ function vscope_cohplotpolar(coh, varargin)
 %       qpt - filename for QPlot figure (empty for current)
 %       width - width of QPlot figure (inch)
 %       height - height of QPlot figure
+%       nolabels - suppress annotating with ROI IDs
 
-kv = getopt('qpt=''/tmp/vscope_coh_polar'' width=5 height=5', varargin);
+kv = getopt('qpt=''/tmp/vscope_coh_polar'' width=5 height=5 nolabels=0', ...
+    varargin);
 if ~isempty(kv.qpt)
   qfigure(kv.qpt, kv.width, kv.height);
 end
@@ -40,6 +42,7 @@ end
 
 %% Draw points and labels
 qmarker o solid 4
+qalign left top
 for k=1:N
   if ~isnan(coh.coh(k))
     qpen(coh.cc(k,:));
@@ -47,10 +50,11 @@ for k=1:N
     y = coh.mag(k) * -sin(coh.phase(k));
     % Draw point
     qmark(x, y);
-    % Draw label
-    qat(x, y);
-    qalign left top
-    qtext(3, 3, vscope_roiid(k));
+    if ~kv.nolabels
+      % Draw label
+      qat(x, y);
+      qtext(3, 3, vscope_roiid(k));
+    end
   end
 end
 
