@@ -5,7 +5,7 @@
 #include <../nidaq/NIDAQmx.h>
 #include <base/dbg.h>
 
-DigitalIn::DigitalIn(AnalogIn *master, QString id) throw(daqException):
+DigitalIn::DigitalIn(AnalogIn *master, QString id) /*throw(daqException)*/:
   daqTask(id), master(master) {
   cmask=0;
   device().demand(); // just to make sure we have one...
@@ -23,7 +23,7 @@ void DigitalIn::setAcqLength(int nscans_) {
   nscans = nscans_;
 }
 
-void DigitalIn::commit() throw(daqException) {
+void DigitalIn::commit() /*throw(daqException)*/ {
   if (committed)
     return;
 
@@ -86,7 +86,7 @@ void DigitalIn::callbackEvery(int nscans) {
     emit dataAvailable(this,nscans);
 }
 
-int DigitalIn::countScansSoFar() throw(daqException) {
+int DigitalIn::countScansSoFar() /*throw(daqException)*/ {
   if (!committed)
     return 0;
   uInt64 data;
@@ -95,7 +95,7 @@ int DigitalIn::countScansSoFar() throw(daqException) {
   return data;
 }
   
-int DigitalIn::read(DigitalData *dest) throw(daqException) {
+int DigitalIn::read(DigitalData *dest) /*throw(daqException)*/ {
   if (!committed)
     throw daqException("DigitalIn","Cannot read when not committed");
 
@@ -155,21 +155,21 @@ int DigitalIn::read(DigitalData *dest) throw(daqException) {
   return donescans;
 }
 
-void DigitalIn::setChannelMask(uint32_t mask) throw(daqException) {
+void DigitalIn::setChannelMask(uint32_t mask) /*throw(daqException)*/ {
   cmask = mask;
 }
 
-void DigitalIn::addChannel(int lineno) throw(daqException) {
+void DigitalIn::addChannel(int lineno) /*throw(daqException)*/ {
   uint32_t one = 1;
   cmask |= one<<lineno;
 }
 
-void DigitalIn::removeChannel(int lineno) throw(daqException) {
+void DigitalIn::removeChannel(int lineno) /*throw(daqException)*/ {
   uint32_t one = 1;
   cmask &= ~(one<<lineno);
 }
 
-bool DigitalIn::hasChannel(int lineno) throw(daqException) {
+bool DigitalIn::hasChannel(int lineno) /*throw(daqException)*/ {
   uint32_t one = 1;
   return (cmask & (one<<lineno)) != 0;
 }

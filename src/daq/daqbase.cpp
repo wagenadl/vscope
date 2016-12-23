@@ -6,7 +6,7 @@
 #include <base/exception.h>
 
 void daqTry(int errcode, char const *issuer,
-	    char const *msg, char const *aux) throw(daqException) {
+	    char const *msg, char const *aux) /*throw(daqException)*/ {
   if (errcode==0)
     return;
   if (errcode==-1) {

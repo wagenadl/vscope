@@ -7,7 +7,7 @@
 #include <../nidaq/NIDAQmx.h>
 #include <base/dbg.h>
 
-DigitalOut::DigitalOut(AnalogOut *master, QString id) throw(daqException):
+DigitalOut::DigitalOut(AnalogOut *master, QString id) /*throw(daqException)*/:
   daqTask(id), master(master) {
   taskIsOutput = true;
   timeout = 0;
@@ -23,7 +23,7 @@ DigitalOut::~DigitalOut() {
   master->detachDO();
 }
 
-void DigitalOut::commit() throw(daqException) {
+void DigitalOut::commit() /*throw(daqException)*/ {
   char chname[64];
 
   if (committed)
@@ -78,7 +78,7 @@ void DigitalOut::commit() throw(daqException) {
   writeData();
 }
 
-void DigitalOut::writeData() throw(daqException) {
+void DigitalOut::writeData() /*throw(daqException)*/ {
   if (!data)
     throw daqException("DigitalOut","No data defined for production");
 
@@ -123,7 +123,7 @@ void DigitalOut::callbackDone(int status) {
   emit productionEnded(this, status ? false : true);
 }
 
-int DigitalOut::countScansSoFar() throw(daqException) {
+int DigitalOut::countScansSoFar() /*throw(daqException)*/ {
   if (!committed)
     return 0;
   uInt64 cnt;
@@ -132,25 +132,25 @@ int DigitalOut::countScansSoFar() throw(daqException) {
   return cnt;
 }
 
-void DigitalOut::setData(DigitalData *dd) throw(daqException) {
+void DigitalOut::setData(DigitalData *dd) /*throw(daqException)*/ {
   data = dd;
 }
 
-void DigitalOut::setChannelMask(uint32_t mask) throw(daqException) {
+void DigitalOut::setChannelMask(uint32_t mask) /*throw(daqException)*/ {
   cmask = mask;
 }
 
-void DigitalOut::addChannel(int lineno) throw(daqException) {
+void DigitalOut::addChannel(int lineno) /*throw(daqException)*/ {
   uint32_t one = 1;
   cmask |= one<<lineno;
 }
 
-void DigitalOut::removeChannel(int lineno) throw(daqException) {
+void DigitalOut::removeChannel(int lineno) /*throw(daqException)*/ {
   uint32_t one = 1;
   cmask &= ~(one<<lineno);
 }
 
-bool DigitalOut::hasChannel(int lineno) throw(daqException) {
+bool DigitalOut::hasChannel(int lineno) /*throw(daqException)*/ {
   uint32_t one = 1;
   return (cmask & (one<<lineno)) != 0;
 }

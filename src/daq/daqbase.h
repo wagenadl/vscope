@@ -17,7 +17,7 @@ typedef Exception daqException;
 typedef SysExc daqPerror;
 
 extern void daqTry(int errcode, char const *issuer=0,
-		   char const *msg=0, char const *aux=0) throw(daqException);
+		   char const *msg=0, char const *aux=0) /*throw(daqException)*/;
 /*:F daqTry(int errcode, char const *issuer=0, char const *msg=0)
  *:D If errcode is non-zero, throws an exception with detailed information
      based on errcode and NIDAQmx's records.
