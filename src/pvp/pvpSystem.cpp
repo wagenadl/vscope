@@ -10,7 +10,7 @@ pvpSystem::pvpSystem() {
   initialize();
 }
 
-void pvpSystem::initialize() throw(pvpException) {
+void pvpSystem::initialize() /*throw(pvpException)*/ {
   if (inited)
     return;
   
@@ -20,7 +20,7 @@ void pvpSystem::initialize() throw(pvpException) {
   inited = true;
 }
 
-void pvpSystem::closedown() throw(pvpException) {
+void pvpSystem::closedown() /*throw(pvpException)*/ {
   if (!inited)
     return;
   
@@ -30,7 +30,7 @@ void pvpSystem::closedown() throw(pvpException) {
   inited = false;
 }
 
-int pvpSystem::countCameras() throw(pvpException) {
+int pvpSystem::countCameras() /*throw(pvpException)*/ {
   initialize();
   
   int16 count;
@@ -42,7 +42,7 @@ int pvpSystem::countCameras() throw(pvpException) {
   return count;
 }
 
-QString pvpSystem::getCamName(int n) throw(pvpException) {
+QString pvpSystem::getCamName(int n) /*throw(pvpException)*/ {
   initialize();
   
   char buffer[CAM_NAME_LEN];
@@ -52,7 +52,7 @@ QString pvpSystem::getCamName(int n) throw(pvpException) {
   return buffer;
 }
 
-int pvpSystem::getPVCAMVersion() throw(pvpException) {
+int pvpSystem::getPVCAMVersion() /*throw(pvpException)*/ {
   initialize();
   
   uns16 version;
@@ -64,7 +64,7 @@ int pvpSystem::getPVCAMVersion() throw(pvpException) {
   return version;
 }
 
-void pvpSystem::reportStatus() throw(pvpException) {
+void pvpSystem::reportStatus() /*throw(pvpException)*/ {
   initialize();
   
   fprintf(stdout, "PVP System status report\n");

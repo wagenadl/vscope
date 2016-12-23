@@ -59,20 +59,20 @@ PolyBlob &PolyBlob::operator=(PolyBlob const &other) {
 
 int PolyBlob::write(FILE *ofd) const {
   size_t k = fwrite(x50.constData(),2,n,ofd);
-  if (k<0 || int(k)<n)
+  if (int(k)<n)
     throw SysExc("PolyBlob","Cannot write x-coordinates","write");
   k = fwrite(y50.constData(),2,n,ofd);
-  if (k<0 || int(k)<n)
+  if (int(k)<n)
     throw SysExc("PolyBlob","Cannot write y-coordinates","write");
   return 2*2*n;
 }
 
 int PolyBlob::read(FILE *ifd) {
   size_t k = fread(x50.data(),2,n,ifd);
-  if (k<0 || int(k)<n)
+  if (int(k)<n)
     throw SysExc("PolyBlob","Cannot read x-coordinates","read");
   k = fread(y50.data(),2,n,ifd);
-  if (k<0 || int(k)<n)
+  if (int(k)<n)
     throw SysExc("PolyBlob","Cannot read y-coordinates","read");
   recalc_center();
   return 2*2*n;

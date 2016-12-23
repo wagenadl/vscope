@@ -88,19 +88,27 @@ void pvpCamera::setExpTime(uint16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportExpTime() /*throw(pvpException)*/ {
   if (availExpTime()) {
-    pvpAccess a = accessExpTime();
-    printf("ExpTime: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getExpTime() <<"\n";
-        ss << "  min value: " << minExpTime() <<"\n";
-        ss << "  max value: " << maxExpTime() <<"\n";
-        ss << "  default value: " << defaultExpTime() <<"\n";
+    try {
+      pvpAccess a = accessExpTime();
+      printf("ExpTime: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getExpTime() <<"\n";
+          ss << "  min value: " << minExpTime() <<"\n";
+          ss << "  max value: " << maxExpTime() <<"\n";
+          ss << "  default value: " << defaultExpTime() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("ExpTime: Could not read\n");
     }
-    printf("  count: %i\n",countExpTime());
+    try {
+      printf("  count: %i\n",countExpTime());
+    } catch (pvpException) {
+      printf("ExpTime: Could not count\n");
+    }
   } else {
     printf("ExpTime is not available.\n");
   }
@@ -199,19 +207,27 @@ void pvpCamera::setExpRes(pvpCamera::ExpRes x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportExpRes() /*throw(pvpException)*/ {
   if (availExpRes()) {
-    pvpAccess a = accessExpRes();
-    printf("ExpRes: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getExpRes().decode() <<"\n";
-        ss << "  min value: " << minExpRes().decode() <<"\n";
-        ss << "  max value: " << maxExpRes().decode() <<"\n";
-        ss << "  default value: " << defaultExpRes().decode() <<"\n";
+    try {
+      pvpAccess a = accessExpRes();
+      printf("ExpRes: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getExpRes().decode() <<"\n";
+          ss << "  min value: " << minExpRes().decode() <<"\n";
+          ss << "  max value: " << maxExpRes().decode() <<"\n";
+          ss << "  default value: " << defaultExpRes().decode() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("ExpRes: Could not read\n");
     }
-    printf("  count: %i\n",countExpRes());
+    try {
+      printf("  count: %i\n",countExpRes());
+    } catch (pvpException) {
+      printf("ExpRes: Could not count\n");
+    }
   } else {
     printf("ExpRes is not available.\n");
   }
@@ -301,19 +317,27 @@ void pvpCamera::setExpResIndex(uint16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportExpResIndex() /*throw(pvpException)*/ {
   if (availExpResIndex()) {
-    pvpAccess a = accessExpResIndex();
-    printf("ExpResIndex: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getExpResIndex() <<"\n";
-        ss << "  min value: " << minExpResIndex() <<"\n";
-        ss << "  max value: " << maxExpResIndex() <<"\n";
-        ss << "  default value: " << defaultExpResIndex() <<"\n";
+    try {
+      pvpAccess a = accessExpResIndex();
+      printf("ExpResIndex: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getExpResIndex() <<"\n";
+          ss << "  min value: " << minExpResIndex() <<"\n";
+          ss << "  max value: " << maxExpResIndex() <<"\n";
+          ss << "  default value: " << defaultExpResIndex() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("ExpResIndex: Could not read\n");
     }
-    printf("  count: %i\n",countExpResIndex());
+    try {
+      printf("  count: %i\n",countExpResIndex());
+    } catch (pvpException) {
+      printf("ExpResIndex: Could not count\n");
+    }
   } else {
     printf("ExpResIndex is not available.\n");
   }
@@ -403,19 +427,27 @@ void pvpCamera::setExposureTime(uint64_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportExposureTime() /*throw(pvpException)*/ {
   if (availExposureTime()) {
-    pvpAccess a = accessExposureTime();
-    printf("ExposureTime: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getExposureTime() <<"\n";
-        ss << "  min value: " << minExposureTime() <<"\n";
-        ss << "  max value: " << maxExposureTime() <<"\n";
-        ss << "  default value: " << defaultExposureTime() <<"\n";
+    try {
+      pvpAccess a = accessExposureTime();
+      printf("ExposureTime: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getExposureTime() <<"\n";
+          ss << "  min value: " << minExposureTime() <<"\n";
+          ss << "  max value: " << maxExposureTime() <<"\n";
+          ss << "  default value: " << defaultExposureTime() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("ExposureTime: Could not read\n");
     }
-    printf("  count: %i\n",countExposureTime());
+    try {
+      printf("  count: %i\n",countExposureTime());
+    } catch (pvpException) {
+      printf("ExposureTime: Could not count\n");
+    }
   } else {
     printf("ExposureTime is not available.\n");
   }
@@ -515,19 +547,27 @@ void pvpCamera::setBofEofEnable(pvpCamera::BofEofEnable x) /*throw(pvpException)
 
 void pvpCamera::reportBofEofEnable() /*throw(pvpException)*/ {
   if (availBofEofEnable()) {
-    pvpAccess a = accessBofEofEnable();
-    printf("BofEofEnable: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getBofEofEnable().decode() <<"\n";
-        ss << "  min value: " << minBofEofEnable().decode() <<"\n";
-        ss << "  max value: " << maxBofEofEnable().decode() <<"\n";
-        ss << "  default value: " << defaultBofEofEnable().decode() <<"\n";
+    try {
+      pvpAccess a = accessBofEofEnable();
+      printf("BofEofEnable: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getBofEofEnable().decode() <<"\n";
+          ss << "  min value: " << minBofEofEnable().decode() <<"\n";
+          ss << "  max value: " << maxBofEofEnable().decode() <<"\n";
+          ss << "  default value: " << defaultBofEofEnable().decode() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("BofEofEnable: Could not read\n");
     }
-    printf("  count: %i\n",countBofEofEnable());
+    try {
+      printf("  count: %i\n",countBofEofEnable());
+    } catch (pvpException) {
+      printf("BofEofEnable: Could not count\n");
+    }
   } else {
     printf("BofEofEnable is not available.\n");
   }
@@ -617,19 +657,27 @@ void pvpCamera::setBofEofCount(uint32_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportBofEofCount() /*throw(pvpException)*/ {
   if (availBofEofCount()) {
-    pvpAccess a = accessBofEofCount();
-    printf("BofEofCount: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getBofEofCount() <<"\n";
-        ss << "  min value: " << minBofEofCount() <<"\n";
-        ss << "  max value: " << maxBofEofCount() <<"\n";
-        ss << "  default value: " << defaultBofEofCount() <<"\n";
+    try {
+      pvpAccess a = accessBofEofCount();
+      printf("BofEofCount: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getBofEofCount() <<"\n";
+          ss << "  min value: " << minBofEofCount() <<"\n";
+          ss << "  max value: " << maxBofEofCount() <<"\n";
+          ss << "  default value: " << defaultBofEofCount() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("BofEofCount: Could not read\n");
     }
-    printf("  count: %i\n",countBofEofCount());
+    try {
+      printf("  count: %i\n",countBofEofCount());
+    } catch (pvpException) {
+      printf("BofEofCount: Could not count\n");
+    }
   } else {
     printf("BofEofCount is not available.\n");
   }
@@ -719,19 +767,27 @@ void pvpCamera::setBofEofClr(bool x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportBofEofClr() /*throw(pvpException)*/ {
   if (availBofEofClr()) {
-    pvpAccess a = accessBofEofClr();
-    printf("BofEofClr: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getBofEofClr() <<"\n";
-        ss << "  min value: " << minBofEofClr() <<"\n";
-        ss << "  max value: " << maxBofEofClr() <<"\n";
-        ss << "  default value: " << defaultBofEofClr() <<"\n";
+    try {
+      pvpAccess a = accessBofEofClr();
+      printf("BofEofClr: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getBofEofClr() <<"\n";
+          ss << "  min value: " << minBofEofClr() <<"\n";
+          ss << "  max value: " << maxBofEofClr() <<"\n";
+          ss << "  default value: " << defaultBofEofClr() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("BofEofClr: Could not read\n");
     }
-    printf("  count: %i\n",countBofEofClr());
+    try {
+      printf("  count: %i\n",countBofEofClr());
+    } catch (pvpException) {
+      printf("BofEofClr: Could not count\n");
+    }
   } else {
     printf("BofEofClr is not available.\n");
   }
@@ -821,19 +877,27 @@ void pvpCamera::setCircBuffer(bool x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportCircBuffer() /*throw(pvpException)*/ {
   if (availCircBuffer()) {
-    pvpAccess a = accessCircBuffer();
-    printf("CircBuffer: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getCircBuffer() <<"\n";
-        ss << "  min value: " << minCircBuffer() <<"\n";
-        ss << "  max value: " << maxCircBuffer() <<"\n";
-        ss << "  default value: " << defaultCircBuffer() <<"\n";
+    try {
+      pvpAccess a = accessCircBuffer();
+      printf("CircBuffer: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getCircBuffer() <<"\n";
+          ss << "  min value: " << minCircBuffer() <<"\n";
+          ss << "  max value: " << maxCircBuffer() <<"\n";
+          ss << "  default value: " << defaultCircBuffer() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("CircBuffer: Could not read\n");
     }
-    printf("  count: %i\n",countCircBuffer());
+    try {
+      printf("  count: %i\n",countCircBuffer());
+    } catch (pvpException) {
+      printf("CircBuffer: Could not count\n");
+    }
   } else {
     printf("CircBuffer is not available.\n");
   }
@@ -923,19 +987,27 @@ void pvpCamera::setFrameBufferSize(uint64_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportFrameBufferSize() /*throw(pvpException)*/ {
   if (availFrameBufferSize()) {
-    pvpAccess a = accessFrameBufferSize();
-    printf("FrameBufferSize: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getFrameBufferSize() <<"\n";
-        ss << "  min value: " << minFrameBufferSize() <<"\n";
-        ss << "  max value: " << maxFrameBufferSize() <<"\n";
-        ss << "  default value: " << defaultFrameBufferSize() <<"\n";
+    try {
+      pvpAccess a = accessFrameBufferSize();
+      printf("FrameBufferSize: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getFrameBufferSize() <<"\n";
+          ss << "  min value: " << minFrameBufferSize() <<"\n";
+          ss << "  max value: " << maxFrameBufferSize() <<"\n";
+          ss << "  default value: " << defaultFrameBufferSize() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("FrameBufferSize: Could not read\n");
     }
-    printf("  count: %i\n",countFrameBufferSize());
+    try {
+      printf("  count: %i\n",countFrameBufferSize());
+    } catch (pvpException) {
+      printf("FrameBufferSize: Could not count\n");
+    }
   } else {
     printf("FrameBufferSize is not available.\n");
   }
@@ -1035,19 +1107,27 @@ void pvpCamera::setBinningSer(pvpCamera::BinningSer x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportBinningSer() /*throw(pvpException)*/ {
   if (availBinningSer()) {
-    pvpAccess a = accessBinningSer();
-    printf("BinningSer: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getBinningSer().decode() <<"\n";
-        ss << "  min value: " << minBinningSer().decode() <<"\n";
-        ss << "  max value: " << maxBinningSer().decode() <<"\n";
-        ss << "  default value: " << defaultBinningSer().decode() <<"\n";
+    try {
+      pvpAccess a = accessBinningSer();
+      printf("BinningSer: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getBinningSer().decode() <<"\n";
+          ss << "  min value: " << minBinningSer().decode() <<"\n";
+          ss << "  max value: " << maxBinningSer().decode() <<"\n";
+          ss << "  default value: " << defaultBinningSer().decode() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("BinningSer: Could not read\n");
     }
-    printf("  count: %i\n",countBinningSer());
+    try {
+      printf("  count: %i\n",countBinningSer());
+    } catch (pvpException) {
+      printf("BinningSer: Could not count\n");
+    }
   } else {
     printf("BinningSer is not available.\n");
   }
@@ -1147,19 +1227,27 @@ void pvpCamera::setBinningPar(pvpCamera::BinningPar x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportBinningPar() /*throw(pvpException)*/ {
   if (availBinningPar()) {
-    pvpAccess a = accessBinningPar();
-    printf("BinningPar: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getBinningPar().decode() <<"\n";
-        ss << "  min value: " << minBinningPar().decode() <<"\n";
-        ss << "  max value: " << maxBinningPar().decode() <<"\n";
-        ss << "  default value: " << defaultBinningPar().decode() <<"\n";
+    try {
+      pvpAccess a = accessBinningPar();
+      printf("BinningPar: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getBinningPar().decode() <<"\n";
+          ss << "  min value: " << minBinningPar().decode() <<"\n";
+          ss << "  max value: " << maxBinningPar().decode() <<"\n";
+          ss << "  default value: " << defaultBinningPar().decode() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("BinningPar: Could not read\n");
     }
-    printf("  count: %i\n",countBinningPar());
+    try {
+      printf("  count: %i\n",countBinningPar());
+    } catch (pvpException) {
+      printf("BinningPar: Could not count\n");
+    }
   } else {
     printf("BinningPar is not available.\n");
   }
@@ -1249,19 +1337,27 @@ void pvpCamera::setMetadataEnabled(bool x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportMetadataEnabled() /*throw(pvpException)*/ {
   if (availMetadataEnabled()) {
-    pvpAccess a = accessMetadataEnabled();
-    printf("MetadataEnabled: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getMetadataEnabled() <<"\n";
-        ss << "  min value: " << minMetadataEnabled() <<"\n";
-        ss << "  max value: " << maxMetadataEnabled() <<"\n";
-        ss << "  default value: " << defaultMetadataEnabled() <<"\n";
+    try {
+      pvpAccess a = accessMetadataEnabled();
+      printf("MetadataEnabled: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getMetadataEnabled() <<"\n";
+          ss << "  min value: " << minMetadataEnabled() <<"\n";
+          ss << "  max value: " << maxMetadataEnabled() <<"\n";
+          ss << "  default value: " << defaultMetadataEnabled() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("MetadataEnabled: Could not read\n");
     }
-    printf("  count: %i\n",countMetadataEnabled());
+    try {
+      printf("  count: %i\n",countMetadataEnabled());
+    } catch (pvpException) {
+      printf("MetadataEnabled: Could not count\n");
+    }
   } else {
     printf("MetadataEnabled is not available.\n");
   }
@@ -1351,19 +1447,27 @@ void pvpCamera::setRoiCount(uint16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportRoiCount() /*throw(pvpException)*/ {
   if (availRoiCount()) {
-    pvpAccess a = accessRoiCount();
-    printf("RoiCount: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getRoiCount() <<"\n";
-        ss << "  min value: " << minRoiCount() <<"\n";
-        ss << "  max value: " << maxRoiCount() <<"\n";
-        ss << "  default value: " << defaultRoiCount() <<"\n";
+    try {
+      pvpAccess a = accessRoiCount();
+      printf("RoiCount: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getRoiCount() <<"\n";
+          ss << "  min value: " << minRoiCount() <<"\n";
+          ss << "  max value: " << maxRoiCount() <<"\n";
+          ss << "  default value: " << defaultRoiCount() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("RoiCount: Could not read\n");
     }
-    printf("  count: %i\n",countRoiCount());
+    try {
+      printf("  count: %i\n",countRoiCount());
+    } catch (pvpException) {
+      printf("RoiCount: Could not count\n");
+    }
   } else {
     printf("RoiCount is not available.\n");
   }
@@ -1453,19 +1557,27 @@ void pvpCamera::setCentroidsEnabled(bool x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportCentroidsEnabled() /*throw(pvpException)*/ {
   if (availCentroidsEnabled()) {
-    pvpAccess a = accessCentroidsEnabled();
-    printf("CentroidsEnabled: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getCentroidsEnabled() <<"\n";
-        ss << "  min value: " << minCentroidsEnabled() <<"\n";
-        ss << "  max value: " << maxCentroidsEnabled() <<"\n";
-        ss << "  default value: " << defaultCentroidsEnabled() <<"\n";
+    try {
+      pvpAccess a = accessCentroidsEnabled();
+      printf("CentroidsEnabled: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getCentroidsEnabled() <<"\n";
+          ss << "  min value: " << minCentroidsEnabled() <<"\n";
+          ss << "  max value: " << maxCentroidsEnabled() <<"\n";
+          ss << "  default value: " << defaultCentroidsEnabled() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("CentroidsEnabled: Could not read\n");
     }
-    printf("  count: %i\n",countCentroidsEnabled());
+    try {
+      printf("  count: %i\n",countCentroidsEnabled());
+    } catch (pvpException) {
+      printf("CentroidsEnabled: Could not count\n");
+    }
   } else {
     printf("CentroidsEnabled is not available.\n");
   }
@@ -1555,19 +1667,27 @@ void pvpCamera::setCentroidsRadius(uint16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportCentroidsRadius() /*throw(pvpException)*/ {
   if (availCentroidsRadius()) {
-    pvpAccess a = accessCentroidsRadius();
-    printf("CentroidsRadius: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getCentroidsRadius() <<"\n";
-        ss << "  min value: " << minCentroidsRadius() <<"\n";
-        ss << "  max value: " << maxCentroidsRadius() <<"\n";
-        ss << "  default value: " << defaultCentroidsRadius() <<"\n";
+    try {
+      pvpAccess a = accessCentroidsRadius();
+      printf("CentroidsRadius: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getCentroidsRadius() <<"\n";
+          ss << "  min value: " << minCentroidsRadius() <<"\n";
+          ss << "  max value: " << maxCentroidsRadius() <<"\n";
+          ss << "  default value: " << defaultCentroidsRadius() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("CentroidsRadius: Could not read\n");
     }
-    printf("  count: %i\n",countCentroidsRadius());
+    try {
+      printf("  count: %i\n",countCentroidsRadius());
+    } catch (pvpException) {
+      printf("CentroidsRadius: Could not count\n");
+    }
   } else {
     printf("CentroidsRadius is not available.\n");
   }
@@ -1657,19 +1777,27 @@ void pvpCamera::setCentroidsCount(uint16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportCentroidsCount() /*throw(pvpException)*/ {
   if (availCentroidsCount()) {
-    pvpAccess a = accessCentroidsCount();
-    printf("CentroidsCount: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getCentroidsCount() <<"\n";
-        ss << "  min value: " << minCentroidsCount() <<"\n";
-        ss << "  max value: " << maxCentroidsCount() <<"\n";
-        ss << "  default value: " << defaultCentroidsCount() <<"\n";
+    try {
+      pvpAccess a = accessCentroidsCount();
+      printf("CentroidsCount: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getCentroidsCount() <<"\n";
+          ss << "  min value: " << minCentroidsCount() <<"\n";
+          ss << "  max value: " << maxCentroidsCount() <<"\n";
+          ss << "  default value: " << defaultCentroidsCount() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("CentroidsCount: Could not read\n");
     }
-    printf("  count: %i\n",countCentroidsCount());
+    try {
+      printf("  count: %i\n",countCentroidsCount());
+    } catch (pvpException) {
+      printf("CentroidsCount: Could not count\n");
+    }
   } else {
     printf("CentroidsCount is not available.\n");
   }
@@ -1766,19 +1894,27 @@ void pvpCamera::setTrigtabSignal(pvpCamera::TrigtabSignal x) /*throw(pvpExceptio
 
 void pvpCamera::reportTrigtabSignal() /*throw(pvpException)*/ {
   if (availTrigtabSignal()) {
-    pvpAccess a = accessTrigtabSignal();
-    printf("TrigtabSignal: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getTrigtabSignal().decode() <<"\n";
-        ss << "  min value: " << minTrigtabSignal().decode() <<"\n";
-        ss << "  max value: " << maxTrigtabSignal().decode() <<"\n";
-        ss << "  default value: " << defaultTrigtabSignal().decode() <<"\n";
+    try {
+      pvpAccess a = accessTrigtabSignal();
+      printf("TrigtabSignal: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getTrigtabSignal().decode() <<"\n";
+          ss << "  min value: " << minTrigtabSignal().decode() <<"\n";
+          ss << "  max value: " << maxTrigtabSignal().decode() <<"\n";
+          ss << "  default value: " << defaultTrigtabSignal().decode() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("TrigtabSignal: Could not read\n");
     }
-    printf("  count: %i\n",countTrigtabSignal());
+    try {
+      printf("  count: %i\n",countTrigtabSignal());
+    } catch (pvpException) {
+      printf("TrigtabSignal: Could not count\n");
+    }
   } else {
     printf("TrigtabSignal is not available.\n");
   }
@@ -1868,19 +2004,27 @@ void pvpCamera::setLastMuxedSignal(unsigned char x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportLastMuxedSignal() /*throw(pvpException)*/ {
   if (availLastMuxedSignal()) {
-    pvpAccess a = accessLastMuxedSignal();
-    printf("LastMuxedSignal: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getLastMuxedSignal() <<"\n";
-        ss << "  min value: " << minLastMuxedSignal() <<"\n";
-        ss << "  max value: " << maxLastMuxedSignal() <<"\n";
-        ss << "  default value: " << defaultLastMuxedSignal() <<"\n";
+    try {
+      pvpAccess a = accessLastMuxedSignal();
+      printf("LastMuxedSignal: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getLastMuxedSignal() <<"\n";
+          ss << "  min value: " << minLastMuxedSignal() <<"\n";
+          ss << "  max value: " << maxLastMuxedSignal() <<"\n";
+          ss << "  default value: " << defaultLastMuxedSignal() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("LastMuxedSignal: Could not read\n");
     }
-    printf("  count: %i\n",countLastMuxedSignal());
+    try {
+      printf("  count: %i\n",countLastMuxedSignal());
+    } catch (pvpException) {
+      printf("LastMuxedSignal: Could not count\n");
+    }
   } else {
     printf("LastMuxedSignal is not available.\n");
   }

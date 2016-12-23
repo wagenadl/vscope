@@ -415,19 +415,27 @@ EOF
   $fcpp[$pclass]->print(<<"EOF");
 void pvp$CLASSNAMES{$pclass}::report$nicename() /*throw(pvpException)*/ {
   if (avail$nicename()) {
-    pvpAccess a = access$nicename();
-    printf("$nicename: \%s\\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << get$nicename()$ref <<"\\n";
-        ss << "  min value: " << min$nicename()$ref <<"\\n";
-        ss << "  max value: " << max$nicename()$ref <<"\\n";
-        ss << "  default value: " << default$nicename()$ref <<"\\n";
+    try {
+      pvpAccess a = access$nicename();
+      printf("$nicename: \%s\\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << get$nicename()$ref <<"\\n";
+          ss << "  min value: " << min$nicename()$ref <<"\\n";
+          ss << "  max value: " << max$nicename()$ref <<"\\n";
+          ss << "  default value: " << default$nicename()$ref <<"\\n";
+        }
+        printf("\%s",s.toUtf8().data());
       }
-      printf("\%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("$nicename: Could not read\\n");
     }
-    printf("  count: %i\\n",count$nicename());
+    try {
+      printf("  count: %i\\n",count$nicename());
+    } catch (pvpException) {
+      printf("$nicename: Could not count\\n");
+    }
   } else {
     printf("$nicename is not available.\\n");
   }

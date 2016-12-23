@@ -9,7 +9,7 @@
 #include <pvp/dwpvcam.h>
 #include <base/dbg.h>
 
-pvpCamera::pvpCamera(QString camname) throw(pvpException):
+pvpCamera::pvpCamera(QString camname) /*throw(pvpException)*/:
   camname(camname) {
   pvpSystem(); // ensure system is initialized
   
@@ -62,7 +62,7 @@ QString pvpCamera::getCameraChipName() {
   return availChipName() ? getChipName() : "?";
 }
 
-void pvpCamera::reportStatus() throw(pvpException) {
+void pvpCamera::reportStatus() /*throw(pvpException)*/ {
   printf("Status report for camera %s\n",camname.toUtf8().data());
   printf("Chip: %s\n", getCameraChipName().toUtf8().data());
   printf("Ser no: %s\n", serno.toUtf8().data());
@@ -77,7 +77,7 @@ void pvpCamera::reportStatus() throw(pvpException) {
   printf("End of camera status report\n");
 }
 
-void pvpCamera::reportSpeeds() throw(pvpException) {
+void pvpCamera::reportSpeeds() /*throw(pvpException)*/ {
   int K = countReadoutPort();
   int k0 = getReadoutPort();
   int n0 = getSpdtabIndex();
@@ -112,7 +112,7 @@ void pvpCamera::reportSpeeds() throw(pvpException) {
 }
 
 
-int pvpCamera::pvpTrigMode(CCDTrigMode const &tm) throw(pvpException) {
+int pvpCamera::pvpTrigMode(CCDTrigMode const &tm) /*throw(pvpException)*/ {
   switch (tm) {
   case CCDTrigMode::Immediate:
     return TIMED_MODE;
@@ -128,7 +128,7 @@ int pvpCamera::pvpTrigMode(CCDTrigMode const &tm) throw(pvpException) {
 }
 
 rgn_type pvpCamera::pvpRegion(CCDRegion const &region,
-			      CCDBinning const &bin) throw(pvpException) {
+			      CCDBinning const &bin) /*throw(pvpException)*/ {
   rgn_type rgn;
   rgn.s1 = region.smin;
   rgn.s2 = region.smax;
@@ -145,7 +145,7 @@ int32 pvpCamera::bestExposureTime(int32 t_us) {
 }
 
 int32 pvpCamera::pvpExposureTime(int32 t_us, int32 *reso_us_out)
-  throw(pvpException) {
+  /*throw(pvpException)*/ {
   int best_reso_idx = 0;
   for (int n=0; n<expres.size(); n++) {
     //if (expres[n] > t_ms/1e4 && expres[n]<expres[best_reso_idx]) {

@@ -88,19 +88,27 @@ void pvpCamera::setDdInfoLength(int16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportDdInfoLength() /*throw(pvpException)*/ {
   if (availDdInfoLength()) {
-    pvpAccess a = accessDdInfoLength();
-    printf("DdInfoLength: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdInfoLength() <<"\n";
-        ss << "  min value: " << minDdInfoLength() <<"\n";
-        ss << "  max value: " << maxDdInfoLength() <<"\n";
-        ss << "  default value: " << defaultDdInfoLength() <<"\n";
+    try {
+      pvpAccess a = accessDdInfoLength();
+      printf("DdInfoLength: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdInfoLength() <<"\n";
+          ss << "  min value: " << minDdInfoLength() <<"\n";
+          ss << "  max value: " << maxDdInfoLength() <<"\n";
+          ss << "  default value: " << defaultDdInfoLength() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdInfoLength: Could not read\n");
     }
-    printf("  count: %i\n",countDdInfoLength());
+    try {
+      printf("  count: %i\n",countDdInfoLength());
+    } catch (pvpException) {
+      printf("DdInfoLength: Could not count\n");
+    }
   } else {
     printf("DdInfoLength is not available.\n");
   }
@@ -190,19 +198,27 @@ void pvpCamera::setDdVersion(uint16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportDdVersion() /*throw(pvpException)*/ {
   if (availDdVersion()) {
-    pvpAccess a = accessDdVersion();
-    printf("DdVersion: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdVersion() <<"\n";
-        ss << "  min value: " << minDdVersion() <<"\n";
-        ss << "  max value: " << maxDdVersion() <<"\n";
-        ss << "  default value: " << defaultDdVersion() <<"\n";
+    try {
+      pvpAccess a = accessDdVersion();
+      printf("DdVersion: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdVersion() <<"\n";
+          ss << "  min value: " << minDdVersion() <<"\n";
+          ss << "  max value: " << maxDdVersion() <<"\n";
+          ss << "  default value: " << defaultDdVersion() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdVersion: Could not read\n");
     }
-    printf("  count: %i\n",countDdVersion());
+    try {
+      printf("  count: %i\n",countDdVersion());
+    } catch (pvpException) {
+      printf("DdVersion: Could not count\n");
+    }
   } else {
     printf("DdVersion is not available.\n");
   }
@@ -292,19 +308,27 @@ void pvpCamera::setDdRetries(uint16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportDdRetries() /*throw(pvpException)*/ {
   if (availDdRetries()) {
-    pvpAccess a = accessDdRetries();
-    printf("DdRetries: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdRetries() <<"\n";
-        ss << "  min value: " << minDdRetries() <<"\n";
-        ss << "  max value: " << maxDdRetries() <<"\n";
-        ss << "  default value: " << defaultDdRetries() <<"\n";
+    try {
+      pvpAccess a = accessDdRetries();
+      printf("DdRetries: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdRetries() <<"\n";
+          ss << "  min value: " << minDdRetries() <<"\n";
+          ss << "  max value: " << maxDdRetries() <<"\n";
+          ss << "  default value: " << defaultDdRetries() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdRetries: Could not read\n");
     }
-    printf("  count: %i\n",countDdRetries());
+    try {
+      printf("  count: %i\n",countDdRetries());
+    } catch (pvpException) {
+      printf("DdRetries: Could not count\n");
+    }
   } else {
     printf("DdRetries is not available.\n");
   }
@@ -394,19 +418,27 @@ void pvpCamera::setDdTimeout(uint16_t x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportDdTimeout() /*throw(pvpException)*/ {
   if (availDdTimeout()) {
-    pvpAccess a = accessDdTimeout();
-    printf("DdTimeout: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdTimeout() <<"\n";
-        ss << "  min value: " << minDdTimeout() <<"\n";
-        ss << "  max value: " << maxDdTimeout() <<"\n";
-        ss << "  default value: " << defaultDdTimeout() <<"\n";
+    try {
+      pvpAccess a = accessDdTimeout();
+      printf("DdTimeout: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdTimeout() <<"\n";
+          ss << "  min value: " << minDdTimeout() <<"\n";
+          ss << "  max value: " << maxDdTimeout() <<"\n";
+          ss << "  default value: " << defaultDdTimeout() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdTimeout: Could not read\n");
     }
-    printf("  count: %i\n",countDdTimeout());
+    try {
+      printf("  count: %i\n",countDdTimeout());
+    } catch (pvpException) {
+      printf("DdTimeout: Could not count\n");
+    }
   } else {
     printf("DdTimeout is not available.\n");
   }
@@ -481,19 +513,27 @@ void pvpCamera::setDdInfo(QString x) /*throw(pvpException)*/ {
 
 void pvpCamera::reportDdInfo() /*throw(pvpException)*/ {
   if (availDdInfo()) {
-    pvpAccess a = accessDdInfo();
-    printf("DdInfo: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdInfo() <<"\n";
-        ss << "  min value: " << minDdInfo() <<"\n";
-        ss << "  max value: " << maxDdInfo() <<"\n";
-        ss << "  default value: " << defaultDdInfo() <<"\n";
+    try {
+      pvpAccess a = accessDdInfo();
+      printf("DdInfo: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdInfo() <<"\n";
+          ss << "  min value: " << minDdInfo() <<"\n";
+          ss << "  max value: " << maxDdInfo() <<"\n";
+          ss << "  default value: " << defaultDdInfo() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdInfo: Could not read\n");
     }
-    printf("  count: %i\n",countDdInfo());
+    try {
+      printf("  count: %i\n",countDdInfo());
+    } catch (pvpException) {
+      printf("DdInfo: Could not count\n");
+    }
   } else {
     printf("DdInfo is not available.\n");
   }
