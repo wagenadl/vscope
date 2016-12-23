@@ -120,8 +120,6 @@ QWidget *makeBanner2(QWidget *parent) {
 }
 
 void setupAppStyle(QApplication &app) {
-  //  app.setStyle(new QPlastiqueStyle);
-  
   QFont f = app.font();
   f.setFamily(BUTTON_FontFamily);
   f.setPixelSize(BUTTON_FontSize);
@@ -256,6 +254,7 @@ void setupCams() {
     QString serno = Connections::findCam(id).serno;
     CamPool::rename(serno, id);
     Connections::markCameraExists(id, CamPool::findp(id));
+    CamPool::find(id).fullReport();
   }
 }
 

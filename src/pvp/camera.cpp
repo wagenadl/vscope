@@ -23,7 +23,6 @@ Camera::~Camera() {
     fprintf(stderr,"Camera: caught exception in destructor:\n");
     e.report();
   }
-
 }
 
 QString Camera::getSerialNumber() const {
@@ -150,6 +149,12 @@ QStringList Camera::cameraInfo() {
   res.append("Actual T");
   res.append(QString("%1 C").arg(pvpcam->getTemp()/100.0));
   return res;
+}
+
+void Camera::fullReport() {
+    Dbg() << "Camera report for " << id;
+  pvpcam->reportStatus();
+  pvpcam->reportSpeeds();
 }
 
 QString Camera::getID() const {

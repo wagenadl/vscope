@@ -58,21 +58,21 @@ PolyBlob &PolyBlob::operator=(PolyBlob const &other) {
 }
 
 int PolyBlob::write(FILE *ofd) const {
-  int k = fwrite(x50.constData(),2,n,ofd);
-  if (k<n)
+  size_t k = fwrite(x50.constData(),2,n,ofd);
+  if (k<0 || int(k)<n)
     throw SysExc("PolyBlob","Cannot write x-coordinates","write");
   k = fwrite(y50.constData(),2,n,ofd);
-  if (k<n)
+  if (k<0 || int(k)<n)
     throw SysExc("PolyBlob","Cannot write y-coordinates","write");
   return 2*2*n;
 }
 
 int PolyBlob::read(FILE *ifd) {
-  int k = fread(x50.data(),2,n,ifd);
-  if (k<n)
+  size_t k = fread(x50.data(),2,n,ifd);
+  if (k<0 || int(k)<n)
     throw SysExc("PolyBlob","Cannot read x-coordinates","read");
   k = fread(y50.data(),2,n,ifd);
-  if (k<n)
+  if (k<0 || int(k)<n)
     throw SysExc("PolyBlob","Cannot read y-coordinates","read");
   recalc_center();
   return 2*2*n;
@@ -99,9 +99,9 @@ void PolyBlob::recenter(double x0new, double y0new) {
   double y0old = y0();
   short dx = short(POLYBLOB_SCALE * (x0new - x0old));
   short dy = short(POLYBLOB_SCALE * (y0new - y0old));
-  for (int i=0; i<n; i++) 
+  for (int i=0; i<n; i++)
     x50[i] += dx;
-  for (int i=0; i<n; i++) 
+  for (int i=0; i<n; i++)
     y50[i] += dy;
   sumx+=n*dx;
   sumy+=n*dy;
@@ -201,9 +201,9 @@ void PolyBlob::revertex(int log2m) {
     int k = m/n;
     for (int i=0; i<n; i++) {
       for (int j=0; j<k; j++) {
-	double a = j/double(k);
-	x50a[i*k+j] = short(x50[i]*(1-a) + x50[(i+1)&msk]*a);
-	y50a[i*k+j] = short(y50[i]*(1-a) + y50[(i+1)&msk]*a);
+      double a = j/double(k);
+      x50a[i*k+j] = short(x50[i]*(1-a) + x50[(i+1)&msk]*a);
+      y50a[i*k+j] = short(y50[i]*(1-a) + y50[(i+1)&msk]*a);
       }
     }
   } else {
@@ -212,8 +212,8 @@ void PolyBlob::revertex(int log2m) {
       double x=0;
       double y=0;
       for (int j=0; j<k; j++) {
-	x+=x50[i*k+j];
-	y+=y50[i*k+j];
+        x+=x50[i*k+j];
+        y+=y50[i*k+j];
       }
       x50a[i] = short(x/k+.5);
       y50a[i] = short(y/k+.5);
@@ -278,14 +278,14 @@ void PolyBlob::adjust(double x, double y, bool first) {
       set(k,x,y);
     } else if (dk>0) {
       for (int l=lastk+1; l<=k; l++) {
-	double a = double(l-lastk)/double(k-lastk);
-	set(l,(1-a)*lastx+a*x,(1-a)*lasty+a*y);
+      double a = double(l-lastk)/double(k-lastk);
+      set(l,(1-a)*lastx+a*x,(1-a)*lasty+a*y);
       }
     } else {
       // dk<0
       for (int l=lastk-1; l>=k; l--) {
-	double a = double(lastk-l)/double(lastk-k);
-	set(l,(1-a)*lastx+a*x,(1-a)*lasty+a*y);
+        double a = double(lastk-l)/double(lastk-k);
+        set(l,(1-a)*lastx+a*x,(1-a)*lasty+a*y);
       }
     }	
   }
