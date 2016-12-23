@@ -4,14 +4,14 @@
 #include <QTextStream>
 #include <pvp/dwpvcam.h>
 
-bool pvpCamera::availAdcOffset() throw(pvpException) {
+bool pvpCamera::availAdcOffset() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_ADC_OFFSET,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get ADC_OFFSET availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessAdcOffset() throw(pvpException) {
+pvpAccess pvpCamera::accessAdcOffset() /*throw(pvpException)*/ {
   uns16 access;
   if (!availAdcOffset())
     throw pvpException("ADC_OFFSET not available");
@@ -20,7 +20,7 @@ pvpAccess pvpCamera::accessAdcOffset() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countAdcOffset() throw(pvpException) {
+int pvpCamera::countAdcOffset() /*throw(pvpException)*/ {
   uns32 count;
   if (!availAdcOffset())
     throw pvpException("ADC_OFFSET not available");
@@ -29,7 +29,7 @@ int pvpCamera::countAdcOffset() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getAdcOffset() throw(pvpException) {
+int16_t pvpCamera::getAdcOffset() /*throw(pvpException)*/ {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -41,7 +41,7 @@ int16_t pvpCamera::getAdcOffset() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultAdcOffset() throw(pvpException) {
+int16_t pvpCamera::defaultAdcOffset() /*throw(pvpException)*/ {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -53,7 +53,7 @@ int16_t pvpCamera::defaultAdcOffset() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minAdcOffset() throw(pvpException) {
+int16_t pvpCamera::minAdcOffset() /*throw(pvpException)*/ {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -65,7 +65,7 @@ int16_t pvpCamera::minAdcOffset() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxAdcOffset() throw(pvpException) {
+int16_t pvpCamera::maxAdcOffset() /*throw(pvpException)*/ {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -77,7 +77,7 @@ int16_t pvpCamera::maxAdcOffset() throw(pvpException) {
   }
 }
 
-void pvpCamera::setAdcOffset(int16_t x) throw(pvpException) {
+void pvpCamera::setAdcOffset(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessAdcOffset();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -86,7 +86,7 @@ void pvpCamera::setAdcOffset(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportAdcOffset() throw(pvpException) {
+void pvpCamera::reportAdcOffset() /*throw(pvpException)*/ {
   if (availAdcOffset()) {
     pvpAccess a = accessAdcOffset();
     printf("AdcOffset: %s\n",a.decode());
@@ -106,14 +106,14 @@ void pvpCamera::reportAdcOffset() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availChipName() throw(pvpException) {
+bool pvpCamera::availChipName() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_CHIP_NAME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get CHIP_NAME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessChipName() throw(pvpException) {
+pvpAccess pvpCamera::accessChipName() /*throw(pvpException)*/ {
   uns16 access;
   if (!availChipName())
     throw pvpException("CHIP_NAME not available");
@@ -122,7 +122,7 @@ pvpAccess pvpCamera::accessChipName() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countChipName() throw(pvpException) {
+int pvpCamera::countChipName() /*throw(pvpException)*/ {
   uns32 count;
   if (!availChipName())
     throw pvpException("CHIP_NAME not available");
@@ -131,7 +131,7 @@ int pvpCamera::countChipName() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getChipName() throw(pvpException) {
+QString pvpCamera::getChipName() /*throw(pvpException)*/ {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(CCD_NAME_LEN, 0);
@@ -144,7 +144,7 @@ QString pvpCamera::getChipName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultChipName() throw(pvpException) {
+QString pvpCamera::defaultChipName() /*throw(pvpException)*/ {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(CCD_NAME_LEN, 0);
@@ -157,15 +157,15 @@ QString pvpCamera::defaultChipName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minChipName() throw(pvpException) {
+QString pvpCamera::minChipName() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxChipName() throw(pvpException) {
+QString pvpCamera::maxChipName() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setChipName(QString x) throw(pvpException) {
+void pvpCamera::setChipName(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessChipName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_CHIP_NAME,(void*)(x.toUtf8().data())))
@@ -173,7 +173,7 @@ void pvpCamera::setChipName(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportChipName() throw(pvpException) {
+void pvpCamera::reportChipName() /*throw(pvpException)*/ {
   if (availChipName()) {
     pvpAccess a = accessChipName();
     printf("ChipName: %s\n",a.decode());
@@ -193,14 +193,14 @@ void pvpCamera::reportChipName() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availSystemName() throw(pvpException) {
+bool pvpCamera::availSystemName() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SYSTEM_NAME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SYSTEM_NAME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessSystemName() throw(pvpException) {
+pvpAccess pvpCamera::accessSystemName() /*throw(pvpException)*/ {
   uns16 access;
   if (!availSystemName())
     throw pvpException("SYSTEM_NAME not available");
@@ -209,7 +209,7 @@ pvpAccess pvpCamera::accessSystemName() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countSystemName() throw(pvpException) {
+int pvpCamera::countSystemName() /*throw(pvpException)*/ {
   uns32 count;
   if (!availSystemName())
     throw pvpException("SYSTEM_NAME not available");
@@ -218,7 +218,7 @@ int pvpCamera::countSystemName() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getSystemName() throw(pvpException) {
+QString pvpCamera::getSystemName() /*throw(pvpException)*/ {
   pvpAccess a = accessSystemName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_SYSTEM_NAME_LEN, 0);
@@ -231,7 +231,7 @@ QString pvpCamera::getSystemName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultSystemName() throw(pvpException) {
+QString pvpCamera::defaultSystemName() /*throw(pvpException)*/ {
   pvpAccess a = accessSystemName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_SYSTEM_NAME_LEN, 0);
@@ -244,15 +244,15 @@ QString pvpCamera::defaultSystemName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minSystemName() throw(pvpException) {
+QString pvpCamera::minSystemName() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxSystemName() throw(pvpException) {
+QString pvpCamera::maxSystemName() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setSystemName(QString x) throw(pvpException) {
+void pvpCamera::setSystemName(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessSystemName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_SYSTEM_NAME,(void*)(x.toUtf8().data())))
@@ -260,7 +260,7 @@ void pvpCamera::setSystemName(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportSystemName() throw(pvpException) {
+void pvpCamera::reportSystemName() /*throw(pvpException)*/ {
   if (availSystemName()) {
     pvpAccess a = accessSystemName();
     printf("SystemName: %s\n",a.decode());
@@ -280,14 +280,14 @@ void pvpCamera::reportSystemName() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availVendorName() throw(pvpException) {
+bool pvpCamera::availVendorName() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_VENDOR_NAME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get VENDOR_NAME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessVendorName() throw(pvpException) {
+pvpAccess pvpCamera::accessVendorName() /*throw(pvpException)*/ {
   uns16 access;
   if (!availVendorName())
     throw pvpException("VENDOR_NAME not available");
@@ -296,7 +296,7 @@ pvpAccess pvpCamera::accessVendorName() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countVendorName() throw(pvpException) {
+int pvpCamera::countVendorName() /*throw(pvpException)*/ {
   uns32 count;
   if (!availVendorName())
     throw pvpException("VENDOR_NAME not available");
@@ -305,7 +305,7 @@ int pvpCamera::countVendorName() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getVendorName() throw(pvpException) {
+QString pvpCamera::getVendorName() /*throw(pvpException)*/ {
   pvpAccess a = accessVendorName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_VENDOR_NAME_LEN, 0);
@@ -318,7 +318,7 @@ QString pvpCamera::getVendorName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultVendorName() throw(pvpException) {
+QString pvpCamera::defaultVendorName() /*throw(pvpException)*/ {
   pvpAccess a = accessVendorName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_VENDOR_NAME_LEN, 0);
@@ -331,15 +331,15 @@ QString pvpCamera::defaultVendorName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minVendorName() throw(pvpException) {
+QString pvpCamera::minVendorName() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxVendorName() throw(pvpException) {
+QString pvpCamera::maxVendorName() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setVendorName(QString x) throw(pvpException) {
+void pvpCamera::setVendorName(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessVendorName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_VENDOR_NAME,(void*)(x.toUtf8().data())))
@@ -347,7 +347,7 @@ void pvpCamera::setVendorName(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportVendorName() throw(pvpException) {
+void pvpCamera::reportVendorName() /*throw(pvpException)*/ {
   if (availVendorName()) {
     pvpAccess a = accessVendorName();
     printf("VendorName: %s\n",a.decode());
@@ -367,14 +367,14 @@ void pvpCamera::reportVendorName() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availProductName() throw(pvpException) {
+bool pvpCamera::availProductName() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PRODUCT_NAME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PRODUCT_NAME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessProductName() throw(pvpException) {
+pvpAccess pvpCamera::accessProductName() /*throw(pvpException)*/ {
   uns16 access;
   if (!availProductName())
     throw pvpException("PRODUCT_NAME not available");
@@ -383,7 +383,7 @@ pvpAccess pvpCamera::accessProductName() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countProductName() throw(pvpException) {
+int pvpCamera::countProductName() /*throw(pvpException)*/ {
   uns32 count;
   if (!availProductName())
     throw pvpException("PRODUCT_NAME not available");
@@ -392,7 +392,7 @@ int pvpCamera::countProductName() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getProductName() throw(pvpException) {
+QString pvpCamera::getProductName() /*throw(pvpException)*/ {
   pvpAccess a = accessProductName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_PRODUCT_NAME_LEN, 0);
@@ -405,7 +405,7 @@ QString pvpCamera::getProductName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultProductName() throw(pvpException) {
+QString pvpCamera::defaultProductName() /*throw(pvpException)*/ {
   pvpAccess a = accessProductName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_PRODUCT_NAME_LEN, 0);
@@ -418,15 +418,15 @@ QString pvpCamera::defaultProductName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minProductName() throw(pvpException) {
+QString pvpCamera::minProductName() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxProductName() throw(pvpException) {
+QString pvpCamera::maxProductName() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setProductName(QString x) throw(pvpException) {
+void pvpCamera::setProductName(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessProductName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_PRODUCT_NAME,(void*)(x.toUtf8().data())))
@@ -434,7 +434,7 @@ void pvpCamera::setProductName(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportProductName() throw(pvpException) {
+void pvpCamera::reportProductName() /*throw(pvpException)*/ {
   if (availProductName()) {
     pvpAccess a = accessProductName();
     printf("ProductName: %s\n",a.decode());
@@ -454,14 +454,14 @@ void pvpCamera::reportProductName() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availCameraPartNumber() throw(pvpException) {
+bool pvpCamera::availCameraPartNumber() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_CAMERA_PART_NUMBER,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get CAMERA_PART_NUMBER availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessCameraPartNumber() throw(pvpException) {
+pvpAccess pvpCamera::accessCameraPartNumber() /*throw(pvpException)*/ {
   uns16 access;
   if (!availCameraPartNumber())
     throw pvpException("CAMERA_PART_NUMBER not available");
@@ -470,7 +470,7 @@ pvpAccess pvpCamera::accessCameraPartNumber() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countCameraPartNumber() throw(pvpException) {
+int pvpCamera::countCameraPartNumber() /*throw(pvpException)*/ {
   uns32 count;
   if (!availCameraPartNumber())
     throw pvpException("CAMERA_PART_NUMBER not available");
@@ -479,7 +479,7 @@ int pvpCamera::countCameraPartNumber() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getCameraPartNumber() throw(pvpException) {
+QString pvpCamera::getCameraPartNumber() /*throw(pvpException)*/ {
   pvpAccess a = accessCameraPartNumber();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_CAM_PART_NUM_LEN, 0);
@@ -492,7 +492,7 @@ QString pvpCamera::getCameraPartNumber() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultCameraPartNumber() throw(pvpException) {
+QString pvpCamera::defaultCameraPartNumber() /*throw(pvpException)*/ {
   pvpAccess a = accessCameraPartNumber();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_CAM_PART_NUM_LEN, 0);
@@ -505,15 +505,15 @@ QString pvpCamera::defaultCameraPartNumber() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minCameraPartNumber() throw(pvpException) {
+QString pvpCamera::minCameraPartNumber() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxCameraPartNumber() throw(pvpException) {
+QString pvpCamera::maxCameraPartNumber() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setCameraPartNumber(QString x) throw(pvpException) {
+void pvpCamera::setCameraPartNumber(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessCameraPartNumber();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_CAMERA_PART_NUMBER,(void*)(x.toUtf8().data())))
@@ -521,7 +521,7 @@ void pvpCamera::setCameraPartNumber(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportCameraPartNumber() throw(pvpException) {
+void pvpCamera::reportCameraPartNumber() /*throw(pvpException)*/ {
   if (availCameraPartNumber()) {
     pvpAccess a = accessCameraPartNumber();
     printf("CameraPartNumber: %s\n",a.decode());
@@ -549,14 +549,14 @@ char const *pvpCamera::CoolingMode::decode() const {
   }
 }
 
-bool pvpCamera::availCoolingMode() throw(pvpException) {
+bool pvpCamera::availCoolingMode() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_COOLING_MODE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get COOLING_MODE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessCoolingMode() throw(pvpException) {
+pvpAccess pvpCamera::accessCoolingMode() /*throw(pvpException)*/ {
   uns16 access;
   if (!availCoolingMode())
     throw pvpException("COOLING_MODE not available");
@@ -565,7 +565,7 @@ pvpAccess pvpCamera::accessCoolingMode() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countCoolingMode() throw(pvpException) {
+int pvpCamera::countCoolingMode() /*throw(pvpException)*/ {
   uns32 count;
   if (!availCoolingMode())
     throw pvpException("COOLING_MODE not available");
@@ -574,7 +574,7 @@ int pvpCamera::countCoolingMode() throw(pvpException) {
   return count;
 }
 
-pvpCamera::CoolingMode pvpCamera::getCoolingMode() throw(pvpException) {
+pvpCamera::CoolingMode pvpCamera::getCoolingMode() /*throw(pvpException)*/ {
   pvpAccess a = accessCoolingMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -586,7 +586,7 @@ pvpCamera::CoolingMode pvpCamera::getCoolingMode() throw(pvpException) {
   }
 }
 
-pvpCamera::CoolingMode pvpCamera::defaultCoolingMode() throw(pvpException) {
+pvpCamera::CoolingMode pvpCamera::defaultCoolingMode() /*throw(pvpException)*/ {
   pvpAccess a = accessCoolingMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -598,7 +598,7 @@ pvpCamera::CoolingMode pvpCamera::defaultCoolingMode() throw(pvpException) {
   }
 }
 
-pvpCamera::CoolingMode pvpCamera::minCoolingMode() throw(pvpException) {
+pvpCamera::CoolingMode pvpCamera::minCoolingMode() /*throw(pvpException)*/ {
   pvpAccess a = accessCoolingMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -610,7 +610,7 @@ pvpCamera::CoolingMode pvpCamera::minCoolingMode() throw(pvpException) {
   }
 }
 
-pvpCamera::CoolingMode pvpCamera::maxCoolingMode() throw(pvpException) {
+pvpCamera::CoolingMode pvpCamera::maxCoolingMode() /*throw(pvpException)*/ {
   pvpAccess a = accessCoolingMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -622,7 +622,7 @@ pvpCamera::CoolingMode pvpCamera::maxCoolingMode() throw(pvpException) {
   }
 }
 
-void pvpCamera::setCoolingMode(pvpCamera::CoolingMode x) throw(pvpException) {
+void pvpCamera::setCoolingMode(pvpCamera::CoolingMode x) /*throw(pvpException)*/ {
   pvpAccess a = accessCoolingMode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -631,7 +631,7 @@ void pvpCamera::setCoolingMode(pvpCamera::CoolingMode x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportCoolingMode() throw(pvpException) {
+void pvpCamera::reportCoolingMode() /*throw(pvpException)*/ {
   if (availCoolingMode()) {
     pvpAccess a = accessCoolingMode();
     printf("CoolingMode: %s\n",a.decode());
@@ -651,14 +651,14 @@ void pvpCamera::reportCoolingMode() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPreampDelay() throw(pvpException) {
+bool pvpCamera::availPreampDelay() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PREAMP_DELAY,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PREAMP_DELAY availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPreampDelay() throw(pvpException) {
+pvpAccess pvpCamera::accessPreampDelay() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPreampDelay())
     throw pvpException("PREAMP_DELAY not available");
@@ -667,7 +667,7 @@ pvpAccess pvpCamera::accessPreampDelay() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPreampDelay() throw(pvpException) {
+int pvpCamera::countPreampDelay() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPreampDelay())
     throw pvpException("PREAMP_DELAY not available");
@@ -676,7 +676,7 @@ int pvpCamera::countPreampDelay() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPreampDelay() throw(pvpException) {
+uint16_t pvpCamera::getPreampDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -688,7 +688,7 @@ uint16_t pvpCamera::getPreampDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPreampDelay() throw(pvpException) {
+uint16_t pvpCamera::defaultPreampDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -700,7 +700,7 @@ uint16_t pvpCamera::defaultPreampDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPreampDelay() throw(pvpException) {
+uint16_t pvpCamera::minPreampDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -712,7 +712,7 @@ uint16_t pvpCamera::minPreampDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPreampDelay() throw(pvpException) {
+uint16_t pvpCamera::maxPreampDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -724,7 +724,7 @@ uint16_t pvpCamera::maxPreampDelay() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPreampDelay(uint16_t x) throw(pvpException) {
+void pvpCamera::setPreampDelay(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPreampDelay();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -733,7 +733,7 @@ void pvpCamera::setPreampDelay(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPreampDelay() throw(pvpException) {
+void pvpCamera::reportPreampDelay() /*throw(pvpException)*/ {
   if (availPreampDelay()) {
     pvpAccess a = accessPreampDelay();
     printf("PreampDelay: %s\n",a.decode());
@@ -765,14 +765,14 @@ char const *pvpCamera::ColorMode::decode() const {
   }
 }
 
-bool pvpCamera::availColorMode() throw(pvpException) {
+bool pvpCamera::availColorMode() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_COLOR_MODE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get COLOR_MODE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessColorMode() throw(pvpException) {
+pvpAccess pvpCamera::accessColorMode() /*throw(pvpException)*/ {
   uns16 access;
   if (!availColorMode())
     throw pvpException("COLOR_MODE not available");
@@ -781,7 +781,7 @@ pvpAccess pvpCamera::accessColorMode() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countColorMode() throw(pvpException) {
+int pvpCamera::countColorMode() /*throw(pvpException)*/ {
   uns32 count;
   if (!availColorMode())
     throw pvpException("COLOR_MODE not available");
@@ -790,7 +790,7 @@ int pvpCamera::countColorMode() throw(pvpException) {
   return count;
 }
 
-pvpCamera::ColorMode pvpCamera::getColorMode() throw(pvpException) {
+pvpCamera::ColorMode pvpCamera::getColorMode() /*throw(pvpException)*/ {
   pvpAccess a = accessColorMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -802,7 +802,7 @@ pvpCamera::ColorMode pvpCamera::getColorMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ColorMode pvpCamera::defaultColorMode() throw(pvpException) {
+pvpCamera::ColorMode pvpCamera::defaultColorMode() /*throw(pvpException)*/ {
   pvpAccess a = accessColorMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -814,7 +814,7 @@ pvpCamera::ColorMode pvpCamera::defaultColorMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ColorMode pvpCamera::minColorMode() throw(pvpException) {
+pvpCamera::ColorMode pvpCamera::minColorMode() /*throw(pvpException)*/ {
   pvpAccess a = accessColorMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -826,7 +826,7 @@ pvpCamera::ColorMode pvpCamera::minColorMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ColorMode pvpCamera::maxColorMode() throw(pvpException) {
+pvpCamera::ColorMode pvpCamera::maxColorMode() /*throw(pvpException)*/ {
   pvpAccess a = accessColorMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -838,7 +838,7 @@ pvpCamera::ColorMode pvpCamera::maxColorMode() throw(pvpException) {
   }
 }
 
-void pvpCamera::setColorMode(pvpCamera::ColorMode x) throw(pvpException) {
+void pvpCamera::setColorMode(pvpCamera::ColorMode x) /*throw(pvpException)*/ {
   pvpAccess a = accessColorMode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -847,7 +847,7 @@ void pvpCamera::setColorMode(pvpCamera::ColorMode x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportColorMode() throw(pvpException) {
+void pvpCamera::reportColorMode() /*throw(pvpException)*/ {
   if (availColorMode()) {
     pvpAccess a = accessColorMode();
     printf("ColorMode: %s\n",a.decode());
@@ -877,14 +877,14 @@ char const *pvpCamera::MppCapable::decode() const {
   }
 }
 
-bool pvpCamera::availMppCapable() throw(pvpException) {
+bool pvpCamera::availMppCapable() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_MPP_CAPABLE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get MPP_CAPABLE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessMppCapable() throw(pvpException) {
+pvpAccess pvpCamera::accessMppCapable() /*throw(pvpException)*/ {
   uns16 access;
   if (!availMppCapable())
     throw pvpException("MPP_CAPABLE not available");
@@ -893,7 +893,7 @@ pvpAccess pvpCamera::accessMppCapable() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countMppCapable() throw(pvpException) {
+int pvpCamera::countMppCapable() /*throw(pvpException)*/ {
   uns32 count;
   if (!availMppCapable())
     throw pvpException("MPP_CAPABLE not available");
@@ -902,7 +902,7 @@ int pvpCamera::countMppCapable() throw(pvpException) {
   return count;
 }
 
-pvpCamera::MppCapable pvpCamera::getMppCapable() throw(pvpException) {
+pvpCamera::MppCapable pvpCamera::getMppCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessMppCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -914,7 +914,7 @@ pvpCamera::MppCapable pvpCamera::getMppCapable() throw(pvpException) {
   }
 }
 
-pvpCamera::MppCapable pvpCamera::defaultMppCapable() throw(pvpException) {
+pvpCamera::MppCapable pvpCamera::defaultMppCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessMppCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -926,7 +926,7 @@ pvpCamera::MppCapable pvpCamera::defaultMppCapable() throw(pvpException) {
   }
 }
 
-pvpCamera::MppCapable pvpCamera::minMppCapable() throw(pvpException) {
+pvpCamera::MppCapable pvpCamera::minMppCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessMppCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -938,7 +938,7 @@ pvpCamera::MppCapable pvpCamera::minMppCapable() throw(pvpException) {
   }
 }
 
-pvpCamera::MppCapable pvpCamera::maxMppCapable() throw(pvpException) {
+pvpCamera::MppCapable pvpCamera::maxMppCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessMppCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -950,7 +950,7 @@ pvpCamera::MppCapable pvpCamera::maxMppCapable() throw(pvpException) {
   }
 }
 
-void pvpCamera::setMppCapable(pvpCamera::MppCapable x) throw(pvpException) {
+void pvpCamera::setMppCapable(pvpCamera::MppCapable x) /*throw(pvpException)*/ {
   pvpAccess a = accessMppCapable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -959,7 +959,7 @@ void pvpCamera::setMppCapable(pvpCamera::MppCapable x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportMppCapable() throw(pvpException) {
+void pvpCamera::reportMppCapable() /*throw(pvpException)*/ {
   if (availMppCapable()) {
     pvpAccess a = accessMppCapable();
     printf("MppCapable: %s\n",a.decode());
@@ -979,14 +979,14 @@ void pvpCamera::reportMppCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPreampOffControl() throw(pvpException) {
+bool pvpCamera::availPreampOffControl() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PREAMP_OFF_CONTROL,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PREAMP_OFF_CONTROL availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPreampOffControl() throw(pvpException) {
+pvpAccess pvpCamera::accessPreampOffControl() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPreampOffControl())
     throw pvpException("PREAMP_OFF_CONTROL not available");
@@ -995,7 +995,7 @@ pvpAccess pvpCamera::accessPreampOffControl() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPreampOffControl() throw(pvpException) {
+int pvpCamera::countPreampOffControl() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPreampOffControl())
     throw pvpException("PREAMP_OFF_CONTROL not available");
@@ -1004,7 +1004,7 @@ int pvpCamera::countPreampOffControl() throw(pvpException) {
   return count;
 }
 
-uint32_t pvpCamera::getPreampOffControl() throw(pvpException) {
+uint32_t pvpCamera::getPreampOffControl() /*throw(pvpException)*/ {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -1016,7 +1016,7 @@ uint32_t pvpCamera::getPreampOffControl() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::defaultPreampOffControl() throw(pvpException) {
+uint32_t pvpCamera::defaultPreampOffControl() /*throw(pvpException)*/ {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -1028,7 +1028,7 @@ uint32_t pvpCamera::defaultPreampOffControl() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::minPreampOffControl() throw(pvpException) {
+uint32_t pvpCamera::minPreampOffControl() /*throw(pvpException)*/ {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -1040,7 +1040,7 @@ uint32_t pvpCamera::minPreampOffControl() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::maxPreampOffControl() throw(pvpException) {
+uint32_t pvpCamera::maxPreampOffControl() /*throw(pvpException)*/ {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -1052,7 +1052,7 @@ uint32_t pvpCamera::maxPreampOffControl() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPreampOffControl(uint32_t x) throw(pvpException) {
+void pvpCamera::setPreampOffControl(uint32_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPreampOffControl();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint32_t y = x;
@@ -1061,7 +1061,7 @@ void pvpCamera::setPreampOffControl(uint32_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPreampOffControl() throw(pvpException) {
+void pvpCamera::reportPreampOffControl() /*throw(pvpException)*/ {
   if (availPreampOffControl()) {
     pvpAccess a = accessPreampOffControl();
     printf("PreampOffControl: %s\n",a.decode());
@@ -1081,14 +1081,14 @@ void pvpCamera::reportPreampOffControl() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPremask() throw(pvpException) {
+bool pvpCamera::availPremask() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PREMASK,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PREMASK availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPremask() throw(pvpException) {
+pvpAccess pvpCamera::accessPremask() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPremask())
     throw pvpException("PREMASK not available");
@@ -1097,7 +1097,7 @@ pvpAccess pvpCamera::accessPremask() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPremask() throw(pvpException) {
+int pvpCamera::countPremask() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPremask())
     throw pvpException("PREMASK not available");
@@ -1106,7 +1106,7 @@ int pvpCamera::countPremask() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPremask() throw(pvpException) {
+uint16_t pvpCamera::getPremask() /*throw(pvpException)*/ {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1118,7 +1118,7 @@ uint16_t pvpCamera::getPremask() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPremask() throw(pvpException) {
+uint16_t pvpCamera::defaultPremask() /*throw(pvpException)*/ {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1130,7 +1130,7 @@ uint16_t pvpCamera::defaultPremask() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPremask() throw(pvpException) {
+uint16_t pvpCamera::minPremask() /*throw(pvpException)*/ {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1142,7 +1142,7 @@ uint16_t pvpCamera::minPremask() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPremask() throw(pvpException) {
+uint16_t pvpCamera::maxPremask() /*throw(pvpException)*/ {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1154,7 +1154,7 @@ uint16_t pvpCamera::maxPremask() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPremask(uint16_t x) throw(pvpException) {
+void pvpCamera::setPremask(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPremask();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -1163,7 +1163,7 @@ void pvpCamera::setPremask(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPremask() throw(pvpException) {
+void pvpCamera::reportPremask() /*throw(pvpException)*/ {
   if (availPremask()) {
     pvpAccess a = accessPremask();
     printf("Premask: %s\n",a.decode());
@@ -1183,14 +1183,14 @@ void pvpCamera::reportPremask() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPrescan() throw(pvpException) {
+bool pvpCamera::availPrescan() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PRESCAN,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PRESCAN availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPrescan() throw(pvpException) {
+pvpAccess pvpCamera::accessPrescan() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPrescan())
     throw pvpException("PRESCAN not available");
@@ -1199,7 +1199,7 @@ pvpAccess pvpCamera::accessPrescan() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPrescan() throw(pvpException) {
+int pvpCamera::countPrescan() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPrescan())
     throw pvpException("PRESCAN not available");
@@ -1208,7 +1208,7 @@ int pvpCamera::countPrescan() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPrescan() throw(pvpException) {
+uint16_t pvpCamera::getPrescan() /*throw(pvpException)*/ {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1220,7 +1220,7 @@ uint16_t pvpCamera::getPrescan() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPrescan() throw(pvpException) {
+uint16_t pvpCamera::defaultPrescan() /*throw(pvpException)*/ {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1232,7 +1232,7 @@ uint16_t pvpCamera::defaultPrescan() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPrescan() throw(pvpException) {
+uint16_t pvpCamera::minPrescan() /*throw(pvpException)*/ {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1244,7 +1244,7 @@ uint16_t pvpCamera::minPrescan() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPrescan() throw(pvpException) {
+uint16_t pvpCamera::maxPrescan() /*throw(pvpException)*/ {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1256,7 +1256,7 @@ uint16_t pvpCamera::maxPrescan() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPrescan(uint16_t x) throw(pvpException) {
+void pvpCamera::setPrescan(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPrescan();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -1265,7 +1265,7 @@ void pvpCamera::setPrescan(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPrescan() throw(pvpException) {
+void pvpCamera::reportPrescan() /*throw(pvpException)*/ {
   if (availPrescan()) {
     pvpAccess a = accessPrescan();
     printf("Prescan: %s\n",a.decode());
@@ -1285,14 +1285,14 @@ void pvpCamera::reportPrescan() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPostmask() throw(pvpException) {
+bool pvpCamera::availPostmask() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_POSTMASK,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get POSTMASK availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPostmask() throw(pvpException) {
+pvpAccess pvpCamera::accessPostmask() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPostmask())
     throw pvpException("POSTMASK not available");
@@ -1301,7 +1301,7 @@ pvpAccess pvpCamera::accessPostmask() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPostmask() throw(pvpException) {
+int pvpCamera::countPostmask() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPostmask())
     throw pvpException("POSTMASK not available");
@@ -1310,7 +1310,7 @@ int pvpCamera::countPostmask() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPostmask() throw(pvpException) {
+uint16_t pvpCamera::getPostmask() /*throw(pvpException)*/ {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1322,7 +1322,7 @@ uint16_t pvpCamera::getPostmask() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPostmask() throw(pvpException) {
+uint16_t pvpCamera::defaultPostmask() /*throw(pvpException)*/ {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1334,7 +1334,7 @@ uint16_t pvpCamera::defaultPostmask() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPostmask() throw(pvpException) {
+uint16_t pvpCamera::minPostmask() /*throw(pvpException)*/ {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1346,7 +1346,7 @@ uint16_t pvpCamera::minPostmask() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPostmask() throw(pvpException) {
+uint16_t pvpCamera::maxPostmask() /*throw(pvpException)*/ {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1358,7 +1358,7 @@ uint16_t pvpCamera::maxPostmask() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPostmask(uint16_t x) throw(pvpException) {
+void pvpCamera::setPostmask(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPostmask();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -1367,7 +1367,7 @@ void pvpCamera::setPostmask(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPostmask() throw(pvpException) {
+void pvpCamera::reportPostmask() /*throw(pvpException)*/ {
   if (availPostmask()) {
     pvpAccess a = accessPostmask();
     printf("Postmask: %s\n",a.decode());
@@ -1387,14 +1387,14 @@ void pvpCamera::reportPostmask() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPostscan() throw(pvpException) {
+bool pvpCamera::availPostscan() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_POSTSCAN,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get POSTSCAN availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPostscan() throw(pvpException) {
+pvpAccess pvpCamera::accessPostscan() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPostscan())
     throw pvpException("POSTSCAN not available");
@@ -1403,7 +1403,7 @@ pvpAccess pvpCamera::accessPostscan() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPostscan() throw(pvpException) {
+int pvpCamera::countPostscan() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPostscan())
     throw pvpException("POSTSCAN not available");
@@ -1412,7 +1412,7 @@ int pvpCamera::countPostscan() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPostscan() throw(pvpException) {
+uint16_t pvpCamera::getPostscan() /*throw(pvpException)*/ {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1424,7 +1424,7 @@ uint16_t pvpCamera::getPostscan() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPostscan() throw(pvpException) {
+uint16_t pvpCamera::defaultPostscan() /*throw(pvpException)*/ {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1436,7 +1436,7 @@ uint16_t pvpCamera::defaultPostscan() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPostscan() throw(pvpException) {
+uint16_t pvpCamera::minPostscan() /*throw(pvpException)*/ {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1448,7 +1448,7 @@ uint16_t pvpCamera::minPostscan() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPostscan() throw(pvpException) {
+uint16_t pvpCamera::maxPostscan() /*throw(pvpException)*/ {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1460,7 +1460,7 @@ uint16_t pvpCamera::maxPostscan() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPostscan(uint16_t x) throw(pvpException) {
+void pvpCamera::setPostscan(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPostscan();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -1469,7 +1469,7 @@ void pvpCamera::setPostscan(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPostscan() throw(pvpException) {
+void pvpCamera::reportPostscan() /*throw(pvpException)*/ {
   if (availPostscan()) {
     pvpAccess a = accessPostscan();
     printf("Postscan: %s\n",a.decode());
@@ -1489,14 +1489,14 @@ void pvpCamera::reportPostscan() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPixParDist() throw(pvpException) {
+bool pvpCamera::availPixParDist() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PIX_PAR_DIST,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PIX_PAR_DIST availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPixParDist() throw(pvpException) {
+pvpAccess pvpCamera::accessPixParDist() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPixParDist())
     throw pvpException("PIX_PAR_DIST not available");
@@ -1505,7 +1505,7 @@ pvpAccess pvpCamera::accessPixParDist() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPixParDist() throw(pvpException) {
+int pvpCamera::countPixParDist() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPixParDist())
     throw pvpException("PIX_PAR_DIST not available");
@@ -1514,7 +1514,7 @@ int pvpCamera::countPixParDist() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPixParDist() throw(pvpException) {
+uint16_t pvpCamera::getPixParDist() /*throw(pvpException)*/ {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1526,7 +1526,7 @@ uint16_t pvpCamera::getPixParDist() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPixParDist() throw(pvpException) {
+uint16_t pvpCamera::defaultPixParDist() /*throw(pvpException)*/ {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1538,7 +1538,7 @@ uint16_t pvpCamera::defaultPixParDist() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPixParDist() throw(pvpException) {
+uint16_t pvpCamera::minPixParDist() /*throw(pvpException)*/ {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1550,7 +1550,7 @@ uint16_t pvpCamera::minPixParDist() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPixParDist() throw(pvpException) {
+uint16_t pvpCamera::maxPixParDist() /*throw(pvpException)*/ {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1562,7 +1562,7 @@ uint16_t pvpCamera::maxPixParDist() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPixParDist(uint16_t x) throw(pvpException) {
+void pvpCamera::setPixParDist(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPixParDist();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -1571,7 +1571,7 @@ void pvpCamera::setPixParDist(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPixParDist() throw(pvpException) {
+void pvpCamera::reportPixParDist() /*throw(pvpException)*/ {
   if (availPixParDist()) {
     pvpAccess a = accessPixParDist();
     printf("PixParDist: %s\n",a.decode());
@@ -1591,14 +1591,14 @@ void pvpCamera::reportPixParDist() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPixParSize() throw(pvpException) {
+bool pvpCamera::availPixParSize() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PIX_PAR_SIZE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PIX_PAR_SIZE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPixParSize() throw(pvpException) {
+pvpAccess pvpCamera::accessPixParSize() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPixParSize())
     throw pvpException("PIX_PAR_SIZE not available");
@@ -1607,7 +1607,7 @@ pvpAccess pvpCamera::accessPixParSize() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPixParSize() throw(pvpException) {
+int pvpCamera::countPixParSize() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPixParSize())
     throw pvpException("PIX_PAR_SIZE not available");
@@ -1616,7 +1616,7 @@ int pvpCamera::countPixParSize() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPixParSize() throw(pvpException) {
+uint16_t pvpCamera::getPixParSize() /*throw(pvpException)*/ {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1628,7 +1628,7 @@ uint16_t pvpCamera::getPixParSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPixParSize() throw(pvpException) {
+uint16_t pvpCamera::defaultPixParSize() /*throw(pvpException)*/ {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1640,7 +1640,7 @@ uint16_t pvpCamera::defaultPixParSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPixParSize() throw(pvpException) {
+uint16_t pvpCamera::minPixParSize() /*throw(pvpException)*/ {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1652,7 +1652,7 @@ uint16_t pvpCamera::minPixParSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPixParSize() throw(pvpException) {
+uint16_t pvpCamera::maxPixParSize() /*throw(pvpException)*/ {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1664,7 +1664,7 @@ uint16_t pvpCamera::maxPixParSize() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPixParSize(uint16_t x) throw(pvpException) {
+void pvpCamera::setPixParSize(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPixParSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -1673,7 +1673,7 @@ void pvpCamera::setPixParSize(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPixParSize() throw(pvpException) {
+void pvpCamera::reportPixParSize() /*throw(pvpException)*/ {
   if (availPixParSize()) {
     pvpAccess a = accessPixParSize();
     printf("PixParSize: %s\n",a.decode());
@@ -1693,14 +1693,14 @@ void pvpCamera::reportPixParSize() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPixSerDist() throw(pvpException) {
+bool pvpCamera::availPixSerDist() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PIX_SER_DIST,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PIX_SER_DIST availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPixSerDist() throw(pvpException) {
+pvpAccess pvpCamera::accessPixSerDist() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPixSerDist())
     throw pvpException("PIX_SER_DIST not available");
@@ -1709,7 +1709,7 @@ pvpAccess pvpCamera::accessPixSerDist() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPixSerDist() throw(pvpException) {
+int pvpCamera::countPixSerDist() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPixSerDist())
     throw pvpException("PIX_SER_DIST not available");
@@ -1718,7 +1718,7 @@ int pvpCamera::countPixSerDist() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPixSerDist() throw(pvpException) {
+uint16_t pvpCamera::getPixSerDist() /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1730,7 +1730,7 @@ uint16_t pvpCamera::getPixSerDist() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPixSerDist() throw(pvpException) {
+uint16_t pvpCamera::defaultPixSerDist() /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1742,7 +1742,7 @@ uint16_t pvpCamera::defaultPixSerDist() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPixSerDist() throw(pvpException) {
+uint16_t pvpCamera::minPixSerDist() /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1754,7 +1754,7 @@ uint16_t pvpCamera::minPixSerDist() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPixSerDist() throw(pvpException) {
+uint16_t pvpCamera::maxPixSerDist() /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1766,7 +1766,7 @@ uint16_t pvpCamera::maxPixSerDist() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPixSerDist(uint16_t x) throw(pvpException) {
+void pvpCamera::setPixSerDist(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerDist();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -1775,7 +1775,7 @@ void pvpCamera::setPixSerDist(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPixSerDist() throw(pvpException) {
+void pvpCamera::reportPixSerDist() /*throw(pvpException)*/ {
   if (availPixSerDist()) {
     pvpAccess a = accessPixSerDist();
     printf("PixSerDist: %s\n",a.decode());
@@ -1795,14 +1795,14 @@ void pvpCamera::reportPixSerDist() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPixSerSize() throw(pvpException) {
+bool pvpCamera::availPixSerSize() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PIX_SER_SIZE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PIX_SER_SIZE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPixSerSize() throw(pvpException) {
+pvpAccess pvpCamera::accessPixSerSize() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPixSerSize())
     throw pvpException("PIX_SER_SIZE not available");
@@ -1811,7 +1811,7 @@ pvpAccess pvpCamera::accessPixSerSize() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPixSerSize() throw(pvpException) {
+int pvpCamera::countPixSerSize() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPixSerSize())
     throw pvpException("PIX_SER_SIZE not available");
@@ -1820,7 +1820,7 @@ int pvpCamera::countPixSerSize() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPixSerSize() throw(pvpException) {
+uint16_t pvpCamera::getPixSerSize() /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1832,7 +1832,7 @@ uint16_t pvpCamera::getPixSerSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPixSerSize() throw(pvpException) {
+uint16_t pvpCamera::defaultPixSerSize() /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1844,7 +1844,7 @@ uint16_t pvpCamera::defaultPixSerSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPixSerSize() throw(pvpException) {
+uint16_t pvpCamera::minPixSerSize() /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1856,7 +1856,7 @@ uint16_t pvpCamera::minPixSerSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPixSerSize() throw(pvpException) {
+uint16_t pvpCamera::maxPixSerSize() /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -1868,7 +1868,7 @@ uint16_t pvpCamera::maxPixSerSize() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPixSerSize(uint16_t x) throw(pvpException) {
+void pvpCamera::setPixSerSize(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPixSerSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -1877,7 +1877,7 @@ void pvpCamera::setPixSerSize(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPixSerSize() throw(pvpException) {
+void pvpCamera::reportPixSerSize() /*throw(pvpException)*/ {
   if (availPixSerSize()) {
     pvpAccess a = accessPixSerSize();
     printf("PixSerSize: %s\n",a.decode());
@@ -1897,14 +1897,14 @@ void pvpCamera::reportPixSerSize() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availSummingWell() throw(pvpException) {
+bool pvpCamera::availSummingWell() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SUMMING_WELL,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SUMMING_WELL availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessSummingWell() throw(pvpException) {
+pvpAccess pvpCamera::accessSummingWell() /*throw(pvpException)*/ {
   uns16 access;
   if (!availSummingWell())
     throw pvpException("SUMMING_WELL not available");
@@ -1913,7 +1913,7 @@ pvpAccess pvpCamera::accessSummingWell() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countSummingWell() throw(pvpException) {
+int pvpCamera::countSummingWell() /*throw(pvpException)*/ {
   uns32 count;
   if (!availSummingWell())
     throw pvpException("SUMMING_WELL not available");
@@ -1922,7 +1922,7 @@ int pvpCamera::countSummingWell() throw(pvpException) {
   return count;
 }
 
-bool pvpCamera::getSummingWell() throw(pvpException) {
+bool pvpCamera::getSummingWell() /*throw(pvpException)*/ {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -1934,7 +1934,7 @@ bool pvpCamera::getSummingWell() throw(pvpException) {
   }
 }
 
-bool pvpCamera::defaultSummingWell() throw(pvpException) {
+bool pvpCamera::defaultSummingWell() /*throw(pvpException)*/ {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -1946,7 +1946,7 @@ bool pvpCamera::defaultSummingWell() throw(pvpException) {
   }
 }
 
-bool pvpCamera::minSummingWell() throw(pvpException) {
+bool pvpCamera::minSummingWell() /*throw(pvpException)*/ {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -1958,7 +1958,7 @@ bool pvpCamera::minSummingWell() throw(pvpException) {
   }
 }
 
-bool pvpCamera::maxSummingWell() throw(pvpException) {
+bool pvpCamera::maxSummingWell() /*throw(pvpException)*/ {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -1970,7 +1970,7 @@ bool pvpCamera::maxSummingWell() throw(pvpException) {
   }
 }
 
-void pvpCamera::setSummingWell(bool x) throw(pvpException) {
+void pvpCamera::setSummingWell(bool x) /*throw(pvpException)*/ {
   pvpAccess a = accessSummingWell();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     rs_bool y = x;
@@ -1979,7 +1979,7 @@ void pvpCamera::setSummingWell(bool x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportSummingWell() throw(pvpException) {
+void pvpCamera::reportSummingWell() /*throw(pvpException)*/ {
   if (availSummingWell()) {
     pvpAccess a = accessSummingWell();
     printf("SummingWell: %s\n",a.decode());
@@ -1999,14 +1999,14 @@ void pvpCamera::reportSummingWell() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availFwellCapacity() throw(pvpException) {
+bool pvpCamera::availFwellCapacity() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_FWELL_CAPACITY,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get FWELL_CAPACITY availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessFwellCapacity() throw(pvpException) {
+pvpAccess pvpCamera::accessFwellCapacity() /*throw(pvpException)*/ {
   uns16 access;
   if (!availFwellCapacity())
     throw pvpException("FWELL_CAPACITY not available");
@@ -2015,7 +2015,7 @@ pvpAccess pvpCamera::accessFwellCapacity() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countFwellCapacity() throw(pvpException) {
+int pvpCamera::countFwellCapacity() /*throw(pvpException)*/ {
   uns32 count;
   if (!availFwellCapacity())
     throw pvpException("FWELL_CAPACITY not available");
@@ -2024,7 +2024,7 @@ int pvpCamera::countFwellCapacity() throw(pvpException) {
   return count;
 }
 
-uint32_t pvpCamera::getFwellCapacity() throw(pvpException) {
+uint32_t pvpCamera::getFwellCapacity() /*throw(pvpException)*/ {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -2036,7 +2036,7 @@ uint32_t pvpCamera::getFwellCapacity() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::defaultFwellCapacity() throw(pvpException) {
+uint32_t pvpCamera::defaultFwellCapacity() /*throw(pvpException)*/ {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -2048,7 +2048,7 @@ uint32_t pvpCamera::defaultFwellCapacity() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::minFwellCapacity() throw(pvpException) {
+uint32_t pvpCamera::minFwellCapacity() /*throw(pvpException)*/ {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -2060,7 +2060,7 @@ uint32_t pvpCamera::minFwellCapacity() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::maxFwellCapacity() throw(pvpException) {
+uint32_t pvpCamera::maxFwellCapacity() /*throw(pvpException)*/ {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -2072,7 +2072,7 @@ uint32_t pvpCamera::maxFwellCapacity() throw(pvpException) {
   }
 }
 
-void pvpCamera::setFwellCapacity(uint32_t x) throw(pvpException) {
+void pvpCamera::setFwellCapacity(uint32_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessFwellCapacity();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint32_t y = x;
@@ -2081,7 +2081,7 @@ void pvpCamera::setFwellCapacity(uint32_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportFwellCapacity() throw(pvpException) {
+void pvpCamera::reportFwellCapacity() /*throw(pvpException)*/ {
   if (availFwellCapacity()) {
     pvpAccess a = accessFwellCapacity();
     printf("FwellCapacity: %s\n",a.decode());
@@ -2101,14 +2101,14 @@ void pvpCamera::reportFwellCapacity() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availParSize() throw(pvpException) {
+bool pvpCamera::availParSize() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PAR_SIZE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PAR_SIZE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessParSize() throw(pvpException) {
+pvpAccess pvpCamera::accessParSize() /*throw(pvpException)*/ {
   uns16 access;
   if (!availParSize())
     throw pvpException("PAR_SIZE not available");
@@ -2117,7 +2117,7 @@ pvpAccess pvpCamera::accessParSize() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countParSize() throw(pvpException) {
+int pvpCamera::countParSize() /*throw(pvpException)*/ {
   uns32 count;
   if (!availParSize())
     throw pvpException("PAR_SIZE not available");
@@ -2126,7 +2126,7 @@ int pvpCamera::countParSize() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getParSize() throw(pvpException) {
+uint16_t pvpCamera::getParSize() /*throw(pvpException)*/ {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2138,7 +2138,7 @@ uint16_t pvpCamera::getParSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultParSize() throw(pvpException) {
+uint16_t pvpCamera::defaultParSize() /*throw(pvpException)*/ {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2150,7 +2150,7 @@ uint16_t pvpCamera::defaultParSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minParSize() throw(pvpException) {
+uint16_t pvpCamera::minParSize() /*throw(pvpException)*/ {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2162,7 +2162,7 @@ uint16_t pvpCamera::minParSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxParSize() throw(pvpException) {
+uint16_t pvpCamera::maxParSize() /*throw(pvpException)*/ {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2174,7 +2174,7 @@ uint16_t pvpCamera::maxParSize() throw(pvpException) {
   }
 }
 
-void pvpCamera::setParSize(uint16_t x) throw(pvpException) {
+void pvpCamera::setParSize(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessParSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -2183,7 +2183,7 @@ void pvpCamera::setParSize(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportParSize() throw(pvpException) {
+void pvpCamera::reportParSize() /*throw(pvpException)*/ {
   if (availParSize()) {
     pvpAccess a = accessParSize();
     printf("ParSize: %s\n",a.decode());
@@ -2203,14 +2203,14 @@ void pvpCamera::reportParSize() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availSerSize() throw(pvpException) {
+bool pvpCamera::availSerSize() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SER_SIZE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SER_SIZE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessSerSize() throw(pvpException) {
+pvpAccess pvpCamera::accessSerSize() /*throw(pvpException)*/ {
   uns16 access;
   if (!availSerSize())
     throw pvpException("SER_SIZE not available");
@@ -2219,7 +2219,7 @@ pvpAccess pvpCamera::accessSerSize() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countSerSize() throw(pvpException) {
+int pvpCamera::countSerSize() /*throw(pvpException)*/ {
   uns32 count;
   if (!availSerSize())
     throw pvpException("SER_SIZE not available");
@@ -2228,7 +2228,7 @@ int pvpCamera::countSerSize() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getSerSize() throw(pvpException) {
+uint16_t pvpCamera::getSerSize() /*throw(pvpException)*/ {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2240,7 +2240,7 @@ uint16_t pvpCamera::getSerSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultSerSize() throw(pvpException) {
+uint16_t pvpCamera::defaultSerSize() /*throw(pvpException)*/ {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2252,7 +2252,7 @@ uint16_t pvpCamera::defaultSerSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minSerSize() throw(pvpException) {
+uint16_t pvpCamera::minSerSize() /*throw(pvpException)*/ {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2264,7 +2264,7 @@ uint16_t pvpCamera::minSerSize() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxSerSize() throw(pvpException) {
+uint16_t pvpCamera::maxSerSize() /*throw(pvpException)*/ {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2276,7 +2276,7 @@ uint16_t pvpCamera::maxSerSize() throw(pvpException) {
   }
 }
 
-void pvpCamera::setSerSize(uint16_t x) throw(pvpException) {
+void pvpCamera::setSerSize(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessSerSize();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -2285,7 +2285,7 @@ void pvpCamera::setSerSize(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportSerSize() throw(pvpException) {
+void pvpCamera::reportSerSize() /*throw(pvpException)*/ {
   if (availSerSize()) {
     pvpAccess a = accessSerSize();
     printf("SerSize: %s\n",a.decode());
@@ -2305,14 +2305,14 @@ void pvpCamera::reportSerSize() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availAccumCapable() throw(pvpException) {
+bool pvpCamera::availAccumCapable() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_ACCUM_CAPABLE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get ACCUM_CAPABLE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessAccumCapable() throw(pvpException) {
+pvpAccess pvpCamera::accessAccumCapable() /*throw(pvpException)*/ {
   uns16 access;
   if (!availAccumCapable())
     throw pvpException("ACCUM_CAPABLE not available");
@@ -2321,7 +2321,7 @@ pvpAccess pvpCamera::accessAccumCapable() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countAccumCapable() throw(pvpException) {
+int pvpCamera::countAccumCapable() /*throw(pvpException)*/ {
   uns32 count;
   if (!availAccumCapable())
     throw pvpException("ACCUM_CAPABLE not available");
@@ -2330,7 +2330,7 @@ int pvpCamera::countAccumCapable() throw(pvpException) {
   return count;
 }
 
-bool pvpCamera::getAccumCapable() throw(pvpException) {
+bool pvpCamera::getAccumCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2342,7 +2342,7 @@ bool pvpCamera::getAccumCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::defaultAccumCapable() throw(pvpException) {
+bool pvpCamera::defaultAccumCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2354,7 +2354,7 @@ bool pvpCamera::defaultAccumCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::minAccumCapable() throw(pvpException) {
+bool pvpCamera::minAccumCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2366,7 +2366,7 @@ bool pvpCamera::minAccumCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::maxAccumCapable() throw(pvpException) {
+bool pvpCamera::maxAccumCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2378,7 +2378,7 @@ bool pvpCamera::maxAccumCapable() throw(pvpException) {
   }
 }
 
-void pvpCamera::setAccumCapable(bool x) throw(pvpException) {
+void pvpCamera::setAccumCapable(bool x) /*throw(pvpException)*/ {
   pvpAccess a = accessAccumCapable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     rs_bool y = x;
@@ -2387,7 +2387,7 @@ void pvpCamera::setAccumCapable(bool x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportAccumCapable() throw(pvpException) {
+void pvpCamera::reportAccumCapable() /*throw(pvpException)*/ {
   if (availAccumCapable()) {
     pvpAccess a = accessAccumCapable();
     printf("AccumCapable: %s\n",a.decode());
@@ -2407,14 +2407,14 @@ void pvpCamera::reportAccumCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availFlashDwnldCapable() throw(pvpException) {
+bool pvpCamera::availFlashDwnldCapable() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_FLASH_DWNLD_CAPABLE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get FLASH_DWNLD_CAPABLE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessFlashDwnldCapable() throw(pvpException) {
+pvpAccess pvpCamera::accessFlashDwnldCapable() /*throw(pvpException)*/ {
   uns16 access;
   if (!availFlashDwnldCapable())
     throw pvpException("FLASH_DWNLD_CAPABLE not available");
@@ -2423,7 +2423,7 @@ pvpAccess pvpCamera::accessFlashDwnldCapable() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countFlashDwnldCapable() throw(pvpException) {
+int pvpCamera::countFlashDwnldCapable() /*throw(pvpException)*/ {
   uns32 count;
   if (!availFlashDwnldCapable())
     throw pvpException("FLASH_DWNLD_CAPABLE not available");
@@ -2432,7 +2432,7 @@ int pvpCamera::countFlashDwnldCapable() throw(pvpException) {
   return count;
 }
 
-bool pvpCamera::getFlashDwnldCapable() throw(pvpException) {
+bool pvpCamera::getFlashDwnldCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2444,7 +2444,7 @@ bool pvpCamera::getFlashDwnldCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::defaultFlashDwnldCapable() throw(pvpException) {
+bool pvpCamera::defaultFlashDwnldCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2456,7 +2456,7 @@ bool pvpCamera::defaultFlashDwnldCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::minFlashDwnldCapable() throw(pvpException) {
+bool pvpCamera::minFlashDwnldCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2468,7 +2468,7 @@ bool pvpCamera::minFlashDwnldCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::maxFlashDwnldCapable() throw(pvpException) {
+bool pvpCamera::maxFlashDwnldCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2480,7 +2480,7 @@ bool pvpCamera::maxFlashDwnldCapable() throw(pvpException) {
   }
 }
 
-void pvpCamera::setFlashDwnldCapable(bool x) throw(pvpException) {
+void pvpCamera::setFlashDwnldCapable(bool x) /*throw(pvpException)*/ {
   pvpAccess a = accessFlashDwnldCapable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     rs_bool y = x;
@@ -2489,7 +2489,7 @@ void pvpCamera::setFlashDwnldCapable(bool x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportFlashDwnldCapable() throw(pvpException) {
+void pvpCamera::reportFlashDwnldCapable() /*throw(pvpException)*/ {
   if (availFlashDwnldCapable()) {
     pvpAccess a = accessFlashDwnldCapable();
     printf("FlashDwnldCapable: %s\n",a.decode());
@@ -2509,14 +2509,14 @@ void pvpCamera::reportFlashDwnldCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availReadoutTime() throw(pvpException) {
+bool pvpCamera::availReadoutTime() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_READOUT_TIME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get READOUT_TIME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessReadoutTime() throw(pvpException) {
+pvpAccess pvpCamera::accessReadoutTime() /*throw(pvpException)*/ {
   uns16 access;
   if (!availReadoutTime())
     throw pvpException("READOUT_TIME not available");
@@ -2525,7 +2525,7 @@ pvpAccess pvpCamera::accessReadoutTime() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countReadoutTime() throw(pvpException) {
+int pvpCamera::countReadoutTime() /*throw(pvpException)*/ {
   uns32 count;
   if (!availReadoutTime())
     throw pvpException("READOUT_TIME not available");
@@ -2534,7 +2534,7 @@ int pvpCamera::countReadoutTime() throw(pvpException) {
   return count;
 }
 
-double pvpCamera::getReadoutTime() throw(pvpException) {
+double pvpCamera::getReadoutTime() /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     double x;
@@ -2546,7 +2546,7 @@ double pvpCamera::getReadoutTime() throw(pvpException) {
   }
 }
 
-double pvpCamera::defaultReadoutTime() throw(pvpException) {
+double pvpCamera::defaultReadoutTime() /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     double x;
@@ -2558,7 +2558,7 @@ double pvpCamera::defaultReadoutTime() throw(pvpException) {
   }
 }
 
-double pvpCamera::minReadoutTime() throw(pvpException) {
+double pvpCamera::minReadoutTime() /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     double x;
@@ -2570,7 +2570,7 @@ double pvpCamera::minReadoutTime() throw(pvpException) {
   }
 }
 
-double pvpCamera::maxReadoutTime() throw(pvpException) {
+double pvpCamera::maxReadoutTime() /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     double x;
@@ -2582,7 +2582,7 @@ double pvpCamera::maxReadoutTime() throw(pvpException) {
   }
 }
 
-void pvpCamera::setReadoutTime(double x) throw(pvpException) {
+void pvpCamera::setReadoutTime(double x) /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutTime();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     double y = x;
@@ -2591,7 +2591,7 @@ void pvpCamera::setReadoutTime(double x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportReadoutTime() throw(pvpException) {
+void pvpCamera::reportReadoutTime() /*throw(pvpException)*/ {
   if (availReadoutTime()) {
     pvpAccess a = accessReadoutTime();
     printf("ReadoutTime: %s\n",a.decode());
@@ -2611,14 +2611,14 @@ void pvpCamera::reportReadoutTime() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availClearCycles() throw(pvpException) {
+bool pvpCamera::availClearCycles() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_CLEAR_CYCLES,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get CLEAR_CYCLES availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessClearCycles() throw(pvpException) {
+pvpAccess pvpCamera::accessClearCycles() /*throw(pvpException)*/ {
   uns16 access;
   if (!availClearCycles())
     throw pvpException("CLEAR_CYCLES not available");
@@ -2627,7 +2627,7 @@ pvpAccess pvpCamera::accessClearCycles() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countClearCycles() throw(pvpException) {
+int pvpCamera::countClearCycles() /*throw(pvpException)*/ {
   uns32 count;
   if (!availClearCycles())
     throw pvpException("CLEAR_CYCLES not available");
@@ -2636,7 +2636,7 @@ int pvpCamera::countClearCycles() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getClearCycles() throw(pvpException) {
+uint16_t pvpCamera::getClearCycles() /*throw(pvpException)*/ {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2648,7 +2648,7 @@ uint16_t pvpCamera::getClearCycles() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultClearCycles() throw(pvpException) {
+uint16_t pvpCamera::defaultClearCycles() /*throw(pvpException)*/ {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2660,7 +2660,7 @@ uint16_t pvpCamera::defaultClearCycles() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minClearCycles() throw(pvpException) {
+uint16_t pvpCamera::minClearCycles() /*throw(pvpException)*/ {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2672,7 +2672,7 @@ uint16_t pvpCamera::minClearCycles() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxClearCycles() throw(pvpException) {
+uint16_t pvpCamera::maxClearCycles() /*throw(pvpException)*/ {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -2684,7 +2684,7 @@ uint16_t pvpCamera::maxClearCycles() throw(pvpException) {
   }
 }
 
-void pvpCamera::setClearCycles(uint16_t x) throw(pvpException) {
+void pvpCamera::setClearCycles(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessClearCycles();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -2693,7 +2693,7 @@ void pvpCamera::setClearCycles(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportClearCycles() throw(pvpException) {
+void pvpCamera::reportClearCycles() /*throw(pvpException)*/ {
   if (availClearCycles()) {
     pvpAccess a = accessClearCycles();
     printf("ClearCycles: %s\n",a.decode());
@@ -2726,14 +2726,14 @@ char const *pvpCamera::ClearMode::decode() const {
   }
 }
 
-bool pvpCamera::availClearMode() throw(pvpException) {
+bool pvpCamera::availClearMode() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_CLEAR_MODE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get CLEAR_MODE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessClearMode() throw(pvpException) {
+pvpAccess pvpCamera::accessClearMode() /*throw(pvpException)*/ {
   uns16 access;
   if (!availClearMode())
     throw pvpException("CLEAR_MODE not available");
@@ -2742,7 +2742,7 @@ pvpAccess pvpCamera::accessClearMode() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countClearMode() throw(pvpException) {
+int pvpCamera::countClearMode() /*throw(pvpException)*/ {
   uns32 count;
   if (!availClearMode())
     throw pvpException("CLEAR_MODE not available");
@@ -2751,7 +2751,7 @@ int pvpCamera::countClearMode() throw(pvpException) {
   return count;
 }
 
-pvpCamera::ClearMode pvpCamera::getClearMode() throw(pvpException) {
+pvpCamera::ClearMode pvpCamera::getClearMode() /*throw(pvpException)*/ {
   pvpAccess a = accessClearMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -2763,7 +2763,7 @@ pvpCamera::ClearMode pvpCamera::getClearMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ClearMode pvpCamera::defaultClearMode() throw(pvpException) {
+pvpCamera::ClearMode pvpCamera::defaultClearMode() /*throw(pvpException)*/ {
   pvpAccess a = accessClearMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -2775,7 +2775,7 @@ pvpCamera::ClearMode pvpCamera::defaultClearMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ClearMode pvpCamera::minClearMode() throw(pvpException) {
+pvpCamera::ClearMode pvpCamera::minClearMode() /*throw(pvpException)*/ {
   pvpAccess a = accessClearMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -2787,7 +2787,7 @@ pvpCamera::ClearMode pvpCamera::minClearMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ClearMode pvpCamera::maxClearMode() throw(pvpException) {
+pvpCamera::ClearMode pvpCamera::maxClearMode() /*throw(pvpException)*/ {
   pvpAccess a = accessClearMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -2799,7 +2799,7 @@ pvpCamera::ClearMode pvpCamera::maxClearMode() throw(pvpException) {
   }
 }
 
-void pvpCamera::setClearMode(pvpCamera::ClearMode x) throw(pvpException) {
+void pvpCamera::setClearMode(pvpCamera::ClearMode x) /*throw(pvpException)*/ {
   pvpAccess a = accessClearMode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -2808,7 +2808,7 @@ void pvpCamera::setClearMode(pvpCamera::ClearMode x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportClearMode() throw(pvpException) {
+void pvpCamera::reportClearMode() /*throw(pvpException)*/ {
   if (availClearMode()) {
     pvpAccess a = accessClearMode();
     printf("ClearMode: %s\n",a.decode());
@@ -2828,14 +2828,14 @@ void pvpCamera::reportClearMode() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availFrameCapable() throw(pvpException) {
+bool pvpCamera::availFrameCapable() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_FRAME_CAPABLE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get FRAME_CAPABLE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessFrameCapable() throw(pvpException) {
+pvpAccess pvpCamera::accessFrameCapable() /*throw(pvpException)*/ {
   uns16 access;
   if (!availFrameCapable())
     throw pvpException("FRAME_CAPABLE not available");
@@ -2844,7 +2844,7 @@ pvpAccess pvpCamera::accessFrameCapable() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countFrameCapable() throw(pvpException) {
+int pvpCamera::countFrameCapable() /*throw(pvpException)*/ {
   uns32 count;
   if (!availFrameCapable())
     throw pvpException("FRAME_CAPABLE not available");
@@ -2853,7 +2853,7 @@ int pvpCamera::countFrameCapable() throw(pvpException) {
   return count;
 }
 
-bool pvpCamera::getFrameCapable() throw(pvpException) {
+bool pvpCamera::getFrameCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2865,7 +2865,7 @@ bool pvpCamera::getFrameCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::defaultFrameCapable() throw(pvpException) {
+bool pvpCamera::defaultFrameCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2877,7 +2877,7 @@ bool pvpCamera::defaultFrameCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::minFrameCapable() throw(pvpException) {
+bool pvpCamera::minFrameCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2889,7 +2889,7 @@ bool pvpCamera::minFrameCapable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::maxFrameCapable() throw(pvpException) {
+bool pvpCamera::maxFrameCapable() /*throw(pvpException)*/ {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -2901,7 +2901,7 @@ bool pvpCamera::maxFrameCapable() throw(pvpException) {
   }
 }
 
-void pvpCamera::setFrameCapable(bool x) throw(pvpException) {
+void pvpCamera::setFrameCapable(bool x) /*throw(pvpException)*/ {
   pvpAccess a = accessFrameCapable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     rs_bool y = x;
@@ -2910,7 +2910,7 @@ void pvpCamera::setFrameCapable(bool x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportFrameCapable() throw(pvpException) {
+void pvpCamera::reportFrameCapable() /*throw(pvpException)*/ {
   if (availFrameCapable()) {
     pvpAccess a = accessFrameCapable();
     printf("FrameCapable: %s\n",a.decode());
@@ -2944,14 +2944,14 @@ char const *pvpCamera::Pmode::decode() const {
   }
 }
 
-bool pvpCamera::availPmode() throw(pvpException) {
+bool pvpCamera::availPmode() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PMODE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PMODE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPmode() throw(pvpException) {
+pvpAccess pvpCamera::accessPmode() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPmode())
     throw pvpException("PMODE not available");
@@ -2960,7 +2960,7 @@ pvpAccess pvpCamera::accessPmode() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPmode() throw(pvpException) {
+int pvpCamera::countPmode() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPmode())
     throw pvpException("PMODE not available");
@@ -2969,7 +2969,7 @@ int pvpCamera::countPmode() throw(pvpException) {
   return count;
 }
 
-pvpCamera::Pmode pvpCamera::getPmode() throw(pvpException) {
+pvpCamera::Pmode pvpCamera::getPmode() /*throw(pvpException)*/ {
   pvpAccess a = accessPmode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -2981,7 +2981,7 @@ pvpCamera::Pmode pvpCamera::getPmode() throw(pvpException) {
   }
 }
 
-pvpCamera::Pmode pvpCamera::defaultPmode() throw(pvpException) {
+pvpCamera::Pmode pvpCamera::defaultPmode() /*throw(pvpException)*/ {
   pvpAccess a = accessPmode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -2993,7 +2993,7 @@ pvpCamera::Pmode pvpCamera::defaultPmode() throw(pvpException) {
   }
 }
 
-pvpCamera::Pmode pvpCamera::minPmode() throw(pvpException) {
+pvpCamera::Pmode pvpCamera::minPmode() /*throw(pvpException)*/ {
   pvpAccess a = accessPmode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3005,7 +3005,7 @@ pvpCamera::Pmode pvpCamera::minPmode() throw(pvpException) {
   }
 }
 
-pvpCamera::Pmode pvpCamera::maxPmode() throw(pvpException) {
+pvpCamera::Pmode pvpCamera::maxPmode() /*throw(pvpException)*/ {
   pvpAccess a = accessPmode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3017,7 +3017,7 @@ pvpCamera::Pmode pvpCamera::maxPmode() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPmode(pvpCamera::Pmode x) throw(pvpException) {
+void pvpCamera::setPmode(pvpCamera::Pmode x) /*throw(pvpException)*/ {
   pvpAccess a = accessPmode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -3026,7 +3026,7 @@ void pvpCamera::setPmode(pvpCamera::Pmode x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPmode() throw(pvpException) {
+void pvpCamera::reportPmode() /*throw(pvpException)*/ {
   if (availPmode()) {
     pvpAccess a = accessPmode();
     printf("Pmode: %s\n",a.decode());
@@ -3046,14 +3046,14 @@ void pvpCamera::reportPmode() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availTemp() throw(pvpException) {
+bool pvpCamera::availTemp() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_TEMP,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get TEMP availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessTemp() throw(pvpException) {
+pvpAccess pvpCamera::accessTemp() /*throw(pvpException)*/ {
   uns16 access;
   if (!availTemp())
     throw pvpException("TEMP not available");
@@ -3062,7 +3062,7 @@ pvpAccess pvpCamera::accessTemp() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countTemp() throw(pvpException) {
+int pvpCamera::countTemp() /*throw(pvpException)*/ {
   uns32 count;
   if (!availTemp())
     throw pvpException("TEMP not available");
@@ -3071,7 +3071,7 @@ int pvpCamera::countTemp() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getTemp() throw(pvpException) {
+int16_t pvpCamera::getTemp() /*throw(pvpException)*/ {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3083,7 +3083,7 @@ int16_t pvpCamera::getTemp() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultTemp() throw(pvpException) {
+int16_t pvpCamera::defaultTemp() /*throw(pvpException)*/ {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3095,7 +3095,7 @@ int16_t pvpCamera::defaultTemp() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minTemp() throw(pvpException) {
+int16_t pvpCamera::minTemp() /*throw(pvpException)*/ {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3107,7 +3107,7 @@ int16_t pvpCamera::minTemp() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxTemp() throw(pvpException) {
+int16_t pvpCamera::maxTemp() /*throw(pvpException)*/ {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3119,7 +3119,7 @@ int16_t pvpCamera::maxTemp() throw(pvpException) {
   }
 }
 
-void pvpCamera::setTemp(int16_t x) throw(pvpException) {
+void pvpCamera::setTemp(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessTemp();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -3128,7 +3128,7 @@ void pvpCamera::setTemp(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportTemp() throw(pvpException) {
+void pvpCamera::reportTemp() /*throw(pvpException)*/ {
   if (availTemp()) {
     pvpAccess a = accessTemp();
     printf("Temp: %s\n",a.decode());
@@ -3148,14 +3148,14 @@ void pvpCamera::reportTemp() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availTempSetpoint() throw(pvpException) {
+bool pvpCamera::availTempSetpoint() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_TEMP_SETPOINT,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get TEMP_SETPOINT availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessTempSetpoint() throw(pvpException) {
+pvpAccess pvpCamera::accessTempSetpoint() /*throw(pvpException)*/ {
   uns16 access;
   if (!availTempSetpoint())
     throw pvpException("TEMP_SETPOINT not available");
@@ -3164,7 +3164,7 @@ pvpAccess pvpCamera::accessTempSetpoint() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countTempSetpoint() throw(pvpException) {
+int pvpCamera::countTempSetpoint() /*throw(pvpException)*/ {
   uns32 count;
   if (!availTempSetpoint())
     throw pvpException("TEMP_SETPOINT not available");
@@ -3173,7 +3173,7 @@ int pvpCamera::countTempSetpoint() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getTempSetpoint() throw(pvpException) {
+int16_t pvpCamera::getTempSetpoint() /*throw(pvpException)*/ {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3185,7 +3185,7 @@ int16_t pvpCamera::getTempSetpoint() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultTempSetpoint() throw(pvpException) {
+int16_t pvpCamera::defaultTempSetpoint() /*throw(pvpException)*/ {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3197,7 +3197,7 @@ int16_t pvpCamera::defaultTempSetpoint() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minTempSetpoint() throw(pvpException) {
+int16_t pvpCamera::minTempSetpoint() /*throw(pvpException)*/ {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3209,7 +3209,7 @@ int16_t pvpCamera::minTempSetpoint() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxTempSetpoint() throw(pvpException) {
+int16_t pvpCamera::maxTempSetpoint() /*throw(pvpException)*/ {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3221,7 +3221,7 @@ int16_t pvpCamera::maxTempSetpoint() throw(pvpException) {
   }
 }
 
-void pvpCamera::setTempSetpoint(int16_t x) throw(pvpException) {
+void pvpCamera::setTempSetpoint(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessTempSetpoint();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -3230,7 +3230,7 @@ void pvpCamera::setTempSetpoint(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportTempSetpoint() throw(pvpException) {
+void pvpCamera::reportTempSetpoint() /*throw(pvpException)*/ {
   if (availTempSetpoint()) {
     pvpAccess a = accessTempSetpoint();
     printf("TempSetpoint: %s\n",a.decode());
@@ -3250,14 +3250,14 @@ void pvpCamera::reportTempSetpoint() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availCamFwVersion() throw(pvpException) {
+bool pvpCamera::availCamFwVersion() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_CAM_FW_VERSION,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get CAM_FW_VERSION availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessCamFwVersion() throw(pvpException) {
+pvpAccess pvpCamera::accessCamFwVersion() /*throw(pvpException)*/ {
   uns16 access;
   if (!availCamFwVersion())
     throw pvpException("CAM_FW_VERSION not available");
@@ -3266,7 +3266,7 @@ pvpAccess pvpCamera::accessCamFwVersion() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countCamFwVersion() throw(pvpException) {
+int pvpCamera::countCamFwVersion() /*throw(pvpException)*/ {
   uns32 count;
   if (!availCamFwVersion())
     throw pvpException("CAM_FW_VERSION not available");
@@ -3275,7 +3275,7 @@ int pvpCamera::countCamFwVersion() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getCamFwVersion() throw(pvpException) {
+uint16_t pvpCamera::getCamFwVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -3287,7 +3287,7 @@ uint16_t pvpCamera::getCamFwVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultCamFwVersion() throw(pvpException) {
+uint16_t pvpCamera::defaultCamFwVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -3299,7 +3299,7 @@ uint16_t pvpCamera::defaultCamFwVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minCamFwVersion() throw(pvpException) {
+uint16_t pvpCamera::minCamFwVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -3311,7 +3311,7 @@ uint16_t pvpCamera::minCamFwVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxCamFwVersion() throw(pvpException) {
+uint16_t pvpCamera::maxCamFwVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -3323,7 +3323,7 @@ uint16_t pvpCamera::maxCamFwVersion() throw(pvpException) {
   }
 }
 
-void pvpCamera::setCamFwVersion(uint16_t x) throw(pvpException) {
+void pvpCamera::setCamFwVersion(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessCamFwVersion();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -3332,7 +3332,7 @@ void pvpCamera::setCamFwVersion(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportCamFwVersion() throw(pvpException) {
+void pvpCamera::reportCamFwVersion() /*throw(pvpException)*/ {
   if (availCamFwVersion()) {
     pvpAccess a = accessCamFwVersion();
     printf("CamFwVersion: %s\n",a.decode());
@@ -3352,14 +3352,14 @@ void pvpCamera::reportCamFwVersion() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availHeadSerNumAlpha() throw(pvpException) {
+bool pvpCamera::availHeadSerNumAlpha() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_HEAD_SER_NUM_ALPHA,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get HEAD_SER_NUM_ALPHA availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessHeadSerNumAlpha() throw(pvpException) {
+pvpAccess pvpCamera::accessHeadSerNumAlpha() /*throw(pvpException)*/ {
   uns16 access;
   if (!availHeadSerNumAlpha())
     throw pvpException("HEAD_SER_NUM_ALPHA not available");
@@ -3368,7 +3368,7 @@ pvpAccess pvpCamera::accessHeadSerNumAlpha() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countHeadSerNumAlpha() throw(pvpException) {
+int pvpCamera::countHeadSerNumAlpha() /*throw(pvpException)*/ {
   uns32 count;
   if (!availHeadSerNumAlpha())
     throw pvpException("HEAD_SER_NUM_ALPHA not available");
@@ -3377,7 +3377,7 @@ int pvpCamera::countHeadSerNumAlpha() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getHeadSerNumAlpha() throw(pvpException) {
+QString pvpCamera::getHeadSerNumAlpha() /*throw(pvpException)*/ {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_ALPHA_SER_NUM_LEN, 0);
@@ -3390,7 +3390,7 @@ QString pvpCamera::getHeadSerNumAlpha() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultHeadSerNumAlpha() throw(pvpException) {
+QString pvpCamera::defaultHeadSerNumAlpha() /*throw(pvpException)*/ {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_ALPHA_SER_NUM_LEN, 0);
@@ -3403,15 +3403,15 @@ QString pvpCamera::defaultHeadSerNumAlpha() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minHeadSerNumAlpha() throw(pvpException) {
+QString pvpCamera::minHeadSerNumAlpha() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxHeadSerNumAlpha() throw(pvpException) {
+QString pvpCamera::maxHeadSerNumAlpha() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setHeadSerNumAlpha(QString x) throw(pvpException) {
+void pvpCamera::setHeadSerNumAlpha(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessHeadSerNumAlpha();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_HEAD_SER_NUM_ALPHA,(void*)(x.toUtf8().data())))
@@ -3419,7 +3419,7 @@ void pvpCamera::setHeadSerNumAlpha(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportHeadSerNumAlpha() throw(pvpException) {
+void pvpCamera::reportHeadSerNumAlpha() /*throw(pvpException)*/ {
   if (availHeadSerNumAlpha()) {
     pvpAccess a = accessHeadSerNumAlpha();
     printf("HeadSerNumAlpha: %s\n",a.decode());
@@ -3439,14 +3439,14 @@ void pvpCamera::reportHeadSerNumAlpha() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPciFwVersion() throw(pvpException) {
+bool pvpCamera::availPciFwVersion() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PCI_FW_VERSION,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PCI_FW_VERSION availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPciFwVersion() throw(pvpException) {
+pvpAccess pvpCamera::accessPciFwVersion() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPciFwVersion())
     throw pvpException("PCI_FW_VERSION not available");
@@ -3455,7 +3455,7 @@ pvpAccess pvpCamera::accessPciFwVersion() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPciFwVersion() throw(pvpException) {
+int pvpCamera::countPciFwVersion() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPciFwVersion())
     throw pvpException("PCI_FW_VERSION not available");
@@ -3464,7 +3464,7 @@ int pvpCamera::countPciFwVersion() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPciFwVersion() throw(pvpException) {
+uint16_t pvpCamera::getPciFwVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -3476,7 +3476,7 @@ uint16_t pvpCamera::getPciFwVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPciFwVersion() throw(pvpException) {
+uint16_t pvpCamera::defaultPciFwVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -3488,7 +3488,7 @@ uint16_t pvpCamera::defaultPciFwVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPciFwVersion() throw(pvpException) {
+uint16_t pvpCamera::minPciFwVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -3500,7 +3500,7 @@ uint16_t pvpCamera::minPciFwVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPciFwVersion() throw(pvpException) {
+uint16_t pvpCamera::maxPciFwVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -3512,7 +3512,7 @@ uint16_t pvpCamera::maxPciFwVersion() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPciFwVersion(uint16_t x) throw(pvpException) {
+void pvpCamera::setPciFwVersion(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPciFwVersion();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -3521,7 +3521,7 @@ void pvpCamera::setPciFwVersion(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPciFwVersion() throw(pvpException) {
+void pvpCamera::reportPciFwVersion() /*throw(pvpException)*/ {
   if (availPciFwVersion()) {
     pvpAccess a = accessPciFwVersion();
     printf("PciFwVersion: %s\n",a.decode());
@@ -3551,14 +3551,14 @@ char const *pvpCamera::FanSpeedSetpoint::decode() const {
   }
 }
 
-bool pvpCamera::availFanSpeedSetpoint() throw(pvpException) {
+bool pvpCamera::availFanSpeedSetpoint() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_FAN_SPEED_SETPOINT,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get FAN_SPEED_SETPOINT availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessFanSpeedSetpoint() throw(pvpException) {
+pvpAccess pvpCamera::accessFanSpeedSetpoint() /*throw(pvpException)*/ {
   uns16 access;
   if (!availFanSpeedSetpoint())
     throw pvpException("FAN_SPEED_SETPOINT not available");
@@ -3567,7 +3567,7 @@ pvpAccess pvpCamera::accessFanSpeedSetpoint() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countFanSpeedSetpoint() throw(pvpException) {
+int pvpCamera::countFanSpeedSetpoint() /*throw(pvpException)*/ {
   uns32 count;
   if (!availFanSpeedSetpoint())
     throw pvpException("FAN_SPEED_SETPOINT not available");
@@ -3576,7 +3576,7 @@ int pvpCamera::countFanSpeedSetpoint() throw(pvpException) {
   return count;
 }
 
-pvpCamera::FanSpeedSetpoint pvpCamera::getFanSpeedSetpoint() throw(pvpException) {
+pvpCamera::FanSpeedSetpoint pvpCamera::getFanSpeedSetpoint() /*throw(pvpException)*/ {
   pvpAccess a = accessFanSpeedSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3588,7 +3588,7 @@ pvpCamera::FanSpeedSetpoint pvpCamera::getFanSpeedSetpoint() throw(pvpException)
   }
 }
 
-pvpCamera::FanSpeedSetpoint pvpCamera::defaultFanSpeedSetpoint() throw(pvpException) {
+pvpCamera::FanSpeedSetpoint pvpCamera::defaultFanSpeedSetpoint() /*throw(pvpException)*/ {
   pvpAccess a = accessFanSpeedSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3600,7 +3600,7 @@ pvpCamera::FanSpeedSetpoint pvpCamera::defaultFanSpeedSetpoint() throw(pvpExcept
   }
 }
 
-pvpCamera::FanSpeedSetpoint pvpCamera::minFanSpeedSetpoint() throw(pvpException) {
+pvpCamera::FanSpeedSetpoint pvpCamera::minFanSpeedSetpoint() /*throw(pvpException)*/ {
   pvpAccess a = accessFanSpeedSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3612,7 +3612,7 @@ pvpCamera::FanSpeedSetpoint pvpCamera::minFanSpeedSetpoint() throw(pvpException)
   }
 }
 
-pvpCamera::FanSpeedSetpoint pvpCamera::maxFanSpeedSetpoint() throw(pvpException) {
+pvpCamera::FanSpeedSetpoint pvpCamera::maxFanSpeedSetpoint() /*throw(pvpException)*/ {
   pvpAccess a = accessFanSpeedSetpoint();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3624,7 +3624,7 @@ pvpCamera::FanSpeedSetpoint pvpCamera::maxFanSpeedSetpoint() throw(pvpException)
   }
 }
 
-void pvpCamera::setFanSpeedSetpoint(pvpCamera::FanSpeedSetpoint x) throw(pvpException) {
+void pvpCamera::setFanSpeedSetpoint(pvpCamera::FanSpeedSetpoint x) /*throw(pvpException)*/ {
   pvpAccess a = accessFanSpeedSetpoint();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -3633,7 +3633,7 @@ void pvpCamera::setFanSpeedSetpoint(pvpCamera::FanSpeedSetpoint x) throw(pvpExce
   }
 }
 
-void pvpCamera::reportFanSpeedSetpoint() throw(pvpException) {
+void pvpCamera::reportFanSpeedSetpoint() /*throw(pvpException)*/ {
   if (availFanSpeedSetpoint()) {
     pvpAccess a = accessFanSpeedSetpoint();
     printf("FanSpeedSetpoint: %s\n",a.decode());
@@ -3670,14 +3670,14 @@ char const *pvpCamera::ExposureMode::decode() const {
   }
 }
 
-bool pvpCamera::availExposureMode() throw(pvpException) {
+bool pvpCamera::availExposureMode() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_EXPOSURE_MODE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get EXPOSURE_MODE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessExposureMode() throw(pvpException) {
+pvpAccess pvpCamera::accessExposureMode() /*throw(pvpException)*/ {
   uns16 access;
   if (!availExposureMode())
     throw pvpException("EXPOSURE_MODE not available");
@@ -3686,7 +3686,7 @@ pvpAccess pvpCamera::accessExposureMode() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countExposureMode() throw(pvpException) {
+int pvpCamera::countExposureMode() /*throw(pvpException)*/ {
   uns32 count;
   if (!availExposureMode())
     throw pvpException("EXPOSURE_MODE not available");
@@ -3695,7 +3695,7 @@ int pvpCamera::countExposureMode() throw(pvpException) {
   return count;
 }
 
-pvpCamera::ExposureMode pvpCamera::getExposureMode() throw(pvpException) {
+pvpCamera::ExposureMode pvpCamera::getExposureMode() /*throw(pvpException)*/ {
   pvpAccess a = accessExposureMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3707,7 +3707,7 @@ pvpCamera::ExposureMode pvpCamera::getExposureMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ExposureMode pvpCamera::defaultExposureMode() throw(pvpException) {
+pvpCamera::ExposureMode pvpCamera::defaultExposureMode() /*throw(pvpException)*/ {
   pvpAccess a = accessExposureMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3719,7 +3719,7 @@ pvpCamera::ExposureMode pvpCamera::defaultExposureMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ExposureMode pvpCamera::minExposureMode() throw(pvpException) {
+pvpCamera::ExposureMode pvpCamera::minExposureMode() /*throw(pvpException)*/ {
   pvpAccess a = accessExposureMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3731,7 +3731,7 @@ pvpCamera::ExposureMode pvpCamera::minExposureMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ExposureMode pvpCamera::maxExposureMode() throw(pvpException) {
+pvpCamera::ExposureMode pvpCamera::maxExposureMode() /*throw(pvpException)*/ {
   pvpAccess a = accessExposureMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3743,7 +3743,7 @@ pvpCamera::ExposureMode pvpCamera::maxExposureMode() throw(pvpException) {
   }
 }
 
-void pvpCamera::setExposureMode(pvpCamera::ExposureMode x) throw(pvpException) {
+void pvpCamera::setExposureMode(pvpCamera::ExposureMode x) /*throw(pvpException)*/ {
   pvpAccess a = accessExposureMode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -3752,7 +3752,7 @@ void pvpCamera::setExposureMode(pvpCamera::ExposureMode x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportExposureMode() throw(pvpException) {
+void pvpCamera::reportExposureMode() /*throw(pvpException)*/ {
   if (availExposureMode()) {
     pvpAccess a = accessExposureMode();
     printf("ExposureMode: %s\n",a.decode());
@@ -3782,14 +3782,14 @@ char const *pvpCamera::ExposeOutMode::decode() const {
   }
 }
 
-bool pvpCamera::availExposeOutMode() throw(pvpException) {
+bool pvpCamera::availExposeOutMode() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_EXPOSE_OUT_MODE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get EXPOSE_OUT_MODE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessExposeOutMode() throw(pvpException) {
+pvpAccess pvpCamera::accessExposeOutMode() /*throw(pvpException)*/ {
   uns16 access;
   if (!availExposeOutMode())
     throw pvpException("EXPOSE_OUT_MODE not available");
@@ -3798,7 +3798,7 @@ pvpAccess pvpCamera::accessExposeOutMode() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countExposeOutMode() throw(pvpException) {
+int pvpCamera::countExposeOutMode() /*throw(pvpException)*/ {
   uns32 count;
   if (!availExposeOutMode())
     throw pvpException("EXPOSE_OUT_MODE not available");
@@ -3807,7 +3807,7 @@ int pvpCamera::countExposeOutMode() throw(pvpException) {
   return count;
 }
 
-pvpCamera::ExposeOutMode pvpCamera::getExposeOutMode() throw(pvpException) {
+pvpCamera::ExposeOutMode pvpCamera::getExposeOutMode() /*throw(pvpException)*/ {
   pvpAccess a = accessExposeOutMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3819,7 +3819,7 @@ pvpCamera::ExposeOutMode pvpCamera::getExposeOutMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ExposeOutMode pvpCamera::defaultExposeOutMode() throw(pvpException) {
+pvpCamera::ExposeOutMode pvpCamera::defaultExposeOutMode() /*throw(pvpException)*/ {
   pvpAccess a = accessExposeOutMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3831,7 +3831,7 @@ pvpCamera::ExposeOutMode pvpCamera::defaultExposeOutMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ExposeOutMode pvpCamera::minExposeOutMode() throw(pvpException) {
+pvpCamera::ExposeOutMode pvpCamera::minExposeOutMode() /*throw(pvpException)*/ {
   pvpAccess a = accessExposeOutMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3843,7 +3843,7 @@ pvpCamera::ExposeOutMode pvpCamera::minExposeOutMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ExposeOutMode pvpCamera::maxExposeOutMode() throw(pvpException) {
+pvpCamera::ExposeOutMode pvpCamera::maxExposeOutMode() /*throw(pvpException)*/ {
   pvpAccess a = accessExposeOutMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -3855,7 +3855,7 @@ pvpCamera::ExposeOutMode pvpCamera::maxExposeOutMode() throw(pvpException) {
   }
 }
 
-void pvpCamera::setExposeOutMode(pvpCamera::ExposeOutMode x) throw(pvpException) {
+void pvpCamera::setExposeOutMode(pvpCamera::ExposeOutMode x) /*throw(pvpException)*/ {
   pvpAccess a = accessExposeOutMode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -3864,7 +3864,7 @@ void pvpCamera::setExposeOutMode(pvpCamera::ExposeOutMode x) throw(pvpException)
   }
 }
 
-void pvpCamera::reportExposeOutMode() throw(pvpException) {
+void pvpCamera::reportExposeOutMode() /*throw(pvpException)*/ {
   if (availExposeOutMode()) {
     pvpAccess a = accessExposeOutMode();
     printf("ExposeOutMode: %s\n",a.decode());
@@ -3884,14 +3884,14 @@ void pvpCamera::reportExposeOutMode() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availBitDepth() throw(pvpException) {
+bool pvpCamera::availBitDepth() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_BIT_DEPTH,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get BIT_DEPTH availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessBitDepth() throw(pvpException) {
+pvpAccess pvpCamera::accessBitDepth() /*throw(pvpException)*/ {
   uns16 access;
   if (!availBitDepth())
     throw pvpException("BIT_DEPTH not available");
@@ -3900,7 +3900,7 @@ pvpAccess pvpCamera::accessBitDepth() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countBitDepth() throw(pvpException) {
+int pvpCamera::countBitDepth() /*throw(pvpException)*/ {
   uns32 count;
   if (!availBitDepth())
     throw pvpException("BIT_DEPTH not available");
@@ -3909,7 +3909,7 @@ int pvpCamera::countBitDepth() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getBitDepth() throw(pvpException) {
+int16_t pvpCamera::getBitDepth() /*throw(pvpException)*/ {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3921,7 +3921,7 @@ int16_t pvpCamera::getBitDepth() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultBitDepth() throw(pvpException) {
+int16_t pvpCamera::defaultBitDepth() /*throw(pvpException)*/ {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3933,7 +3933,7 @@ int16_t pvpCamera::defaultBitDepth() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minBitDepth() throw(pvpException) {
+int16_t pvpCamera::minBitDepth() /*throw(pvpException)*/ {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3945,7 +3945,7 @@ int16_t pvpCamera::minBitDepth() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxBitDepth() throw(pvpException) {
+int16_t pvpCamera::maxBitDepth() /*throw(pvpException)*/ {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -3957,7 +3957,7 @@ int16_t pvpCamera::maxBitDepth() throw(pvpException) {
   }
 }
 
-void pvpCamera::setBitDepth(int16_t x) throw(pvpException) {
+void pvpCamera::setBitDepth(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessBitDepth();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -3966,7 +3966,7 @@ void pvpCamera::setBitDepth(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportBitDepth() throw(pvpException) {
+void pvpCamera::reportBitDepth() /*throw(pvpException)*/ {
   if (availBitDepth()) {
     pvpAccess a = accessBitDepth();
     printf("BitDepth: %s\n",a.decode());
@@ -3986,14 +3986,14 @@ void pvpCamera::reportBitDepth() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availGainIndex() throw(pvpException) {
+bool pvpCamera::availGainIndex() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_GAIN_INDEX,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get GAIN_INDEX availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessGainIndex() throw(pvpException) {
+pvpAccess pvpCamera::accessGainIndex() /*throw(pvpException)*/ {
   uns16 access;
   if (!availGainIndex())
     throw pvpException("GAIN_INDEX not available");
@@ -4002,7 +4002,7 @@ pvpAccess pvpCamera::accessGainIndex() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countGainIndex() throw(pvpException) {
+int pvpCamera::countGainIndex() /*throw(pvpException)*/ {
   uns32 count;
   if (!availGainIndex())
     throw pvpException("GAIN_INDEX not available");
@@ -4011,7 +4011,7 @@ int pvpCamera::countGainIndex() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getGainIndex() throw(pvpException) {
+int16_t pvpCamera::getGainIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -4023,7 +4023,7 @@ int16_t pvpCamera::getGainIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultGainIndex() throw(pvpException) {
+int16_t pvpCamera::defaultGainIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -4035,7 +4035,7 @@ int16_t pvpCamera::defaultGainIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minGainIndex() throw(pvpException) {
+int16_t pvpCamera::minGainIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -4047,7 +4047,7 @@ int16_t pvpCamera::minGainIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxGainIndex() throw(pvpException) {
+int16_t pvpCamera::maxGainIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -4059,7 +4059,7 @@ int16_t pvpCamera::maxGainIndex() throw(pvpException) {
   }
 }
 
-void pvpCamera::setGainIndex(int16_t x) throw(pvpException) {
+void pvpCamera::setGainIndex(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessGainIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -4068,7 +4068,7 @@ void pvpCamera::setGainIndex(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportGainIndex() throw(pvpException) {
+void pvpCamera::reportGainIndex() /*throw(pvpException)*/ {
   if (availGainIndex()) {
     pvpAccess a = accessGainIndex();
     printf("GainIndex: %s\n",a.decode());
@@ -4088,14 +4088,14 @@ void pvpCamera::reportGainIndex() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availSpdtabIndex() throw(pvpException) {
+bool pvpCamera::availSpdtabIndex() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SPDTAB_INDEX,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SPDTAB_INDEX availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessSpdtabIndex() throw(pvpException) {
+pvpAccess pvpCamera::accessSpdtabIndex() /*throw(pvpException)*/ {
   uns16 access;
   if (!availSpdtabIndex())
     throw pvpException("SPDTAB_INDEX not available");
@@ -4104,7 +4104,7 @@ pvpAccess pvpCamera::accessSpdtabIndex() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countSpdtabIndex() throw(pvpException) {
+int pvpCamera::countSpdtabIndex() /*throw(pvpException)*/ {
   uns32 count;
   if (!availSpdtabIndex())
     throw pvpException("SPDTAB_INDEX not available");
@@ -4113,7 +4113,7 @@ int pvpCamera::countSpdtabIndex() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getSpdtabIndex() throw(pvpException) {
+int16_t pvpCamera::getSpdtabIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -4125,7 +4125,7 @@ int16_t pvpCamera::getSpdtabIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultSpdtabIndex() throw(pvpException) {
+int16_t pvpCamera::defaultSpdtabIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -4137,7 +4137,7 @@ int16_t pvpCamera::defaultSpdtabIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minSpdtabIndex() throw(pvpException) {
+int16_t pvpCamera::minSpdtabIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -4149,7 +4149,7 @@ int16_t pvpCamera::minSpdtabIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxSpdtabIndex() throw(pvpException) {
+int16_t pvpCamera::maxSpdtabIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -4161,7 +4161,7 @@ int16_t pvpCamera::maxSpdtabIndex() throw(pvpException) {
   }
 }
 
-void pvpCamera::setSpdtabIndex(int16_t x) throw(pvpException) {
+void pvpCamera::setSpdtabIndex(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessSpdtabIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -4170,7 +4170,7 @@ void pvpCamera::setSpdtabIndex(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportSpdtabIndex() throw(pvpException) {
+void pvpCamera::reportSpdtabIndex() /*throw(pvpException)*/ {
   if (availSpdtabIndex()) {
     pvpAccess a = accessSpdtabIndex();
     printf("SpdtabIndex: %s\n",a.decode());
@@ -4190,14 +4190,14 @@ void pvpCamera::reportSpdtabIndex() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availGainName() throw(pvpException) {
+bool pvpCamera::availGainName() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_GAIN_NAME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get GAIN_NAME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessGainName() throw(pvpException) {
+pvpAccess pvpCamera::accessGainName() /*throw(pvpException)*/ {
   uns16 access;
   if (!availGainName())
     throw pvpException("GAIN_NAME not available");
@@ -4206,7 +4206,7 @@ pvpAccess pvpCamera::accessGainName() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countGainName() throw(pvpException) {
+int pvpCamera::countGainName() /*throw(pvpException)*/ {
   uns32 count;
   if (!availGainName())
     throw pvpException("GAIN_NAME not available");
@@ -4215,7 +4215,7 @@ int pvpCamera::countGainName() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getGainName() throw(pvpException) {
+QString pvpCamera::getGainName() /*throw(pvpException)*/ {
   pvpAccess a = accessGainName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_GAIN_NAME_LEN, 0);
@@ -4228,7 +4228,7 @@ QString pvpCamera::getGainName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultGainName() throw(pvpException) {
+QString pvpCamera::defaultGainName() /*throw(pvpException)*/ {
   pvpAccess a = accessGainName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_GAIN_NAME_LEN, 0);
@@ -4241,15 +4241,15 @@ QString pvpCamera::defaultGainName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minGainName() throw(pvpException) {
+QString pvpCamera::minGainName() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxGainName() throw(pvpException) {
+QString pvpCamera::maxGainName() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setGainName(QString x) throw(pvpException) {
+void pvpCamera::setGainName(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessGainName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_GAIN_NAME,(void*)(x.toUtf8().data())))
@@ -4257,7 +4257,7 @@ void pvpCamera::setGainName(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportGainName() throw(pvpException) {
+void pvpCamera::reportGainName() /*throw(pvpException)*/ {
   if (availGainName()) {
     pvpAccess a = accessGainName();
     printf("GainName: %s\n",a.decode());
@@ -4285,14 +4285,14 @@ char const *pvpCamera::ReadoutPort::decode() const {
   }
 }
 
-bool pvpCamera::availReadoutPort() throw(pvpException) {
+bool pvpCamera::availReadoutPort() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_READOUT_PORT,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get READOUT_PORT availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessReadoutPort() throw(pvpException) {
+pvpAccess pvpCamera::accessReadoutPort() /*throw(pvpException)*/ {
   uns16 access;
   if (!availReadoutPort())
     throw pvpException("READOUT_PORT not available");
@@ -4301,7 +4301,7 @@ pvpAccess pvpCamera::accessReadoutPort() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countReadoutPort() throw(pvpException) {
+int pvpCamera::countReadoutPort() /*throw(pvpException)*/ {
   uns32 count;
   if (!availReadoutPort())
     throw pvpException("READOUT_PORT not available");
@@ -4310,7 +4310,7 @@ int pvpCamera::countReadoutPort() throw(pvpException) {
   return count;
 }
 
-pvpCamera::ReadoutPort pvpCamera::getReadoutPort() throw(pvpException) {
+pvpCamera::ReadoutPort pvpCamera::getReadoutPort() /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutPort();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4322,7 +4322,7 @@ pvpCamera::ReadoutPort pvpCamera::getReadoutPort() throw(pvpException) {
   }
 }
 
-pvpCamera::ReadoutPort pvpCamera::defaultReadoutPort() throw(pvpException) {
+pvpCamera::ReadoutPort pvpCamera::defaultReadoutPort() /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutPort();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4334,7 +4334,7 @@ pvpCamera::ReadoutPort pvpCamera::defaultReadoutPort() throw(pvpException) {
   }
 }
 
-pvpCamera::ReadoutPort pvpCamera::minReadoutPort() throw(pvpException) {
+pvpCamera::ReadoutPort pvpCamera::minReadoutPort() /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutPort();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4346,7 +4346,7 @@ pvpCamera::ReadoutPort pvpCamera::minReadoutPort() throw(pvpException) {
   }
 }
 
-pvpCamera::ReadoutPort pvpCamera::maxReadoutPort() throw(pvpException) {
+pvpCamera::ReadoutPort pvpCamera::maxReadoutPort() /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutPort();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4358,7 +4358,7 @@ pvpCamera::ReadoutPort pvpCamera::maxReadoutPort() throw(pvpException) {
   }
 }
 
-void pvpCamera::setReadoutPort(pvpCamera::ReadoutPort x) throw(pvpException) {
+void pvpCamera::setReadoutPort(pvpCamera::ReadoutPort x) /*throw(pvpException)*/ {
   pvpAccess a = accessReadoutPort();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -4367,7 +4367,7 @@ void pvpCamera::setReadoutPort(pvpCamera::ReadoutPort x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportReadoutPort() throw(pvpException) {
+void pvpCamera::reportReadoutPort() /*throw(pvpException)*/ {
   if (availReadoutPort()) {
     pvpAccess a = accessReadoutPort();
     printf("ReadoutPort: %s\n",a.decode());
@@ -4387,14 +4387,14 @@ void pvpCamera::reportReadoutPort() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPixTime() throw(pvpException) {
+bool pvpCamera::availPixTime() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PIX_TIME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PIX_TIME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPixTime() throw(pvpException) {
+pvpAccess pvpCamera::accessPixTime() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPixTime())
     throw pvpException("PIX_TIME not available");
@@ -4403,7 +4403,7 @@ pvpAccess pvpCamera::accessPixTime() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPixTime() throw(pvpException) {
+int pvpCamera::countPixTime() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPixTime())
     throw pvpException("PIX_TIME not available");
@@ -4412,7 +4412,7 @@ int pvpCamera::countPixTime() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPixTime() throw(pvpException) {
+uint16_t pvpCamera::getPixTime() /*throw(pvpException)*/ {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4424,7 +4424,7 @@ uint16_t pvpCamera::getPixTime() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPixTime() throw(pvpException) {
+uint16_t pvpCamera::defaultPixTime() /*throw(pvpException)*/ {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4436,7 +4436,7 @@ uint16_t pvpCamera::defaultPixTime() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPixTime() throw(pvpException) {
+uint16_t pvpCamera::minPixTime() /*throw(pvpException)*/ {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4448,7 +4448,7 @@ uint16_t pvpCamera::minPixTime() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPixTime() throw(pvpException) {
+uint16_t pvpCamera::maxPixTime() /*throw(pvpException)*/ {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4460,7 +4460,7 @@ uint16_t pvpCamera::maxPixTime() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPixTime(uint16_t x) throw(pvpException) {
+void pvpCamera::setPixTime(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPixTime();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -4469,7 +4469,7 @@ void pvpCamera::setPixTime(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPixTime() throw(pvpException) {
+void pvpCamera::reportPixTime() /*throw(pvpException)*/ {
   if (availPixTime()) {
     pvpAccess a = accessPixTime();
     printf("PixTime: %s\n",a.decode());
@@ -4489,14 +4489,14 @@ void pvpCamera::reportPixTime() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availShtrCloseDelay() throw(pvpException) {
+bool pvpCamera::availShtrCloseDelay() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SHTR_CLOSE_DELAY,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SHTR_CLOSE_DELAY availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessShtrCloseDelay() throw(pvpException) {
+pvpAccess pvpCamera::accessShtrCloseDelay() /*throw(pvpException)*/ {
   uns16 access;
   if (!availShtrCloseDelay())
     throw pvpException("SHTR_CLOSE_DELAY not available");
@@ -4505,7 +4505,7 @@ pvpAccess pvpCamera::accessShtrCloseDelay() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countShtrCloseDelay() throw(pvpException) {
+int pvpCamera::countShtrCloseDelay() /*throw(pvpException)*/ {
   uns32 count;
   if (!availShtrCloseDelay())
     throw pvpException("SHTR_CLOSE_DELAY not available");
@@ -4514,7 +4514,7 @@ int pvpCamera::countShtrCloseDelay() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getShtrCloseDelay() throw(pvpException) {
+uint16_t pvpCamera::getShtrCloseDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4526,7 +4526,7 @@ uint16_t pvpCamera::getShtrCloseDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultShtrCloseDelay() throw(pvpException) {
+uint16_t pvpCamera::defaultShtrCloseDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4538,7 +4538,7 @@ uint16_t pvpCamera::defaultShtrCloseDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minShtrCloseDelay() throw(pvpException) {
+uint16_t pvpCamera::minShtrCloseDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4550,7 +4550,7 @@ uint16_t pvpCamera::minShtrCloseDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxShtrCloseDelay() throw(pvpException) {
+uint16_t pvpCamera::maxShtrCloseDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4562,7 +4562,7 @@ uint16_t pvpCamera::maxShtrCloseDelay() throw(pvpException) {
   }
 }
 
-void pvpCamera::setShtrCloseDelay(uint16_t x) throw(pvpException) {
+void pvpCamera::setShtrCloseDelay(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessShtrCloseDelay();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -4571,7 +4571,7 @@ void pvpCamera::setShtrCloseDelay(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportShtrCloseDelay() throw(pvpException) {
+void pvpCamera::reportShtrCloseDelay() /*throw(pvpException)*/ {
   if (availShtrCloseDelay()) {
     pvpAccess a = accessShtrCloseDelay();
     printf("ShtrCloseDelay: %s\n",a.decode());
@@ -4591,14 +4591,14 @@ void pvpCamera::reportShtrCloseDelay() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availShtrOpenDelay() throw(pvpException) {
+bool pvpCamera::availShtrOpenDelay() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SHTR_OPEN_DELAY,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SHTR_OPEN_DELAY availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessShtrOpenDelay() throw(pvpException) {
+pvpAccess pvpCamera::accessShtrOpenDelay() /*throw(pvpException)*/ {
   uns16 access;
   if (!availShtrOpenDelay())
     throw pvpException("SHTR_OPEN_DELAY not available");
@@ -4607,7 +4607,7 @@ pvpAccess pvpCamera::accessShtrOpenDelay() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countShtrOpenDelay() throw(pvpException) {
+int pvpCamera::countShtrOpenDelay() /*throw(pvpException)*/ {
   uns32 count;
   if (!availShtrOpenDelay())
     throw pvpException("SHTR_OPEN_DELAY not available");
@@ -4616,7 +4616,7 @@ int pvpCamera::countShtrOpenDelay() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getShtrOpenDelay() throw(pvpException) {
+uint16_t pvpCamera::getShtrOpenDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4628,7 +4628,7 @@ uint16_t pvpCamera::getShtrOpenDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultShtrOpenDelay() throw(pvpException) {
+uint16_t pvpCamera::defaultShtrOpenDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4640,7 +4640,7 @@ uint16_t pvpCamera::defaultShtrOpenDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minShtrOpenDelay() throw(pvpException) {
+uint16_t pvpCamera::minShtrOpenDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4652,7 +4652,7 @@ uint16_t pvpCamera::minShtrOpenDelay() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxShtrOpenDelay() throw(pvpException) {
+uint16_t pvpCamera::maxShtrOpenDelay() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4664,7 +4664,7 @@ uint16_t pvpCamera::maxShtrOpenDelay() throw(pvpException) {
   }
 }
 
-void pvpCamera::setShtrOpenDelay(uint16_t x) throw(pvpException) {
+void pvpCamera::setShtrOpenDelay(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenDelay();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -4673,7 +4673,7 @@ void pvpCamera::setShtrOpenDelay(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportShtrOpenDelay() throw(pvpException) {
+void pvpCamera::reportShtrOpenDelay() /*throw(pvpException)*/ {
   if (availShtrOpenDelay()) {
     pvpAccess a = accessShtrOpenDelay();
     printf("ShtrOpenDelay: %s\n",a.decode());
@@ -4704,14 +4704,14 @@ char const *pvpCamera::ShtrOpenMode::decode() const {
   }
 }
 
-bool pvpCamera::availShtrOpenMode() throw(pvpException) {
+bool pvpCamera::availShtrOpenMode() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SHTR_OPEN_MODE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SHTR_OPEN_MODE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessShtrOpenMode() throw(pvpException) {
+pvpAccess pvpCamera::accessShtrOpenMode() /*throw(pvpException)*/ {
   uns16 access;
   if (!availShtrOpenMode())
     throw pvpException("SHTR_OPEN_MODE not available");
@@ -4720,7 +4720,7 @@ pvpAccess pvpCamera::accessShtrOpenMode() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countShtrOpenMode() throw(pvpException) {
+int pvpCamera::countShtrOpenMode() /*throw(pvpException)*/ {
   uns32 count;
   if (!availShtrOpenMode())
     throw pvpException("SHTR_OPEN_MODE not available");
@@ -4729,7 +4729,7 @@ int pvpCamera::countShtrOpenMode() throw(pvpException) {
   return count;
 }
 
-pvpCamera::ShtrOpenMode pvpCamera::getShtrOpenMode() throw(pvpException) {
+pvpCamera::ShtrOpenMode pvpCamera::getShtrOpenMode() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4741,7 +4741,7 @@ pvpCamera::ShtrOpenMode pvpCamera::getShtrOpenMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ShtrOpenMode pvpCamera::defaultShtrOpenMode() throw(pvpException) {
+pvpCamera::ShtrOpenMode pvpCamera::defaultShtrOpenMode() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4753,7 +4753,7 @@ pvpCamera::ShtrOpenMode pvpCamera::defaultShtrOpenMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ShtrOpenMode pvpCamera::minShtrOpenMode() throw(pvpException) {
+pvpCamera::ShtrOpenMode pvpCamera::minShtrOpenMode() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4765,7 +4765,7 @@ pvpCamera::ShtrOpenMode pvpCamera::minShtrOpenMode() throw(pvpException) {
   }
 }
 
-pvpCamera::ShtrOpenMode pvpCamera::maxShtrOpenMode() throw(pvpException) {
+pvpCamera::ShtrOpenMode pvpCamera::maxShtrOpenMode() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4777,7 +4777,7 @@ pvpCamera::ShtrOpenMode pvpCamera::maxShtrOpenMode() throw(pvpException) {
   }
 }
 
-void pvpCamera::setShtrOpenMode(pvpCamera::ShtrOpenMode x) throw(pvpException) {
+void pvpCamera::setShtrOpenMode(pvpCamera::ShtrOpenMode x) /*throw(pvpException)*/ {
   pvpAccess a = accessShtrOpenMode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -4786,7 +4786,7 @@ void pvpCamera::setShtrOpenMode(pvpCamera::ShtrOpenMode x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportShtrOpenMode() throw(pvpException) {
+void pvpCamera::reportShtrOpenMode() /*throw(pvpException)*/ {
   if (availShtrOpenMode()) {
     pvpAccess a = accessShtrOpenMode();
     printf("ShtrOpenMode: %s\n",a.decode());
@@ -4818,14 +4818,14 @@ char const *pvpCamera::ShtrStatus::decode() const {
   }
 }
 
-bool pvpCamera::availShtrStatus() throw(pvpException) {
+bool pvpCamera::availShtrStatus() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SHTR_STATUS,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SHTR_STATUS availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessShtrStatus() throw(pvpException) {
+pvpAccess pvpCamera::accessShtrStatus() /*throw(pvpException)*/ {
   uns16 access;
   if (!availShtrStatus())
     throw pvpException("SHTR_STATUS not available");
@@ -4834,7 +4834,7 @@ pvpAccess pvpCamera::accessShtrStatus() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countShtrStatus() throw(pvpException) {
+int pvpCamera::countShtrStatus() /*throw(pvpException)*/ {
   uns32 count;
   if (!availShtrStatus())
     throw pvpException("SHTR_STATUS not available");
@@ -4843,7 +4843,7 @@ int pvpCamera::countShtrStatus() throw(pvpException) {
   return count;
 }
 
-pvpCamera::ShtrStatus pvpCamera::getShtrStatus() throw(pvpException) {
+pvpCamera::ShtrStatus pvpCamera::getShtrStatus() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrStatus();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4855,7 +4855,7 @@ pvpCamera::ShtrStatus pvpCamera::getShtrStatus() throw(pvpException) {
   }
 }
 
-pvpCamera::ShtrStatus pvpCamera::defaultShtrStatus() throw(pvpException) {
+pvpCamera::ShtrStatus pvpCamera::defaultShtrStatus() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrStatus();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4867,7 +4867,7 @@ pvpCamera::ShtrStatus pvpCamera::defaultShtrStatus() throw(pvpException) {
   }
 }
 
-pvpCamera::ShtrStatus pvpCamera::minShtrStatus() throw(pvpException) {
+pvpCamera::ShtrStatus pvpCamera::minShtrStatus() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrStatus();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4879,7 +4879,7 @@ pvpCamera::ShtrStatus pvpCamera::minShtrStatus() throw(pvpException) {
   }
 }
 
-pvpCamera::ShtrStatus pvpCamera::maxShtrStatus() throw(pvpException) {
+pvpCamera::ShtrStatus pvpCamera::maxShtrStatus() /*throw(pvpException)*/ {
   pvpAccess a = accessShtrStatus();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -4891,7 +4891,7 @@ pvpCamera::ShtrStatus pvpCamera::maxShtrStatus() throw(pvpException) {
   }
 }
 
-void pvpCamera::setShtrStatus(pvpCamera::ShtrStatus x) throw(pvpException) {
+void pvpCamera::setShtrStatus(pvpCamera::ShtrStatus x) /*throw(pvpException)*/ {
   pvpAccess a = accessShtrStatus();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -4900,7 +4900,7 @@ void pvpCamera::setShtrStatus(pvpCamera::ShtrStatus x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportShtrStatus() throw(pvpException) {
+void pvpCamera::reportShtrStatus() /*throw(pvpException)*/ {
   if (availShtrStatus()) {
     pvpAccess a = accessShtrStatus();
     printf("ShtrStatus: %s\n",a.decode());
@@ -4920,14 +4920,14 @@ void pvpCamera::reportShtrStatus() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availIoAddr() throw(pvpException) {
+bool pvpCamera::availIoAddr() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_IO_ADDR,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get IO_ADDR availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessIoAddr() throw(pvpException) {
+pvpAccess pvpCamera::accessIoAddr() /*throw(pvpException)*/ {
   uns16 access;
   if (!availIoAddr())
     throw pvpException("IO_ADDR not available");
@@ -4936,7 +4936,7 @@ pvpAccess pvpCamera::accessIoAddr() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countIoAddr() throw(pvpException) {
+int pvpCamera::countIoAddr() /*throw(pvpException)*/ {
   uns32 count;
   if (!availIoAddr())
     throw pvpException("IO_ADDR not available");
@@ -4945,7 +4945,7 @@ int pvpCamera::countIoAddr() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getIoAddr() throw(pvpException) {
+uint16_t pvpCamera::getIoAddr() /*throw(pvpException)*/ {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4957,7 +4957,7 @@ uint16_t pvpCamera::getIoAddr() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultIoAddr() throw(pvpException) {
+uint16_t pvpCamera::defaultIoAddr() /*throw(pvpException)*/ {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4969,7 +4969,7 @@ uint16_t pvpCamera::defaultIoAddr() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minIoAddr() throw(pvpException) {
+uint16_t pvpCamera::minIoAddr() /*throw(pvpException)*/ {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4981,7 +4981,7 @@ uint16_t pvpCamera::minIoAddr() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxIoAddr() throw(pvpException) {
+uint16_t pvpCamera::maxIoAddr() /*throw(pvpException)*/ {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -4993,7 +4993,7 @@ uint16_t pvpCamera::maxIoAddr() throw(pvpException) {
   }
 }
 
-void pvpCamera::setIoAddr(uint16_t x) throw(pvpException) {
+void pvpCamera::setIoAddr(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessIoAddr();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -5002,7 +5002,7 @@ void pvpCamera::setIoAddr(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportIoAddr() throw(pvpException) {
+void pvpCamera::reportIoAddr() /*throw(pvpException)*/ {
   if (availIoAddr()) {
     pvpAccess a = accessIoAddr();
     printf("IoAddr: %s\n",a.decode());
@@ -5030,14 +5030,14 @@ char const *pvpCamera::IoType::decode() const {
   }
 }
 
-bool pvpCamera::availIoType() throw(pvpException) {
+bool pvpCamera::availIoType() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_IO_TYPE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get IO_TYPE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessIoType() throw(pvpException) {
+pvpAccess pvpCamera::accessIoType() /*throw(pvpException)*/ {
   uns16 access;
   if (!availIoType())
     throw pvpException("IO_TYPE not available");
@@ -5046,7 +5046,7 @@ pvpAccess pvpCamera::accessIoType() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countIoType() throw(pvpException) {
+int pvpCamera::countIoType() /*throw(pvpException)*/ {
   uns32 count;
   if (!availIoType())
     throw pvpException("IO_TYPE not available");
@@ -5055,7 +5055,7 @@ int pvpCamera::countIoType() throw(pvpException) {
   return count;
 }
 
-pvpCamera::IoType pvpCamera::getIoType() throw(pvpException) {
+pvpCamera::IoType pvpCamera::getIoType() /*throw(pvpException)*/ {
   pvpAccess a = accessIoType();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -5067,7 +5067,7 @@ pvpCamera::IoType pvpCamera::getIoType() throw(pvpException) {
   }
 }
 
-pvpCamera::IoType pvpCamera::defaultIoType() throw(pvpException) {
+pvpCamera::IoType pvpCamera::defaultIoType() /*throw(pvpException)*/ {
   pvpAccess a = accessIoType();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -5079,7 +5079,7 @@ pvpCamera::IoType pvpCamera::defaultIoType() throw(pvpException) {
   }
 }
 
-pvpCamera::IoType pvpCamera::minIoType() throw(pvpException) {
+pvpCamera::IoType pvpCamera::minIoType() /*throw(pvpException)*/ {
   pvpAccess a = accessIoType();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -5091,7 +5091,7 @@ pvpCamera::IoType pvpCamera::minIoType() throw(pvpException) {
   }
 }
 
-pvpCamera::IoType pvpCamera::maxIoType() throw(pvpException) {
+pvpCamera::IoType pvpCamera::maxIoType() /*throw(pvpException)*/ {
   pvpAccess a = accessIoType();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -5103,7 +5103,7 @@ pvpCamera::IoType pvpCamera::maxIoType() throw(pvpException) {
   }
 }
 
-void pvpCamera::setIoType(pvpCamera::IoType x) throw(pvpException) {
+void pvpCamera::setIoType(pvpCamera::IoType x) /*throw(pvpException)*/ {
   pvpAccess a = accessIoType();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -5112,7 +5112,7 @@ void pvpCamera::setIoType(pvpCamera::IoType x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportIoType() throw(pvpException) {
+void pvpCamera::reportIoType() /*throw(pvpException)*/ {
   if (availIoType()) {
     pvpAccess a = accessIoType();
     printf("IoType: %s\n",a.decode());
@@ -5141,14 +5141,14 @@ char const *pvpCamera::IoDirection::decode() const {
   }
 }
 
-bool pvpCamera::availIoDirection() throw(pvpException) {
+bool pvpCamera::availIoDirection() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_IO_DIRECTION,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get IO_DIRECTION availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessIoDirection() throw(pvpException) {
+pvpAccess pvpCamera::accessIoDirection() /*throw(pvpException)*/ {
   uns16 access;
   if (!availIoDirection())
     throw pvpException("IO_DIRECTION not available");
@@ -5157,7 +5157,7 @@ pvpAccess pvpCamera::accessIoDirection() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countIoDirection() throw(pvpException) {
+int pvpCamera::countIoDirection() /*throw(pvpException)*/ {
   uns32 count;
   if (!availIoDirection())
     throw pvpException("IO_DIRECTION not available");
@@ -5166,7 +5166,7 @@ int pvpCamera::countIoDirection() throw(pvpException) {
   return count;
 }
 
-pvpCamera::IoDirection pvpCamera::getIoDirection() throw(pvpException) {
+pvpCamera::IoDirection pvpCamera::getIoDirection() /*throw(pvpException)*/ {
   pvpAccess a = accessIoDirection();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -5178,7 +5178,7 @@ pvpCamera::IoDirection pvpCamera::getIoDirection() throw(pvpException) {
   }
 }
 
-pvpCamera::IoDirection pvpCamera::defaultIoDirection() throw(pvpException) {
+pvpCamera::IoDirection pvpCamera::defaultIoDirection() /*throw(pvpException)*/ {
   pvpAccess a = accessIoDirection();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -5190,7 +5190,7 @@ pvpCamera::IoDirection pvpCamera::defaultIoDirection() throw(pvpException) {
   }
 }
 
-pvpCamera::IoDirection pvpCamera::minIoDirection() throw(pvpException) {
+pvpCamera::IoDirection pvpCamera::minIoDirection() /*throw(pvpException)*/ {
   pvpAccess a = accessIoDirection();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -5202,7 +5202,7 @@ pvpCamera::IoDirection pvpCamera::minIoDirection() throw(pvpException) {
   }
 }
 
-pvpCamera::IoDirection pvpCamera::maxIoDirection() throw(pvpException) {
+pvpCamera::IoDirection pvpCamera::maxIoDirection() /*throw(pvpException)*/ {
   pvpAccess a = accessIoDirection();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uns32 x;
@@ -5214,7 +5214,7 @@ pvpCamera::IoDirection pvpCamera::maxIoDirection() throw(pvpException) {
   }
 }
 
-void pvpCamera::setIoDirection(pvpCamera::IoDirection x) throw(pvpException) {
+void pvpCamera::setIoDirection(pvpCamera::IoDirection x) /*throw(pvpException)*/ {
   pvpAccess a = accessIoDirection();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uns32 y = x;
@@ -5223,7 +5223,7 @@ void pvpCamera::setIoDirection(pvpCamera::IoDirection x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportIoDirection() throw(pvpException) {
+void pvpCamera::reportIoDirection() /*throw(pvpException)*/ {
   if (availIoDirection()) {
     pvpAccess a = accessIoDirection();
     printf("IoDirection: %s\n",a.decode());
@@ -5243,14 +5243,14 @@ void pvpCamera::reportIoDirection() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availIoState() throw(pvpException) {
+bool pvpCamera::availIoState() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_IO_STATE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get IO_STATE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessIoState() throw(pvpException) {
+pvpAccess pvpCamera::accessIoState() /*throw(pvpException)*/ {
   uns16 access;
   if (!availIoState())
     throw pvpException("IO_STATE not available");
@@ -5259,7 +5259,7 @@ pvpAccess pvpCamera::accessIoState() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countIoState() throw(pvpException) {
+int pvpCamera::countIoState() /*throw(pvpException)*/ {
   uns32 count;
   if (!availIoState())
     throw pvpException("IO_STATE not available");
@@ -5268,7 +5268,7 @@ int pvpCamera::countIoState() throw(pvpException) {
   return count;
 }
 
-double pvpCamera::getIoState() throw(pvpException) {
+double pvpCamera::getIoState() /*throw(pvpException)*/ {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     double x;
@@ -5280,7 +5280,7 @@ double pvpCamera::getIoState() throw(pvpException) {
   }
 }
 
-double pvpCamera::defaultIoState() throw(pvpException) {
+double pvpCamera::defaultIoState() /*throw(pvpException)*/ {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     double x;
@@ -5292,7 +5292,7 @@ double pvpCamera::defaultIoState() throw(pvpException) {
   }
 }
 
-double pvpCamera::minIoState() throw(pvpException) {
+double pvpCamera::minIoState() /*throw(pvpException)*/ {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     double x;
@@ -5304,7 +5304,7 @@ double pvpCamera::minIoState() throw(pvpException) {
   }
 }
 
-double pvpCamera::maxIoState() throw(pvpException) {
+double pvpCamera::maxIoState() /*throw(pvpException)*/ {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     double x;
@@ -5316,7 +5316,7 @@ double pvpCamera::maxIoState() throw(pvpException) {
   }
 }
 
-void pvpCamera::setIoState(double x) throw(pvpException) {
+void pvpCamera::setIoState(double x) /*throw(pvpException)*/ {
   pvpAccess a = accessIoState();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     double y = x;
@@ -5325,7 +5325,7 @@ void pvpCamera::setIoState(double x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportIoState() throw(pvpException) {
+void pvpCamera::reportIoState() /*throw(pvpException)*/ {
   if (availIoState()) {
     pvpAccess a = accessIoState();
     printf("IoState: %s\n",a.decode());
@@ -5345,14 +5345,14 @@ void pvpCamera::reportIoState() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availIoBitdepth() throw(pvpException) {
+bool pvpCamera::availIoBitdepth() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_IO_BITDEPTH,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get IO_BITDEPTH availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessIoBitdepth() throw(pvpException) {
+pvpAccess pvpCamera::accessIoBitdepth() /*throw(pvpException)*/ {
   uns16 access;
   if (!availIoBitdepth())
     throw pvpException("IO_BITDEPTH not available");
@@ -5361,7 +5361,7 @@ pvpAccess pvpCamera::accessIoBitdepth() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countIoBitdepth() throw(pvpException) {
+int pvpCamera::countIoBitdepth() /*throw(pvpException)*/ {
   uns32 count;
   if (!availIoBitdepth())
     throw pvpException("IO_BITDEPTH not available");
@@ -5370,7 +5370,7 @@ int pvpCamera::countIoBitdepth() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getIoBitdepth() throw(pvpException) {
+uint16_t pvpCamera::getIoBitdepth() /*throw(pvpException)*/ {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5382,7 +5382,7 @@ uint16_t pvpCamera::getIoBitdepth() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultIoBitdepth() throw(pvpException) {
+uint16_t pvpCamera::defaultIoBitdepth() /*throw(pvpException)*/ {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5394,7 +5394,7 @@ uint16_t pvpCamera::defaultIoBitdepth() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minIoBitdepth() throw(pvpException) {
+uint16_t pvpCamera::minIoBitdepth() /*throw(pvpException)*/ {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5406,7 +5406,7 @@ uint16_t pvpCamera::minIoBitdepth() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxIoBitdepth() throw(pvpException) {
+uint16_t pvpCamera::maxIoBitdepth() /*throw(pvpException)*/ {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5418,7 +5418,7 @@ uint16_t pvpCamera::maxIoBitdepth() throw(pvpException) {
   }
 }
 
-void pvpCamera::setIoBitdepth(uint16_t x) throw(pvpException) {
+void pvpCamera::setIoBitdepth(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessIoBitdepth();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -5427,7 +5427,7 @@ void pvpCamera::setIoBitdepth(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportIoBitdepth() throw(pvpException) {
+void pvpCamera::reportIoBitdepth() /*throw(pvpException)*/ {
   if (availIoBitdepth()) {
     pvpAccess a = accessIoBitdepth();
     printf("IoBitdepth: %s\n",a.decode());
@@ -5447,14 +5447,14 @@ void pvpCamera::reportIoBitdepth() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availGainMultFactor() throw(pvpException) {
+bool pvpCamera::availGainMultFactor() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_GAIN_MULT_FACTOR,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get GAIN_MULT_FACTOR availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessGainMultFactor() throw(pvpException) {
+pvpAccess pvpCamera::accessGainMultFactor() /*throw(pvpException)*/ {
   uns16 access;
   if (!availGainMultFactor())
     throw pvpException("GAIN_MULT_FACTOR not available");
@@ -5463,7 +5463,7 @@ pvpAccess pvpCamera::accessGainMultFactor() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countGainMultFactor() throw(pvpException) {
+int pvpCamera::countGainMultFactor() /*throw(pvpException)*/ {
   uns32 count;
   if (!availGainMultFactor())
     throw pvpException("GAIN_MULT_FACTOR not available");
@@ -5472,7 +5472,7 @@ int pvpCamera::countGainMultFactor() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getGainMultFactor() throw(pvpException) {
+uint16_t pvpCamera::getGainMultFactor() /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5484,7 +5484,7 @@ uint16_t pvpCamera::getGainMultFactor() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultGainMultFactor() throw(pvpException) {
+uint16_t pvpCamera::defaultGainMultFactor() /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5496,7 +5496,7 @@ uint16_t pvpCamera::defaultGainMultFactor() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minGainMultFactor() throw(pvpException) {
+uint16_t pvpCamera::minGainMultFactor() /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5508,7 +5508,7 @@ uint16_t pvpCamera::minGainMultFactor() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxGainMultFactor() throw(pvpException) {
+uint16_t pvpCamera::maxGainMultFactor() /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5520,7 +5520,7 @@ uint16_t pvpCamera::maxGainMultFactor() throw(pvpException) {
   }
 }
 
-void pvpCamera::setGainMultFactor(uint16_t x) throw(pvpException) {
+void pvpCamera::setGainMultFactor(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultFactor();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -5529,7 +5529,7 @@ void pvpCamera::setGainMultFactor(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportGainMultFactor() throw(pvpException) {
+void pvpCamera::reportGainMultFactor() /*throw(pvpException)*/ {
   if (availGainMultFactor()) {
     pvpAccess a = accessGainMultFactor();
     printf("GainMultFactor: %s\n",a.decode());
@@ -5549,14 +5549,14 @@ void pvpCamera::reportGainMultFactor() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availGainMultEnable() throw(pvpException) {
+bool pvpCamera::availGainMultEnable() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_GAIN_MULT_ENABLE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get GAIN_MULT_ENABLE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessGainMultEnable() throw(pvpException) {
+pvpAccess pvpCamera::accessGainMultEnable() /*throw(pvpException)*/ {
   uns16 access;
   if (!availGainMultEnable())
     throw pvpException("GAIN_MULT_ENABLE not available");
@@ -5565,7 +5565,7 @@ pvpAccess pvpCamera::accessGainMultEnable() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countGainMultEnable() throw(pvpException) {
+int pvpCamera::countGainMultEnable() /*throw(pvpException)*/ {
   uns32 count;
   if (!availGainMultEnable())
     throw pvpException("GAIN_MULT_ENABLE not available");
@@ -5574,7 +5574,7 @@ int pvpCamera::countGainMultEnable() throw(pvpException) {
   return count;
 }
 
-bool pvpCamera::getGainMultEnable() throw(pvpException) {
+bool pvpCamera::getGainMultEnable() /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -5586,7 +5586,7 @@ bool pvpCamera::getGainMultEnable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::defaultGainMultEnable() throw(pvpException) {
+bool pvpCamera::defaultGainMultEnable() /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -5598,7 +5598,7 @@ bool pvpCamera::defaultGainMultEnable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::minGainMultEnable() throw(pvpException) {
+bool pvpCamera::minGainMultEnable() /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -5610,7 +5610,7 @@ bool pvpCamera::minGainMultEnable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::maxGainMultEnable() throw(pvpException) {
+bool pvpCamera::maxGainMultEnable() /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -5622,7 +5622,7 @@ bool pvpCamera::maxGainMultEnable() throw(pvpException) {
   }
 }
 
-void pvpCamera::setGainMultEnable(bool x) throw(pvpException) {
+void pvpCamera::setGainMultEnable(bool x) /*throw(pvpException)*/ {
   pvpAccess a = accessGainMultEnable();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     rs_bool y = x;
@@ -5631,7 +5631,7 @@ void pvpCamera::setGainMultEnable(bool x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportGainMultEnable() throw(pvpException) {
+void pvpCamera::reportGainMultEnable() /*throw(pvpException)*/ {
   if (availGainMultEnable()) {
     pvpAccess a = accessGainMultEnable();
     printf("GainMultEnable: %s\n",a.decode());
@@ -5651,14 +5651,14 @@ void pvpCamera::reportGainMultEnable() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPpFeatName() throw(pvpException) {
+bool pvpCamera::availPpFeatName() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PP_FEAT_NAME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PP_FEAT_NAME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPpFeatName() throw(pvpException) {
+pvpAccess pvpCamera::accessPpFeatName() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPpFeatName())
     throw pvpException("PP_FEAT_NAME not available");
@@ -5667,7 +5667,7 @@ pvpAccess pvpCamera::accessPpFeatName() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPpFeatName() throw(pvpException) {
+int pvpCamera::countPpFeatName() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPpFeatName())
     throw pvpException("PP_FEAT_NAME not available");
@@ -5676,7 +5676,7 @@ int pvpCamera::countPpFeatName() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getPpFeatName() throw(pvpException) {
+QString pvpCamera::getPpFeatName() /*throw(pvpException)*/ {
   pvpAccess a = accessPpFeatName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_PP_NAME_LEN, 0);
@@ -5689,7 +5689,7 @@ QString pvpCamera::getPpFeatName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultPpFeatName() throw(pvpException) {
+QString pvpCamera::defaultPpFeatName() /*throw(pvpException)*/ {
   pvpAccess a = accessPpFeatName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_PP_NAME_LEN, 0);
@@ -5702,15 +5702,15 @@ QString pvpCamera::defaultPpFeatName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minPpFeatName() throw(pvpException) {
+QString pvpCamera::minPpFeatName() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxPpFeatName() throw(pvpException) {
+QString pvpCamera::maxPpFeatName() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setPpFeatName(QString x) throw(pvpException) {
+void pvpCamera::setPpFeatName(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessPpFeatName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_PP_FEAT_NAME,(void*)(x.toUtf8().data())))
@@ -5718,7 +5718,7 @@ void pvpCamera::setPpFeatName(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPpFeatName() throw(pvpException) {
+void pvpCamera::reportPpFeatName() /*throw(pvpException)*/ {
   if (availPpFeatName()) {
     pvpAccess a = accessPpFeatName();
     printf("PpFeatName: %s\n",a.decode());
@@ -5738,14 +5738,14 @@ void pvpCamera::reportPpFeatName() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPpIndex() throw(pvpException) {
+bool pvpCamera::availPpIndex() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PP_INDEX,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PP_INDEX availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPpIndex() throw(pvpException) {
+pvpAccess pvpCamera::accessPpIndex() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPpIndex())
     throw pvpException("PP_INDEX not available");
@@ -5754,7 +5754,7 @@ pvpAccess pvpCamera::accessPpIndex() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPpIndex() throw(pvpException) {
+int pvpCamera::countPpIndex() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPpIndex())
     throw pvpException("PP_INDEX not available");
@@ -5763,7 +5763,7 @@ int pvpCamera::countPpIndex() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getPpIndex() throw(pvpException) {
+int16_t pvpCamera::getPpIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -5775,7 +5775,7 @@ int16_t pvpCamera::getPpIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultPpIndex() throw(pvpException) {
+int16_t pvpCamera::defaultPpIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -5787,7 +5787,7 @@ int16_t pvpCamera::defaultPpIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minPpIndex() throw(pvpException) {
+int16_t pvpCamera::minPpIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -5799,7 +5799,7 @@ int16_t pvpCamera::minPpIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxPpIndex() throw(pvpException) {
+int16_t pvpCamera::maxPpIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -5811,7 +5811,7 @@ int16_t pvpCamera::maxPpIndex() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPpIndex(int16_t x) throw(pvpException) {
+void pvpCamera::setPpIndex(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPpIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -5820,7 +5820,7 @@ void pvpCamera::setPpIndex(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPpIndex() throw(pvpException) {
+void pvpCamera::reportPpIndex() /*throw(pvpException)*/ {
   if (availPpIndex()) {
     pvpAccess a = accessPpIndex();
     printf("PpIndex: %s\n",a.decode());
@@ -5840,14 +5840,14 @@ void pvpCamera::reportPpIndex() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availActualGain() throw(pvpException) {
+bool pvpCamera::availActualGain() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_ACTUAL_GAIN,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get ACTUAL_GAIN availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessActualGain() throw(pvpException) {
+pvpAccess pvpCamera::accessActualGain() /*throw(pvpException)*/ {
   uns16 access;
   if (!availActualGain())
     throw pvpException("ACTUAL_GAIN not available");
@@ -5856,7 +5856,7 @@ pvpAccess pvpCamera::accessActualGain() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countActualGain() throw(pvpException) {
+int pvpCamera::countActualGain() /*throw(pvpException)*/ {
   uns32 count;
   if (!availActualGain())
     throw pvpException("ACTUAL_GAIN not available");
@@ -5865,7 +5865,7 @@ int pvpCamera::countActualGain() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getActualGain() throw(pvpException) {
+uint16_t pvpCamera::getActualGain() /*throw(pvpException)*/ {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5877,7 +5877,7 @@ uint16_t pvpCamera::getActualGain() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultActualGain() throw(pvpException) {
+uint16_t pvpCamera::defaultActualGain() /*throw(pvpException)*/ {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5889,7 +5889,7 @@ uint16_t pvpCamera::defaultActualGain() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minActualGain() throw(pvpException) {
+uint16_t pvpCamera::minActualGain() /*throw(pvpException)*/ {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5901,7 +5901,7 @@ uint16_t pvpCamera::minActualGain() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxActualGain() throw(pvpException) {
+uint16_t pvpCamera::maxActualGain() /*throw(pvpException)*/ {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -5913,7 +5913,7 @@ uint16_t pvpCamera::maxActualGain() throw(pvpException) {
   }
 }
 
-void pvpCamera::setActualGain(uint16_t x) throw(pvpException) {
+void pvpCamera::setActualGain(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessActualGain();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -5922,7 +5922,7 @@ void pvpCamera::setActualGain(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportActualGain() throw(pvpException) {
+void pvpCamera::reportActualGain() /*throw(pvpException)*/ {
   if (availActualGain()) {
     pvpAccess a = accessActualGain();
     printf("ActualGain: %s\n",a.decode());
@@ -5942,14 +5942,14 @@ void pvpCamera::reportActualGain() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPpParamIndex() throw(pvpException) {
+bool pvpCamera::availPpParamIndex() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PP_PARAM_INDEX,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PP_PARAM_INDEX availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPpParamIndex() throw(pvpException) {
+pvpAccess pvpCamera::accessPpParamIndex() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPpParamIndex())
     throw pvpException("PP_PARAM_INDEX not available");
@@ -5958,7 +5958,7 @@ pvpAccess pvpCamera::accessPpParamIndex() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPpParamIndex() throw(pvpException) {
+int pvpCamera::countPpParamIndex() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPpParamIndex())
     throw pvpException("PP_PARAM_INDEX not available");
@@ -5967,7 +5967,7 @@ int pvpCamera::countPpParamIndex() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getPpParamIndex() throw(pvpException) {
+int16_t pvpCamera::getPpParamIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -5979,7 +5979,7 @@ int16_t pvpCamera::getPpParamIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultPpParamIndex() throw(pvpException) {
+int16_t pvpCamera::defaultPpParamIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -5991,7 +5991,7 @@ int16_t pvpCamera::defaultPpParamIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minPpParamIndex() throw(pvpException) {
+int16_t pvpCamera::minPpParamIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -6003,7 +6003,7 @@ int16_t pvpCamera::minPpParamIndex() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxPpParamIndex() throw(pvpException) {
+int16_t pvpCamera::maxPpParamIndex() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -6015,7 +6015,7 @@ int16_t pvpCamera::maxPpParamIndex() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPpParamIndex(int16_t x) throw(pvpException) {
+void pvpCamera::setPpParamIndex(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamIndex();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -6024,7 +6024,7 @@ void pvpCamera::setPpParamIndex(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPpParamIndex() throw(pvpException) {
+void pvpCamera::reportPpParamIndex() /*throw(pvpException)*/ {
   if (availPpParamIndex()) {
     pvpAccess a = accessPpParamIndex();
     printf("PpParamIndex: %s\n",a.decode());
@@ -6044,14 +6044,14 @@ void pvpCamera::reportPpParamIndex() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPpParamName() throw(pvpException) {
+bool pvpCamera::availPpParamName() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PP_PARAM_NAME,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PP_PARAM_NAME availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPpParamName() throw(pvpException) {
+pvpAccess pvpCamera::accessPpParamName() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPpParamName())
     throw pvpException("PP_PARAM_NAME not available");
@@ -6060,7 +6060,7 @@ pvpAccess pvpCamera::accessPpParamName() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPpParamName() throw(pvpException) {
+int pvpCamera::countPpParamName() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPpParamName())
     throw pvpException("PP_PARAM_NAME not available");
@@ -6069,7 +6069,7 @@ int pvpCamera::countPpParamName() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getPpParamName() throw(pvpException) {
+QString pvpCamera::getPpParamName() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_PP_NAME_LEN, 0);
@@ -6082,7 +6082,7 @@ QString pvpCamera::getPpParamName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultPpParamName() throw(pvpException) {
+QString pvpCamera::defaultPpParamName() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamName();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(MAX_PP_NAME_LEN, 0);
@@ -6095,15 +6095,15 @@ QString pvpCamera::defaultPpParamName() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minPpParamName() throw(pvpException) {
+QString pvpCamera::minPpParamName() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxPpParamName() throw(pvpException) {
+QString pvpCamera::maxPpParamName() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setPpParamName(QString x) throw(pvpException) {
+void pvpCamera::setPpParamName(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamName();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_PP_PARAM_NAME,(void*)(x.toUtf8().data())))
@@ -6111,7 +6111,7 @@ void pvpCamera::setPpParamName(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPpParamName() throw(pvpException) {
+void pvpCamera::reportPpParamName() /*throw(pvpException)*/ {
   if (availPpParamName()) {
     pvpAccess a = accessPpParamName();
     printf("PpParamName: %s\n",a.decode());
@@ -6131,14 +6131,14 @@ void pvpCamera::reportPpParamName() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPpParam() throw(pvpException) {
+bool pvpCamera::availPpParam() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PP_PARAM,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PP_PARAM availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPpParam() throw(pvpException) {
+pvpAccess pvpCamera::accessPpParam() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPpParam())
     throw pvpException("PP_PARAM not available");
@@ -6147,7 +6147,7 @@ pvpAccess pvpCamera::accessPpParam() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPpParam() throw(pvpException) {
+int pvpCamera::countPpParam() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPpParam())
     throw pvpException("PP_PARAM not available");
@@ -6156,7 +6156,7 @@ int pvpCamera::countPpParam() throw(pvpException) {
   return count;
 }
 
-uint32_t pvpCamera::getPpParam() throw(pvpException) {
+uint32_t pvpCamera::getPpParam() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -6168,7 +6168,7 @@ uint32_t pvpCamera::getPpParam() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::defaultPpParam() throw(pvpException) {
+uint32_t pvpCamera::defaultPpParam() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -6180,7 +6180,7 @@ uint32_t pvpCamera::defaultPpParam() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::minPpParam() throw(pvpException) {
+uint32_t pvpCamera::minPpParam() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -6192,7 +6192,7 @@ uint32_t pvpCamera::minPpParam() throw(pvpException) {
   }
 }
 
-uint32_t pvpCamera::maxPpParam() throw(pvpException) {
+uint32_t pvpCamera::maxPpParam() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint32_t x;
@@ -6204,7 +6204,7 @@ uint32_t pvpCamera::maxPpParam() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPpParam(uint32_t x) throw(pvpException) {
+void pvpCamera::setPpParam(uint32_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPpParam();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint32_t y = x;
@@ -6213,7 +6213,7 @@ void pvpCamera::setPpParam(uint32_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPpParam() throw(pvpException) {
+void pvpCamera::reportPpParam() /*throw(pvpException)*/ {
   if (availPpParam()) {
     pvpAccess a = accessPpParam();
     printf("PpParam: %s\n",a.decode());
@@ -6233,14 +6233,14 @@ void pvpCamera::reportPpParam() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availReadNoise() throw(pvpException) {
+bool pvpCamera::availReadNoise() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_READ_NOISE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get READ_NOISE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessReadNoise() throw(pvpException) {
+pvpAccess pvpCamera::accessReadNoise() /*throw(pvpException)*/ {
   uns16 access;
   if (!availReadNoise())
     throw pvpException("READ_NOISE not available");
@@ -6249,7 +6249,7 @@ pvpAccess pvpCamera::accessReadNoise() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countReadNoise() throw(pvpException) {
+int pvpCamera::countReadNoise() /*throw(pvpException)*/ {
   uns32 count;
   if (!availReadNoise())
     throw pvpException("READ_NOISE not available");
@@ -6258,7 +6258,7 @@ int pvpCamera::countReadNoise() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getReadNoise() throw(pvpException) {
+uint16_t pvpCamera::getReadNoise() /*throw(pvpException)*/ {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6270,7 +6270,7 @@ uint16_t pvpCamera::getReadNoise() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultReadNoise() throw(pvpException) {
+uint16_t pvpCamera::defaultReadNoise() /*throw(pvpException)*/ {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6282,7 +6282,7 @@ uint16_t pvpCamera::defaultReadNoise() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minReadNoise() throw(pvpException) {
+uint16_t pvpCamera::minReadNoise() /*throw(pvpException)*/ {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6294,7 +6294,7 @@ uint16_t pvpCamera::minReadNoise() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxReadNoise() throw(pvpException) {
+uint16_t pvpCamera::maxReadNoise() /*throw(pvpException)*/ {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6306,7 +6306,7 @@ uint16_t pvpCamera::maxReadNoise() throw(pvpException) {
   }
 }
 
-void pvpCamera::setReadNoise(uint16_t x) throw(pvpException) {
+void pvpCamera::setReadNoise(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessReadNoise();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -6315,7 +6315,7 @@ void pvpCamera::setReadNoise(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportReadNoise() throw(pvpException) {
+void pvpCamera::reportReadNoise() /*throw(pvpException)*/ {
   if (availReadNoise()) {
     pvpAccess a = accessReadNoise();
     printf("ReadNoise: %s\n",a.decode());
@@ -6335,14 +6335,14 @@ void pvpCamera::reportReadNoise() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPpFeatId() throw(pvpException) {
+bool pvpCamera::availPpFeatId() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PP_FEAT_ID,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PP_FEAT_ID availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPpFeatId() throw(pvpException) {
+pvpAccess pvpCamera::accessPpFeatId() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPpFeatId())
     throw pvpException("PP_FEAT_ID not available");
@@ -6351,7 +6351,7 @@ pvpAccess pvpCamera::accessPpFeatId() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPpFeatId() throw(pvpException) {
+int pvpCamera::countPpFeatId() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPpFeatId())
     throw pvpException("PP_FEAT_ID not available");
@@ -6360,7 +6360,7 @@ int pvpCamera::countPpFeatId() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPpFeatId() throw(pvpException) {
+uint16_t pvpCamera::getPpFeatId() /*throw(pvpException)*/ {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6372,7 +6372,7 @@ uint16_t pvpCamera::getPpFeatId() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPpFeatId() throw(pvpException) {
+uint16_t pvpCamera::defaultPpFeatId() /*throw(pvpException)*/ {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6384,7 +6384,7 @@ uint16_t pvpCamera::defaultPpFeatId() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPpFeatId() throw(pvpException) {
+uint16_t pvpCamera::minPpFeatId() /*throw(pvpException)*/ {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6396,7 +6396,7 @@ uint16_t pvpCamera::minPpFeatId() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPpFeatId() throw(pvpException) {
+uint16_t pvpCamera::maxPpFeatId() /*throw(pvpException)*/ {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6408,7 +6408,7 @@ uint16_t pvpCamera::maxPpFeatId() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPpFeatId(uint16_t x) throw(pvpException) {
+void pvpCamera::setPpFeatId(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPpFeatId();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -6417,7 +6417,7 @@ void pvpCamera::setPpFeatId(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPpFeatId() throw(pvpException) {
+void pvpCamera::reportPpFeatId() /*throw(pvpException)*/ {
   if (availPpFeatId()) {
     pvpAccess a = accessPpFeatId();
     printf("PpFeatId: %s\n",a.decode());
@@ -6437,14 +6437,14 @@ void pvpCamera::reportPpFeatId() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availPpParamId() throw(pvpException) {
+bool pvpCamera::availPpParamId() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_PP_PARAM_ID,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get PP_PARAM_ID availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessPpParamId() throw(pvpException) {
+pvpAccess pvpCamera::accessPpParamId() /*throw(pvpException)*/ {
   uns16 access;
   if (!availPpParamId())
     throw pvpException("PP_PARAM_ID not available");
@@ -6453,7 +6453,7 @@ pvpAccess pvpCamera::accessPpParamId() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countPpParamId() throw(pvpException) {
+int pvpCamera::countPpParamId() /*throw(pvpException)*/ {
   uns32 count;
   if (!availPpParamId())
     throw pvpException("PP_PARAM_ID not available");
@@ -6462,7 +6462,7 @@ int pvpCamera::countPpParamId() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getPpParamId() throw(pvpException) {
+uint16_t pvpCamera::getPpParamId() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6474,7 +6474,7 @@ uint16_t pvpCamera::getPpParamId() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultPpParamId() throw(pvpException) {
+uint16_t pvpCamera::defaultPpParamId() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6486,7 +6486,7 @@ uint16_t pvpCamera::defaultPpParamId() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minPpParamId() throw(pvpException) {
+uint16_t pvpCamera::minPpParamId() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6498,7 +6498,7 @@ uint16_t pvpCamera::minPpParamId() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxPpParamId() throw(pvpException) {
+uint16_t pvpCamera::maxPpParamId() /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6510,7 +6510,7 @@ uint16_t pvpCamera::maxPpParamId() throw(pvpException) {
   }
 }
 
-void pvpCamera::setPpParamId(uint16_t x) throw(pvpException) {
+void pvpCamera::setPpParamId(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessPpParamId();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -6519,7 +6519,7 @@ void pvpCamera::setPpParamId(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportPpParamId() throw(pvpException) {
+void pvpCamera::reportPpParamId() /*throw(pvpException)*/ {
   if (availPpParamId()) {
     pvpAccess a = accessPpParamId();
     printf("PpParamId: %s\n",a.decode());
@@ -6539,14 +6539,14 @@ void pvpCamera::reportPpParamId() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availSmartStreamModeEnabled() throw(pvpException) {
+bool pvpCamera::availSmartStreamModeEnabled() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE_ENABLED,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SMART_STREAM_MODE_ENABLED availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessSmartStreamModeEnabled() throw(pvpException) {
+pvpAccess pvpCamera::accessSmartStreamModeEnabled() /*throw(pvpException)*/ {
   uns16 access;
   if (!availSmartStreamModeEnabled())
     throw pvpException("SMART_STREAM_MODE_ENABLED not available");
@@ -6555,7 +6555,7 @@ pvpAccess pvpCamera::accessSmartStreamModeEnabled() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countSmartStreamModeEnabled() throw(pvpException) {
+int pvpCamera::countSmartStreamModeEnabled() /*throw(pvpException)*/ {
   uns32 count;
   if (!availSmartStreamModeEnabled())
     throw pvpException("SMART_STREAM_MODE_ENABLED not available");
@@ -6564,7 +6564,7 @@ int pvpCamera::countSmartStreamModeEnabled() throw(pvpException) {
   return count;
 }
 
-bool pvpCamera::getSmartStreamModeEnabled() throw(pvpException) {
+bool pvpCamera::getSmartStreamModeEnabled() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -6576,7 +6576,7 @@ bool pvpCamera::getSmartStreamModeEnabled() throw(pvpException) {
   }
 }
 
-bool pvpCamera::defaultSmartStreamModeEnabled() throw(pvpException) {
+bool pvpCamera::defaultSmartStreamModeEnabled() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -6588,7 +6588,7 @@ bool pvpCamera::defaultSmartStreamModeEnabled() throw(pvpException) {
   }
 }
 
-bool pvpCamera::minSmartStreamModeEnabled() throw(pvpException) {
+bool pvpCamera::minSmartStreamModeEnabled() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -6600,7 +6600,7 @@ bool pvpCamera::minSmartStreamModeEnabled() throw(pvpException) {
   }
 }
 
-bool pvpCamera::maxSmartStreamModeEnabled() throw(pvpException) {
+bool pvpCamera::maxSmartStreamModeEnabled() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     rs_bool x;
@@ -6612,7 +6612,7 @@ bool pvpCamera::maxSmartStreamModeEnabled() throw(pvpException) {
   }
 }
 
-void pvpCamera::setSmartStreamModeEnabled(bool x) throw(pvpException) {
+void pvpCamera::setSmartStreamModeEnabled(bool x) /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamModeEnabled();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     rs_bool y = x;
@@ -6621,7 +6621,7 @@ void pvpCamera::setSmartStreamModeEnabled(bool x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportSmartStreamModeEnabled() throw(pvpException) {
+void pvpCamera::reportSmartStreamModeEnabled() /*throw(pvpException)*/ {
   if (availSmartStreamModeEnabled()) {
     pvpAccess a = accessSmartStreamModeEnabled();
     printf("SmartStreamModeEnabled: %s\n",a.decode());
@@ -6641,14 +6641,14 @@ void pvpCamera::reportSmartStreamModeEnabled() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availSmartStreamMode() throw(pvpException) {
+bool pvpCamera::availSmartStreamMode() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SMART_STREAM_MODE,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SMART_STREAM_MODE availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessSmartStreamMode() throw(pvpException) {
+pvpAccess pvpCamera::accessSmartStreamMode() /*throw(pvpException)*/ {
   uns16 access;
   if (!availSmartStreamMode())
     throw pvpException("SMART_STREAM_MODE not available");
@@ -6657,7 +6657,7 @@ pvpAccess pvpCamera::accessSmartStreamMode() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countSmartStreamMode() throw(pvpException) {
+int pvpCamera::countSmartStreamMode() /*throw(pvpException)*/ {
   uns32 count;
   if (!availSmartStreamMode())
     throw pvpException("SMART_STREAM_MODE not available");
@@ -6666,7 +6666,7 @@ int pvpCamera::countSmartStreamMode() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getSmartStreamMode() throw(pvpException) {
+uint16_t pvpCamera::getSmartStreamMode() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6678,7 +6678,7 @@ uint16_t pvpCamera::getSmartStreamMode() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultSmartStreamMode() throw(pvpException) {
+uint16_t pvpCamera::defaultSmartStreamMode() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6690,7 +6690,7 @@ uint16_t pvpCamera::defaultSmartStreamMode() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minSmartStreamMode() throw(pvpException) {
+uint16_t pvpCamera::minSmartStreamMode() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6702,7 +6702,7 @@ uint16_t pvpCamera::minSmartStreamMode() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxSmartStreamMode() throw(pvpException) {
+uint16_t pvpCamera::maxSmartStreamMode() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -6714,7 +6714,7 @@ uint16_t pvpCamera::maxSmartStreamMode() throw(pvpException) {
   }
 }
 
-void pvpCamera::setSmartStreamMode(uint16_t x) throw(pvpException) {
+void pvpCamera::setSmartStreamMode(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamMode();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -6723,7 +6723,7 @@ void pvpCamera::setSmartStreamMode(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportSmartStreamMode() throw(pvpException) {
+void pvpCamera::reportSmartStreamMode() /*throw(pvpException)*/ {
   if (availSmartStreamMode()) {
     pvpAccess a = accessSmartStreamMode();
     printf("SmartStreamMode: %s\n",a.decode());
@@ -6743,14 +6743,14 @@ void pvpCamera::reportSmartStreamMode() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availSmartStreamExpParams() throw(pvpException) {
+bool pvpCamera::availSmartStreamExpParams() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SMART_STREAM_EXP_PARAMS,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SMART_STREAM_EXP_PARAMS availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessSmartStreamExpParams() throw(pvpException) {
+pvpAccess pvpCamera::accessSmartStreamExpParams() /*throw(pvpException)*/ {
   uns16 access;
   if (!availSmartStreamExpParams())
     throw pvpException("SMART_STREAM_EXP_PARAMS not available");
@@ -6759,7 +6759,7 @@ pvpAccess pvpCamera::accessSmartStreamExpParams() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countSmartStreamExpParams() throw(pvpException) {
+int pvpCamera::countSmartStreamExpParams() /*throw(pvpException)*/ {
   uns32 count;
   if (!availSmartStreamExpParams())
     throw pvpException("SMART_STREAM_EXP_PARAMS not available");
@@ -6768,7 +6768,7 @@ int pvpCamera::countSmartStreamExpParams() throw(pvpException) {
   return count;
 }
 
-void * pvpCamera::getSmartStreamExpParams() throw(pvpException) {
+void * pvpCamera::getSmartStreamExpParams() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     void * x;
@@ -6780,7 +6780,7 @@ void * pvpCamera::getSmartStreamExpParams() throw(pvpException) {
   }
 }
 
-void * pvpCamera::defaultSmartStreamExpParams() throw(pvpException) {
+void * pvpCamera::defaultSmartStreamExpParams() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     void * x;
@@ -6792,7 +6792,7 @@ void * pvpCamera::defaultSmartStreamExpParams() throw(pvpException) {
   }
 }
 
-void * pvpCamera::minSmartStreamExpParams() throw(pvpException) {
+void * pvpCamera::minSmartStreamExpParams() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     void * x;
@@ -6804,7 +6804,7 @@ void * pvpCamera::minSmartStreamExpParams() throw(pvpException) {
   }
 }
 
-void * pvpCamera::maxSmartStreamExpParams() throw(pvpException) {
+void * pvpCamera::maxSmartStreamExpParams() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     void * x;
@@ -6816,7 +6816,7 @@ void * pvpCamera::maxSmartStreamExpParams() throw(pvpException) {
   }
 }
 
-void pvpCamera::setSmartStreamExpParams(void * x) throw(pvpException) {
+void pvpCamera::setSmartStreamExpParams(void * x) /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamExpParams();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     void * y = x;
@@ -6825,7 +6825,7 @@ void pvpCamera::setSmartStreamExpParams(void * x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportSmartStreamExpParams() throw(pvpException) {
+void pvpCamera::reportSmartStreamExpParams() /*throw(pvpException)*/ {
   if (availSmartStreamExpParams()) {
     pvpAccess a = accessSmartStreamExpParams();
     printf("SmartStreamExpParams: %s\n",a.decode());
@@ -6845,14 +6845,14 @@ void pvpCamera::reportSmartStreamExpParams() throw(pvpException) {
   }
 }
 
-bool pvpCamera::availSmartStreamDlyParams() throw(pvpException) {
+bool pvpCamera::availSmartStreamDlyParams() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_SMART_STREAM_DLY_PARAMS,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get SMART_STREAM_DLY_PARAMS availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessSmartStreamDlyParams() throw(pvpException) {
+pvpAccess pvpCamera::accessSmartStreamDlyParams() /*throw(pvpException)*/ {
   uns16 access;
   if (!availSmartStreamDlyParams())
     throw pvpException("SMART_STREAM_DLY_PARAMS not available");
@@ -6861,7 +6861,7 @@ pvpAccess pvpCamera::accessSmartStreamDlyParams() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countSmartStreamDlyParams() throw(pvpException) {
+int pvpCamera::countSmartStreamDlyParams() /*throw(pvpException)*/ {
   uns32 count;
   if (!availSmartStreamDlyParams())
     throw pvpException("SMART_STREAM_DLY_PARAMS not available");
@@ -6870,7 +6870,7 @@ int pvpCamera::countSmartStreamDlyParams() throw(pvpException) {
   return count;
 }
 
-void * pvpCamera::getSmartStreamDlyParams() throw(pvpException) {
+void * pvpCamera::getSmartStreamDlyParams() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     void * x;
@@ -6882,7 +6882,7 @@ void * pvpCamera::getSmartStreamDlyParams() throw(pvpException) {
   }
 }
 
-void * pvpCamera::defaultSmartStreamDlyParams() throw(pvpException) {
+void * pvpCamera::defaultSmartStreamDlyParams() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     void * x;
@@ -6894,7 +6894,7 @@ void * pvpCamera::defaultSmartStreamDlyParams() throw(pvpException) {
   }
 }
 
-void * pvpCamera::minSmartStreamDlyParams() throw(pvpException) {
+void * pvpCamera::minSmartStreamDlyParams() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     void * x;
@@ -6906,7 +6906,7 @@ void * pvpCamera::minSmartStreamDlyParams() throw(pvpException) {
   }
 }
 
-void * pvpCamera::maxSmartStreamDlyParams() throw(pvpException) {
+void * pvpCamera::maxSmartStreamDlyParams() /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     void * x;
@@ -6918,7 +6918,7 @@ void * pvpCamera::maxSmartStreamDlyParams() throw(pvpException) {
   }
 }
 
-void pvpCamera::setSmartStreamDlyParams(void * x) throw(pvpException) {
+void pvpCamera::setSmartStreamDlyParams(void * x) /*throw(pvpException)*/ {
   pvpAccess a = accessSmartStreamDlyParams();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     void * y = x;
@@ -6927,7 +6927,7 @@ void pvpCamera::setSmartStreamDlyParams(void * x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportSmartStreamDlyParams() throw(pvpException) {
+void pvpCamera::reportSmartStreamDlyParams() /*throw(pvpException)*/ {
   if (availSmartStreamDlyParams()) {
     pvpAccess a = accessSmartStreamDlyParams();
     printf("SmartStreamDlyParams: %s\n",a.decode());
@@ -6947,7 +6947,7 @@ void pvpCamera::reportSmartStreamDlyParams() throw(pvpException) {
   }
 }
 
-void pvpCamera::reportClass2() throw(pvpException) {
+void pvpCamera::reportClass2() /*throw(pvpException)*/ {
   reportAdcOffset();
   reportChipName();
   reportSystemName();
