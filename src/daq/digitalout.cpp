@@ -4,7 +4,7 @@
 
 #include <daq/analogout.h>
 #include <base/digitaldata.h>
-#include <daq/dwNIDAQmx.h>
+#include <../nidaq/NIDAQmx.h>
 #include <base/dbg.h>
 
 DigitalOut::DigitalOut(AnalogOut *master, QString id) throw(daqException):

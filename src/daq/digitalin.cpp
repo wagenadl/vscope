@@ -2,7 +2,7 @@
 
 #include <daq/digitalin.h>
 #include <daq/analogin.h>
-#include <daq/dwNIDAQmx.h>
+#include <../nidaq/NIDAQmx.h>
 #include <base/dbg.h>
 
 DigitalIn::DigitalIn(AnalogIn *master, QString id) throw(daqException):

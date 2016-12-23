@@ -3,7 +3,7 @@
 #include <daq/analogin.h>
 #include <daq/digitalin.h>
 #include <daq/analogout.h>
-#include <daq/dwNIDAQmx.h>
+#include <../nidaq/NIDAQmx.h>
 #include <math.h>
 #include <base/dbg.h>
 

@@ -6,12 +6,16 @@ PVCAM_GENERATED=src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 	src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp \
 	src/pvp/pvpDummy.cpp
 
+NIDAQ_GENERATED=src/daq/daqdummy.cpp
+
+GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED)
+
 COMMON=src/Makefile src/toplevel/version.xml
 
-release: $(COMMON) src/Makefile.Release build/release $(PVCAM_GENERATED)
+release: $(COMMON) src/Makefile.Release build/release $(GENERATED)
 	+make -C src release
 
-debug: $(COMMON) src/Makefile.Debug build/debug $(PVCAM_GENERATED)
+debug: $(COMMON) src/Makefile.Debug build/debug $(GENERATED)
 	+make -C src debug
 
 build/release:; mkdir -p $@
@@ -32,4 +36,7 @@ src/pvp/pvpDummy.cpp: tools/pvcam2dummy.pl pvcam/pvcam.h
 	$<
 
 src/toplevel/version.xml: tools/updateversion.sh
+	$<
+
+src/daq/daqdummy.cpp: tools/daqmx2dummy.pl nidaq/NIDAQmx.h
 	$<

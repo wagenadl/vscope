@@ -4,7 +4,7 @@
 #include <daq/analogin.h>
 #include <daq/digitalout.h>
 #include <base/analogdata.h>
-#include <daq/dwNIDAQmx.h>
+#include <../nidaq/NIDAQmx.h>
 #include <base/dbg.h>
 
 #define AO_RANGE_V 10.0

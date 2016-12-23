@@ -44,6 +44,9 @@ win32 {
   SOURCES -= pvp/pvpDummy.cpp
 }
 
+linux {
+#    SOURCES += daq/daqdummy.c
+}
 
 win32: RC_FILE = vscope.rc
 
