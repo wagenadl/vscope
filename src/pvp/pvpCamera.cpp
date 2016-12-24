@@ -20,8 +20,9 @@ pvpCamera::pvpCamera(QString camname) /*throw(pvpException)*/:
 
   serno = getHeadSerNumAlpha();
 
-  setSpdtabIndex(0);
   setReadoutPort(ReadoutPort::X1); // was Port2
+  setReadoutPort(ReadoutPort::X0); // was Port2
+  setSpdtabIndex(1);
   setGainIndex(1);
 
   int N = countExpResIndex();
@@ -217,7 +218,7 @@ pvpCamera::Status pvpCamera::getContinuousStatus() {
   uns32 bytecount;
   uns32 bufcount;
   if (!pl_exp_check_cont_status(camh, &status, &bytecount, &bufcount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 1");
   switch (status) {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;
@@ -233,7 +234,7 @@ pvpCamera::Status pvpCamera::getFiniteStatus() {
   int16 status;
   uns32 bytecount;
   if (!pl_exp_check_status(camh, &status, &bytecount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 2");
   switch (status) {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;
@@ -249,7 +250,7 @@ size_t pvpCamera::nPixelsSoFarFinite() {
   int16 status;
   uns32 bytecount;
   if (!pl_exp_check_status(camh, &status, &bytecount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 3");
   return bytecount/2;
 }
 
@@ -258,7 +259,7 @@ size_t pvpCamera::nPixelsSoFarContinuous(size_t npix_in_buf) {
   uns32 bytecount;
   uns32 bufcount;
   if (!pl_exp_check_cont_status(camh, &status, &bytecount, &bufcount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 4");
   return bytecount/2 + npix_in_buf*bufcount;
 }
 
@@ -267,7 +268,7 @@ int pvpCamera::haveNewFrame() {
   uns32 bytecount;
   uns32 bufcount;
   if (!pl_exp_check_cont_status(camh, &status, &bytecount, &bufcount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 5");
   if (status==READOUT_FAILED)
     return -1;
   else if (status==FRAME_AVAILABLE)
