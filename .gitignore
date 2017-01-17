@@ -1,7 +1,9 @@
 Makefile
 Makefile.Debug
 Makefile.Release
-build*
+build
+build-*
+release-*
 *pro.user*
 *~
 
