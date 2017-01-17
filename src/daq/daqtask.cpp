@@ -1,7 +1,7 @@
 // daqtask.cpp
 
 #include <daq/daqtask.h>
-#include <daq/dwNIDAQmx.h>
+#include <../nidaq/NIDAQmx.h>
 #include <base/dbg.h>
 
 daqTask::daqTask(QString id): dev(DAQDevice::find(id)) {

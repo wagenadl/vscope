@@ -1,12 +1,12 @@
 // daqBase.cpp
 
 #include <daq/daqbase.h>
-#include <daq/dwNIDAQmx.h>
+#include <../nidaq/NIDAQmx.h>
 #include <base/dbg.h>
 #include <base/exception.h>
 
 void daqTry(int errcode, char const *issuer,
-	    char const *msg, char const *aux) throw(daqException) {
+	    char const *msg, char const *aux) /*throw(daqException)*/ {
   if (errcode==0)
     return;
   if (errcode==-1) {
@@ -16,6 +16,7 @@ void daqTry(int errcode, char const *issuer,
   }
 
   int n = DAQmxGetErrorString(errcode, 0, 0);
+  // daqTry(DAQmxGetErrorString()) // for daqmx2dummy!
   if (n<0 || n>1000)
     n=1000;
   QByteArray ar(n, 0);
@@ -106,6 +107,7 @@ QStringList DAQDevice::deviceList() {
   QStringList devs;
   if (DAQmxGetSysDevNames(buffer,2048))
     return devs;
+  // daqTry(DAQmxGetSysDevNames())
   char *devptr = buffer;
   while ((devptr = strtok(devptr, ", "))) {
     devs.append(devptr);
@@ -266,16 +268,19 @@ void DAQDevice::initialize() {
 QString DAQDevice::nidaqVersion() {
     uInt32 maj, min, upd;
     int e = DAQmxGetSysNIDAQMajorVersion(&maj);
+    // daqTry(DAQmxGetSysNIDAQMajorVersion())
     if (e<0)
         return "(no driver)";
     else if (e>0)
         return "(error)";
     e = DAQmxGetSysNIDAQMinorVersion(&min);
+    // daqTry(DAQmxGetSysNIDAQMinorVersion())
     if (e<0)
         return "(no driver)";
     else if (e>0)
         return "(error)";
     e = DAQmxGetSysNIDAQUpdateVersion(&upd);
+    // daqTry(DAQmxGetSysNIDAQUpdateVersion())
     if (e<0)
         return "(no driver)";
     else if (e>0)

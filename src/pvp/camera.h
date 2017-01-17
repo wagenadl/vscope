@@ -18,6 +18,7 @@ public:
   // Querying basic camera info
   QString getSerialNumber() const;
   QStringList cameraInfo();
+  void fullReport();
 
   // Managing cameras by logical name
   QString getID() const; 

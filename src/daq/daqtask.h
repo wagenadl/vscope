@@ -8,7 +8,7 @@
 #include <QObject>
 
 // We include NIDAQmx.h just to have TaskHandle defined. Oh well.
-#include <daq/dwNIDAQmx.h> 
+#include <../nidaq/NIDAQmx.h> 
 
 class daqTask: public QObject {
   /*:C daqTask

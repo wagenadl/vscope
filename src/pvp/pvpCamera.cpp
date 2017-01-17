@@ -9,7 +9,7 @@
 #include <pvp/dwpvcam.h>
 #include <base/dbg.h>
 
-pvpCamera::pvpCamera(QString camname) throw(pvpException):
+pvpCamera::pvpCamera(QString camname) /*throw(pvpException)*/:
   camname(camname) {
   pvpSystem(); // ensure system is initialized
   
@@ -20,8 +20,9 @@ pvpCamera::pvpCamera(QString camname) throw(pvpException):
 
   serno = getHeadSerNumAlpha();
 
-  setSpdtabIndex(0);
   setReadoutPort(ReadoutPort::X1); // was Port2
+  setReadoutPort(ReadoutPort::X0); // was Port2
+  setSpdtabIndex(1);
   setGainIndex(1);
 
   int N = countExpResIndex();
@@ -62,7 +63,7 @@ QString pvpCamera::getCameraChipName() {
   return availChipName() ? getChipName() : "?";
 }
 
-void pvpCamera::reportStatus() throw(pvpException) {
+void pvpCamera::reportStatus() /*throw(pvpException)*/ {
   printf("Status report for camera %s\n",camname.toUtf8().data());
   printf("Chip: %s\n", getCameraChipName().toUtf8().data());
   printf("Ser no: %s\n", serno.toUtf8().data());
@@ -77,7 +78,7 @@ void pvpCamera::reportStatus() throw(pvpException) {
   printf("End of camera status report\n");
 }
 
-void pvpCamera::reportSpeeds() throw(pvpException) {
+void pvpCamera::reportSpeeds() /*throw(pvpException)*/ {
   int K = countReadoutPort();
   int k0 = getReadoutPort();
   int n0 = getSpdtabIndex();
@@ -112,7 +113,7 @@ void pvpCamera::reportSpeeds() throw(pvpException) {
 }
 
 
-int pvpCamera::pvpTrigMode(CCDTrigMode const &tm) throw(pvpException) {
+int pvpCamera::pvpTrigMode(CCDTrigMode const &tm) /*throw(pvpException)*/ {
   switch (tm) {
   case CCDTrigMode::Immediate:
     return TIMED_MODE;
@@ -128,7 +129,7 @@ int pvpCamera::pvpTrigMode(CCDTrigMode const &tm) throw(pvpException) {
 }
 
 rgn_type pvpCamera::pvpRegion(CCDRegion const &region,
-			      CCDBinning const &bin) throw(pvpException) {
+			      CCDBinning const &bin) /*throw(pvpException)*/ {
   rgn_type rgn;
   rgn.s1 = region.smin;
   rgn.s2 = region.smax;
@@ -145,7 +146,7 @@ int32 pvpCamera::bestExposureTime(int32 t_us) {
 }
 
 int32 pvpCamera::pvpExposureTime(int32 t_us, int32 *reso_us_out)
-  throw(pvpException) {
+  /*throw(pvpException)*/ {
   int best_reso_idx = 0;
   for (int n=0; n<expres.size(); n++) {
     //if (expres[n] > t_ms/1e4 && expres[n]<expres[best_reso_idx]) {
@@ -217,7 +218,7 @@ pvpCamera::Status pvpCamera::getContinuousStatus() {
   uns32 bytecount;
   uns32 bufcount;
   if (!pl_exp_check_cont_status(camh, &status, &bytecount, &bufcount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 1");
   switch (status) {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;
@@ -233,7 +234,7 @@ pvpCamera::Status pvpCamera::getFiniteStatus() {
   int16 status;
   uns32 bytecount;
   if (!pl_exp_check_status(camh, &status, &bytecount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 2");
   switch (status) {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;
@@ -249,7 +250,7 @@ size_t pvpCamera::nPixelsSoFarFinite() {
   int16 status;
   uns32 bytecount;
   if (!pl_exp_check_status(camh, &status, &bytecount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 3");
   return bytecount/2;
 }
 
@@ -258,7 +259,7 @@ size_t pvpCamera::nPixelsSoFarContinuous(size_t npix_in_buf) {
   uns32 bytecount;
   uns32 bufcount;
   if (!pl_exp_check_cont_status(camh, &status, &bytecount, &bufcount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 4");
   return bytecount/2 + npix_in_buf*bufcount;
 }
 
@@ -267,7 +268,7 @@ int pvpCamera::haveNewFrame() {
   uns32 bytecount;
   uns32 bufcount;
   if (!pl_exp_check_cont_status(camh, &status, &bytecount, &bufcount))
-    throw pvpException("pvpCamera: check_status failed");
+    throw pvpException("pvpCamera: check_status failed 5");
   if (status==READOUT_FAILED)
     return -1;
   else if (status==FRAME_AVAILABLE)

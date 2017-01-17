@@ -201,7 +201,7 @@ void Focus::dataAvailable() {
     try {
       frmA = camA->getLatestFrame();
       newA = true;
-    } catch(Exception const &e) {
+    } catch(Exception const &) {
       dbg("  No A frame read");
     }
   }
@@ -209,7 +209,7 @@ void Focus::dataAvailable() {
     try {
       frmB = camB->getLatestFrame();
       newB = true;
-    } catch(Exception const &e) {
+    } catch(Exception const &) {
       dbg("  No B frame read");
     }
   }

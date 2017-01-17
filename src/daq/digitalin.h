@@ -14,19 +14,19 @@ signals:
   void dataAvailable(DigitalIn *src, int nscans);
   void acquisitionEnded(DigitalIn *src, bool ok);
 public:  
-  DigitalIn(class AnalogIn *master, QString id="") throw(daqException);
+  DigitalIn(class AnalogIn *master, QString id="") /*throw(daqException)*/;
   virtual ~DigitalIn();
   void setAcqLength(int nscans); // set to zero for undefined length (cont. acq.)
   int getAcqLength() const;
-  virtual void commit() throw(daqException);
-  virtual int countScansSoFar() throw(daqException);
-  int read(DigitalData *dest) throw(daqException); // Returns number of scans actually read.
+  virtual void commit() /*throw(daqException)*/;
+  virtual int countScansSoFar() /*throw(daqException)*/;
+  int read(DigitalData *dest) /*throw(daqException)*/; // Returns number of scans actually read.
   /* This will wait until data available, except of course at end of acq. */
-  void setChannelMask(uint32_t mask) throw(daqException);
-  void addChannel(int lineno) throw(daqException);
-  void removeChannel(int lineno) throw(daqException);
+  void setChannelMask(uint32_t mask) /*throw(daqException)*/;
+  void addChannel(int lineno) /*throw(daqException)*/;
+  void removeChannel(int lineno) /*throw(daqException)*/;
   uint32_t getChannelMask() const { return cmask; }
-  bool hasChannel(int lineno) throw(daqException);
+  bool hasChannel(int lineno) /*throw(daqException)*/;
 protected:
   uint32_t cmask;
   int nscans;

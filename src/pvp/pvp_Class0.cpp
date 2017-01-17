@@ -4,14 +4,14 @@
 #include <QTextStream>
 #include <pvp/dwpvcam.h>
 
-bool pvpCamera::availDdInfoLength() throw(pvpException) {
+bool pvpCamera::availDdInfoLength() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_DD_INFO_LENGTH,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get DD_INFO_LENGTH availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessDdInfoLength() throw(pvpException) {
+pvpAccess pvpCamera::accessDdInfoLength() /*throw(pvpException)*/ {
   uns16 access;
   if (!availDdInfoLength())
     throw pvpException("DD_INFO_LENGTH not available");
@@ -20,7 +20,7 @@ pvpAccess pvpCamera::accessDdInfoLength() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countDdInfoLength() throw(pvpException) {
+int pvpCamera::countDdInfoLength() /*throw(pvpException)*/ {
   uns32 count;
   if (!availDdInfoLength())
     throw pvpException("DD_INFO_LENGTH not available");
@@ -29,7 +29,7 @@ int pvpCamera::countDdInfoLength() throw(pvpException) {
   return count;
 }
 
-int16_t pvpCamera::getDdInfoLength() throw(pvpException) {
+int16_t pvpCamera::getDdInfoLength() /*throw(pvpException)*/ {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -41,7 +41,7 @@ int16_t pvpCamera::getDdInfoLength() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::defaultDdInfoLength() throw(pvpException) {
+int16_t pvpCamera::defaultDdInfoLength() /*throw(pvpException)*/ {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -53,7 +53,7 @@ int16_t pvpCamera::defaultDdInfoLength() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::minDdInfoLength() throw(pvpException) {
+int16_t pvpCamera::minDdInfoLength() /*throw(pvpException)*/ {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -65,7 +65,7 @@ int16_t pvpCamera::minDdInfoLength() throw(pvpException) {
   }
 }
 
-int16_t pvpCamera::maxDdInfoLength() throw(pvpException) {
+int16_t pvpCamera::maxDdInfoLength() /*throw(pvpException)*/ {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     int16_t x;
@@ -77,7 +77,7 @@ int16_t pvpCamera::maxDdInfoLength() throw(pvpException) {
   }
 }
 
-void pvpCamera::setDdInfoLength(int16_t x) throw(pvpException) {
+void pvpCamera::setDdInfoLength(int16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessDdInfoLength();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     int16_t y = x;
@@ -86,34 +86,42 @@ void pvpCamera::setDdInfoLength(int16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportDdInfoLength() throw(pvpException) {
+void pvpCamera::reportDdInfoLength() /*throw(pvpException)*/ {
   if (availDdInfoLength()) {
-    pvpAccess a = accessDdInfoLength();
-    printf("DdInfoLength: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdInfoLength() <<"\n";
-        ss << "  min value: " << minDdInfoLength() <<"\n";
-        ss << "  max value: " << maxDdInfoLength() <<"\n";
-        ss << "  default value: " << defaultDdInfoLength() <<"\n";
+    try {
+      pvpAccess a = accessDdInfoLength();
+      printf("DdInfoLength: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdInfoLength() <<"\n";
+          ss << "  min value: " << minDdInfoLength() <<"\n";
+          ss << "  max value: " << maxDdInfoLength() <<"\n";
+          ss << "  default value: " << defaultDdInfoLength() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdInfoLength: Could not read\n");
     }
-    printf("  count: %i\n",countDdInfoLength());
+    try {
+      printf("  count: %i\n",countDdInfoLength());
+    } catch (pvpException) {
+      printf("DdInfoLength: Could not count\n");
+    }
   } else {
     printf("DdInfoLength is not available.\n");
   }
 }
 
-bool pvpCamera::availDdVersion() throw(pvpException) {
+bool pvpCamera::availDdVersion() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_DD_VERSION,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get DD_VERSION availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessDdVersion() throw(pvpException) {
+pvpAccess pvpCamera::accessDdVersion() /*throw(pvpException)*/ {
   uns16 access;
   if (!availDdVersion())
     throw pvpException("DD_VERSION not available");
@@ -122,7 +130,7 @@ pvpAccess pvpCamera::accessDdVersion() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countDdVersion() throw(pvpException) {
+int pvpCamera::countDdVersion() /*throw(pvpException)*/ {
   uns32 count;
   if (!availDdVersion())
     throw pvpException("DD_VERSION not available");
@@ -131,7 +139,7 @@ int pvpCamera::countDdVersion() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getDdVersion() throw(pvpException) {
+uint16_t pvpCamera::getDdVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -143,7 +151,7 @@ uint16_t pvpCamera::getDdVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultDdVersion() throw(pvpException) {
+uint16_t pvpCamera::defaultDdVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -155,7 +163,7 @@ uint16_t pvpCamera::defaultDdVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minDdVersion() throw(pvpException) {
+uint16_t pvpCamera::minDdVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -167,7 +175,7 @@ uint16_t pvpCamera::minDdVersion() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxDdVersion() throw(pvpException) {
+uint16_t pvpCamera::maxDdVersion() /*throw(pvpException)*/ {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -179,7 +187,7 @@ uint16_t pvpCamera::maxDdVersion() throw(pvpException) {
   }
 }
 
-void pvpCamera::setDdVersion(uint16_t x) throw(pvpException) {
+void pvpCamera::setDdVersion(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessDdVersion();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -188,34 +196,42 @@ void pvpCamera::setDdVersion(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportDdVersion() throw(pvpException) {
+void pvpCamera::reportDdVersion() /*throw(pvpException)*/ {
   if (availDdVersion()) {
-    pvpAccess a = accessDdVersion();
-    printf("DdVersion: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdVersion() <<"\n";
-        ss << "  min value: " << minDdVersion() <<"\n";
-        ss << "  max value: " << maxDdVersion() <<"\n";
-        ss << "  default value: " << defaultDdVersion() <<"\n";
+    try {
+      pvpAccess a = accessDdVersion();
+      printf("DdVersion: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdVersion() <<"\n";
+          ss << "  min value: " << minDdVersion() <<"\n";
+          ss << "  max value: " << maxDdVersion() <<"\n";
+          ss << "  default value: " << defaultDdVersion() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdVersion: Could not read\n");
     }
-    printf("  count: %i\n",countDdVersion());
+    try {
+      printf("  count: %i\n",countDdVersion());
+    } catch (pvpException) {
+      printf("DdVersion: Could not count\n");
+    }
   } else {
     printf("DdVersion is not available.\n");
   }
 }
 
-bool pvpCamera::availDdRetries() throw(pvpException) {
+bool pvpCamera::availDdRetries() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_DD_RETRIES,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get DD_RETRIES availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessDdRetries() throw(pvpException) {
+pvpAccess pvpCamera::accessDdRetries() /*throw(pvpException)*/ {
   uns16 access;
   if (!availDdRetries())
     throw pvpException("DD_RETRIES not available");
@@ -224,7 +240,7 @@ pvpAccess pvpCamera::accessDdRetries() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countDdRetries() throw(pvpException) {
+int pvpCamera::countDdRetries() /*throw(pvpException)*/ {
   uns32 count;
   if (!availDdRetries())
     throw pvpException("DD_RETRIES not available");
@@ -233,7 +249,7 @@ int pvpCamera::countDdRetries() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getDdRetries() throw(pvpException) {
+uint16_t pvpCamera::getDdRetries() /*throw(pvpException)*/ {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -245,7 +261,7 @@ uint16_t pvpCamera::getDdRetries() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultDdRetries() throw(pvpException) {
+uint16_t pvpCamera::defaultDdRetries() /*throw(pvpException)*/ {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -257,7 +273,7 @@ uint16_t pvpCamera::defaultDdRetries() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minDdRetries() throw(pvpException) {
+uint16_t pvpCamera::minDdRetries() /*throw(pvpException)*/ {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -269,7 +285,7 @@ uint16_t pvpCamera::minDdRetries() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxDdRetries() throw(pvpException) {
+uint16_t pvpCamera::maxDdRetries() /*throw(pvpException)*/ {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -281,7 +297,7 @@ uint16_t pvpCamera::maxDdRetries() throw(pvpException) {
   }
 }
 
-void pvpCamera::setDdRetries(uint16_t x) throw(pvpException) {
+void pvpCamera::setDdRetries(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessDdRetries();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -290,34 +306,42 @@ void pvpCamera::setDdRetries(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportDdRetries() throw(pvpException) {
+void pvpCamera::reportDdRetries() /*throw(pvpException)*/ {
   if (availDdRetries()) {
-    pvpAccess a = accessDdRetries();
-    printf("DdRetries: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdRetries() <<"\n";
-        ss << "  min value: " << minDdRetries() <<"\n";
-        ss << "  max value: " << maxDdRetries() <<"\n";
-        ss << "  default value: " << defaultDdRetries() <<"\n";
+    try {
+      pvpAccess a = accessDdRetries();
+      printf("DdRetries: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdRetries() <<"\n";
+          ss << "  min value: " << minDdRetries() <<"\n";
+          ss << "  max value: " << maxDdRetries() <<"\n";
+          ss << "  default value: " << defaultDdRetries() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdRetries: Could not read\n");
     }
-    printf("  count: %i\n",countDdRetries());
+    try {
+      printf("  count: %i\n",countDdRetries());
+    } catch (pvpException) {
+      printf("DdRetries: Could not count\n");
+    }
   } else {
     printf("DdRetries is not available.\n");
   }
 }
 
-bool pvpCamera::availDdTimeout() throw(pvpException) {
+bool pvpCamera::availDdTimeout() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_DD_TIMEOUT,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get DD_TIMEOUT availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessDdTimeout() throw(pvpException) {
+pvpAccess pvpCamera::accessDdTimeout() /*throw(pvpException)*/ {
   uns16 access;
   if (!availDdTimeout())
     throw pvpException("DD_TIMEOUT not available");
@@ -326,7 +350,7 @@ pvpAccess pvpCamera::accessDdTimeout() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countDdTimeout() throw(pvpException) {
+int pvpCamera::countDdTimeout() /*throw(pvpException)*/ {
   uns32 count;
   if (!availDdTimeout())
     throw pvpException("DD_TIMEOUT not available");
@@ -335,7 +359,7 @@ int pvpCamera::countDdTimeout() throw(pvpException) {
   return count;
 }
 
-uint16_t pvpCamera::getDdTimeout() throw(pvpException) {
+uint16_t pvpCamera::getDdTimeout() /*throw(pvpException)*/ {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -347,7 +371,7 @@ uint16_t pvpCamera::getDdTimeout() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::defaultDdTimeout() throw(pvpException) {
+uint16_t pvpCamera::defaultDdTimeout() /*throw(pvpException)*/ {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -359,7 +383,7 @@ uint16_t pvpCamera::defaultDdTimeout() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::minDdTimeout() throw(pvpException) {
+uint16_t pvpCamera::minDdTimeout() /*throw(pvpException)*/ {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -371,7 +395,7 @@ uint16_t pvpCamera::minDdTimeout() throw(pvpException) {
   }
 }
 
-uint16_t pvpCamera::maxDdTimeout() throw(pvpException) {
+uint16_t pvpCamera::maxDdTimeout() /*throw(pvpException)*/ {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     uint16_t x;
@@ -383,7 +407,7 @@ uint16_t pvpCamera::maxDdTimeout() throw(pvpException) {
   }
 }
 
-void pvpCamera::setDdTimeout(uint16_t x) throw(pvpException) {
+void pvpCamera::setDdTimeout(uint16_t x) /*throw(pvpException)*/ {
   pvpAccess a = accessDdTimeout();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     uint16_t y = x;
@@ -392,34 +416,42 @@ void pvpCamera::setDdTimeout(uint16_t x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportDdTimeout() throw(pvpException) {
+void pvpCamera::reportDdTimeout() /*throw(pvpException)*/ {
   if (availDdTimeout()) {
-    pvpAccess a = accessDdTimeout();
-    printf("DdTimeout: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdTimeout() <<"\n";
-        ss << "  min value: " << minDdTimeout() <<"\n";
-        ss << "  max value: " << maxDdTimeout() <<"\n";
-        ss << "  default value: " << defaultDdTimeout() <<"\n";
+    try {
+      pvpAccess a = accessDdTimeout();
+      printf("DdTimeout: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdTimeout() <<"\n";
+          ss << "  min value: " << minDdTimeout() <<"\n";
+          ss << "  max value: " << maxDdTimeout() <<"\n";
+          ss << "  default value: " << defaultDdTimeout() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdTimeout: Could not read\n");
     }
-    printf("  count: %i\n",countDdTimeout());
+    try {
+      printf("  count: %i\n",countDdTimeout());
+    } catch (pvpException) {
+      printf("DdTimeout: Could not count\n");
+    }
   } else {
     printf("DdTimeout is not available.\n");
   }
 }
 
-bool pvpCamera::availDdInfo() throw(pvpException) {
+bool pvpCamera::availDdInfo() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_DD_INFO,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get DD_INFO availability");
   return avail;
 }
 
-pvpAccess pvpCamera::accessDdInfo() throw(pvpException) {
+pvpAccess pvpCamera::accessDdInfo() /*throw(pvpException)*/ {
   uns16 access;
   if (!availDdInfo())
     throw pvpException("DD_INFO not available");
@@ -428,7 +460,7 @@ pvpAccess pvpCamera::accessDdInfo() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvpCamera::countDdInfo() throw(pvpException) {
+int pvpCamera::countDdInfo() /*throw(pvpException)*/ {
   uns32 count;
   if (!availDdInfo())
     throw pvpException("DD_INFO not available");
@@ -437,7 +469,7 @@ int pvpCamera::countDdInfo() throw(pvpException) {
   return count;
 }
 
-QString pvpCamera::getDdInfo() throw(pvpException) {
+QString pvpCamera::getDdInfo() /*throw(pvpException)*/ {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(getDdInfoLength(), 0);
@@ -450,7 +482,7 @@ QString pvpCamera::getDdInfo() throw(pvpException) {
   }
 }
 
-QString pvpCamera::defaultDdInfo() throw(pvpException) {
+QString pvpCamera::defaultDdInfo() /*throw(pvpException)*/ {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
     QByteArray ar(getDdInfoLength(), 0);
@@ -463,15 +495,15 @@ QString pvpCamera::defaultDdInfo() throw(pvpException) {
   }
 }
 
-QString pvpCamera::minDdInfo() throw(pvpException) {
+QString pvpCamera::minDdInfo() /*throw(pvpException)*/ {
     return "";
 }
 
-QString pvpCamera::maxDdInfo() throw(pvpException) {
+QString pvpCamera::maxDdInfo() /*throw(pvpException)*/ {
     return "";
 }
 
-void pvpCamera::setDdInfo(QString x) throw(pvpException) {
+void pvpCamera::setDdInfo(QString x) /*throw(pvpException)*/ {
   pvpAccess a = accessDdInfo();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
     if (!pl_set_param(camh,PARAM_DD_INFO,(void*)(x.toUtf8().data())))
@@ -479,27 +511,35 @@ void pvpCamera::setDdInfo(QString x) throw(pvpException) {
   }
 }
 
-void pvpCamera::reportDdInfo() throw(pvpException) {
+void pvpCamera::reportDdInfo() /*throw(pvpException)*/ {
   if (availDdInfo()) {
-    pvpAccess a = accessDdInfo();
-    printf("DdInfo: %s\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << getDdInfo() <<"\n";
-        ss << "  min value: " << minDdInfo() <<"\n";
-        ss << "  max value: " << maxDdInfo() <<"\n";
-        ss << "  default value: " << defaultDdInfo() <<"\n";
+    try {
+      pvpAccess a = accessDdInfo();
+      printf("DdInfo: %s\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << getDdInfo() <<"\n";
+          ss << "  min value: " << minDdInfo() <<"\n";
+          ss << "  max value: " << maxDdInfo() <<"\n";
+          ss << "  default value: " << defaultDdInfo() <<"\n";
+        }
+        printf("%s",s.toUtf8().data());
       }
-      printf("%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("DdInfo: Could not read\n");
     }
-    printf("  count: %i\n",countDdInfo());
+    try {
+      printf("  count: %i\n",countDdInfo());
+    } catch (pvpException) {
+      printf("DdInfo: Could not count\n");
+    }
   } else {
     printf("DdInfo is not available.\n");
   }
 }
 
-void pvpCamera::reportClass0() throw(pvpException) {
+void pvpCamera::reportClass0() /*throw(pvpException)*/ {
   reportDdInfoLength();
   reportDdVersion();
   reportDdRetries();

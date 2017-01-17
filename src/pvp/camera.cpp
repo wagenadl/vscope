@@ -23,7 +23,6 @@ Camera::~Camera() {
     fprintf(stderr,"Camera: caught exception in destructor:\n");
     e.report();
   }
-
 }
 
 QString Camera::getSerialNumber() const {
@@ -57,16 +56,20 @@ void Camera::setConfig(CCDConfig const &cfg0) {
     if (contBuffer.size()<int(npixels_for_seq))
       contBuffer.resize(npixels_for_seq);
   }
+  Dbg() << "camera::setconfig npix=" << npixels_for_seq << " expotime=" << expotime << ":" << expores_us << ":" << expose_ms<< " nframes="<< cfg.nframes;
 }
 
 void Camera::startFinite(uint16_t *dest, size_t destsize_pix) {
+    Dbg() << "startfinite";
   if (cfg.iscont)
     throw Exception("Camera","startFinite() is not for continuous acq.");
   if (destsize_pix<npixels_for_seq)
     throw Exception("Camera", "Destination buffer too small");
-  if (isRunning())
-    throw Exception("Camera", "Already running");
+  /* For some reason, isRunning() causes a crash in PVCam 3.1+. So we simply don't check anymore. */
+  //  if (isRunning())
+  //    throw Exception("Camera", "Already running");
   pvpcam->startFinite(dest);
+  Dbg() << "startfinite ok";
 }
 
 void Camera::startContinuous() {
@@ -100,10 +103,12 @@ void Camera::abort() {
       : pvpcam->getFiniteStatus())
 
 bool Camera::isRunning() {
+    Dbg() << "camera::isrunning?";
   return GETSTATUS == pvpCamera::Acquiring;
 }
 
 bool Camera::hasCompleted() {
+    Dbg() << "Camera::hascompleted?";
   switch (GETSTATUS) {
   case pvpCamera::Failed:
     throw Exception("Camera", "Readout failed", "hasCompleted");
@@ -150,6 +155,12 @@ QStringList Camera::cameraInfo() {
   res.append("Actual T");
   res.append(QString("%1 C").arg(pvpcam->getTemp()/100.0));
   return res;
+}
+
+void Camera::fullReport() {
+    Dbg() << "Camera report for " << id;
+  // pvpcam->reportStatus();
+  pvpcam->reportSpeeds();
 }
 
 QString Camera::getID() const {

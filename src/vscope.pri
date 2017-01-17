@@ -122,7 +122,6 @@ HEADERS += \
      daq/digitalin.h  \
      daq/digitalout.h  \
      daq/digitalstep.h  \
-     daq/dwNIDAQmx.h  \
 
 SOURCES += \
      daq/analogin.cpp  \

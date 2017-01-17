@@ -130,17 +130,17 @@ Transform &Transform::invert() {
 
 Transform Transform::scaled(double x, double y) const {
   Transform t(*this);
-  return t.scaled(x,y);
+  return t.scale(x,y);
 }
 
 Transform Transform::scaled(double xy) const {
   Transform t(*this);
-  return t.scaled(xy);
+  return t.scale(xy);
 }
 
 Transform Transform::translated(double dx, double dy) const {
   Transform t(*this);
-  return t.translated(dx,dy);
+  return t.translate(dx,dy);
 }
 
 Transform Transform::xflipped(double xcoord) const {

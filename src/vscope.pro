@@ -35,15 +35,20 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 
 win32 {
+  message(win32: pwd=$$PWD)
   INCLUDEPATH += "C:\Program Files (x86)\National Instruments\NI-DAQ\DAQmx ANSI C Dev\include"
-  LIBS += -L"C:\Program Files (x86)\National Instruments\NI-DAQ\DAQmx ANSI C Dev\lib\msvc"
+  LIBS += -L$$PWD/../nidaq
   LIBS += -lNIDAQmx
-  LIBS += -L"..\pvcam\i386"
+  LIBS += -L$$PWD/../pvcam/i386
   LIBS += -lpvcam32
+  #LIBS += "..\pvcam\i386\pvcam32.lib"
   SOURCES -= daq/daqdummy.cpp
   SOURCES -= pvp/pvpDummy.cpp
 }
 
+linux {
+#    SOURCES += daq/daqdummy.c
+}
 
 win32: RC_FILE = vscope.rc
 

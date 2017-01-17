@@ -177,10 +177,10 @@ for (@pvclines) {
 }
 
 for my $c (keys %CLASSNAMES) {
-  $fh[$c]->print("  void reportClass$c() throw(pvpException);\n");
+  $fh[$c]->print("  void reportClass$c() /*throw(pvpException)*/;\n");
   close($fh[$c]);
 
-  $fcpp[$c]->print("void pvp$CLASSNAMES{$c}::reportClass$c() throw(pvpException) {\n");
+  $fcpp[$c]->print("void pvp$CLASSNAMES{$c}::reportClass$c() /*throw(pvpException)*/ {\n");
   for (@{$paramlists[$c]}) {
     $fcpp[$c]->print("  report$_();\n");
   }
@@ -231,28 +231,28 @@ sub handleparam {
   die "No mapping for $ptype\n" unless defined $nicetype;
 
   $fh[$pclass]->print(<<"EOF");
-  bool avail$nicename() throw(pvpException);
-  pvpAccess access$nicename() throw(pvpException);
-  $nicetype get$nicename() throw(pvpException);
-  $nicetype min$nicename() throw(pvpException);
-  $nicetype max$nicename() throw(pvpException);
-  $nicetype default$nicename() throw(pvpException);
-  $nicetype step$nicename() throw(pvpException);
-  int count$nicename() throw(pvpException);
-  void set$nicename($nicetype) throw(pvpException);
-  void report$nicename() throw(pvpException);
+  bool avail$nicename() /*throw(pvpException)*/;
+  pvpAccess access$nicename() /*throw(pvpException)*/;
+  $nicetype get$nicename() /*throw(pvpException)*/;
+  $nicetype min$nicename() /*throw(pvpException)*/;
+  $nicetype max$nicename() /*throw(pvpException)*/;
+  $nicetype default$nicename() /*throw(pvpException)*/;
+  $nicetype step$nicename() /*throw(pvpException)*/;
+  int count$nicename() /*throw(pvpException)*/;
+  void set$nicename($nicetype) /*throw(pvpException)*/;
+  void report$nicename() /*throw(pvpException)*/;
 
 EOF
 
   $fcpp[$pclass]->print(<<"EOF");
-bool pvp$CLASSNAMES{$pclass}::avail$nicename() throw(pvpException) {
+bool pvp$CLASSNAMES{$pclass}::avail$nicename() /*throw(pvpException)*/ {
   rs_bool avail;
   if (!pl_get_param(camh,PARAM_$pname,ATTR_AVAIL,&avail))
     throw pvpException("Cannot get $pname availability");
   return avail;
 }
 
-pvpAccess pvp$CLASSNAMES{$pclass}::access$nicename() throw(pvpException) {
+pvpAccess pvp$CLASSNAMES{$pclass}::access$nicename() /*throw(pvpException)*/ {
   uns16 access;
   if (!avail$nicename())
     throw pvpException("$pname not available");
@@ -261,7 +261,7 @@ pvpAccess pvp$CLASSNAMES{$pclass}::access$nicename() throw(pvpException) {
   return pvpAccess(access);
 }
 
-int pvp$CLASSNAMES{$pclass}::count$nicename() throw(pvpException) {
+int pvp$CLASSNAMES{$pclass}::count$nicename() /*throw(pvpException)*/ {
   uns32 count;
   if (!avail$nicename())
     throw pvpException("$pname not available");
@@ -270,7 +270,7 @@ int pvp$CLASSNAMES{$pclass}::count$nicename() throw(pvpException) {
   return count;
 }
 
-$nicetype pvp$CLASSNAMES{$pclass}::get$nicename() throw(pvpException) {
+$nicetype pvp$CLASSNAMES{$pclass}::get$nicename() /*throw(pvpException)*/ {
   pvpAccess a = access$nicename();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
 EOF
@@ -311,7 +311,7 @@ EOF
   }
 }
 
-$nicetype pvp$CLASSNAMES{$pclass}::default$nicename() throw(pvpException) {
+$nicetype pvp$CLASSNAMES{$pclass}::default$nicename() /*throw(pvpException)*/ {
   pvpAccess a = access$nicename();
   if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
 EOF
@@ -346,7 +346,7 @@ EOF
   }
 }
 
-$nicetype pvp$CLASSNAMES{$pclass}::min$nicename() throw(pvpException) {
+$nicetype pvp$CLASSNAMES{$pclass}::min$nicename() /*throw(pvpException)*/ {
 EOF
   if ($ptype eq "CHAR_PTR") {
     $fcpp[$pclass]->print("    return \"\";\n"); #throw pvpException(\"min not defined for string-typed $pname\");\n");
@@ -366,7 +366,7 @@ EOF
   $fcpp[$pclass]->print(<<"EOF");
 }
 
-$nicetype pvp$CLASSNAMES{$pclass}::max$nicename() throw(pvpException) {
+$nicetype pvp$CLASSNAMES{$pclass}::max$nicename() /*throw(pvpException)*/ {
 EOF
   if ($ptype eq "CHAR_PTR") {
     $fcpp[$pclass]->print("    return \"\";\n"); # throw pvpException(\"max not defined for string-typed $pname\");\n");
@@ -386,7 +386,7 @@ EOF
   $fcpp[$pclass]->print(<<"EOF");
 }
 
-void pvp$CLASSNAMES{$pclass}::set$nicename($nicetype x) throw(pvpException) {
+void pvp$CLASSNAMES{$pclass}::set$nicename($nicetype x) /*throw(pvpException)*/ {
   pvpAccess a = access$nicename();
   if (a==pvpAccess::WriteOnly || a==pvpAccess::ReadWrite) {
 EOF
@@ -413,21 +413,29 @@ EOF
     $ref ="";
   }
   $fcpp[$pclass]->print(<<"EOF");
-void pvp$CLASSNAMES{$pclass}::report$nicename() throw(pvpException) {
+void pvp$CLASSNAMES{$pclass}::report$nicename() /*throw(pvpException)*/ {
   if (avail$nicename()) {
-    pvpAccess a = access$nicename();
-    printf("$nicename: \%s\\n",a.decode());
-    if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
-      QString s;
-      { QTextStream ss(&s);
-        ss << "  current value: " << get$nicename()$ref <<"\\n";
-        ss << "  min value: " << min$nicename()$ref <<"\\n";
-        ss << "  max value: " << max$nicename()$ref <<"\\n";
-        ss << "  default value: " << default$nicename()$ref <<"\\n";
+    try {
+      pvpAccess a = access$nicename();
+      printf("$nicename: \%s\\n",a.decode());
+      if (a==pvpAccess::ReadOnly || a==pvpAccess::ReadWrite) {
+        QString s;
+        { QTextStream ss(&s);
+          ss << "  current value: " << get$nicename()$ref <<"\\n";
+          ss << "  min value: " << min$nicename()$ref <<"\\n";
+          ss << "  max value: " << max$nicename()$ref <<"\\n";
+          ss << "  default value: " << default$nicename()$ref <<"\\n";
+        }
+        printf("\%s",s.toUtf8().data());
       }
-      printf("\%s",s.toUtf8().data());
+    } catch (pvpException) {
+       printf("$nicename: Could not read\\n");
     }
-    printf("  count: %i\\n",count$nicename());
+    try {
+      printf("  count: %i\\n",count$nicename());
+    } catch (pvpException) {
+      printf("$nicename: Could not count\\n");
+    }
   } else {
     printf("$nicename is not available.\\n");
   }
