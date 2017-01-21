@@ -1,3 +1,9 @@
+vscope (0.99.3-1) yakkety; urgency=medium
+
+  Preparing for github release
+
+ -- Daniel A. Wagenaar <daw@caltech.edu>  Fri, 20 Jan 2017 22:07:56 -0800
+
 vscope (0.0.0-1) yakkety; urgency=medium
 
   Placeholder changelog entry
