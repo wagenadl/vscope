@@ -14,6 +14,7 @@ endif
 QMAKE=qmake
 SELECTQT="-qt=qt5"
 
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 PVCAM_GENERATED=src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 	src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp \
@@ -82,6 +83,6 @@ install: release DOC MTPSD
 	install tools/vscope.desktop $(SHAREPATH)/applications/vscope.desktop
 	install -d $(SHAREPATH)/pixmaps
 	cp tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
-	install -d $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0
-	cp build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0/
-	cp build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0/
+	install -d $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
+	cp build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0/
+	cp build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0/
