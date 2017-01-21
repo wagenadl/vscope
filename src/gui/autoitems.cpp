@@ -67,7 +67,7 @@ void AutoItems::override(QStringList newids, PageBuildGeom *g_out) {
   if (!p)
     throw Exception("AutoItems", "Parent is not a page");
   foreach (QString id, items.keys()) {
-    Dbg() << "AI: deleting " << id;
+    // Dbg() << "AI: deleting " << id;
     p->deleteButton(id);
   }
 
@@ -82,7 +82,7 @@ void AutoItems::override(QStringList newids, PageBuildGeom *g_out) {
   foreach (QString id, ids) {
     if (!enumerator->has(id) || enumerator->lookup(id)>=0) {
       // let's build an item
-      Dbg() << "AI: building " << id;
+      // Dbg() << "AI: building " << id;
       xml.setContent(hd1 + "\n" + hd2 + "\n"
 		     + "<item value=\""
 		     + id
