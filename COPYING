@@ -37,4 +37,6 @@ and are not covered by this license. These are:
 
   Copyright © 2016 National Instruments Corporation. All Rights Reserved.
   Further details are at http://www.ni.com/legal/license/.
- 
+
+* The files in tools/mtpsd are (C) Antonio Sanchez, and distributed under
+  the terms of the GNU General Public License version 3.
