@@ -57,6 +57,8 @@ function coh = vscope_cohanalysis(x, varargin)
 %                               these if you want to overlay the image with
 %                               VSCOPE_ROIOUTLINE results.)
 %       extra.rois - original rois
+%       extra.here - binary vector indicating whether a given ROI lives
+%                    on our camera
 %
 %    Since we usually do multiple comparisons, either pthresh should be 
 %    chosen conservatively, or, more clever, put in pthresh=-0.05 (or -p in
@@ -102,6 +104,15 @@ end
 [t_on, t_off] = vscope_ccdtime(x, kv.camera);
 
 coh.extra.rois = x.rois;
+
+K = length(x.rois);
+coh.extra.here = logical(zeros(K,1));
+for k=1:K
+  if strmatch(x.ccd.info.camid{kv.camera}, x.roicams{k}, 'exact')
+    coh.extra.here(k) = 1;
+  end
+end
+
 
 % Extract reference image
 [Y X C T] = size(x.ccd.dat);

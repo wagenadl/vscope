@@ -68,9 +68,9 @@ elseif endswith(ifn,'-ccd.dat');
     case 4
       dat = vscope_load_ccd(ifn,wht,frmno,camno);
   end
-elseif endswith(ifn,'-roi.xml')
-  dat = vsdl_rois(ifd);
-  ifclose(ifd);
+elseif endswith(ifn,'-rois.xml')
+  [dat.rois dat.roicams] = vsdl_rois(ifd);
+  fclose(ifd);
 elseif endswith(ifn,'.xml') 
   % Structured
   if nargin<2
