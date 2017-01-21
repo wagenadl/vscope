@@ -39,7 +39,7 @@ build-dbg/Makefile: $(PVCAM_GENERATED) $(COMMON)
 	mkdir -p build-dbg
 	( cd build-dbg; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
-clean:; rm -rf build build-dbg
+clean:; rm -rf build build-dbg build-doc build-mtpsd
 
 src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp: \
@@ -61,7 +61,14 @@ DOC:;	mkdir -p build-doc
 	cp doc/Makefile build-doc
 	+make -C build-doc
 
-install: release DOC
+MTPSD:	build-mtpsd/mtpsd.oct build-mtpsd/dpss.oct
+
+build-mtpsd/mtpsd.oct build-mtpsd/dpss.oct:;
+	mkdir -p build-mtpsd
+	cp tools/mtpsd/Makefile build-mtpsd/
+	+make SRC=../tools/mtpsd -C build-mtpsd oct
+
+install: release DOC MTPSD
 	install -d $(INSTALLPATH)/bin
 	install build/vscope $(INSTALLPATH)/bin/vscope
 	mkdir -p $(SHAREPATH)/octave/packages/vscope-1.0/private 
@@ -75,3 +82,6 @@ install: release DOC
 	install tools/vscope.desktop $(SHAREPATH)/applications/vscope.desktop
 	install -d $(SHAREPATH)/pixmaps
 	cp tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
+	install -d $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0
+	cp build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0/
+	cp build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0/
