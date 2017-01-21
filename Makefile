@@ -8,7 +8,7 @@ PVCAM_GENERATED=src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 
 NIDAQ_GENERATED=src/daq/daqdummy.cpp
 
-GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED)
+GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED) src/base/enums.h
 
 COMMON=src/Makefile src/toplevel/version.xml
 
@@ -39,4 +39,7 @@ src/toplevel/version.xml: tools/updateversion.sh
 	$<
 
 src/daq/daqdummy.cpp: tools/daqmx2dummy.pl nidaq/NIDAQmx.h
+	$<
+
+src/base/enums.h: tools/enums2c.pl src/base/enums.xml 
 	$<

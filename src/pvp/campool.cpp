@@ -37,10 +37,15 @@ Camera &CamPool::get(int n) {
 }
 
 Camera &CamPool::find(QString serno) {
-  if (byId.contains(serno))
-    return *byId[serno];
-  else
-    throw Exception("CamPool","No such camera");
+  if (byId.contains(serno)) {
+    Camera *c = byId[serno];
+    if (c)
+      return *c;
+    else
+      throw Exception("CamPool", "Null camera: " + serno);
+  } else {
+    throw Exception("CamPool", "No such camera: " + serno);
+  }
 }
 
 Camera *CamPool::findp(QString serno) {

@@ -8,6 +8,7 @@
 #include <pvp/ccdregion.h>
 #include <pvp/ccdtrigmode.h>
 #include <base/transform.h>
+#include <base/enums.h>
 
 class CCDConfig {
 public:
@@ -34,6 +35,7 @@ public:
   CCDRegion region;
   CCDBinning binning;
   CCDTrigMode trigmode;
+  PORTSPEED portspeed;
   bool iscont;
 };
 

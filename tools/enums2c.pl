@@ -4,8 +4,8 @@ use strict;
 
 use XML::Simple;
 
-my $infile = "enums.xml";
-my $outfile = "enums.h";
+my $infile = "src/base/enums.xml";
+my $outfile = "src/base/enums.h";
 
 usage() if @ARGV;
 

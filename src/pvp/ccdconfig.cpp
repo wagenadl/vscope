@@ -8,6 +8,7 @@ CCDConfig::CCDConfig() {
   clear_every_frame = false;
   trigmode = CCDTrigMode::Immediate;
   iscont = false;
+  portspeed = PS_P1S1;
 }
 
 CCDConfig::CCDConfig(CCDConfig const &c) {

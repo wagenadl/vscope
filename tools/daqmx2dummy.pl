@@ -34,8 +34,12 @@ while (<IN>) {
   s/\s+/ /g;
   /(.*)\s*\((.*)\);/ or die "Bad function declaration: $_\n";
   my $pre = $1;
-  my @args = split(/, */,$2);
-#  for (@args) { s/ (\**)[a-zA-Z][a-zA-Z0-9_]*(\[?\]?)$/$1$2/; }
+  my @args = split(/, */, $2);
+  for (@args) {
+    my $hasconst = s/^const +//;
+    s/ (\**)[a-zA-Z][a-zA-Z0-9_]*(\[?\]?)$/$1$2/;
+    $_ = "const $_" if $hasconst;
+  }
   print OUT "int32 DAQmx$foo(",join(", ",@args),") {\n";
   print OUT "  return -1;\n";
   print OUT "}\n\n";

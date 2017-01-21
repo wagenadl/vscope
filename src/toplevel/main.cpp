@@ -251,10 +251,13 @@ void setupCams() {
   CamPool::initialize();
   QStringList sz = Connections::allCams();
   foreach (QString id, sz) {
-    QString serno = Connections::findCam(id).serno;
-    CamPool::rename(serno, id);
-    Connections::markCameraExists(id, CamPool::findp(id));
-    CamPool::find(id).fullReport();
+    bool xist = CamPool::findp(id);
+    Connections::markCameraExists(id, xist);
+    if (xist) {
+      QString serno = Connections::findCam(id).serno;
+      CamPool::rename(serno, id);
+      CamPool::find(id).fullReport();
+    }
   }
 }
 
@@ -510,8 +513,8 @@ int main(int argc, char **argv) {
     Dbg() << "Application done";
     return res;
   } catch (Exception const &e) {
-    Warning() << "Exception caught in main.";
-    GUIExc::report(e,"");
+    Dbg() << "Exception caught in main.";
+    GUIExc::report(e, "");
   }
   return 0;
 }
