@@ -2,6 +2,15 @@ DEFAULT: release
 
 both: release debug
 
+ifdef DESTDIR
+  # Debian uses this
+  INSTALLPATH = $(DESTDIR)/usr
+  SHAREPATH = $(DESTDIR)/usr/share
+else
+  INSTALLPATH = /usr/local
+  SHAREPATH = /usr/local/share
+endif
+
 QMAKE=qmake
 SELECTQT="-qt=qt5"
 
@@ -47,3 +56,22 @@ src/daq/daqdummy.cpp: tools/daqmx2dummy.pl nidaq/NIDAQmx.h
 
 src/base/enums.h: tools/enums2c.pl src/base/enums.xml 
 	$<
+
+DOC:;	mkdir -p build-doc
+	cp doc/Makefile build-doc
+	+make -C build-doc
+
+install: release DOC
+	install -d $(INSTALLPATH)/bin
+	install build/vscope $(INSTALLPATH)/bin/vscope
+	mkdir -p $(SHAREPATH)/octave/packages/vscope-1.0/private 
+	cp $(wildcard octave/vscope-1.0/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/
+	cp $(wildcard octave/vscope-1.0/private/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/private/
+	mkdir -p $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
+	cp octave/vscope-1.0/packinfo/DESCRIPTION $(SHAREPATH)/octave/packages/vscope-1.0/packinfo/
+	install -d $(SHAREPATH)/man/man1
+	cp build-doc/vscope.1 $(SHAREPATH)/man/man1/vscope.1
+	install -d $(SHAREPATH)/applications
+	install tools/vscope.desktop $(SHAREPATH)/applications/vscope.desktop
+	install -d $(SHAREPATH)/pixmaps
+	cp tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
