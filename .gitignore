@@ -13,3 +13,9 @@ src/utils/mtpsd/lib
 *stackdump
 object_script*
 .qmake.stash
+
+*debhelper*
+debian/eln
+debian/files
+debian/*.substvars
+
