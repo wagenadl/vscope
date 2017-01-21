@@ -1,0 +1,33 @@
+VSCOPE(1)
+=========
+:doctype: manpage
+
+NAME
+----
+vscope - Voltage-sensitive dye data acquisition
+
+SYNOPSIS
+--------
+*vscope* ['VSCOPE']
+
+DESCRIPTION
+-----------
+The *vscope*(1) command starts the VSCOPE voltage-sensitive dye data
+acquisition and analysis program.
+
+OPTIONS
+-------
+None.
+
+BUGS
+----
+VSCOPE has been in continuous development since 2008. Some bugs remain.
+
+AUTHOR
+------
+Daniel Wagenaar <daw@caltech.edu>, Division of Biology and Biological 
+Engineering, California Institute of Technology. http://www.danielwagenaar.net.
+
+SEE ALSO
+--------
+For more information please visit http://www.danielwagenaar.net.

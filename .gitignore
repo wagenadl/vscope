@@ -6,6 +6,8 @@ build-*
 release-*
 *pro.user*
 *~
+#*#
+.#*
 
 src/toplevel/version.tmp
 src/utils/mtpsd/bin
