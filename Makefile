@@ -2,6 +2,10 @@ DEFAULT: release
 
 both: release debug
 
+QMAKE=qmake
+SELECTQT="-qt=qt5"
+
+
 PVCAM_GENERATED=src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 	src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp \
 	src/pvp/pvpDummy.cpp
@@ -10,22 +14,23 @@ NIDAQ_GENERATED=src/daq/daqdummy.cpp
 
 GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED) src/base/enums.h
 
-COMMON=src/Makefile src/toplevel/version.xml
+COMMON=src/toplevel/version.xml src/vscope.pro src/vscope.pri
 
-release: $(COMMON) src/Makefile.Release build/release $(GENERATED)
-	+make -C src release
+release: build/Makefile
+	+make -C build release
 
-debug: $(COMMON) src/Makefile.Debug build/debug $(GENERATED)
-	+make -C src debug
+build/Makefile:	$(PVCAM_GENERATED) $(COMMON)
+	mkdir -p build
+	( cd build; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
-build/release:; mkdir -p $@
-build/debug:; mkdir -p $@
+debug: build-dbg/Makefile
+	+make -C build-dbg debug
 
-clean:; rm -rf build/release build/debug
+build-dbg/Makefile: $(PVCAM_GENERATED) $(COMMON)
+	mkdir -p build-dbg
+	( cd build-dbg; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
-src/Makefile src/Makefile.Debug src/Makefile.Release build/release build/debug: \
-	src/vscope.pro src/vscope.pri
-	cd src; qmake -qt=qt5
+clean:; rm -rf build build-dbg
 
 src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp: \
