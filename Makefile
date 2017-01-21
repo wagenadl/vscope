@@ -40,8 +40,7 @@ src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp: \
 src/pvp/pvpDummy.cpp: tools/pvcam2dummy.pl pvcam/pvcam.h
 	$<
 
-src/toplevel/version.xml: tools/updateversion.sh
-	$<
+src/toplevel/version.xml:; tools/updateversion.sh
 
 src/daq/daqdummy.cpp: tools/daqmx2dummy.pl nidaq/NIDAQmx.h
 	$<
