@@ -6,9 +6,17 @@ ifdef DESTDIR
   # Debian uses this
   INSTALLPATH = $(DESTDIR)/usr
   SHAREPATH = $(DESTDIR)/usr/share
+  VERSION:
+  # This ensures version.xml is not modified by debian build.
+  # I think that is a decent solution. Alternatively, version.xml
+  # could be updated in the build/ tree, and version.qrc could
+  # somehow fetch it from there. That would be even better,
+  # but too tricky for the moment.
 else
   INSTALLPATH = /usr/local
   SHAREPATH = /usr/local/share
+  VERSION:; tools/updateversion.sh
+  # This ensures version.xml is updated by regular build
 endif
 
 QMAKE=qmake
@@ -22,21 +30,21 @@ PVCAM_GENERATED=src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 
 NIDAQ_GENERATED=src/daq/daqdummy.cpp
 
-GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED) src/base/enums.h
+GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED) src/base/enums.h src/toplevel/version.xml
 
-COMMON=src/toplevel/version.xml src/vscope.pro src/vscope.pri
+COMMON=src/vscope.pro src/vscope.pri
 
 release: build/Makefile
 	+make -C build release
 
-build/Makefile:	$(PVCAM_GENERATED) $(COMMON)
+build/Makefile:	$(GENERATED) $(COMMON) VERSION
 	mkdir -p build
 	( cd build; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
 debug: build-dbg/Makefile
 	+make -C build-dbg debug
 
-build-dbg/Makefile: $(PVCAM_GENERATED) $(COMMON)
+build-dbg/Makefile: $(GENERATED) $(COMMON) VERSION
 	mkdir -p build-dbg
 	( cd build-dbg; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
