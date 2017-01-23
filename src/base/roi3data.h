@@ -100,6 +100,7 @@ public:
        get done exactly?)
    *:N If we don't have acceptor data, this returns donor data w/o ratioing.
   */
+  void report() const;
 protected:
   ROIData datDonor, datAcceptor;
   mutable QVector<double> datRatio;

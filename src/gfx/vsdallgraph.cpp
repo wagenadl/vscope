@@ -88,7 +88,7 @@ void VSDAllGraph::newOffsets() {
 }
 
 void VSDAllGraph::updateSelection(int id) {
-  // Dbg() << "VSDAllGraph("<<this<<"): updateSelection("<<id<<") was:"<<selectedId;
+  Dbg() << "VSDAllGraph("<<this<<"): updateSelection("<<id<<") was:"<<selectedId;
   if (selectedId)
     setTracePen(num2az(selectedId),QColor("#000000"));
   selectedId = traces.contains(id) ? id : 0;
@@ -112,10 +112,13 @@ void VSDAllGraph::paintEvent(class QPaintEvent *e) {
   if (autoRP)
     setAutoRepaint(false);
 
+  Dbg() << "vsdallgraph::paintevent";
   foreach (int id, traces.keys()) {
     TraceInfo *trc = traces[id];
-    if (!data->haveData(id))
+    if (!data->haveData(id)) {
+      Dbg() << "  missing data for " << id;
       continue; // this should not happen
+    }
     ROI3Data const *dat = data->getData(id);
     trc->setData(dat->getRatioT0ms()/1e3, dat->getRatioDTms()/1e3,
 		 DataPtr(dat->dataRatio()), dat->getRatioNFrames());

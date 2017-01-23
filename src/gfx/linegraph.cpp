@@ -527,10 +527,6 @@ void LineGraph::paintYAxis(QPainter &p) {
 }
 
 void LineGraph::paintTrace(QPainter &p, TraceInfo const *ti) {
-
-  //Dbg() << "LineGraph("<<this<<"): ti="<<ti;
-  if (ti)
-    ti->report();
   int M = contentsWidth(); // number of pixels
   if (M==0)
     return;

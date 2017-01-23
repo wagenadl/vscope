@@ -145,7 +145,8 @@ void setupParsAndConns(char const *pathoverride) {
   char const *envpath = getenv("VSCOPEPATH");
   QString fpath = "/";
   if (pathoverride) {
-    fpath = pathoverride;
+    QDir dir(pathoverride);
+    fpath = dir.absolutePath();
   } else if (envpath) {
     fpath = envpath;
     Dbg() << "Got path from VSCOPEPATH: " << fpath;
@@ -168,7 +169,7 @@ void setupParsAndConns(char const *pathoverride) {
       x.mkpath(spath);
     QFile f(":/connections.xml");
     if (!f.copy(connfn))
-      throw Exception("main", "Cannot create connections file");
+      throw Exception("main", "Cannot create connections file: " + connfn);
   }
   Dbg() << "Reading connections from: " << connfn;
   XML connDoc(connfn);

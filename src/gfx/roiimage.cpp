@@ -182,9 +182,6 @@ void ROIImage::paintEvent(class QPaintEvent *e) {
 }
 
 void ROIImage::mousePressEvent(QMouseEvent *e) {
-  //dbg("ROIImage: press (%i,%i) mode=%i\n",e->x(),e->y(),clickMode);
-  //Dbg() << "ROIImage: selectedid="<<selectedroi
-  //	<< " has="<<roiset->contains(selectedroi);
   clickPoint = e->pos();
   QPointF canvasPoint =
     canvasToScreen().inverse()(Transform::pixelCenter(clickPoint));
@@ -330,7 +327,6 @@ int ROIImage::findNearestROI(QPoint xy, double marg) {
 }
 
 void ROIImage::mouseReleaseEvent(QMouseEvent *e) {
-  dbg("ROIImage: release (%i,%i) mode=%i\n",e->x(),e->y(),int(clickMode));
   if (clickMode==CM_Zoom || clickMode==CM_None) {
     CCDImage::mouseReleaseEvent(e);
   }

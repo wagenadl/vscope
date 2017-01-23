@@ -20,7 +20,6 @@ BlobROI::BlobROI(PolyBlob const &src, Transform const &t,
 
 void BlobROI::construct(PolyBlob const &src, Transform const &t,
 			QRect bbox, double border) {
-  //  Dbg() << "BlobROI::construct " << this;
   QPointF p = t(src.xy(0));
   double xmin = p.x();
   double xmax = p.x();
@@ -43,9 +42,6 @@ void BlobROI::construct(PolyBlob const &src, Transform const &t,
   w = ceili(xmax + 2*border) - x0;
   y0 = floori(ymin - 2*border);
   h = ceili(ymax + 2*border) - y0;
-  //Dbg() << "BlobROI: x0="<<x0<< " w="<<w<< " y0="<<y0<< " h="<<h;
-  //Dbg() << "  bbox.l=" << bbox.left() << " .r="<<bbox.right()
-  //	<< " .t=" << bbox.top() << " .b="<<bbox.bottom();
   if (bbox.isValid()) {
     if (x0<bbox.left())
       x0 = bbox.left();
@@ -97,8 +93,8 @@ int BlobROI::nPixels() const {
 
 QVector<bool> BlobROI::bitmap() const {
   QVector<bool> dst(w*h);
-  Q_ASSERT(bitmap(dst.data(), w*h));
-  //  Dbg() << "BlobROI::bitmap" << this;
+  int res = bitmap(dst.data(), w*h);
+  Q_ASSERT(res);
   return dst;
 }
 

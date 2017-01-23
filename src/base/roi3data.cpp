@@ -160,3 +160,27 @@ Range ROI3Data::timeRange() const {
   return tt;
 }
  
+void ROI3Data::report() const {
+  Dbg() << "ROI3Data::report";
+  datDonor.report();
+  datAcceptor.report();
+  double const *src = dataRatio();
+  int N = getRatioNFrames();
+  if (src && N) {
+    double min = 10000;
+    double max = -10000;
+    double sumx = 0;
+    double sumxx = 0;
+    for (int n=0; n<N; n++) {
+      double v = src[n];
+      if (v<min)
+        min = v;
+      if (v>max)
+        max = v;
+      sumx += v;
+      sumxx += v*v;
+    }
+    Dbg() << "ratio min="<<min << " max="<<max << " avg="<<sumx/N
+          << " var:"<<(sumxx-sumx*sumx/N)/N << " first="<<src[0];
+  }
+}
