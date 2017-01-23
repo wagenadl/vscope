@@ -136,7 +136,7 @@ void setupAIChannels() {
   Globals::ptree->find("acqEphys/aiChannels").setStrings(ai);
 }
 
-void setupParsAndConns() {
+void setupParsAndConns(char const *pathoverride) {
   XML enumsDoc(":/enums.xml");
   XML paramsDoc(":/parameters.xml");
   QDomElement enums = enumsDoc.root();
@@ -144,7 +144,9 @@ void setupParsAndConns() {
   
   char const *envpath = getenv("VSCOPEPATH");
   QString fpath = "/";
-  if (envpath) {
+  if (pathoverride) {
+    fpath = pathoverride;
+  } else if (envpath) {
     fpath = envpath;
     Dbg() << "Got path from VSCOPEPATH: " << fpath;
   } else {
@@ -435,7 +437,7 @@ int main(int argc, char **argv) {
     QObject guard;
     checkTypes();
     setupAppStyle(app);
-    setupParsAndConns();
+    setupParsAndConns(argc>=2 ? argv[1] : 0);
 
     QString fpath = Globals::filePath();
     Globals::trove = new DataTrove(Globals::ptree);
