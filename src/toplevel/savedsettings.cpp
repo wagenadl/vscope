@@ -155,7 +155,7 @@ void SavedSettings::saveSettings(QString fn) {
     if (!ptree)
       ptree = Globals::ptree;
     SettingsFile::save(fn, ptree);
-  } catch (Exception const &e) {
+  } catch (Exception const &) {
     dbg("SavedSettings::saveSettings: Caught exception");
   }
   if (isVisible()) {

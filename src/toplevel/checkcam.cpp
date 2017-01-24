@@ -58,7 +58,7 @@ QStringList checkcam() {
       }
       list.append(s);
     }
-  } catch (Exception const &e) {
+  } catch (Exception const &) {
     QString s = "Cannot read camera info";
     list.append(s);
   }

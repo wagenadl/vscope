@@ -106,7 +106,7 @@ bool Taperbank::canProvide(TaperID const &id, bool guarantee) {
   if (guarantee) {
     try {
       find(id);
-    } catch (Exception const &e) {
+    } catch (Exception const &) {
       return false;
     }
     return true;

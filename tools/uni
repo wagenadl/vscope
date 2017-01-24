@@ -1,7 +1,0 @@
-#!/bin/zsh
-# unison -batch vscope
-
-#[[ -f /usr/local/bin/unison-2.13.exe ]] && /usr/local/bin/unison-2.13.exe -servercmd /usr/bin/unison-2.13 -batch vscope || 
-
-unison -batch vscope
-

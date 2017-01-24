@@ -52,7 +52,7 @@ linux {
 
 win32: RC_FILE = vscope.rc
 
-unix: CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
+CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 
 win32 {
   DEFINES += WIN32
