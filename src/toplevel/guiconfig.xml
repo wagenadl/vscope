@@ -219,6 +219,7 @@
 	<button id="dur" label="VSD dur." bg="#77bbff"/>
 	<button id="rate" label="Frame rate" bg="#4488ff"/>
 	<button id="dutyCycle" label="Duty cycle" bg="#4444ff"/>
+        <button id="portspeed" label="Port/Speed" bg="#8888ff"/>
 	<button id="preIllum" label="Pre-illum"  bg="#ddbbff" y="3"/>
 	<button id="postIllum" label="Post-illum" bg="#bb99ff"/>
 	<button id="preHeat" label="Pre-Heat" bg="#bb77ee" alwayshidden="true"/>
@@ -290,6 +291,9 @@
   	85%, 90%, 95%, 100%
         </items>
         <item custom="1" editcaption="Duty cycle"/>
+      </menu>
+      <menu id="portspeed" cols="1">
+        <auto enum="PORTSPEED"/>
       </menu>
       <menu id="preIllum"  cols="4.2">
         <items>
@@ -685,6 +689,7 @@
   <alias id="CohGraph" label="Coherence Graph"/>
   <alias id="CCD-*" label="CCD: "/>
   <alias id="Coh-*" label="Coherence Map: "/>
+
   <!-- For FocusMode -->
   <alias id="TwoFull" label="A and B Full"/>
   <alias id="AZoom" label="A and Zoom"/>
@@ -697,6 +702,11 @@
   <alias id="TH" label="Tail to head"/>
   <alias id="RL" label="Right to left"/>
   <alias id="LR" label="Left to right"/>
+
+  <alias id="P0S0" label="EM Fast"/>
+  <alias id="P0S1" label="EM Medium"/>
+  <alias id="P1S0" label="Std Medium"/>
+  <alias id="P1S1" label="Std Slow"/>
 </aliases>
 
 <colors>

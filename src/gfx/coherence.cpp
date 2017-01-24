@@ -37,7 +37,6 @@ Coherence::~Coherence() {
 
 void Coherence::paintEvent(QPaintEvent *e) {
   CCDImage::paintEvent(e);
-  //  dbg("coherence::paintevent");
   if (!data)
     return;
   ROISet const *roiset = data->currentData()->getROISet();
@@ -106,7 +105,6 @@ void Coherence::showEvent(QShowEvent *e) {
 }
 
 void Coherence::updateData() {
-  //  dbg("coherence:newdata");
   perhapsRefresh();
 }
 
@@ -136,7 +134,6 @@ void Coherence::setRefStim(StimulusDef const &s, bool p) {
 }
 
 void Coherence::setRefFreq(double fref_hz) {
-  //  dbg("coherence setRefFreq: %g",fref_hz);
   if (data)
     data->setRefFreq(fref_hz);
   perhapsRefresh();

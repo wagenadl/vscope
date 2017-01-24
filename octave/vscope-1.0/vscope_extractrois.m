@@ -1,4 +1,4 @@
-function [dat] = vscope_extractrois(ccd, roi)
+function [dat, got] = vscope_extractrois(ccd, roi)
 % VSCOPE_EXTRACTROIS - Extract averages from ROIs in CCD images
 %    dat = VSCOPE_EXTRACTROIS(ccd, rois) extracts the number of photons
 %    in each ROI. This currently uses a fixed PHOTONS_PER_DIGI value.
@@ -6,6 +6,8 @@ function [dat] = vscope_extractrois(ccd, roi)
 %    of ROIs, and C the number of cameras.
 %    dat = VSCOPE_EXTRACTROIS(x) where X is straight from VSCOPE_LOAD also
 %    works.
+%    [dat, got] = VSCOPE_EXTRACTROIS(...) returns an additional NxC matrix
+%    that reports whether ROI #n exists on camera #c.
 
 if nargin==1
   roi = ccd.rois;
@@ -30,12 +32,13 @@ end
 ccd.dat = reshape(ccd.dat,[X*Y C T]);
 
 dat = zeros(T,N,C) + nan;
-
+got = logical(zeros(N,C));
 for n=1:N
   for c=1:C
     if isempty(roicams) ...
 	  || ~isempty(find(strcmp(ccd.info.camid{c}, roicams{n})))
       dat(:,n,c) = squeeze(sum(ccd.dat(idx{n,c},c,:)-DIGI_BASE,1));
+      got(n,c) = 1;
     end
   end
 end

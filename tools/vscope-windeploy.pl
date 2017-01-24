@@ -2,20 +2,31 @@
 
 use strict;
 use Cwd;
+use File::Copy;
+use File::Path;
 
-print "Hello world\n";
+######################################################################
+# EXTERNAL PATHS
+my $qbin_path = "c:/Qt/Qt5.7.0-x86/5.7/msvc2013/bin";
+my $msvc_path = "c:/Program Files (x86)/Microsoft Visual Studio 12.0/VC";
 
-chdir("build/release");
+######################################################################
+# INTERNAL PATHS
+my $vscope_buildpath = "build-vscope-x86/release";
+my $release_path = "release-vscope-x86";
 
-my $here = getcwd();
+######################################################################
 
-print "pwd: $here\n";
-for my $k (sort keys %ENV) {
-#print "ENV $k: $ENV{$k}\n";
-}
-mkdir("vscope-w32");
+$msvc_path =~ s/\//\\/g;
+$ENV{VCINSTALLDIR} = $msvc_path;
 
-my $qbinpath = "c:/Qt/Qt5.7.0-x86/5.7/msvc2013/bin";
-$ENV{VCINSTALLDIR} = "C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC";
-system("$qbinpath/windeployqt --dir vscope-w32 --compiler-runtime vscope.exe");
-system("copy vscope.exe vscope-w32\\vscope.exe");
+File::Path::remove_tree($release_path) if -d $release_path;
+File::Path::make_path($release_path);
+
+system("$qbinpath/windeployqt --dir $release_path "
+       . " --compiler-runtime $vscope_buildpath/vscope.exe")
+  and die "Failed to get vscope deployment";
+
+File::Copy::copy("$vscope_buildpath/vscope.exe", "$releasepath/");
+
+print "Now run 'tools/vscope-x86.iss' using Inno Setup.\n";

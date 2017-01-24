@@ -33,7 +33,7 @@ VSDTraces::VSDTraces(QWidget *parent): MultiGraph(parent) {
   refgraph->autoSetYRange();
   connect(&Globals::trove->trial(), SIGNAL(newData()),
 	  SLOT(updateEPhysData()));
-  //  Dbg(this) << "connected " << &Globals::trove->trial() << ":newData to my updateEphysData";
+  Dbg(this) << "connected " << &Globals::trove->trial() << ":newData to my updateEphysData";
 
   allgraph = new VSDAllGraph(&Globals::trove->roidata(), this);
   addGraph("all",allgraph);
@@ -70,7 +70,6 @@ void VSDTraces::setRefStim(StimulusDef const &, bool) {
 }
 
 void VSDTraces::updateEPhysData() {
-  //  Dbg() << "VSDTraces::updateEphysData";
   AnalogData const *adata = Globals::trove->trial().analogData();
   //if (!adata->contains(refchn)) {
   //  QString rf = adata->getChannelAtIndex(0);
@@ -99,6 +98,5 @@ void VSDTraces::updateEPhysData() {
   refgraph->autoSetYRange();
   Range xr = allgraph->computeXRange();
   xr.expand(refgraph->computeXRange());
-  //dbg("  vsdtraces: xrange = [%g:%g]",xr.min,xr.max);
   zoomRequest(xr);
 }

@@ -91,11 +91,9 @@ void MGAuto::rebuild() {
   }
 
   AnalogData const *as = Globals::trove->trial().analogStimuli();
-  Dbg() << "mgauto as=" << as;
   if (as) {
     for (int i=0; i<as->getNumChannels(); i++) {
       QString id = as->getChannelAtIndex(i);
-      Dbg() << "mgauto as:" << i << ": " << id << ": " << useOutputChannel(id);
       if (useOutputChannel(id)) {
 	newlist << id;
 	outp << id;
@@ -114,12 +112,7 @@ void MGAuto::rebuild() {
       }
     }
   }
-  
-  Dbg() << "mgauto:" << myname << " newlist=" << QStringList(newlist).join(",")
-	<< " digi=" << QStringList(digi.toList()).join(",")
-	<< " outp=" << QStringList(outp.toList()).join(",")
-	<< " actual=" << QStringList(actual).join(",");
-  
+    
   if (newlist!=actual) {
     actual = newlist;
     digiSet = digi;

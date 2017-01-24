@@ -43,7 +43,6 @@ CohGraph::~CohGraph() {
 
 void CohGraph::paintEvent(QPaintEvent *e) {
   RadialGraph::paintEvent(e);
-  dbg("cohgraph::paintevent");
   if (!data)
     return;
   ROISet const *roiset = data->currentData()->getROISet();
@@ -135,7 +134,6 @@ void CohGraph::setRefStim(class StimulusDef const &s, bool p) {
 }
 
 void CohGraph::setRefFreq(double fref_hz) {
-  dbg("cohgraph setRefFreq: %g",fref_hz);
   if (data)
     data->setRefFreq(fref_hz);
   perhapsRefresh();

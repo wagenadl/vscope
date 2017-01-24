@@ -3,7 +3,7 @@
 # When adding source files, run tools/updatesources.sh to include them
 
 TEMPLATE = app
-unix: TARGET = ../build/vscope
+unix: TARGET = vscope
 
 include(vscope.pri)
 
@@ -18,14 +18,6 @@ QT += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets 
 
 DEPENDPATH +=  $$sourcedirs
-
-unix {
-  OBJECTS_DIR=../build/release
-  CONFIG(debug, debug|release) { OBJECTS_DIR=../build/debug }
-}
-MOC_DIR = $${OBJECTS_DIR}
-RCC_DIR = $${OBJECTS_DIR}
-UI_DIR = $${OBJECTS_DIR}
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG += c++11
@@ -44,10 +36,6 @@ win32 {
   #LIBS += "..\pvcam\i386\pvcam32.lib"
   SOURCES -= daq/daqdummy.cpp
   SOURCES -= pvp/pvpDummy.cpp
-}
-
-linux {
-#    SOURCES += daq/daqdummy.c
 }
 
 win32: RC_FILE = vscope.rc

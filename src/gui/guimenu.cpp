@@ -87,9 +87,9 @@ void guiMenu::prepForOpening() {
   if (!pp)
     throw Exception("guiMenu", "openSelf failed because paramtree has no leaf");
 
-  Dbg() << "prepforopening:" << path() << "autoi="<<autoItems
-        << " over="<<overridden
-        << " ids="<<(autoItems?autoItems->allIDs().join(",") : QString("-"));
+  //Dbg() << "prepforopening:" << path() << "autoi="<<autoItems
+  //      << " over="<<overridden
+  //      << " ids="<<(autoItems?autoItems->allIDs().join(",") : QString("-"));
   if (autoItems && !overridden)
     autoItems->rebuild();
 
@@ -147,14 +147,14 @@ bool guiMenu::mayResize() {
 }
 
 void guiMenu::updateAuto() {
-  Dbg() << "guimenu:" << path() << ": updateauto";
+  // Dbg() << "guimenu:" << path() << ": updateauto";
   overridden = false;
   if (autoItems)
     autoItems->rebuild();
 }
 
 void guiMenu::overrideAuto(QStringList ids) {
-  Dbg() << "guimenu:" << path() << ": overrideauto: " << ids.join(",");
+  //  Dbg() << "guimenu:" << path() << ": overrideauto: " << ids.join(",");
   overridden = true;
   if (autoItems)
     autoItems->override(ids);

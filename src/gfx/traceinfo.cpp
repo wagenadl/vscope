@@ -157,11 +157,10 @@ TraceInfo::TraceInfo() {
 }
 
 void TraceInfo::report() const {
-#if 0
-  //Dbg() << "TraceInfo("<<this<<")::report"
-  //	<<" x0="<<datax0<< " dx="<<datadx
-  //	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
-  //	<<" N="<<N<<" step="<<step;
+  Dbg() << "TraceInfo("<<this<<")::report"
+  	<<" x0="<<datax0<< " dx="<<datadx
+  	<<" dp.ptr="<<dataptr.ptr.dp_none<<" dp.typ="<<int(dataptr.typ)
+  	<<" N="<<N<<" step="<<step;
   if (N) {
     switch (dataptr.typ) {
     case DataPtr::dataDouble: {
@@ -178,13 +177,12 @@ void TraceInfo::report() const {
 	sumx+=x;
 	sumxx+=x*x;
       }
-      //Dbg() << " min:"<<mn<<" max:"<<mx<<" avg:"<<sumx/N<< " var:"<<(sumxx-sumx*sumx/N)/N;
+      Dbg() << " min:"<<mn<<" max:"<<mx<<" avg:"<<sumx/N<< " var:"<<(sumxx-sumx*sumx/N)/N;
     } break;
     default:
       break;
     }
   }
-#endif
 }
 
 void TraceInfo::setData(double datax0_, double datadx_,

@@ -48,6 +48,23 @@ void Camera::setConfig(CCDConfig const &cfg0) {
 		       ? pvpCamera::ClearMode::ClearPreExposure
 		       : pvpCamera::ClearMode::ClearPreSequence);
 
+  switch (cfg.portspeed) {
+  case PS_P0S0:
+    pvpcam->setPortAndSpeed(0, 0);
+    break;
+  case PS_P0S1:
+    pvpcam->setPortAndSpeed(0, 1);
+    break;
+  case PS_P1S0:
+    pvpcam->setPortAndSpeed(1, 0);
+    break;
+  case PS_P1S1:
+    pvpcam->setPortAndSpeed(1, 1);
+    break;
+  default:
+    throw Exception("Camera", "Unknown port/speed combination");
+  }
+  
   npixels_for_seq = cfg.iscont
     ? pvpcam->configContinuous(rgn,trigmode,expotime)
     : pvpcam->configFinite(rgn,trigmode,expotime,cfg.nframes);

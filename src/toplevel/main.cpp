@@ -136,7 +136,7 @@ void setupAIChannels() {
   Globals::ptree->find("acqEphys/aiChannels").setStrings(ai);
 }
 
-void setupParsAndConns() {
+void setupParsAndConns(char const *pathoverride) {
   XML enumsDoc(":/enums.xml");
   XML paramsDoc(":/parameters.xml");
   QDomElement enums = enumsDoc.root();
@@ -144,7 +144,10 @@ void setupParsAndConns() {
   
   char const *envpath = getenv("VSCOPEPATH");
   QString fpath = "/";
-  if (envpath) {
+  if (pathoverride) {
+    QDir dir(pathoverride);
+    fpath = dir.absolutePath();
+  } else if (envpath) {
     fpath = envpath;
     Dbg() << "Got path from VSCOPEPATH: " << fpath;
   } else {
@@ -166,7 +169,7 @@ void setupParsAndConns() {
       x.mkpath(spath);
     QFile f(":/connections.xml");
     if (!f.copy(connfn))
-      throw Exception("main", "Cannot create connections file");
+      throw Exception("main", "Cannot create connections file: " + connfn);
   }
   Dbg() << "Reading connections from: " << connfn;
   XML connDoc(connfn);
@@ -251,10 +254,13 @@ void setupCams() {
   CamPool::initialize();
   QStringList sz = Connections::allCams();
   foreach (QString id, sz) {
-    QString serno = Connections::findCam(id).serno;
-    CamPool::rename(serno, id);
-    Connections::markCameraExists(id, CamPool::findp(id));
-    CamPool::find(id).fullReport();
+    bool xist = CamPool::findp(id);
+    Connections::markCameraExists(id, xist);
+    if (xist) {
+      QString serno = Connections::findCam(id).serno;
+      CamPool::rename(serno, id);
+      CamPool::find(id).fullReport();
+    }
   }
 }
 
@@ -432,7 +438,7 @@ int main(int argc, char **argv) {
     QObject guard;
     checkTypes();
     setupAppStyle(app);
-    setupParsAndConns();
+    setupParsAndConns(argc>=2 ? argv[1] : 0);
 
     QString fpath = Globals::filePath();
     Globals::trove = new DataTrove(Globals::ptree);
@@ -510,8 +516,8 @@ int main(int argc, char **argv) {
     Dbg() << "Application done";
     return res;
   } catch (Exception const &e) {
-    Warning() << "Exception caught in main.";
-    GUIExc::report(e,"");
+    Dbg() << "Exception caught in main.";
+    GUIExc::report(e, "");
   }
   return 0;
 }

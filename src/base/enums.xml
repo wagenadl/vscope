@@ -90,5 +90,12 @@
     
     <enum id="STIMCHS">
     </enum>
+
+    <enum id="PORTSPEED" prefix="PS">
+      <item tag="P0S0"/>
+      <item tag="P0S1"/>
+      <item tag="P1S0"/>
+      <item tag="P1S1"/>
+    </enum>
   </enums>
 </vscope>

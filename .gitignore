@@ -1,9 +1,13 @@
 Makefile
 Makefile.Debug
 Makefile.Release
-build*
+build
+build-*
+release-*
 *pro.user*
 *~
+#*#
+.#*
 
 src/toplevel/version.tmp
 src/utils/mtpsd/bin
@@ -11,3 +15,9 @@ src/utils/mtpsd/lib
 *stackdump
 object_script*
 .qmake.stash
+
+*debhelper*
+debian/vscope
+debian/files
+debian/*.substvars
+

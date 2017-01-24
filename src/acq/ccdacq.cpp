@@ -102,6 +102,7 @@ bool CCDAcq::prepare(ParamTree const *ptree,
 	cfg.region = CCDRegion(reg.left(),reg.right(),reg.top(),reg.bottom());
 	QRect bin(rootTree->find("binning").toRect());
 	cfg.binning = CCDBinning(bin.width(),bin.height());
+        cfg.portspeed = PORTSPEED(rootTree->find("portspeed").toInt());
 	CCDTimingDetail const &detail = timing[id];
 	bool trigEach = DutyCycle::triggerEach(detail.duty_percent());
 	

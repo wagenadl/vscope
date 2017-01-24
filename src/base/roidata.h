@@ -64,6 +64,7 @@ public:
   double getDurms() const;
   Range timeRange() const;
   bool haveData() const;
+  void report() const;
 private:
   bool ensureBitmap() const; // returns true iff it worked
 private:

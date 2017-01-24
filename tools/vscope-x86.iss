@@ -17,7 +17,7 @@ DefaultDirName={pf}\VScope
 DisableProgramGroupPage=yes
 LicenseFile=C:\Users\Daniel Wagenaar\Documents\Progs\vscope\gpl-3.0.txt
 OutputDir=../build
-OutputBaseFilename=vscope-0.99.3-setup
+OutputBaseFilename=vscope-0.99.3-x86-setup
 SetupIconFile=C:\Users\Daniel Wagenaar\Documents\Progs\vscope\src\vscope.ico
 Compression=lzma
 SolidCompression=yes
@@ -29,7 +29,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\build-vscope-Desktop_Qt_5_7_0_MSVC2013_32bit-Release\release\vscope-w32\*"; DestDir: "{app}"; Flags: ignoreversion  recursesubdirs createallsubdirs
+Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\release-vscope-x86\*"; DestDir: "{app}"; Flags: ignoreversion  recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{commonprograms}\VScope"; Filename: "{app}\vscope.exe"
