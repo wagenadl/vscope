@@ -342,6 +342,7 @@ HEADERS += \
      toplevel/savedsettings.h  \
      toplevel/scripts.h  \
      toplevel/updatecamenum.h  \
+     toplevel/version.h  \
      toplevel/vscopegui.h  \
      toplevel/vsdtraces.h  \
 
@@ -368,6 +369,7 @@ SOURCES += \
      toplevel/savedsettings.cpp  \
      toplevel/scripts.cpp  \
      toplevel/updatecamenum.cpp  \
+     toplevel/version.cpp  \
      toplevel/vscopegui.cpp  \
      toplevel/vsdtraces.cpp  \
 

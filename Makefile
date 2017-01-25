@@ -35,6 +35,7 @@ GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED) src/base/enums.h #src/toplevel/v
 COMMON=src/vscope.pro src/vscope.pri
 
 release: build/Makefile
+	rm -f build/release/version.o # force rebuild
 	+make -C build release
 
 build/Makefile:	$(GENERATED) $(COMMON) #VERSION
@@ -42,6 +43,7 @@ build/Makefile:	$(GENERATED) $(COMMON) #VERSION
 	( cd build; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
 debug: build-dbg/Makefile
+	rm -f build-dbg/debug/version.o # force rebuild
 	+make -C build-dbg debug
 
 build-dbg/Makefile: $(GENERATED) $(COMMON) #VERSION

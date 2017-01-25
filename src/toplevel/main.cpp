@@ -77,16 +77,9 @@ QWidget *makeBanner1(QWidget *parent) {
   QTextEdit *w = new QTextEdit(parent);
   w->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   w->setReadOnly(true);
-  QString txt = gitVERSION;
-  txt += ":" gitREVNO "</h1>";
-  txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" gitYEAR;
-  QString gd = gitDATE;
-  gd.replace("..", ", ");
-  gd.replace(".", " ");
-  txt += "<p>Last commit: " + gd + "<br>";
-  txt += "Build date: " buildDATE;
-  txt += "<p>For more info: daw@caltech.edu";
 
+  QString txt = banner();
+  
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();
   daqst.replace("\n","<br>");
