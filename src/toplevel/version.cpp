@@ -17,9 +17,10 @@
 
 #define buildDATE __DATE__ ", " __TIME__
 
-QString banner() {
+QString versionBanner(QString cls) {
   QString txt = gitVERSION;
-  txt += ":" gitREVNO "</h1>";
+  txt += cls;
+
   txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" gitYEAR;
   QString gd = gitDATE;
   gd.replace("..", ", ");
@@ -27,5 +28,6 @@ QString banner() {
   txt += "<p>Last commit: " + gd + "<br>";
   txt += "Build date: " buildDATE;
   txt += "<p>For more info: daw@caltech.edu";
+
   return txt;
 }

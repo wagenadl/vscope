@@ -78,7 +78,9 @@ QWidget *makeBanner1(QWidget *parent) {
   w->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   w->setReadOnly(true);
 
-  QString txt = banner();
+  QString txt = "<h2>VScope ";
+  
+  txt += versionBanner("</h2>");
   
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();

@@ -6,6 +6,6 @@
 
 #include <QString>
 
-QString banner();
+QString versionBanner(QString cls="");
 
 #endif
