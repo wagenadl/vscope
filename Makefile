@@ -38,7 +38,7 @@ release: build/Makefile
 	rm -f build/release/version.o # force rebuild
 	+make -C build release
 
-build/Makefile:	$(GENERATED) $(COMMON) #VERSION
+build/Makefile:	$(GENERATED) $(COMMON) FORCE
 	mkdir -p build
 	( cd build; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
@@ -46,7 +46,7 @@ debug: build-dbg/Makefile
 	rm -f build-dbg/debug/version.o # force rebuild
 	+make -C build-dbg debug
 
-build-dbg/Makefile: $(GENERATED) $(COMMON) #VERSION
+build-dbg/Makefile: $(GENERATED) $(COMMON) FORCE
 	mkdir -p build-dbg
 	( cd build-dbg; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
@@ -96,3 +96,5 @@ install: release DOC MTPSD
 	install -d $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
 	install -m644 build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
 	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
+
+FORCE:
