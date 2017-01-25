@@ -275,7 +275,7 @@ QString Transform::stringRep() const {
   return QString("%1x%2+%3+%4").arg(ax).arg(ay).arg(bx).arg(by);
 }
 
-Dbg &operator<<(Dbg &d, Transform const &t) {
+QDebug &operator<<(QDebug &d, Transform const &t) {
   return d << "Transform(" << t.ax << "," << t.bx << ";"
            << t.ay << "," << t.by << ")";
 }

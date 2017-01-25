@@ -102,10 +102,10 @@ public:
      of its top left.
      pixelCenter returns the coordinates of the center of a pixel.
   */
-  friend Dbg &operator<<(Dbg &d, Transform const &t);
+  friend QDebug &operator<<(QDebug &d, Transform const &t);
 };
 
-Dbg &operator<<(Dbg &d, Transform const &t);
+QDebug &operator<<(QDebug &d, Transform const &t);
 
 
 #endif

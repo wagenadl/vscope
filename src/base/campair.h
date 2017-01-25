@@ -6,7 +6,7 @@
 
 #include <QString>
 #include <QHash>
-#include <QTextStream>
+#include <QDebug>
 
 class CamPair {
 public:
@@ -45,9 +45,9 @@ inline uint qHash(CamPair const &cp) {
   return qHash(cp.donor) + ~qHash(cp.acceptor);
 }
 
-inline QTextStream &operator<<(QTextStream &ts, CamPair const &cp) {
-  ts << (cp.donor + ":" + cp.acceptor);
-  return ts;
+inline QDebug &operator<<(QDebug &ts, CamPair const &cp) {
+  QString x = cp.donor + ":" + cp.acceptor;
+  return ts << x;
 }
 
 #endif
