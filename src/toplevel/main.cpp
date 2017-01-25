@@ -251,13 +251,15 @@ void setupAliases() {
 }
   
 void setupCams() {
+  Dbg() << "setupcams";
   CamPool::initialize();
   QStringList sz = Connections::allCams();
   foreach (QString id, sz) {
-    bool xist = CamPool::findp(id);
+    QString serno = Connections::findCam(id).serno;
+    bool xist = CamPool::findp(serno);
+    Dbg() << "setupcams" << id << " "  << xist << " " << serno;
     Connections::markCameraExists(id, xist);
     if (xist) {
-      QString serno = Connections::findCam(id).serno;
       CamPool::rename(serno, id);
       CamPool::find(id).fullReport();
     }
