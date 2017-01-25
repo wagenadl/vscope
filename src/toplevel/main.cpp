@@ -71,18 +71,20 @@
 extern QString checkdaq();
 extern QStringList checkcam();
 
+#include "toplevel/version.h"
+
 QWidget *makeBanner1(QWidget *parent) {
   QTextEdit *w = new QTextEdit(parent);
   w->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   w->setReadOnly(true);
-  XML vsndoc(":/version.xml");
-  QDomElement vsn = vsndoc.root();
-  QString txt = "<html><body><h1>VScope ";
-  txt += vsn.attribute("version");
-  txt += ":" + vsn.attribute("rev") + "</h1>";
-  txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" + vsn.attribute("year");
-  txt += "<p>Last commit: " + vsn.attribute("date") + "<br>";
-  txt += "Build date: " + vsn.attribute("builddate");
+  QString txt = gitVERSION;
+  txt += ":" gitREVNO "</h1>";
+  txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" gitYEAR;
+  QString gd = gitDATE;
+  gd.replace("..", ", ");
+  gd.replace(".", " ");
+  txt += "<p>Last commit: " + gd + "<br>";
+  txt += "Build date: " buildDATE;
   txt += "<p>For more info: daw@caltech.edu";
 
   txt += "<h2>DAQ status</h2>";
