@@ -58,3 +58,19 @@ linux {
 DISTFILES += \
     ../pvcam/i386/pvcam32.Lib \
     ../tools/vscope-windeploy.pl
+
+gitREVNO = $$system(git rev-list --count --first-parent HEAD)
+gitDATE = $$system(git show -s --format=%cd --date=format:\"%b.%d.%Y..%H:%M:%S\" HEAD)
+# For some reason, the %Z or %s
+gitVERSION = $$system(git describe --long)
+gitYEAR = $$system(git show -s --format=%cd --date=format:%Y HEAD)
+
+DEFINES += gitREVNO=\\\"$$gitREVNO\\\"
+DEFINES += gitDATE=\\\"$$gitDATE\\\"
+DEFINES += gitVERSION=\\\"$$gitVERSION\\\"
+DEFINES += gitYEAR=\\\"$$gitYEAR\\\"
+
+message(revno: $$gitREVNO)
+message(date: $$gitDATE)
+message(version: $$gitVERSION)
+message(year: $$gitYEAR)
