@@ -82,17 +82,17 @@ build-mtpsd/mtpsd.oct build-mtpsd/dpss.oct:;
 install: release DOC MTPSD
 	install -d $(INSTALLPATH)/bin
 	install build/vscope $(INSTALLPATH)/bin/vscope
-	mkdir -p $(SHAREPATH)/octave/packages/vscope-1.0/private 
-	cp $(wildcard octave/vscope-1.0/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/
-	cp $(wildcard octave/vscope-1.0/private/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/private/
-	mkdir -p $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
-	cp octave/vscope-1.0/packinfo/DESCRIPTION $(SHAREPATH)/octave/packages/vscope-1.0/packinfo/
+	install -d $(SHAREPATH)/octave/packages/vscope-1.0/private 
+	install -m644 $(wildcard octave/vscope-1.0/*.m) $(SHAREPATH)/octave/packages/vscope-1.0
+	install -m644 $(wildcard octave/vscope-1.0/private/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/private
+	install -d $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
+	install -m644 octave/vscope-1.0/packinfo/DESCRIPTION $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
 	install -d $(SHAREPATH)/man/man1
-	cp build-doc/vscope.1 $(SHAREPATH)/man/man1/vscope.1
+	install -m644 build-doc/vscope.1 $(SHAREPATH)/man/man1/vscope.1
 	install -d $(SHAREPATH)/applications
 	install tools/vscope.desktop $(SHAREPATH)/applications/vscope.desktop
 	install -d $(SHAREPATH)/pixmaps
-	cp tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
+	install -m644 tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
 	install -d $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
-	cp build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0/
-	cp build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0/
+	install -m644 build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
+	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
