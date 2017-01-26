@@ -479,9 +479,7 @@ void Param::report() const {
 
 void Param::read(QDomElement v) {
   // We assume v is a <pval>.
-  set(xmlAttribute(v,"value","Param","Cannot read value"));
-  if (false && v.hasAttribute("default"))
-    deflt = QVariant(v.attribute("default"));
+  set(xmlAttribute(v, "value", "Param","Cannot read value"));
 }
 
 void Param::write(QDomElement v) {

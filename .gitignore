@@ -17,7 +17,7 @@ object_script*
 .qmake.stash
 
 *debhelper*
-debian/eln
+debian/vscope
 debian/files
 debian/*.substvars
 

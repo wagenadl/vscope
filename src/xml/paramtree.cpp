@@ -117,7 +117,14 @@ void ParamTree::read(QDomElement doc) {
   if (doc.tagName()=="vsdscopeSettings")
     doc = doc.firstChildElement("settings");
   if (doc.tagName()=="pval") {
-    leaf().read(doc);
+    try {
+      leaf().read(doc);
+    } catch (Exception const &) {
+      Dbg() << "Warning: ParamTree (read pval): Could not assign "
+            << xmlAttribute(doc,"value")
+            << " to " << xmlAttribute(doc, "id");
+
+    }
   } else if (doc.tagName()=="settings" || doc.tagName()=="category"
              || doc.tagName()=="elt") {
     for (QDomElement e=doc.firstChildElement();
@@ -129,7 +136,7 @@ void ParamTree::read(QDomElement doc) {
 	  c->read(e);
 	} catch(Exception const &) {
 	  QString v = xmlAttribute(e,"value");
-          Dbg() << "Warning: ParamTree (read): Could not assign "
+          Dbg() << "Warning: ParamTree (read elt): Could not assign "
                 << v << " to " << id;
 	}
       } else {

@@ -4,7 +4,6 @@
      <file>guiconfig.xml</file>
      <file>connections.xml</file>
      <file>aliases.xml</file>
-     <file>version.xml</file>
      <file>vscope.png</file>
  </qresource>
 </RCC>

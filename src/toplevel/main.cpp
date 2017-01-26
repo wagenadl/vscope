@@ -71,20 +71,17 @@
 extern QString checkdaq();
 extern QStringList checkcam();
 
+#include "toplevel/version.h"
+
 QWidget *makeBanner1(QWidget *parent) {
   QTextEdit *w = new QTextEdit(parent);
   w->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   w->setReadOnly(true);
-  XML vsndoc(":/version.xml");
-  QDomElement vsn = vsndoc.root();
-  QString txt = "<html><body><h1>VScope ";
-  txt += vsn.attribute("version");
-  txt += ":" + vsn.attribute("rev") + "</h1>";
-  txt += "<p>(C) Daniel A. Wagenaar 2008&ndash;" + vsn.attribute("year");
-  txt += "<p>Last commit: " + vsn.attribute("date") + "<br>";
-  txt += "Build date: " + vsn.attribute("builddate");
-  txt += "<p>For more info: daw@caltech.edu";
 
+  QString txt = "<h2>VScope ";
+  
+  txt += versionBanner("</h2>");
+  
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();
   daqst.replace("\n","<br>");
@@ -136,7 +133,7 @@ void setupAIChannels() {
   Globals::ptree->find("acqEphys/aiChannels").setStrings(ai);
 }
 
-void setupParsAndConns() {
+void setupParsAndConns(char const *pathoverride) {
   XML enumsDoc(":/enums.xml");
   XML paramsDoc(":/parameters.xml");
   QDomElement enums = enumsDoc.root();
@@ -144,7 +141,10 @@ void setupParsAndConns() {
   
   char const *envpath = getenv("VSCOPEPATH");
   QString fpath = "/";
-  if (envpath) {
+  if (pathoverride) {
+    QDir dir(pathoverride);
+    fpath = dir.absolutePath();
+  } else if (envpath) {
     fpath = envpath;
     Dbg() << "Got path from VSCOPEPATH: " << fpath;
   } else {
@@ -166,7 +166,7 @@ void setupParsAndConns() {
       x.mkpath(spath);
     QFile f(":/connections.xml");
     if (!f.copy(connfn))
-      throw Exception("main", "Cannot create connections file");
+      throw Exception("main", "Cannot create connections file: " + connfn);
   }
   Dbg() << "Reading connections from: " << connfn;
   XML connDoc(connfn);
@@ -248,13 +248,15 @@ void setupAliases() {
 }
   
 void setupCams() {
+  Dbg() << "setupcams";
   CamPool::initialize();
   QStringList sz = Connections::allCams();
   foreach (QString id, sz) {
-    bool xist = CamPool::findp(id);
+    QString serno = Connections::findCam(id).serno;
+    bool xist = CamPool::findp(serno);
+    Dbg() << "setupcams" << id << " "  << xist << " " << serno;
     Connections::markCameraExists(id, xist);
     if (xist) {
-      QString serno = Connections::findCam(id).serno;
       CamPool::rename(serno, id);
       CamPool::find(id).fullReport();
     }
@@ -435,7 +437,7 @@ int main(int argc, char **argv) {
     QObject guard;
     checkTypes();
     setupAppStyle(app);
-    setupParsAndConns();
+    setupParsAndConns(argc>=2 ? argv[1] : 0);
 
     QString fpath = Globals::filePath();
     Globals::trove = new DataTrove(Globals::ptree);

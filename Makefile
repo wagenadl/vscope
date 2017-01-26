@@ -1,4 +1,4 @@
-DEFAULT: release
+ALL: release MTPSD
 
 both: release debug
 
@@ -6,14 +6,23 @@ ifdef DESTDIR
   # Debian uses this
   INSTALLPATH = $(DESTDIR)/usr
   SHAREPATH = $(DESTDIR)/usr/share
+  #VERSION:
+  # This ensures version.xml is not modified by debian build.
+  # I think that is a decent solution. Alternatively, version.xml
+  # could be updated in the build/ tree, and version.qrc could
+  # somehow fetch it from there. That would be even better,
+  # but too tricky for the moment.
 else
   INSTALLPATH = /usr/local
   SHAREPATH = /usr/local/share
+  #VERSION:; tools/updateversion.sh
+  # This ensures version.xml is updated by regular build
 endif
 
 QMAKE=qmake
 SELECTQT="-qt=qt5"
 
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 PVCAM_GENERATED=src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 	src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp \
@@ -21,21 +30,23 @@ PVCAM_GENERATED=src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 
 NIDAQ_GENERATED=src/daq/daqdummy.cpp
 
-GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED) src/base/enums.h
+GENERATED=$(PVCAM_GENERATED) $(NIDAQ_GENERATED) src/base/enums.h #src/toplevel/version.xml
 
-COMMON=src/toplevel/version.xml src/vscope.pro src/vscope.pri
+COMMON=src/vscope.pro src/vscope.pri
 
 release: build/Makefile
+	rm -f build/release/version.o # force rebuild
 	+make -C build release
 
-build/Makefile:	$(PVCAM_GENERATED) $(COMMON)
+build/Makefile:	$(GENERATED) $(COMMON) FORCE
 	mkdir -p build
 	( cd build; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
 debug: build-dbg/Makefile
+	rm -f build-dbg/debug/version.o # force rebuild
 	+make -C build-dbg debug
 
-build-dbg/Makefile: $(PVCAM_GENERATED) $(COMMON)
+build-dbg/Makefile: $(GENERATED) $(COMMON) FORCE
 	mkdir -p build-dbg
 	( cd build-dbg; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
@@ -49,7 +60,7 @@ src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp: \
 src/pvp/pvpDummy.cpp: tools/pvcam2dummy.pl pvcam/pvcam.h
 	$<
 
-src/toplevel/version.xml:; tools/updateversion.sh
+#src/toplevel/version.xml:; tools/updateversion.sh
 
 src/daq/daqdummy.cpp: tools/daqmx2dummy.pl nidaq/NIDAQmx.h
 	$<
@@ -71,17 +82,19 @@ build-mtpsd/mtpsd.oct build-mtpsd/dpss.oct:;
 install: release DOC MTPSD
 	install -d $(INSTALLPATH)/bin
 	install build/vscope $(INSTALLPATH)/bin/vscope
-	mkdir -p $(SHAREPATH)/octave/packages/vscope-1.0/private 
-	cp $(wildcard octave/vscope-1.0/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/
-	cp $(wildcard octave/vscope-1.0/private/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/private/
-	mkdir -p $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
-	cp octave/vscope-1.0/packinfo/DESCRIPTION $(SHAREPATH)/octave/packages/vscope-1.0/packinfo/
+	install -d $(SHAREPATH)/octave/packages/vscope-1.0/private 
+	install -m644 $(wildcard octave/vscope-1.0/*.m) $(SHAREPATH)/octave/packages/vscope-1.0
+	install -m644 $(wildcard octave/vscope-1.0/private/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/private
+	install -d $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
+	install -m644 octave/vscope-1.0/packinfo/DESCRIPTION $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
 	install -d $(SHAREPATH)/man/man1
-	cp build-doc/vscope.1 $(SHAREPATH)/man/man1/vscope.1
+	install -m644 build-doc/vscope.1 $(SHAREPATH)/man/man1/vscope.1
 	install -d $(SHAREPATH)/applications
 	install tools/vscope.desktop $(SHAREPATH)/applications/vscope.desktop
 	install -d $(SHAREPATH)/pixmaps
-	cp tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
-	install -d $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0
-	cp build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0/
-	cp build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/x86_64-linux-gnu/octave/vscope-1.0/
+	install -m644 tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
+	install -d $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
+	install -m644 build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
+	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
+
+FORCE:

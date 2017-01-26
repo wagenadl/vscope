@@ -8,37 +8,26 @@
 #include <string.h>
 #include <QTime>
 #include <base/exception.h>
-#include <QRectF>
-#include <QLineF>
-#include <QColor>
-#include <QPolygon>
 #include <QMessageBox>
 
-Dbg::Dbg(QObject const *x) throw() {
+DbgBase::DbgBase(QString *string): QDebug(string), string(string) {
+}
+
+DbgBase::~DbgBase() {
+  qDebug() << string->toUtf8().data();
+}
+
+Dbg::Dbg(QObject const *x): DbgBase(new QString) {
   static QTime t0(QTime::currentTime());
-  try {
-    txt = QString("[%1] ").arg(t0.msecsTo(QTime::currentTime()) / 1e3);
-    setString(&txt);
-    if (x) 
-      *this << objName(x) << ": ";
-  } catch(...) {
-    ;
-  }
+  *this << QString("[%1]").arg(t0.msecsTo(QTime::currentTime()) / 1e3).toUtf8().data();
+  if (x) 
+    *this << objName(x) << ": ";
 }
 
 Dbg::~Dbg() throw () {
-  try {
-    if (!txt.endsWith("\n"))
-      txt += "\n";
-    
-    printf("%s",qPrintable(txt));
-    if (!dbgfile)
-      dbgfile = new DbgFile();
-    *dbgfile << txt;
-  } catch (...) {
-    printf("dbg destructor!?\n");
-    ;
-  }
+  if (!dbgfile)
+    dbgfile = new DbgFile();
+  *dbgfile << *string;
 }
 
 // ----------------------------------------------------------------------
@@ -112,66 +101,11 @@ DbgFile &DbgFile::operator<<(QString const &str) {
   return *this;
 }
 
-Dbg &Dbg::operator<<(QPoint const &x) {
-  return *this << QString("(%1,%2)")
-    .arg(x.x()).arg(x.y());
-}
-
-Dbg &Dbg::operator<<(QPointF const &x) {
-  return *this << QString("(%1,%2)")
-    .arg(x.x()).arg(x.y());
-}
-
-Dbg &Dbg::operator<<(QSize const &x) {
-  return *this << QString("(%1x%2)")
-    .arg(x.width()).arg(x.height());
-}
-
-Dbg &Dbg::operator<<(QSizeF const &x) {
-  return *this << QString("(%1x%2)")
-    .arg(x.width()).arg(x.height());
-}
-
-Dbg &Dbg::operator<<(QRect const &x) {
-  return *this << QString("(%1x%2+%3+%4)")
-    .arg(x.width()).arg(x.height())
-    .arg(x.left()).arg(x.top());
-}
-
-Dbg &Dbg::operator<<(QRectF const &x) {
-  return *this << QString("(%1x%2+%3+%4)")
-    .arg(x.width()).arg(x.height())
-    .arg(x.left()).arg(x.top());
-}
-
-Dbg &Dbg::operator<<(QLine const &x) {
-  return *this << x.p1() << "-" << x.p2();
-}
-
-Dbg &Dbg::operator<<(QLineF const &x) {
-  return *this << x.p1() << "-" << x.p2();
-}
-
-Dbg &Dbg::operator<<(QColor const &x) {
-  return *this << x.name();
-}
-
-Dbg &Dbg::operator<<(QPolygon const &x) {
-  *this << "[";
-  foreach (QPoint const &p, x)
-    *this << p;
-  return *this << "]";
-}
-
 
 //////////////////////////////////////////////////////////////////////
-Warning::Warning() throw() {
-  try {
-    txt += "WARNING: ";
-    t0 = txt;
-  } catch (...) {
-    ;
-  }
+Warning::Warning(): Dbg() {
+  *this << "WARNING: ";
+  t0 = *string;
 }
 
 bool Warning::guiwarn_enabled = false;
@@ -184,12 +118,8 @@ void Warning::disableGUIWarnings() {
   guiwarn_enabled = false;
 }
 
-Warning::~Warning() throw() {
-  if (guiwarn_enabled) {
-    try {
-      QMessageBox::warning(0, "VScope Warning", txt.mid(t0.size()));
-    } catch (...) {
-      ;
-    }
-  }
+Warning::~Warning() {
+  if (guiwarn_enabled)
+    QMessageBox::warning(0, "VScope Warning",
+                         string->mid(t0.size()));
 }

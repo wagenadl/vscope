@@ -51,8 +51,10 @@ Camera &CamPool::find(QString serno) {
 Camera *CamPool::findp(QString serno) {
   if (byId.contains(serno))
     return byId[serno];
-  else
-    return 0;
+  Dbg() << "Campool contents";
+  foreach (QString s, byId.keys())
+    Dbg() << "campool::findp byid=" << s;
+  return 0;
 }
 
 bool CamPool::haveAll(QStringList const &cams) {
@@ -68,6 +70,7 @@ bool CamPool::haveAll(QStringList const &cams) {
 }
 
 void CamPool::rename(QString oldid, QString newid) {
+  Dbg() << "campool rename" << oldid << newid << (findp(oldid) ? 1 : 0);
   Camera *c = findp(oldid);
   if (c)
     c->setID(newid);

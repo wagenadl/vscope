@@ -119,6 +119,7 @@ void ROIData::DataCache::resize(int len) {
 //////////////////////////////////////////////////////////////////////
 ROIData::BitmapCache::BitmapCache() {
   roi = 0;
+  npix = 0;
   blobROI = 0;
   haveTransformAndClip = 0;
 }
@@ -190,6 +191,10 @@ void ROIData::BitmapCache::makePolyBitmap(PolyBlob const &blob) {
 
   rec = QRect(xl, yt, w1, h1);
   bm = blobROI->bitmap();
+  int cnt = 0;
+  for (int n=0; n<bm.size(); n++)
+    cnt+= bm[n];
+  
   valid = true;
 }      
 
@@ -265,10 +270,6 @@ double const *ROIData::getRaw() const {
     }
     data[n] = (sum1>0) ? sum/sum1 : 0;
   }
-
-  //  Dbg() << "ROIData:raw" << rect << ymul << "/" << sum1;
-
-  //  Dbg() << "ROIData: returning dataRaw=" << data;
 
   raw.validate();
   return data;
@@ -435,3 +436,47 @@ double const *ROIData::getDebleachedDFF() const {
   return dst;
 }
 
+void ROIData::report() const {
+  Dbg() << "ROIData report " << haveData()
+        << " " << getT0ms() << ":" << getDTms() << ":" << getDurms()
+        << " " << getNFrames();
+  if (haveData()) {
+    int N = getNFrames();
+    double min = 10000;
+    double max = -10000;
+    double sumx = 0;
+    double sumxx = 0;
+    double const *src = getRaw();
+    for (int n=0; n<N; n++) {
+      double v = src[n];
+      if (v<min)
+        min = v;
+      if (v>max)
+        max = v;
+      sumx += v;
+      sumxx += v*v;
+    }
+    Dbg() << "raw min="<<min << " max="<<max << " avg="<<sumx/N
+          << " var:"<<(sumxx-sumx*sumx/N)/N << " first="<<src[0];
+  }
+  if (haveData()) {
+    int N = getNFrames();
+    double min = 10000;
+    double max = -10000;
+    double sumx = 0;
+    double sumxx = 0;
+    double const *src = getDebleachedDFF();
+    for (int n=0; n<N; n++) {
+      double v = src[n];
+      if (v<min)
+        min = v;
+      if (v>max)
+        max = v;
+      sumx += v;
+      sumxx += v*v;
+    }
+    Dbg() << "debl min="<<min << " max="<<max << " avg="<<sumx/N
+          << " var:"<<(sumxx-sumx*sumx/N)/N << " first="<<src[0];
+  }
+}
+  

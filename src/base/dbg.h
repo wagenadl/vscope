@@ -3,44 +3,30 @@
 #ifndef DBG_H
 #define DBG_H
 
-#include <QTextStream>
-#include <QString>
-#include <QStringList>
+#include <QDebug>
+#include <QObject>
 #include <QFile>
 
 extern void dbg(char const *fmt,...) throw();
 extern void warn(char const *fmt,...) throw();
 
-class Dbg: public QTextStream {
+class DbgBase: public QDebug {
 public:
-  Dbg(QObject const *src=0) throw();
-  virtual ~Dbg() throw();
-  //Dbg &operator<<(char const *);
-  //Dbg &operator<<(void const *);
-  //Dbg &operator<<(QString const &);
-  //Dbg &operator<<(unsigned int);
-  //Dbg &operator<<(int);
-  //Dbg &operator<<(double);
-  Dbg &operator<<(class QPoint const &);
-  Dbg &operator<<(class QSize const &);
-  Dbg &operator<<(class QRect const &);
-  Dbg &operator<<(class QLine const &);
-  Dbg &operator<<(class QPointF const &);
-  Dbg &operator<<(class QSizeF const &);
-  Dbg &operator<<(class QRectF const &);
-  Dbg &operator<<(class QLineF const &);
-  Dbg &operator<<(class QColor const &);
-  Dbg &operator<<(class QPolygon const &);
-  template <class X> Dbg &operator<<(X const &x) {
-    *(QTextStream*)this << x; return *this;
-  }
+  DbgBase(QString *string);
+  virtual ~DbgBase();
 protected:
-  QString txt;
+  QString *string;
+};
+
+class Dbg: public DbgBase {
+public:
+  Dbg(QObject const *src=0);
+  virtual ~Dbg();
 };
 
 class Warning: public Dbg {
 public:
-  Warning() throw();
+  Warning();
   virtual ~Warning() throw();
   static void enableGUIWarnings();
   static void disableGUIWarnings();

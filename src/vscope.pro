@@ -40,7 +40,7 @@ win32 {
 
 win32: RC_FILE = vscope.rc
 
-unix: CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
+CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 
 win32 {
   DEFINES += WIN32
@@ -58,3 +58,19 @@ linux {
 DISTFILES += \
     ../pvcam/i386/pvcam32.Lib \
     ../tools/vscope-windeploy.pl
+
+gitREVNO = $$system(git rev-list --count --first-parent HEAD)
+gitDATE = $$system(git show -s --format=%cd --date=format:\"%b.%d.%Y..%H:%M:%S\" HEAD)
+# For some reason, the %Z or %s
+gitVERSION = $$system(git describe --long)
+gitYEAR = $$system(git show -s --format=%cd --date=format:%Y HEAD)
+
+DEFINES += gitREVNO=\\\"$$gitREVNO\\\"
+DEFINES += gitDATE=\\\"$$gitDATE\\\"
+DEFINES += gitVERSION=\\\"$$gitVERSION\\\"
+DEFINES += gitYEAR=\\\"$$gitYEAR\\\"
+
+message(revno: $$gitREVNO)
+message(date: $$gitDATE)
+message(version: $$gitVERSION)
+message(year: $$gitYEAR)
