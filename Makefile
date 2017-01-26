@@ -1,4 +1,4 @@
-DEFAULT: release
+ALL: release MTPSD
 
 both: release debug
 
