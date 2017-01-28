@@ -103,6 +103,7 @@ bool CCDAcq::prepare(ParamTree const *ptree,
 	QRect bin(rootTree->find("binning").toRect());
 	cfg.binning = CCDBinning(bin.width(),bin.height());
         cfg.portspeed = PORTSPEED(rootTree->find("portspeed").toInt());
+        Dbg() << "ccdacq:portspeed" << cfg.portspeed;
 	CCDTimingDetail const &detail = timing[id];
 	bool trigEach = DutyCycle::triggerEach(detail.duty_percent());
 	
@@ -113,7 +114,7 @@ bool CCDAcq::prepare(ParamTree const *ptree,
 	cfg.nframes = detail.nframes();
 	cfg.expose_us = frdur_us;
 	cfg.trigmode = trigEach ? CCDTrigMode::EachFrame
-	  : CCDTrigMode::FirstFrame;
+          : CCDTrigMode::Immediate; //FirstFrame;
 	cfg.clear_every_frame = false; // trigEach ? true : false;
 	
 	cfg.region = CCDRegion(caminfo[id]->placement.inverse()(reg));
@@ -163,6 +164,12 @@ bool CCDAcq::prepare(ParamTree const *ptree,
 }
 
 CCDAcq::~CCDAcq() {
+}
+
+void CCDAcq::finish() {
+  foreach (QString id, camids)
+    if (cameras[id])
+      cameras[id]->finishFinite();
 }
 
 void CCDAcq::abort() {

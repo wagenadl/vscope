@@ -141,16 +141,20 @@ void Acquire::abort() {
 }
 
 void Acquire::trialDone() {
-  Globals::blackout->setText("Acquisition Complete");
-  switch (type) {
-  case FRAME:
-    doneFrame();
-    break;
-  case TRIAL:
-    doneTrial();
-    break;
-  case NONE:
-    break;
+  if (Globals::trial->isComplete()) {
+    Globals::blackout->setText("Acquisition Complete");
+    switch (type) {
+    case FRAME:
+      doneFrame();
+      break;
+    case TRIAL:
+      doneTrial();
+      break;
+    case NONE:
+      break;
+    }
+  } else {
+    Globals::blackout->setText("Acquisition Failed"); // this just flashes
   }
   Globals::blackout->hide();
   Globals::gui->open(); // make sure updated trial number visible.

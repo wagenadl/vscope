@@ -22,13 +22,12 @@ public:
   void reconstructStim(class ParamTree const *ptree);
   bool isPrepared() const { return dat->isPrepared(); }
   bool isActive() const { return isPrepared() ? active : false; }
-  // TrialData const &data() const { return *dat; }
-  // TrialData &data() { return *dat; }
+  bool isComplete() const { return outcomplete && acqcomplete && ccdcomplete; }
 public slots:
   void start();
   void abort(); // I need to decide about error handling in abort()
 signals:
-  void ended(QString exptname, QString trialid);
+  void ended(QString exptname, QString trialid); // check isComplete to see if truly OK
 protected slots:
   void ephysoutComplete();
   void ephysacqComplete();
@@ -43,7 +42,9 @@ private:
   // status
   bool prep;
   bool active;
-  bool outcomplete, acqcomplete; // only valid if prepared
+  bool outcomplete;
+  bool acqcomplete;
+  bool ccdcomplete;
 };
 
 #endif

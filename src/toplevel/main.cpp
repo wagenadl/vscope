@@ -154,8 +154,8 @@ void setupParsAndConns(char const *pathoverride) {
 #else
     fpath = QString(getenv("HOME")) + "/vsddata";
 #endif
-    fprintf(stderr,"Warning: VSCOPEPATH not set. Defaulting to %s\n",
-	    qPrintable(fpath));
+    Warning(0) << "VSCOPEPATH not set. Defaulting to" << fpath;
+    fflush(stderr);
   }
 
   QString spath = fpath + "/_settings";
@@ -428,7 +428,7 @@ void reportDAQSituation() {
   }
 }
 
-int main(int argc, char **argv) {
+int realmain(int argc, char **argv) {
   GUIExc::setArgs(argc, argv);
   QApplication app(argc, argv);
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -513,6 +513,7 @@ int main(int argc, char **argv) {
     Dbg() << "Starting application";
     int res = app.exec();
     Dbg() << "Application done";
+    CamPool::closedown();
     return res;
   } catch (Exception const &e) {
     Dbg() << "Exception caught in main.";
@@ -521,3 +522,9 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+int main(int argc, char **argv) {
+  Dbg() << "main";
+  int r = realmain(argc, argv);
+  Dbg() << "back" << r;
+  return r;
+}

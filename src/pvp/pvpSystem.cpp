@@ -3,6 +3,7 @@
 #include <pvp/pvpSystem.h>
 #include <stdio.h>
 #include <pvp/dwpvcam.h>
+#include <base/dbg.h>
 
 bool pvpSystem::inited = false;
 
@@ -14,7 +15,8 @@ void pvpSystem::initialize() /*throw(pvpException)*/ {
   if (inited)
     return;
   
-  pl_pvcam_init();
+  if (pl_pvcam_init() != PV_OK)
+    Warning() << "Could not initialize pvcam";
   // pl_exp_init_seq(); // Deprecated in driver vsn 3.1
 
   inited = true;
@@ -35,8 +37,7 @@ int pvpSystem::countCameras() /*throw(pvpException)*/ {
   
   int16 count;
   if (!pl_cam_get_total(&count)) {
-    fprintf(stdout, "Could not count cameras\n");
-    // throw pvpException("pvpSystem: Could not count cameras");
+    Warning() << "Could not count cameras";
     return 0;
   }
   return count;
