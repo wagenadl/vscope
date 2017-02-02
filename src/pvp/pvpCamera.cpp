@@ -20,11 +20,36 @@ pvpCamera::pvpCamera(QString camname):
 
   serno = getHeadSerNumAlpha();
 
-  setReadoutPort(ReadoutPort::X1); // was Port2
-  setReadoutPort(ReadoutPort::X0); // was Port2
-  setSpdtabIndex(1);
+  setPmode(Pmode::Ft);
+  setReadoutPort(ReadoutPort());
+  setSpdtabIndex(0);
   setGainIndex(1);
+  setClearCycles(2);
+  setBofEofEnable(BofEofEnable::EndFrameIrqs);
+  setBofEofClr(true);
+  abort();
+Dbg() << "pvpcamera" << camname << "opened";
+  QMap<int, QString> eomodes = getEnumeration(PARAM_EXPOSURE_MODE);
+  foreach (int k, eomodes.keys()) {
+    Dbg() << "mode" << k << "is" << eomodes[k];
+  }
 
+  bool haveextmode = availExposeOutMode();
+  if (haveextmode) {
+    Dbg() << "have ext mode";
+    QMap<int, QString> eomodes = getEnumeration(PARAM_EXPOSE_OUT_MODE);
+    foreach (int k, eomodes.keys()) {
+      Dbg() << "mode" << k << "is" << eomodes[k];
+    }
+  } else {
+    Dbg() << "no ext mode";
+  }
+
+
+  initializeResIndex();
+}
+
+void pvpCamera::initializeResIndex() {
   int N = countExpResIndex();
   expres.fill(0, N);
   for (int n=0; n<N; n++) {
@@ -41,6 +66,7 @@ pvpCamera::pvpCamera(QString camname):
       throw pvpException("pvpCamera (constructor): unknown exposure resolution");
     }
   }
+
 }
 
 pvpCamera::~pvpCamera() {
@@ -107,13 +133,40 @@ int pvpCamera::readoutTime() {
   return getPixTime();
 }
 
+QMap<int, QString> pvpCamera::getEnumeration(int param) {
+  QMap<int, QString> res;
+  uns32 N;
+  if (!pl_get_param(camh, param, ATTR_COUNT, (void*)&N)) {
+    Dbg() << "Could not enumerate" << param;
+    return res;
+  }
+  for (uns32 n=0; n<N; n++) {
+    char name[256];
+    int32 value;
+    if (pl_get_enum_param(camh, param, n, &value, name, 255)) {
+      res[value] = name;
+      Dbg() << "enumeration for" << param << "at" << n << ":" << value << "->" << name;
+    } else {
+      Dbg() << "Error enumerating" << param << "at" << n;
+      return res;
+    }
+  }
+  return res;
+}
+
+QMap<int, QString> pvpCamera::enumeratePorts() {
+  return getEnumeration(PARAM_READOUT_PORT);
+}
+
 void pvpCamera::setPortAndSpeed(int port, int spdidx) {
+  Dbg() << "setportandspeed" << port << spdidx;
   if (port<0 || port>=countPorts())
     throw pvpException("Nonexistent readout port requested");
   if (spdidx<0 || spdidx>=countSpeeds(port))
     throw pvpException("Nonexistent speed index requested");
   setReadoutPort(port);
   setSpdtabIndex(spdidx);
+  setGainIndex(1);
 }
 
 void pvpCamera::reportSpeeds() {
@@ -158,6 +211,7 @@ void pvpCamera::reportSpeeds() {
   printf("Restored original port: %i\n",k0);
   setSpdtabIndex(n0);
   printf("  Restored original speed: %i\n",n0);
+  fflush(stdout);
 }
 
 
@@ -216,7 +270,9 @@ int32 pvpCamera::pvpExposureTime(int32 t_us, int32 *reso_us_out) {
 
 size_t pvpCamera::configFinite(rgn_type const &rgn, int trigmode,
 			       int exposetime, int nframes) {
+
   uns32 strmsize;
+  Dbg() <<"setup_seq" << nframes << trigmode << exposetime;
   if (!pl_exp_setup_seq(camh,
 			nframes,
 			1, &rgn,
@@ -224,6 +280,15 @@ size_t pvpCamera::configFinite(rgn_type const &rgn, int trigmode,
 			exposetime,
 			&strmsize))
     throw pvpException("pvpCamera: Cannot setup finite sequence");
+  Dbg() << "streamsize" << strmsize;
+  Dbg() << "expomode" << getExposureMode();
+  int16 st;
+  uns32 bt;
+  if (pl_exp_check_status(camh, &st, &bt))
+    Dbg() << "got status" << st << bt;
+  else
+    Dbg() << "didn't get status";
+  Dbg() << "smart" << getSmartStreamModeEnabled() << getSmartStreamMode();
   return strmsize/2;
 }
 
@@ -237,17 +302,30 @@ size_t pvpCamera::configContinuous(rgn_type const &rgn, int trigmode,
 			 &strmsize,
 			 CIRC_OVERWRITE))
     throw pvpException("pvpCamera: Cannot setup continuous sequence");
+  Dbg() << "cont expomode" << getExposureMode() << trigmode;
   return strmsize/2;
 }
 
-void pvpCamera::startFinite(uint16_t *dest) {
+void pvpCamera::startFinite(uint16_t *dest) {  
   if (!pl_exp_start_seq(camh, (void*)dest))
     throw pvpException("pvpCamera: Cannot start finite acquisition");
+  int16 st;
+  uns32 bt;
+  if (pl_exp_check_status(camh, &st, &bt))
+    Dbg() << "got status" << st << bt;
+  else
+    Dbg() << "didn't get status";
+}
+
+void pvpCamera::finishFinite(uint16_t *dest) {
+  if (!pl_exp_finish_seq(camh, (void*)dest, 0))
+    throw pvpException("pvpCamera: Cannot finish finite acquisition");
 }
 
 void pvpCamera::startContinuous(uint16_t *destbuf, size_t npixinbuf) {
   if (!pl_exp_start_cont(camh, (void*)destbuf,2*npixinbuf))
     throw pvpException("pvpCamera: Cannot start continuous acquisition");
+  Dbg() << "start cont";
 }
 
 void pvpCamera::stopContinuous() {
@@ -256,16 +334,18 @@ void pvpCamera::stopContinuous() {
 }
 
 void pvpCamera::abort() {
-  if (!pl_exp_abort(camh,CCS_HALT))
+  if (!pl_exp_abort(camh,CCS_CLEAR))
     throw pvpException("pvpCamera: Cannot abort acquisition");
 }
 
 pvpCamera::Status pvpCamera::getContinuousStatus() {
+  Dbg() << "getContinuousStatus" << camh;
   int16 status;
   uns32 bytecount;
   uns32 bufcount;
   if (!pl_exp_check_cont_status(camh, &status, &bytecount, &bufcount))
     throw pvpException("pvpCamera: check_status failed 1");
+  Dbg() << "gotContinuousStatus" << status << bytecount << bufcount;
   switch (status) {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;
@@ -278,10 +358,13 @@ pvpCamera::Status pvpCamera::getContinuousStatus() {
 }
 
 pvpCamera::Status pvpCamera::getFiniteStatus() {
+  Dbg() << "getFiniteStatus" << camh;
   int16 status;
   uns32 bytecount;
   if (!pl_exp_check_status(camh, &status, &bytecount))
     throw pvpException("pvpCamera: check_status failed 2");
+Dbg() << "gotFiniteStatus" << status << bytecount;
+
   switch (status) {
   case READOUT_NOT_ACTIVE: return NotActive;
   case EXPOSURE_IN_PROGRESS: return Acquiring;

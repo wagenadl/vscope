@@ -38,6 +38,7 @@ public:
   void startContinuous();
   void stopContinuous();
   void abort();
+  void finishFinite();
 
   // Querying current run
   bool isRunning();
@@ -45,6 +46,7 @@ public:
   uint16_t const *getLatestFrame();
   bool hasCompleted();
   size_t nPixelsSoFar();
+  static void closeDown();
 private:
   QString id;
   class pvpCamera *pvpcam;
@@ -52,6 +54,8 @@ private:
   double expose_ms;
   size_t npixels_for_seq;
   QVector<uint16_t> contBuffer;
+  bool isrunning;
+  uint16_t *mydest;
 };
 
 #endif

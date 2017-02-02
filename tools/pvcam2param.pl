@@ -55,7 +55,8 @@ my %NAMELENGTHS = ("DD_INFO" => "getDdInfoLength()",
 		   "HEAD_SER_NUM_ALPHA" => "MAX_ALPHA_SER_NUM_LEN",
 		   "GAIN_NAME" => "MAX_GAIN_NAME_LEN",
 		   "PP_FEAT_NAME" => "MAX_PP_NAME_LEN",
-		   "PP_PARAM_NAME" => "MAX_PP_NAME_LEN");
+		   "PP_PARAM_NAME" => "MAX_PP_NAME_LEN",
+		"CAM_FW_FULL_VERSION" => "MAX_PP_NAME_LEN");
 
 # Read input
 open PVC, "<pvcam/pvcam.h" or die "Cannot read pvcam.h\n";
@@ -93,6 +94,8 @@ for (@pvclines) {
     $enumvalues{$1} = $2;
   }
   $primer=$1 if /sed with.*PARAM_([A-Z_]+)/;
+  $primer=$1 if /Function: pl_set_param \( PARAM_([A-Z_]+) \)/;
+  $primer=$1 if /^enum ([A-Z_]+)\s*$/;
   if ($primer ne "") {
     $enum=1 if /enum/;
   }
@@ -143,12 +146,13 @@ for (@pvclines) {
 for my $k (sort keys %enums) {
   $enums{$k} = stripenum($k,$enums{$k});
   my $e = $enums{$k};
-  #print "Got enum $k { ";
-  #for (sort {$e->{$a} <=> $e->{$b}} keys %{$e}) {
-  #  print "$_=$e->{$_}, ";
-  #}
-  #print "}\n";
+  print "Got enum $k { ";
+  for (sort {$e->{$a} <=> $e->{$b}} keys %{$e}) {
+    print "$_=$e->{$_}, ";
+  }
+  print "}\n";
 }
+$enums{"SHTR_CLOSE_DELAY_UNIT"} = $enums{"TIME_UNITS"};
 
 my @paramlists;
 for (keys %CLASSNAMES) {

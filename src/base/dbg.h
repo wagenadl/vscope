@@ -26,12 +26,13 @@ public:
 
 class Warning: public Dbg {
 public:
-  Warning();
+  Warning(bool guiwarn=true);
   virtual ~Warning() throw();
   static void enableGUIWarnings();
   static void disableGUIWarnings();
 private:
   QString t0;
+  bool guiwarn;
   static bool guiwarn_enabled;
 };
 

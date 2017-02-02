@@ -40,6 +40,7 @@ public:
    *:N This will reshape the two destination buffers as needed.
   */
   void abort();
+  void finish();
   bool hasEnded();
   /*:F hasEnded
    *:D Returns true iff the acquisition has finished, whether successful or
