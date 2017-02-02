@@ -112,9 +112,9 @@ bool CCDAcq::prepare(ParamTree const *ptree,
 	frdur_us = detail.active_us();
 	
 	cfg.nframes = detail.nframes();
-	cfg.expose_us = frdur_us;
+        cfg.expose_us = frdur_us;
 	cfg.trigmode = trigEach ? CCDTrigMode::EachFrame
-          : CCDTrigMode::Immediate; //FirstFrame;
+          : CCDTrigMode::FirstFrame;
 	cfg.clear_every_frame = false; // trigEach ? true : false;
 	
 	cfg.region = CCDRegion(caminfo[id]->placement.inverse()(reg));

@@ -18,6 +18,7 @@ void pvpSystem::initialize() /*throw(pvpException)*/ {
   if (pl_pvcam_init() != PV_OK)
     Warning() << "Could not initialize pvcam";
   // pl_exp_init_seq(); // Deprecated in driver vsn 3.1
+  Dbg() << "pvpSystem::initialize";
 
   inited = true;
 }
@@ -27,6 +28,7 @@ void pvpSystem::closedown() /*throw(pvpException)*/ {
     return;
   
   // pl_exp_uninit_seq(); // Deprecated in driver vsn 3.1
+  Dbg() << "pvpSystem::closedown";
 
   pl_pvcam_uninit();
   inited = false;

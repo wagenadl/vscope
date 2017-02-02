@@ -113,11 +113,13 @@ void Camera::stopContinuous() {
     throw Exception("Camera", "stopContinuous() is not for finite acq.");
   pvpcam->stopContinuous();
   // wait for it to actually stop:
+  /*
   QTime timeout = QTime::currentTime().addSecs(2); // timeout in two sec
   while (isRunning()) {
     if (QTime::currentTime()>=timeout)
       throw Exception("Camera", "Timeout while stopping acquisition");
   }
+  */
   isrunning = false;
 }
 
