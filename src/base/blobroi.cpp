@@ -95,7 +95,10 @@ QVector<bool> BlobROI::bitmap() const {
   QVector<bool> dst(w*h);
   int res = bitmap(dst.data(), w*h);
   Q_ASSERT(res);
-  return dst;
+  if (res)
+    return dst;
+  else
+    return QVector<bool>();
 }
 
 int BlobROI::bitmap(bool *dst, int dstSize) const {
