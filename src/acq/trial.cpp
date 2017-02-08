@@ -41,6 +41,7 @@ Trial::Trial(TrialData *d): dat(d) {
 
   prep=false;
   active=false;
+  outcomplete = acqcomplete = ccdcomplete = false;
 
   connect(ephysacq, SIGNAL(ended()), this, SLOT(ephysacqComplete()));
   connect(ephysout, SIGNAL(ended()), this, SLOT(ephysoutComplete()));
@@ -109,7 +110,7 @@ void Trial::prepare(ParamTree const *ptree) {
     }
   }
 
-  outcomplete = acqcomplete = false;
+  outcomplete = acqcomplete = ccdcomplete = false;
   prep = true;
 }
 
@@ -123,7 +124,7 @@ void Trial::prepareSnapshot(ParamTree const *ptree) {
   ccdacq->prepare(ptree, dat->allTiming());
   ephysout->setMaster(0);
   ephysout->prepareSnap(ptree, dat->allTiming());
-  outcomplete = acqcomplete = false;
+  outcomplete = acqcomplete = ccdcomplete = false;
   prep = true;
 }
 
@@ -135,7 +136,7 @@ void Trial::start() {
   info.setAttribute("date",now.toString("yyMMdd"));
   info.setAttribute("time",now.toString("hhmmss"));
   
-  outcomplete = acqcomplete = false;
+  outcomplete = acqcomplete = ccdcomplete = false;
   ephysout->commit();
   if (dat->isCCD()) {
     ccdacq->start();
@@ -143,6 +144,8 @@ void Trial::start() {
   ephysout->start(); // this won't do anything if there is a master
   if (dat->isEPhys()) {
     ephysacq->start(); // This starts ephysout synchronously through the "master" system.
+  } else {
+    acqcomplete = true;
   }
   active = true;
 }
@@ -152,11 +155,12 @@ void Trial::abort() {
   ephysacq->abort();
   ephysout->abort();
   active = false;
+  outcomplete = acqcomplete = ccdcomplete = false;
 }
 
 void Trial::ephysoutComplete() {
   outcomplete = true;
-  if (acqcomplete || !dat->isEPhys())
+  if (acqcomplete)
     allEPhysComplete();
 }
 
@@ -174,23 +178,37 @@ public:
 };
 
 void Trial::allEPhysComplete() {
+  bool ccdc = true;
   if (dat->isCCD()) {
-    double maxwait_ms = 1000;
+    double maxwait_ms = 5000;
     while (!ccdacq->hasEnded()) {
       dbg("Trial complete, ccdacq not yet ended");
-      if (maxwait_ms<=0)
-	throw Exception("Trial","CCD Acquisition timed out","allComplete");
+      if (maxwait_ms<=0) {
+        Warning() << "CCD Acquisition timed out";
+        ccdc = false;
+        break;
+      }
       Sleeper::msleep(200);
       maxwait_ms -= 200;
     }
-    if (!ccdacq->wasSuccessful())
-      throw Exception("Trial","CCD Acquisition failed","allComplete");
+    if (ccdc && !ccdacq->wasSuccessful()) {
+      Warning() << "CCD Acquisition failed";
+      ccdc = false;
+    }
   }
+  ccdcomplete = ccdc;
   active = false;
+  Dbg() << "Trial done" << dat->isCCD() << ccdcomplete;
+  if (dat->isCCD()) {
+    if (ccdcomplete) {
+      ccdacq->finish();
+      dat->refineCCDTiming();
+    } else {
+      ccdacq->abort();
+    }
+  }
+  Dbg() << "Emitting ended";
 
-  if (dat->isCCD())
-    dat->refineCCDTiming();
-  
   QDomElement info = dat->getXML()->find("info");
   QDateTime now(QDateTime::currentDateTime());
   info.setAttribute("enddate",now.toString("yyMMdd"));

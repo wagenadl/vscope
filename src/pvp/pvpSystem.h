@@ -14,9 +14,9 @@ public:
   static QString getCamName(int n) /*throw(pvpException)*/;
   static int getPVCAMVersion() /*throw(pvpException)*/;
   static void reportStatus() /*throw(pvpException)*/;
-private:
-  static void initialize() /*throw(pvpException)*/;
+  static void initialize(); // called automatically
   static void closedown() /*throw(pvpException)*/;
+private:
   private:
   static bool inited;
 };

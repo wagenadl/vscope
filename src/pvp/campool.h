@@ -21,6 +21,7 @@ public:
   static void rename(QString oldid, QString newid);
   static bool haveAll(QStringList const &ids);
   static QStringList systemInfo();
+  static void closedown();
 public:
   static void initialize();
 private:
