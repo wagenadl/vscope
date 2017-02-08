@@ -78,30 +78,22 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
 	+ timing[id].shtrPostScans();
       if (illumstart<0) {
 	if (n>=0)
-	  fprintf(stderr,
-		  "Warning: Illumination start delayed (by %i scans)\n",
-		  -illumstart);
+          Warning(0) << "Illumination start delayed (by" << -illumstart << "scans)";
 	illumstart=0;
       }
       if (illumend>nscans-2) {
 	if (n>=0)
-	  fprintf(stderr,
-		  "Warning: Illumination end shortened (by %i scans)\n",
-		  illumend-(nscans-2));
+          Warning(0) << "Illumination end shortened (by " << illumend-(nscans-2) << "scans)";
 	illumend=nscans-2;
       }
       if (shtrstart<0) {
 	if (n>=0)
-	  fprintf(stderr,
-		  "Warning: Shutter open delayed (by %i scans)\n",
-		  -shtrstart);
+          Warning(0) << "Shutter open delayed (by " << -shtrstart << "scans)";
 	shtrstart=0;
       }
       if (shtrend>nscans-2) {
 	if (n>=0)
-	  fprintf(stderr,
-		  "Warning: Shutter close shortened (by %i scans)\n",
-		  shtrend-(nscans-2));
+          Warning(0) << "Shutter close shortened (by " << shtrend-(nscans-2) << "scans)\n";
 	shtrend=nscans-2;
       }
       

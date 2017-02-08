@@ -25,6 +25,17 @@ void CamPool::initialize() {
   inited = true;
 }
 
+void CamPool::closedown() {
+  Dbg() << "Campool closedown";
+  foreach (Camera *c, cameras) {
+    delete c;
+  }
+  cameras.clear();
+  byId.clear();
+  inited = false;
+  Camera::closeDown();
+}
+
 int CamPool::nCameras() {
   return cameras.size();
 }

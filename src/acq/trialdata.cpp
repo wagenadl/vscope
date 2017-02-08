@@ -295,6 +295,7 @@ void TrialData::write() const {
 
   // xml
   xml->write(base + ".xml");
+  Dbg() << "TrialData::write" << d.absolutePath() << d.exists() << snap << contEphys << do_ccd << base;
 }
 
 void TrialData::read(QString dir, QString exptname0, QString trialid0,

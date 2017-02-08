@@ -36,6 +36,6 @@ void KeyAgg::emitUnlessCheckedOut() {
     if (src->anyCheckedOut())
       return;
   //  Dbg(this) << "  No sources checkedout. any of mine? " << anyCheckedOut();
-  dumpObjectInfo();
+  // dumpObjectInfo();
   KeyAccess::emitUnlessCheckedOut();
 }

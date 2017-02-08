@@ -65,6 +65,9 @@ QString Focus::getCamB() const {
 }
 
 void Focus::setCams(QString idA, QString idB) {
+  Dbg() << "setcams" << idA << idB;
+  if (idA == camIDA && idB == camIDB && isActive)
+    return;
   bool wasactive = isActive;
   if (wasactive)
     deactivate();
@@ -80,6 +83,8 @@ void Focus::setCams(QString idA, QString idB) {
 }
   
 void Focus::setCamA(QString idA) {
+  if (idA == camIDA && isActive)
+    return;
   bool wasactive = isActive;
   if (wasactive)
     deactivate();
@@ -116,6 +121,9 @@ void Focus::setCamA(QString idA) {
 }
 
 void Focus::setCamB(QString idB) {
+  if (idB == camIDB && isActive)
+    return;
+
   bool wasactive = isActive;
   if (wasactive)
     deactivate();
@@ -301,7 +309,7 @@ void Focus::autoRange() {
 
 void Focus::activate(bool quietIfAlready) {
   frmA = frmB = 0;
-  //  dbg("Focus::activate");
+   dbg("Focus::activate");
   if (isActive) {
     if (quietIfAlready)
       return;
@@ -371,7 +379,7 @@ void Focus::deactivate(bool quietIfAlready) {
 
   isActive = false;
   hide();
-  //  dbg("  deactivate: hidden");
+  dbg("  deactivate: hidden");
   frmA = frmB = 0;
 }
 

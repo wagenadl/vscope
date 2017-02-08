@@ -69,19 +69,22 @@ void GUIExc::report(class Exception const &e, QString reporter) throw() {
     saveSettings();
     QAbstractButton *clicked = msg.clickedButton();
     if (clicked == b_quit) {
-      ::exit(1);
+      Dbg() << "exiting";
+      ::exit(0);
+      Dbg() << "exited";
 #ifdef vsdLINUX
     } else if (clicked == b_restart) {
       ::execvp(argv[0],argv);
       ::exit(1); // this should never execute
 #endif
     } else if (clicked == b_ignore) {
-      ;
+      Dbg() << "ignored";
     } else {
       Dbg() << "GUIExc got unknown button.";
     }
   } catch (...) {
     fprintf(stderr,"Exception in GUIExc. Instantly aborting.\n");
+    fflush(stderr);
     ::exit(1);
   }      
 }
