@@ -9,6 +9,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QMap>
 
 class pvpCamera {
 public:
