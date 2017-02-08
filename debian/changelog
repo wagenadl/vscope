@@ -1,3 +1,11 @@
+vscope (0.99.4-1) yakkety; urgency=medium
+
+  Still not ready for primetime, since triggering doesn't yet work on Evolve.
+  However, both trigger modes work fine on QuantEM, and continuous acq (focus)
+  works on Evolve.
+
+ -- Daniel A. Wagenaar <daw@caltech.edu>  Tue, 07 Feb 2017 19:57:10 -0800
+
 vscope (0.99.3-1) yakkety; urgency=medium
 
   Preparing for github release
