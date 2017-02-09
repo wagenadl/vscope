@@ -112,10 +112,12 @@ $(DPSS_BIN):$(COMMON_OBJS) $(DPSS_OBJS) $(DPSS_BIN_OBJS) $(DPSS_LIB)
 $(DPSS_OCT):$(COMMON_OBJS) $(DPSS_OBJS) $(DPSS_OCT_OBJS)
 	@[ -d $(dir $@) ] || mkdir -p $(dir $@)		#makes the build path if required
 	$(OCT_CC) $(COMMON_OBJS) $(DPSS_OBJS) $(DPSS_OCT_OBJS) -o $@ $(OCT_LDFLAGS)
+	strip $@
 
 $(MTPSD_OCT):$(COMMON_OBJS) $(DPSS_OBJS) $(MTPSD_OBJS) $(MTPSD_OCT_OBJS)
 	@[ -d $(dir $@) ] || mkdir -p $(dir $@)		#makes the build path if required
 	$(OCT_CC) $(COMMON_OBJS) $(DPSS_OBJS) $(MTPSD_OBJS) $(MTPSD_OCT_OBJS) -o $@ $(OCT_LDFLAGS)
+	strip $@
 
 $(MTPSD_LIB):$(COMMON_OBJS) $(DPSS_OBJS) $(MTPSD_OBJS)
 	@[ -d $(dir $@) ] || mkdir -p $(dir $@)		#makes the build path if required
