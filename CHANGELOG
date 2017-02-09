@@ -1,3 +1,12 @@
+vscope 1.0.0-rc1
+
+  Preparing VScope for first public release.
+  Triggering now does work with Evolve as well as QuantEM. The previous problem
+  was not in VScope but rather in the Firewire driver. Photometrics cameras
+  only work with the "Thesycon" drivers provided with the PVCam package.
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Thu, 09 Feb 2017 10:41:18 -0800
+
 vscope 0.99.4
 
   Still not ready for primetime, since triggering doesn't yet work on Evolve.
