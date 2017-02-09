@@ -1,4 +1,4 @@
-vscope 1.0.0-rc1
+vscope 1.0.0~rc1
 
   Preparing VScope for first public release.
   Triggering now does work with Evolve as well as QuantEM. The previous problem
