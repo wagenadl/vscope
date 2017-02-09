@@ -23,6 +23,7 @@ CCDConfig &CCDConfig::operator=(CCDConfig const &c) {
   binning = c.binning;
   trigmode = c.trigmode;
   iscont = c.iscont;
+  portspeed = c.portspeed;
   return *this;
 }
 

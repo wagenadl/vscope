@@ -2,6 +2,7 @@
 
 #include "camera.h"
 #include "pvpCamera.h"
+#include "pvpSystem.h"
 #include <base/types.h>
 #include <base/dbg.h>
 #include <QTime>
@@ -11,6 +12,8 @@ Camera::Camera(QString camname) {
   id = pvpcam->getSerialNumber();
   expose_ms=0; // i.e. undefined
   npixels_for_seq = 0;
+  isrunning = false;
+  Dbg() << "Camera::Camera" << id;
 }
 
 Camera::~Camera() {
@@ -23,6 +26,9 @@ Camera::~Camera() {
     fprintf(stderr,"Camera: caught exception in destructor:\n");
     e.report();
   }
+  Dbg() << "Camera::~Camera" << id;
+  delete pvpcam;
+  Dbg() << "deleted pvpca";
 }
 
 QString Camera::getSerialNumber() const {
@@ -38,6 +44,7 @@ void Camera::setConfig(CCDConfig const &cfg0) {
 
   rgn_type rgn = pvpcam->pvpRegion(cfg.region,cfg.binning);
   int trigmode = pvpcam->pvpTrigMode(cfg.trigmode);
+  Dbg() << "trigmode is " << cfg.trigmode << trigmode;
 
   int32 expores_us;
   int32 expotime = pvpcam->pvpExposureTime(cfg.expose_us,
@@ -77,15 +84,16 @@ void Camera::setConfig(CCDConfig const &cfg0) {
 }
 
 void Camera::startFinite(uint16_t *dest, size_t destsize_pix) {
-    Dbg() << "startfinite";
+  Dbg() << "startfinite";
   if (cfg.iscont)
     throw Exception("Camera","startFinite() is not for continuous acq.");
   if (destsize_pix<npixels_for_seq)
     throw Exception("Camera", "Destination buffer too small");
-  /* For some reason, isRunning() causes a crash in PVCam 3.1+. So we simply don't check anymore. */
-  //  if (isRunning())
-  //    throw Exception("Camera", "Already running");
+  if (isRunning())
+    throw Exception("Camera", "Already running");
   pvpcam->startFinite(dest);
+  isrunning = true;
+  mydest = dest;
   Dbg() << "startfinite ok";
 }
 
@@ -95,24 +103,39 @@ void Camera::startContinuous() {
   if (isRunning())
     throw Exception("Camera", "Already running");
   pvpcam->startContinuous(contBuffer.data(), contBuffer.size());
+  isrunning = true;
 }  
 
 void Camera::stopContinuous() {
-  //if (!isRunning())
-  //  throw Exception("Camera", "Not running");
+  if (!isRunning())
+    throw Exception("Camera", "Not running");
   if (!cfg.iscont)
     throw Exception("Camera", "stopContinuous() is not for finite acq.");
   pvpcam->stopContinuous();
   // wait for it to actually stop:
+  /*
   QTime timeout = QTime::currentTime().addSecs(2); // timeout in two sec
   while (isRunning()) {
     if (QTime::currentTime()>=timeout)
       throw Exception("Camera", "Timeout while stopping acquisition");
   }
+  */
+  isrunning = false;
+}
+
+void Camera::finishFinite() {
+  if (!isRunning())
+    throw Exception("Camera", "Not running");
+  pvpcam->finishFinite(mydest);
+  isrunning = false;
+  Dbg() << "some pixels" << mydest[0] << mydest[100*512 + 100] << mydest[200*512 + 200] << mydest[300*512+300];
 }
 
 void Camera::abort() {
+  if (!isRunning())
+    Warning(0) << "Aborted camera not running";
   pvpcam->abort();
+  isrunning = false;
 }
 
 #define GETSTATUS (cfg.iscont	    \
@@ -120,8 +143,8 @@ void Camera::abort() {
       : pvpcam->getFiniteStatus())
 
 bool Camera::isRunning() {
-    Dbg() << "camera::isrunning?";
-  return GETSTATUS == pvpCamera::Acquiring;
+  Dbg() << "camera::isrunning?";
+  return isrunning;
 }
 
 bool Camera::hasCompleted() {
@@ -186,4 +209,8 @@ QString Camera::getID() const {
 
 void Camera::setID(QString newid) {
   id = newid;
+}
+
+void Camera::closeDown() {
+  pvpSystem::closedown();
 }

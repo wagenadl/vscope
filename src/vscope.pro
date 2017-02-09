@@ -62,7 +62,7 @@ DISTFILES += \
 gitREVNO = $$system(git rev-list --count --first-parent HEAD)
 gitDATE = $$system(git show -s --format=%cd --date=format:\"%b.%d.%Y..%H:%M:%S\" HEAD)
 # For some reason, the %Z or %s
-gitVERSION = $$system(git describe --long)
+gitVERSION = $$system(git describe)
 gitYEAR = $$system(git show -s --format=%cd --date=format:%Y HEAD)
 
 DEFINES += gitREVNO=\\\"$$gitREVNO\\\"

@@ -36,7 +36,7 @@ void warn(char const *fmt, ...) throw() {
   va_start(ap,fmt);
   char txt[10240];
   vsnprintf(txt,10240,fmt,ap);
-  Warning() << txt;
+  Warning(0) << txt;
   va_end(ap);
 }
 
@@ -103,7 +103,7 @@ DbgFile &DbgFile::operator<<(QString const &str) {
 
 
 //////////////////////////////////////////////////////////////////////
-Warning::Warning(): Dbg() {
+Warning::Warning(bool gw): Dbg(), guiwarn(gw) {
   *this << "WARNING: ";
   t0 = *string;
 }
@@ -119,7 +119,7 @@ void Warning::disableGUIWarnings() {
 }
 
 Warning::~Warning() {
-  if (guiwarn_enabled)
+  if (guiwarn && guiwarn_enabled)
     QMessageBox::warning(0, "VScope Warning",
                          string->mid(t0.size()));
 }

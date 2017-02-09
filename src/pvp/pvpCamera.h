@@ -9,6 +9,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QMap>
 
 class pvpCamera {
 public:
@@ -51,6 +52,7 @@ public:
   // Returns number of pixels in buffer. exposetime must be in units
   // of current resolution.
   void startFinite(uint16_t *dest); // caller is responsible for buffer size!
+  void finishFinite(uint16_t *dest);
   void startContinuous(uint16_t *destbuf, size_t npixinbuf);
   void stopContinuous();
   void abort();
@@ -69,6 +71,11 @@ public:
   // Only for cont. acq.
   uint16_t *getLatestFrame();
   // Only for cont. acq. Does not check if data actually available.
+public:
+  QMap<int, QString> enumeratePorts();
+private:
+  QMap<int, QString> getEnumeration(int param);
+  void initializeResIndex();
 private:
   QString camname;
   QString serno;
