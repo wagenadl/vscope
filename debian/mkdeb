@@ -38,7 +38,7 @@ my $header = <IN>;
 chomp $header;
 my ($pkg, $vsn) = split(/ /, $header);
 die "Package name mismatch\n" unless $pkg eq $package;
-die "Bad version\n" unless $vsn =~ /^\d+\.\d+\.\d+(-.+)?$/;
+die "Bad version\n" unless $vsn =~ /^\d+\.\d+\.\d+(~.+)(-.+)?$/;
 
 my $message = "";
 while (<IN>) {
