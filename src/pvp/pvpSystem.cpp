@@ -16,7 +16,7 @@ void pvpSystem::initialize() /*throw(pvpException)*/ {
     return;
   
   if (pl_pvcam_init() != PV_OK)
-    Warning() << "Could not initialize pvcam";
+    Warning(false) << "Could not initialize pvcam";
   // pl_exp_init_seq(); // Deprecated in driver vsn 3.1
   Dbg() << "pvpSystem::initialize";
 
@@ -39,7 +39,7 @@ int pvpSystem::countCameras() /*throw(pvpException)*/ {
   
   int16 count;
   if (!pl_cam_get_total(&count)) {
-    Warning() << "Could not count cameras";
+    Warning(false) << "Could not count cameras";
     return 0;
   }
   return count;
