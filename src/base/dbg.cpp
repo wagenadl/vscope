@@ -119,7 +119,10 @@ void Warning::disableGUIWarnings() {
 }
 
 Warning::~Warning() {
-  if (guiwarn && guiwarn_enabled)
-    QMessageBox::warning(0, "VScope Warning",
-                         string->mid(t0.size()));
+  if (guiwarn && guiwarn_enabled) {
+    QString s = string->mid(t0.size());
+    s.replace("\"", "");
+    s.replace("\\n", "\n");
+    QMessageBox::warning(0, "VScope Warning", s);
+  }
 }
