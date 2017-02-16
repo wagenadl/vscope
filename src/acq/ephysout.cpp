@@ -106,7 +106,12 @@ bool EPhysOut::prepareSnap(ParamTree const *ptree,
 }
 
 bool EPhysOut::createDAQ(ParamTree const *ptree) {
-  QString devid = "";
+  QString devid = Connections::deviceID();
+  if (devid=="") {
+    QString confser = Connections::deviceSerNo();
+    QString conftyp = Connections::deviceType();
+    devid = DAQDevice::search(conftyp, confser);
+  }
   if (!DAQDevice::find(devid).isValid())
     return false;
   

@@ -15,6 +15,7 @@ namespace Connections {
   QMap<QString,DigiChannel *> digimap;
   QMap<QString,CamCon *> cammap;
   QStringList camorder;
+  QString devid, devserno, devtype;
 
   AIChannel::AIChannel(QString id): id(id) {
     line = -1;
@@ -122,6 +123,21 @@ namespace Connections {
     writeAOChannels(doc);
     writeDIOChannels(doc);
     writeCameras(doc);
+  }
+
+  void readDAQDevice(QDomElement doc) {
+    devid = "";
+    devserno = "";
+    devtype = "";
+    for (QDomElement e=doc.firstChildElement("device");
+         !e.isNull(); e=e.nextSiblingElement("device")) {
+      if (e.hasAttribute("id"))
+        devid = e.attribute("id");
+      if (e.hasAttribute("serno"))
+        devserno = e.attribute("serno");
+      if (e.hasAttribute("type"))
+        devtype = e.attribute("type");
+    }
   }
   
   void readAIChannels(QDomElement doc) {
@@ -287,6 +303,7 @@ namespace Connections {
     if (doc.isNull())
       throw Exception("Connections","No <connections> element","read");
 
+    readDAQDevice(doc);
     readAIChannels(doc);
     readAOChannels(doc);
     readDIChannels(doc);
@@ -474,4 +491,15 @@ namespace Connections {
 	l.append(ao->id);
     return l;
   }
+
+  QString deviceID() {
+    return devid;
+  }
+  QString deviceSerNo() {
+    return devserno;
+  }
+  QString deviceType() {
+    return devtype;
+  }
+  
 }

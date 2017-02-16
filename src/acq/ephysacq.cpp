@@ -155,7 +155,12 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
 
 bool EPhysAcq::createDAQ(ParamTree const *) {
   // perhaps we should use the ptree to figure out what device to use?
-  QString devid = "";
+  QString devid = Connections::deviceID();
+  if (devid=="") {
+    QString confser = Connections::deviceSerNo();
+    QString conftyp = Connections::deviceType();
+    devid = DAQDevice::search(conftyp, confser);
+  }
   if (!DAQDevice::find(devid).isValid())
     return false;
 

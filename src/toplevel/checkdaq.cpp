@@ -5,14 +5,20 @@
 #include <daq/daqbase.h>
 #include <base/dbg.h>
 #include <QLabel>
+#include <xml/connections.h>
 
 static QLabel *lbl = 0;
 
 QString checkdaq() {
   QString vsn = DAQDevice::nidaqVersion();
   QString ltxt = "";
-  QString confdev = "";
-  DAQDevice *daqdev = &DAQDevice::find();
+  QString confdev = Connections::deviceID();
+  if (confdev=="") {
+    QString confser = Connections::deviceSerNo();
+    QString conftyp = Connections::deviceType();
+    confdev = DAQDevice::search(conftyp, confser);
+  }
+  DAQDevice *daqdev = &DAQDevice::find(confdev);
   if (DAQDevice::ok(daqdev)) {
     QString dev = daqdev->id();
     confdev = dev;

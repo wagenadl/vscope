@@ -186,6 +186,14 @@ namespace Connections {
    *:D Return lists of all analog inputs and outputs
    *:N "Stims" are output channels that can be used for user-defined stimuli
    */
+
+  QString deviceID();
+  QString deviceSerNo();
+  QString deviceType();
+  /*:F deviceID, deviceSerNo, deviceType
+   *:D Returns ID, serial number, and type of configured DAQ device
+   *:N Returns empty string if not specified, which is the default.
+   */
 };
   
 #endif
