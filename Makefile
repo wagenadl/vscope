@@ -98,3 +98,5 @@ install: release DOC MTPSD
 	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
 
 FORCE:
+
+zip:; ( cd octave; git archive -o /tmp/octave-vscope-`git describe`.zip HEAD vscope-1.0 ) && echo "Archive created in /tmp/octave-vscope-`git describe`.zip"
