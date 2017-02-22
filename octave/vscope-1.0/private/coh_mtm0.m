@@ -35,9 +35,6 @@ function varargout = coh_mtm0(t,x,y,f_res,alpha_ci,f_star,N_fft,tapers)
 %
 %    If F_STAR is specified, output is [mag, phase, mag0, mag1, ph0, ph1],
 %    that is, FF is not returned.
-%
-%    This version of the code works with pre-stored DPSS results so can be
-%    used on Matlab installations without the Signal Processing toolbox.
 
 t=t(:);
 [T N]=size(x);
@@ -100,7 +97,7 @@ K=floor(2*nw-1);
 %fprintf(1,'coh_mtm0: dt=%g T=%g df=%g nw=%g K=%i\n',...
 %    mean(diff(t)),t(end)-t(1)+mean(diff(t)),f_res,nw,K);
 
-tapers=dpss0(N,nw,K);
+tapers=dpss(N,nw,K);
 
 tapers=reshape(tapers,[N 1 K]);
 

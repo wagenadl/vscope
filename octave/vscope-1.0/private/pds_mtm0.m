@@ -15,9 +15,6 @@ function [f,Pxx,Pxxs] = pds_mtm0(t,x,f_res)
 %
 %    Note that the nature of the beast is that the output Pxx has a 
 %    full width of 2*FRES even if the signal XX is perfectly sinusoidal.
-%
-%    This version of the code works with pre-stored DPSS results so can be
-%    used on Matlab installations without the Signal Processing toolbox.
 
 [T N]=size(x);
 if T==1 && N>1
@@ -60,7 +57,7 @@ fs=1/dt;
 nw=N*dt*f_res;
 K=floor(2*nw-1);
 
-tapers = dpss0(N,nw,K);
+tapers = dpss(N,nw,K);
 tapers=reshape(tapers,[N 1 K]);
 
 % zero-pad, taper, and do the FFT
