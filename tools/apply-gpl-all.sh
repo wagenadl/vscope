@@ -9,6 +9,6 @@ done
 
 cd ../octave/vscope-1.0
 for a in *.m */*.m; do
-    ../tools/apply-gpl.pl $a
+    ../../tools/apply-gpl.pl $a
 done
     

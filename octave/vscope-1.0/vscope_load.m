@@ -31,6 +31,21 @@ function dat=vscope_load(ifn,wht,frmno,camno)
 %      zero, but cameras are counted from one. The images are properly 
 %      flipped. That is, the data for camera 1 is upside downed.
 
+% This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
+
+% VScope is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% VScope is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with VScope.  If not, see <http://www.gnu.org/licenses/>.
+
 if iscell(ifn)
   ifn = sprintf('%s/%03i.xml',ifn{1}, ifn{2});
 elseif ~ischar(ifn)

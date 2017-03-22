@@ -2,13 +2,15 @@
 
 use strict;
 
+my $copyright = "(C) Daniel Wagenaar 2008-1017.";
+
 sub usage {
   print STDERR "Usage: apply-gpl.pl filename\n";
   exit 1;
 }
 
 sub licensetext {
-  return << "EOF";
+  my $text = << "EOF";
 VScope is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +24,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VScope.  If not, see <http://www.gnu.org/licenses/>.
 EOF
+  return $text;
 }
 
 sub badfiletype {
@@ -34,11 +37,21 @@ sub apply_c {
   my $fn = shift;
   open IN, "<$fn~" or die "Cannot open input $fn~\n";
   open OUT, ">$fn" or die "Cannot open output $fn\n";
-  print OUT "// $fn - This file is part of VScope\n";
-  print OUT "\n/* ";
-  my @lines = split(/\n/, $licensetext);
-  print OUT join(@lines, "\n   ");
-  print OUT "\n*/\n\n";
+  print OUT "// $fn - This file is part of VScope.\n";
+  print OUT "// $copyright";
+  print OUT "\n";
+  my $pfx = "/* ";
+  my @lines = split(/\n/, licensetext());
+  for (@lines) {
+    chomp;
+    if (/^\s*$/) {
+      print OUT "\n";
+    } else {
+      print OUT "$pfx$_\n";
+      $pfx = "   ";
+    }
+  }
+  print OUT "*/\n\n";
   while (<IN>) {
     print OUT $_;
   }
@@ -50,22 +63,28 @@ sub apply_matlab {
   my $fn = shift;
   open IN, "<$fn~" or die "Cannot open input $fn~\n";
   open OUT, ">$fn" or die "Cannot open output $fn\n";
-  my @lines = split(/\n/, $licensetext);
+  my @lines = split(/\n/, licensetext());
   my $carry;
+  my $incomment = 0;
   while (<IN>) {
     if (/^\s*\%/) {
-      print OUT $_;
-    } else {
+      $incomment = 1;
+    } elsif ($incomment) {
       $carry = $_;
       last;
     }
+    print OUT $_;
   }
   print OUT "\n";
-  print OUT "% This file is part of VScope\n\n";
+  print OUT "% This file is part of VScope. $copyright\n\n";
   for (@lines) {
-    print OUT "% $_";
+    if (/^\s*$/) {
+      print OUT "%\n";
+    } else {
+      print OUT "% $_\n";
+    }
   }
-  print OUT $carry;
+  print OUT $carry if defined $carry;
   while (<IN>) {
     print OUT $_;
   }
@@ -79,7 +98,7 @@ sub apply_matlab {
 my $fn = shift @ARGV or usage();
 usage() if @ARGV;
 
-system("grep -q 'This file is part of VScope' $fn") and exit 0;
+system("grep -q 'This file is part of VScope' $fn") or exit 0;
 
 badfiletype($fn) unless $fn =~ /\.(cpp|h|m)$/;
 
