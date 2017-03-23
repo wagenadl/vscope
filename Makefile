@@ -72,11 +72,7 @@ DOC:;	mkdir -p build-doc
 	cp doc/Makefile build-doc
 	+make -C build-doc
 
-MTPSD:	build-mtpsd/bin/mtpsd.oct build-mtpsd/bin/dpss.oct \
-	build-mtpsd/bin/mkdpss
-
-build-mtpsd/bin/mtpsd.oct build-mtpsd/bin/dpss.oct build-mtpsd/bin/mkdpss:;
-	mkdir -p build-mtpsd
+MTPSD:; mkdir -p build-mtpsd
 	cp tools/mtpsd/Makefile build-mtpsd/
 	+make SRC=../tools/mtpsd -C build-mtpsd oct bin/mkdpss
 
