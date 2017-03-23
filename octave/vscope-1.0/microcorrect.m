@@ -1,4 +1,4 @@
-function [vsd, dd, ee, ff] = microcorrect(vsd, msk, opts)
+function [vsd, dd, ee, ff] = microcorrect(vsd, msk, opts, varargin)
 % MICROCORRECT - One step microcorrection
 %    out = MICROCORRECT(vsd) performs one iteration of microshifting,
 %    scaling, and perspective correction.
@@ -14,6 +14,12 @@ function [vsd, dd, ee, ff] = microcorrect(vsd, msk, opts)
 %      X = x-perspective
 %      Y = y-perspective
 %    Default is all steps.
+%    MICROCORRECT(vsd, msk, opts, key, value, ...) specifies additional
+%    parameters:
+%      sx: max delta for X (1 pix)
+%      sy: max delta for Y (.25 pix)
+%      ss: max delta for scale (.25 pix/img)
+%
 %    See also MICROCORRECTROIS.
 %
 %    Example:
@@ -33,15 +39,21 @@ elseif nargin==2
   end
 elseif nargin==3
   ;
-else
+elseif nargin==0
   error('microcorrect needs one to three arguments');
 end    
 
+kv = getopt('sx=1 sy=.25 ss=.25 t0=[]', varargin);
+
 [Y X T] = size(vsd);
-T0 = ceil(T/2);
-SX = 1; % * max(1, round(X/128));
-SY = 0.25; % * max(1, round(Y/128));
-SS = 0.25;
+if isempty(kv.t0)
+  T0 = ceil(T/2);
+else
+  T0 = kv.t0;
+end
+SX = kv.sx;%1; % * max(1, round(X/128));
+SY = kv.sy;%0.25; % * max(1, round(Y/128));
+SS = kv.ss;%0.25;
 
 ref = double(vsd(:,:,T0));
 if isempty(msk)
