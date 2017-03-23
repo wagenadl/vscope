@@ -62,7 +62,7 @@ void PathBar::resizeEvent(class QResizeEvent *e) {
 }
 
 void PathBar::setPath(QString path) {
-  QStringList elts = path.split("/",QString::SkipEmptyParts);
+  QStringList elts = path.split("/", QString::SkipEmptyParts);
   elts.push_front("/");
   int N0 = elements.size();
   int N = elts.size();
