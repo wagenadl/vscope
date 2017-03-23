@@ -1,3 +1,10 @@
+vscope 1.0.0
+
+  Now builds correctly under Linux and Windows. No known release-stopping
+  bugs.
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Thu, 23 Mar 2017 15:07:14 -0700
+
 vscope 1.0.0~rc4
 
   Major bugfixes to Windows version:
