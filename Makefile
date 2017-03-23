@@ -72,12 +72,13 @@ DOC:;	mkdir -p build-doc
 	cp doc/Makefile build-doc
 	+make -C build-doc
 
-MTPSD:	build-mtpsd/mtpsd.oct build-mtpsd/dpss.oct
+MTPSD:	build-mtpsd/bin/mtpsd.oct build-mtpsd/bin/dpss.oct \
+	build-mtpsd/bin/mkdpss
 
-build-mtpsd/mtpsd.oct build-mtpsd/dpss.oct:;
+build-mtpsd/bin/mtpsd.oct build-mtpsd/bin/dpss.oct build-mtpsd/bin/mkdpss:;
 	mkdir -p build-mtpsd
 	cp tools/mtpsd/Makefile build-mtpsd/
-	+make SRC=../tools/mtpsd -C build-mtpsd oct
+	+make SRC=../tools/mtpsd -C build-mtpsd oct bin/mkdpss
 
 install: release DOC MTPSD
 	install -d $(INSTALLPATH)/bin
@@ -96,5 +97,8 @@ install: release DOC MTPSD
 	install -d $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
 	install -m644 build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
 	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
+	install build-mtpsd/bin/mkdpss $(INSTALLPATH)/bin/mkdpss
 
 FORCE:
+
+zip:; ( cd octave; git archive -o /tmp/octave-vscope-`git describe`.zip HEAD vscope-1.0 ) && echo "Archive created in /tmp/octave-vscope-`git describe`.zip"

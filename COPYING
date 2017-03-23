@@ -40,3 +40,7 @@ and are not covered by this license. These are:
 
 * The files in tools/mtpsd are (C) Antonio Sanchez, and distributed under
   the terms of the GNU General Public License version 3.
+
+* Early work by Adam Taylor <adamlyletaylor@gmail.com> on the coherence
+  analysis code (octave/vscope-1.0/vscope_cohere.m and friends; math/cohest.cpp
+  and friends) is gratefully acknowledged.

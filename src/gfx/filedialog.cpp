@@ -1,3 +1,19 @@
+// gfx/filedialog.cpp - This file is part of VScope.
+// (C) Daniel Wagenaar 2008-1017.
+/* VScope is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   VScope is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with VScope.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 // filedialog.cpp
 
 #include "filedialog.h"
@@ -132,12 +148,17 @@ void FileDialog::requireConfirm(bool flg) {
 }
 
 void FileDialog::goDir(QString path0) {
+  QRegExp dosdr("/[A-Z]:/");
+  if (dosdr.indexIn(path0)==0) {
+    dbg("dos path detected starting with /");
+    path0 = path0.mid(1);
+  }
   QDir dir(path0);
   path = dir.absolutePath();
   pathbar->setAsPath(path);
   dirs->populateDirs(dir);
   files->populateFiles(dir,extn,true);
-  //  dbg("path = %s",qPrintable(path));
+  dbg("path = %s",qPrintable(path));
   relayout();
   emit changedDir(path);
 }

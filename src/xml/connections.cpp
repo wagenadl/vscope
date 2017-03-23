@@ -1,3 +1,19 @@
+// xml/connections.cpp - This file is part of VScope.
+// (C) Daniel Wagenaar 2008-1017.
+/* VScope is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   VScope is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with VScope.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 // connections.cpp
 
 #include "connections.h"
@@ -15,6 +31,7 @@ namespace Connections {
   QMap<QString,DigiChannel *> digimap;
   QMap<QString,CamCon *> cammap;
   QStringList camorder;
+  QString devid, devserno, devtype;
 
   AIChannel::AIChannel(QString id): id(id) {
     line = -1;
@@ -122,6 +139,21 @@ namespace Connections {
     writeAOChannels(doc);
     writeDIOChannels(doc);
     writeCameras(doc);
+  }
+
+  void readDAQDevice(QDomElement doc) {
+    devid = "";
+    devserno = "";
+    devtype = "";
+    for (QDomElement e=doc.firstChildElement("device");
+         !e.isNull(); e=e.nextSiblingElement("device")) {
+      if (e.hasAttribute("id"))
+        devid = e.attribute("id");
+      if (e.hasAttribute("serno"))
+        devserno = e.attribute("serno");
+      if (e.hasAttribute("type"))
+        devtype = e.attribute("type");
+    }
   }
   
   void readAIChannels(QDomElement doc) {
@@ -287,6 +319,7 @@ namespace Connections {
     if (doc.isNull())
       throw Exception("Connections","No <connections> element","read");
 
+    readDAQDevice(doc);
     readAIChannels(doc);
     readAOChannels(doc);
     readDIChannels(doc);
@@ -474,4 +507,15 @@ namespace Connections {
 	l.append(ao->id);
     return l;
   }
+
+  QString deviceID() {
+    return devid;
+  }
+  QString deviceSerNo() {
+    return devserno;
+  }
+  QString deviceType() {
+    return devtype;
+  }
+  
 }
