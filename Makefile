@@ -78,7 +78,7 @@ MTPSD:	build-mtpsd/bin/mtpsd.oct build-mtpsd/bin/dpss.oct \
 build-mtpsd/bin/mtpsd.oct build-mtpsd/bin/dpss.oct build-mtpsd/bin/mkdpss:;
 	mkdir -p build-mtpsd
 	cp tools/mtpsd/Makefile build-mtpsd/
-	+make SRC=../tools/mtpsd -C build-mtpsd oct bin/mkdpss
+	make SRC=../tools/mtpsd -C build-mtpsd oct bin/mkdpss
 
 install: release DOC MTPSD
 	install -d $(INSTALLPATH)/bin
