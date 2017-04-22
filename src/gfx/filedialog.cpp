@@ -148,12 +148,17 @@ void FileDialog::requireConfirm(bool flg) {
 }
 
 void FileDialog::goDir(QString path0) {
+  QRegExp dosdr("/[A-Z]:/");
+  if (dosdr.indexIn(path0)==0) {
+    dbg("dos path detected starting with /");
+    path0 = path0.mid(1);
+  }
   QDir dir(path0);
   path = dir.absolutePath();
   pathbar->setAsPath(path);
   dirs->populateDirs(dir);
   files->populateFiles(dir,extn,true);
-  //  dbg("path = %s",qPrintable(path));
+  dbg("path = %s",qPrintable(path));
   relayout();
   emit changedDir(path);
 }

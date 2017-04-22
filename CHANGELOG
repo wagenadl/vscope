@@ -1,3 +1,18 @@
+vscope 1.0.0
+
+  Now builds correctly under Linux and Windows. No known release-stopping
+  bugs.
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Thu, 23 Mar 2017 15:07:14 -0700
+
+vscope 1.0.0~rc4
+
+  Major bugfixes to Windows version:
+  - mkdpss is now included with distribution, so coherence works
+  - navigation in "load old data" now works correctly with DOS paths
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Thu, 23 Mar 2017 14:41:04 -0700
+
 vscope 1.0.0~rc1
 
   Preparing VScope for first public release.
