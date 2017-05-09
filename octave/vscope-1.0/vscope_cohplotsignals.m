@@ -16,6 +16,9 @@ function vscope_cohplotsignals(coh, varargin)
 %               2: phase 0 on top, phase 180 on bottom
 %               3: phase 90 on top, phase 270 on bottom
 %               4: phase 0 on top, phase 359 on bottom
+%               Alternatively, order may be a vector of ROI numbers to plot
+%       labels - An optional vector of alternative labels. Either same length
+%                as number of cells, or as length of the "order" vector.
 %       nmax - maximum number of signals to plot (default: all)
 %       tbar - 0: plot x-axis for time
 %              1: plot scale bar for time
