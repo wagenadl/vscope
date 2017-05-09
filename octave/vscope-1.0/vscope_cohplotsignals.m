@@ -1,4 +1,4 @@
-function vscope_cohplotsignals(coh, varargin)
+function str = vscope_cohplotsignals(coh, varargin)
 % VSCOPE_COHPLOTSIGNALS - Proof sheet of coherent signals
 %    VSCOPE_COHPLOTSIGNALS(coh) plots the results of VSCOPE_COHANALYSIS.
 %    VSCOPE_COHPLOTSIGNALS(coh, key, value, ...) specifies additional 
@@ -25,6 +25,12 @@ function vscope_cohplotsignals(coh, varargin)
 %              nan: plot nothing for time
 %       sbar - 0: label dF scale next to x-axis
 %              1: label dF scale next to scale bar
+%       scale - size of scale bar (default: automatic)
+%    str = VSCOPE_COHPLOTSIGNALS(...) returns some potentially useful
+%    information:
+%       yy - y-coordinates of baseline of each of the signals plotted
+%       x0, x1 - left and right edges of the signals
+%       y0, y1 - bottom and top edges
 
 % This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
 
@@ -42,7 +48,8 @@ function vscope_cohplotsignals(coh, varargin)
 % along with VScope.  If not, see <http://www.gnu.org/licenses/>.
 
 kv = getopt([ 'qpt=''/tmp/vscope_coh_signals'' width=5 height=5 ' ...
-      'threshold=[] color=0 uniform=0 order=0 nmax=[] tbar=0 sbar=1' ], ...
+      'threshold=[] color=0 uniform=0 order=0 nmax=[] tbar=0 sbar=1 ' ...
+      'labels=[] scale=[]' ], ...
     varargin);
 
 if isempty(kv.threshold)
@@ -58,47 +65,50 @@ if isempty(kv.height)
   kv.height = kv.width * (3 + length(idx))/30;
 end
 
-if ~isempty(kv.qpt)
-  qfigure(kv.qpt, kv.width, kv.height);
-end
-
-if kv.order==0
-  % ROI ID order: lowest ID on top
-  sortkey = -[1:length(coh.mag)];
-elseif kv.order==1
-  sortkey = coh.mag;
-elseif kv.order==2
-  sortkey = coh.mag .* cos(coh.phase);
-elseif kv.order==3
-  sortkey = coh.mag .* sin(coh.phase);
-elseif kv.order==4
-  sortkey = -mod(-coh.phase, 2*pi);
-else
-  error('Invalid value for plotting order');
-end
-
 if isempty(kv.nmax)
   kv.nmax = inf;
 end
 
-[dd, ord] = sort(sortkey(idx));
-idx = idx(ord);
-N = length(idx);
-
-if N > kv.nmax
-  idx = idx(N-kv.nmax+1:N);
+if length(kv.order)>1
+  idx = kv.order(end:-1:1);
   N = length(idx);
-elseif N==0
-  warning('vscope_cohplotsignals: nothing to plot');
-  return
+  if ~isempty(kv.labels) && length(kv.labels)==N
+    kv.labels = kv.labels(end:-1:1);
+  end
+else
+  if kv.order==0
+    % ROI ID order: lowest ID on top
+    sortkey = -[1:length(coh.mag)];
+  elseif kv.order==1
+    sortkey = coh.mag;
+  elseif kv.order==2
+    sortkey = coh.mag .* cos(coh.phase);
+  elseif kv.order==3
+    sortkey = coh.mag .* sin(coh.phase);
+  elseif kv.order==4
+    sortkey = -mod(-coh.phase, 2*pi);
+  else
+    error('Invalid value for plotting order');
+  end
+
+  [dd, ord] = sort(sortkey(idx));
+  idx = idx(ord);
+  N = length(idx);
+
+  if N > kv.nmax
+    idx = idx(N-kv.nmax+1:N);
+    N = length(idx);
+  elseif N==0
+    warning('vscope_cohplotsignals: nothing to plot');
+    return
+  end
 end
 
 sig = bsxfun(@rdivide, coh.extra.sig0(2:end,:), mean(coh.extra.sig0)) - 1;
-
 if kv.uniform
   sd = std(sig(tidx(2:end), idx));
-  sd = sort(sd);
-  scl = repmat(sd(ceil(.75*N)) * 5, [N 1]);
+  sd = sort(nonan(sd));
+  scl = repmat(sd(ceil(.75*length(sd))) * 5, [N 1]);
 else
   scl = 5*std(sig(tidx(2:end), idx));  
   if isempty(scl)
@@ -108,16 +118,27 @@ else
   end
   scl(scl<s0) = s0;
 end
-if isempty(scl)
-  dy = 1;
+if isempty(kv.scale)
+  if isempty(scl)
+    dy = 1;
+  else
+    dy = sensiblestep(.95*min(scl));
+  end
 else
-  dy = sensiblestep(.95*min(scl));
+  dy = kv.scale/2e2;
+end
+
+if ~isempty(kv.qpt)
+  qfigure(kv.qpt, kv.width, kv.height);
 end
 
 t1 = coh.extra.tt0(end);
 qpen 1 roundcap
+str.y0 = nan;
+str.y1 = nan;
 for n=1:N
   if all(isnan(sig(:,idx(n))))
+    str.yy(n) = nan;
     continue;
   end
   if kv.color
@@ -127,11 +148,22 @@ for n=1:N
   else
     qpen b
   end
-  qplot(coh.extra.tt0(2:end), ...
-      (sig(:,idx(n))-mean(sig(tidx(2:end),idx(n))))/scl(n) + n);
-  qat(coh.extra.tt0(1), n);
+  x_ = coh.extra.tt0(2:end);
+  y_ = (sig(:,idx(n))-mean(sig(tidx(2:end),idx(n))))/scl(n) + n; 
+
+  qplot(x_, y_);
+      
+  qat(x_(1), n);
   qalign right middle
-  qtext(-5, 0, vscope_roiid(idx(n)));
+  if isempty(kv.labels)
+    lbl = vscope_roiid(idx(n));
+  elseif length(kv.labels)==N
+    lbl = kv.labels{n};
+  else
+    lbl = kv.labels{idx(n)};
+  end
+  qtext(-5, 0, lbl);
+  
   if ~kv.uniform
     qpen 2 flatcap
     qgline({'absdata', t1, n+dy/scl(n)/2, 'relpaper', 10, 0}, ...
@@ -143,18 +175,26 @@ for n=1:N
     end
     qpen 1 roundcap
   end
+
+  str.yy(n) = n;
+  str.x0 = x_(1);
+  str.x1 = x_(end);
+  str.y0 = min(str.y0, min(y_));
+  str.y1 = max(str.y1, max(y_));
 end
+
+axy = min(str.yy) - .75;
 
 if kv.tbar==0
   dx = sensiblestep((t1-coh.extra.tt0(1)) / 3);
   rng = [ceil(coh.extra.tt0(1)/dx)*dx : dx : floor(t1/dx)*dx];
   qpen k 0
-  qxaxis(0.25, [coh.extra.tt0(1) t1], rng, 'Time (s)');
+  qxaxis(axy, [coh.extra.tt0(1) t1], rng, 'Time (s)');
 elseif kv.tbar==1
   dx = sensiblestep((t1-coh.extra.tt0(1)) / 5);
   qpen k 2 flatcap
-  qplot([t1-dx t1], [0 0]+.25);
-  qat(t1-dx/2, 0+.25);
+  qplot([t1-dx t1], [axy axy]);
+  qat(t1-dx/2, axy);
   qalign center top 
   qtext(0, 5, sprintf('%g s', dx));
 end
@@ -166,6 +206,7 @@ if kv.sbar==0
 end
 
 if kv.uniform
+  N = max(str.yy);
   dy = sensiblestepup(dy*1.2);
   qpen k 2 flatcap
   qgline({'absdata', t1, N+dy/scl(1)/4, 'relpaper', 10, 0}, ...

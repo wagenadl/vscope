@@ -1,18 +1,20 @@
 function vscope_cohplotimage(x, coh, varargin)
 % VSCOPE_COHPLOTIMAGE - Color ROIs by coherence on top of CCD image
-%    VSCOPE_COHPLOTIMAGE(x, coh) plots the results of VSCOPE_COHANALYSIS on
+%    VSCOPE_COHPLOTIMAGE(coh) plots the results of VSCOPE_COHANALYSIS on
 %    top of an image.
-%    X must be from VSCOPE_LOAD.
-%    VSCOPE_COHPLOTIMAGE(x, coh, key, value, ...) specifies additional 
+%    VSCOPE_COHPLOTIMAGE(coh, key, value, ...) specifies additional 
 %    options:
 %       qpt - filename for QPlot figure (empty for current)
 %       width - width of QPlot figure (inch)
 %       height - height of QPlot figure
 %       alpha - transparency (1=solid, 0=invisible) of ROIs
 %       ns - mark nonsignificant cells (1=dots, 2=id, 0=none, 3=ROI)
-%    VSCOPE_COHPLOTIMAGE(coh, key, value, ...) also works since 8/11/15, because
-%    the only thing we actually needed from the X structure, the ROIS field,
-%    is now also stored in the COH structure.
+%       index - label only given cells (regardless of significance)
+%       labels - labels to apply to those cells
+%    For older files, VSCOPE_COHPLOTIMAGE(x, coh, key, value, ...) also
+%    still works. (Before 8/11/15, the ROIS field was not copied into the
+%    COH structure.)
+%    X must be from VSCOPE_LOAD.
 
 % This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
 
@@ -38,7 +40,9 @@ if isfield(x, 'extra')
   return
 end
 
-kv = getopt('qpt=''/tmp/vscope_coh_image'' width=5 height=5 alpha=1 ns=0', ...
+kv = getopt([ 'qpt=''/tmp/vscope_coh_image'' ' ...
+      'width=5 height=5 alpha=1 ns=0 ' ...
+      'index=0 labels=[]' ], ...
     varargin);
 if ~isempty(kv.qpt)
   qfigure(kv.qpt, kv.width, kv.height);
@@ -94,10 +98,33 @@ if kv.ns==2
 end
 qbrush none
 qpen k
-for k = idx
-  if ~isempty(xx{k})
+
+if any(kv.index)>0
+  K = length(kv.index);
+  use = [];
+  for k=1:K
+    if any(idx==kv.index(k))
+      use(end+1) = k;
+    end
+  end
+  idx = kv.index(use);
+  if length(kv.labels)==length(kv.index)
+    kv.labels = kv.labels(use);
+  end
+end
+
+for k_ = 1:length(idx)
+  k = idx(k_);
+  if ~isempty(xx{k}) && ~isnan(coh.cc(k,1))
     qat(mean(xx{k}), -mean(yy{k}));
     qalign center middle
-    qtext(0, 0, vscope_roiid(k));
+    if isnumeric(kv.labels)
+      lbl = vscope_roiid(k);
+    elseif length(kv.labels)==length(idx)
+      lbl = kv.labels{k_};
+    else
+      lbl = kv.labels{k};
+    end
+    qtext(0, 0, lbl);
   end
 end
