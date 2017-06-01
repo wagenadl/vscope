@@ -401,6 +401,7 @@ ana.info.chanid = cell(nchans,1);
 ana.info.typebytes = ntypebyt;
 ana.info.chunk = struct('istart',1,'iend',inf,'scale',ones(nchans,1));
 ichunk = 1;
+
 while 1
   str = fgetl(ifd);
   if ~ischar(str)
@@ -418,7 +419,7 @@ while 1
       ana.info.channo(idx+1) = chn;
       ana.info.chanid{idx+1} = id;
     end
-    [scl,uni] = vsdl_getscale(vsdl_getval(kv, 'scale'));
+    [scl, uni] = vsdl_getscale(vsdl_getval(kv, 'scale'));
     ana.info.units{idx+1} = uni;
     ana.info.chunk(ichunk).scale(idx+1) = scl;
     of0 = vsdl_getval(kv, 'offset');
@@ -443,6 +444,15 @@ while 1
     ana.info.chunk(ichunk).iend = inf;
     ana.info.chunk(ichunk).scale = ones(nchans,1);
     ana.info.chunk(ichunk).offset = zeros(nchans,1);
+  end
+end
+
+for ich=1:ichunk
+  for ch=1:nchans
+    if isnan(ana.info.chunk(ichunk).scale(ch))
+      warning(sprintf('VSCOPE_LOAD: Assuming scale is 1 mV for channel %i\n', ch));
+      ana.info.chunk(ichunk).scale(ch) = 1;
+    end
   end
 end
 
@@ -751,9 +761,9 @@ else
   warning(sprintf('VSCOPE_LOAD: Scale is in odd units: %s',uni));
 end
 if scl==0
-  scl = 1;
+  scl = nan;
   uni = 'mV';
-  warning(sprintf('VSCOPE_LOAD: Assuming scale=1 mV.'));
+  % warning(sprintf('VSCOPE_LOAD: Assuming scale=1 mV.'));
 end
 
 function [off,uni] = vsdl_getoffset(off_u)
