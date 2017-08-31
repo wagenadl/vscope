@@ -108,6 +108,7 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   bool contEphys = ptree->find("acquisition/contEphys").toBool();
 
   QSet<QString> aic = ptree->find("acqEphys/aiChannels").toStrings();
+  qDebug() << aic;
   QMap<AnalogIn::Channel, QString> chmap;
   foreach (QString s, aic) 
     chmap[AnalogIn::Channel(Connections::findAI(s).line)] = s;

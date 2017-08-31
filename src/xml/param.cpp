@@ -233,7 +233,7 @@ void Param::set(QString s) {
     }
   } else if (valueType=="set") {
     if (s.left(1)=="+") {
-      QSet<QString> vals = QSet<QString>::fromList(value.toString().split(" "));
+      QSet<QString> vals = toStrings();
       vals.insert(s.mid(1));
       v = QVariant(QStringList(vals.toList()).join(" "));
     } else if (s.left(1)=="-") {
@@ -379,8 +379,11 @@ bool Param::toBool() const {
 QSet<QString> Param::toStrings() const {
   if (valueType!="set")
     throw Exception("Param","Only sets can be represented as QSet<QString>");
-  QStringList ss = value.toString().split(" ");
-  return QSet<QString>::fromList(ss);
+  QString s = value.toString();
+  if (s.isEmpty())
+    return QSet<QString>();
+  else
+    return QSet<QString>::fromList(s.split(" "));
 }
 
 QString Param::toString() const {

@@ -145,6 +145,9 @@ void gt_slots::pgopen(QString p, QWidget *w) {
     } else if (p=="acquisition") {
       Globals::gui->findButton("acquisition/singleframe")
         .setEnabled(!Connections::allCams().isEmpty());
+      Globals::gui->findButton("acquisition/singletrial")
+        .setEnabled(!Globals::ptree->find("acqEphys/aiChannels")
+                    .toStrings().isEmpty());
       Globals::walltime->show();
       Globals::exptelapsed->show();
       Globals::trialelapsed->show();
