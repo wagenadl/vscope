@@ -6,7 +6,9 @@
   <!-- These are default values. Modify them for your rig. -->
 
   <device id="" serno="" type=""/>
+  <!-- Leaving ID blank means VScope will find the first NI card -->
 
+  <!-- Some analog inputs for intracellular ephys -->
   <aichannel id="ME1_10Vm" line="0"
      ground="RSE" range="5V" unit="mV" scale="100"/>
      <!-- That is, 1 V at ADC corresponds to 100 mV in real world -->
@@ -16,44 +18,33 @@
      ground="RSE" range="5V" unit="nA" scale="10"/>      
   <aichannel id="ME2_I" line="3"
      ground="RSE" range="5V" unit="nA" scale="10"/>    
-  <aichannel id="Stim0Mon" line="4"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="Stim1Mon" line="5"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="Stim2Mon" line="6"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="Stim3Mon" line="7"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="60HzRef" 
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVA1" line="16"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVA2" line="17"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVA3" line="18"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVA4" line="19"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVB1" line="20"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVB2" line="21"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVB3" line="22"
-     ground="RSE" range="5V" unit="V" scale="1"/> 
-  <aichannel id="ExtVB4" line="23"
-     ground="RSE" range="5V" unit="V" scale="1"/>
 
-  <aochannel id="AO0" line="0" isstim="true" unit="nA" scale="1"/>
+  <!-- Some analog inputs for extracellular ephys -->
+  <aichannel id="ExtVA1" line="4"
+     ground="RSE" range="5V" unit="V" scale="1"/> 
+  <aichannel id="ExtVA2" line="5"
+     ground="RSE" range="5V" unit="V" scale="1"/> 
+  <aichannel id="ExtVA3" line="6"
+     ground="RSE" range="5V" unit="V" scale="1"/> 
+  <aichannel id="ExtVA4" line="7"
+     ground="RSE" range="5V" unit="V" scale="1"/> 
+
+  <!-- Analog output channels -->
+  <aochannel id="AO0" line="0" isstim="true"/>
   <aochannel id="AO1" line="1" isstim="true"/>
-  <aochannel id="VidX" line="2"/>
-  <aochannel id="VidY" line="3"/>
-  <!-- Output units are ignored in the current version. -->
+
+  <!-- Generic digital output channels -->
+  <dochannel id="DO0" line="0" isstim="true"/>
+  <dochannel id="DO1" line="1" isstim="true"/>
+  <dochannel id="DO2" line="2" isstim="true"/>
   
+  <!-- Cameras -->
   <camera id="Cc" serno="A08F101002" role="donor"
      xpix="512" ypix="512" lamp="LED" shutter=""
      focusexpose="200 ms">
     <transform ax="1" ay="-1" bx="0" by="512"/>
   </camera>
+
   <camera id="Ox" serno="A08B101016" role="acceptor"
      xpix="512" ypix="512" lamp="LED" shutter=""
      focusexpose="3 ms" partnerid="Cc">
@@ -68,27 +59,16 @@
        - Trigger:* - output to trigger camera "*"
        - Frame:*   - input for frame time marker from camera "*"
 
-       In particular Lamp:Video is for video illumination.
-       -->
+       Lamp and Shutter are only required if used in a camera
+       definition; Trigger and Frame are required for every
+       camera.
+  -->
   
-  <dichannel id="Frame:Ox" line="28"/>
-  <dichannel id="Frame:Cc" line="29"/>
-  <dichannel id="TrigOxMon" line="26"/>
-  <dichannel id="TrigCcMon" line="27"/>
-  <dichannel id="DO0Mon" line="8"/>
-  <dichannel id="DO1Mon" line="9"/>
-  <dichannel id="DO2Mon" line="10"/>
-  <dichannel id="DO3Mon" line="11"/>
-  <dichannel id="ExcShtrMon" line="24"/>
-  <dichannel id="VideoLightMon" line="17"/>
+  <dochannel id="Lamp:LED" line="3"/>
+  <dochannel id="Trigger:Ox" line="4"/>
+  <dochannel id="Trigger:Cc" line="5"/>
+  <dichannel id="Frame:Ox" line="6"/>
+  <dichannel id="Frame:Cc" line="7"/>
 
-  <dochannel id="Lamp:LED" line="7"/>
-  <dochannel id="Trigger:Ox" line="30"/>
-  <dochannel id="Trigger:Cc" line="31"/>
-  <dochannel id="DO0" line="0" isstim="true"/>
-  <dochannel id="DO1" line="1" isstim="true"/>
-  <dochannel id="DO2" line="2" isstim="true"/>
-  <dochannel id="DO3" line="3" isstim="true"/>
-  <dochannel id="Lamp:Video" line="16"/>
 </connections>
 </vscope>

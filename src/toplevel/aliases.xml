@@ -10,11 +10,6 @@
   <alias id="ME2_Vm" label="V_2"/>
   <alias id="ME1_I" label="I_m"/>
   <alias id="ME2_I" label="I_2"/>
-  <alias id="Stim0Mon" label="AO_0 m"/>
-  <alias id="Stim1Mon" label="AO_1 m"/>
-  <alias id="Stim2Mon" label="X_vid m"/>
-  <alias id="Stim3Mon" label="Y_vid m"/>
-  <alias id="60HzRef" label="line"/>
   <alias id="ExtVA1" label="V_A1"/>
   <alias id="ExtVA2" label="V_A2"/>
   <alias id="ExtVA3" label="V_A3"/>
@@ -27,16 +22,6 @@
   <!-- Digital inputs -->
   <alias id="Frame:Ox" label="Frm_Ox"/>
   <alias id="Frame:Cc" label="Frm_Cc"/>
-  <alias id="TrigOxMon" label="TrgM_Ox"/>
-  <alias id="TrigCcMon" label="TrgM_Cc"/>
-  <alias id="DO0Mon" label="DM_0" />
-  <alias id="DO1Mon" label="DM_1" />
-  <alias id="DO2Mon" label="DM_2" />
-  <alias id="DO3Mon" label="DM_3" />
-  <alias id="ExcShtrMon" label="Shtr_exc" />
-  <alias id="VideoResp" label="Resp_vid" />
-  <alias id="VideoFrame" label="Frm_vid" />
-  <alias id="VideoLightMon" label="Light_vid" />
 
   <!-- Digital outputs -->
   <alias id="Lamp:LED" label="LED"/>
@@ -48,7 +33,6 @@
   <alias id="DO1" label="DO_1"/>
   <alias id="DO2" label="DO_2"/>
   <alias id="DO3" label="DO_3"/>
-  <alias id="Lamp:Video" label="Light_vid"/>
 
   <alias id="Train" label="Stim. Train"/>
   <alias id="Pulses" label="Stim. Pulses"/>
