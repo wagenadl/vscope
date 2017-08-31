@@ -112,6 +112,9 @@ void gt_slots::pgopen(QString p, QWidget *w) {
       checkcam(w);
     else if (p=="maintenance/checkMEA")
       checkmea(w);
+    else if (p=="maintenance")
+      Globals::gui->findButton("maintenance/focus")
+        .setEnabled(!Connections::allCams().isEmpty());
     else if (p=="maintenance/focus") {
       hideTop();
       if (Globals::focus) {
