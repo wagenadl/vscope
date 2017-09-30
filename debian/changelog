@@ -1,4 +1,4 @@
-vscope (1.0.2-1) yakkety; urgency=medium
+vscope (1.0.2-1) zesty; urgency=medium
 
   Various updates and bugfixes
 
@@ -10,6 +10,21 @@ vscope (1.0.2-1) yakkety; urgency=medium
       vscope_stacktrial creates a synthetic snapshot trial from a focus stack of real snapshot trials
 
  -- Daniel A. Wagenaar <daw@caltech.edu>  Fri, 29 Sep 2017 21:40:12 -0700
+
+vscope (1.0.0-1) yakkety; urgency=medium
+
+  Now builds correctly under Linux and Windows. No known release-stopping
+  bugs.
+
+ -- Daniel A. Wagenaar <daw@caltech.edu>  Thu, 23 Mar 2017 15:10:06 -0700
+
+vscope (1.0.0~rc4-1) yakkety; urgency=medium
+
+  Major bugfixes to Windows version:
+  - mkdpss is now included with distribution, so coherence works
+  - navigation in "load old data" now works correctly with DOS paths
+
+ -- Daniel A. Wagenaar <daw@caltech.edu>  Thu, 23 Mar 2017 14:46:06 -0700
 
 vscope (1.0.0~rc1-1) yakkety; urgency=medium
 
