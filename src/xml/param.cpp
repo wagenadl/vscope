@@ -1,3 +1,19 @@
+// xml/param.cpp - This file is part of VScope.
+// (C) Daniel Wagenaar 2008-1017.
+/* VScope is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   VScope is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with VScope.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 // param.cpp
 
 #include <xml/param.h>
@@ -217,7 +233,7 @@ void Param::set(QString s) {
     }
   } else if (valueType=="set") {
     if (s.left(1)=="+") {
-      QSet<QString> vals = QSet<QString>::fromList(value.toString().split(" "));
+      QSet<QString> vals = toStrings();
       vals.insert(s.mid(1));
       v = QVariant(QStringList(vals.toList()).join(" "));
     } else if (s.left(1)=="-") {
@@ -363,8 +379,11 @@ bool Param::toBool() const {
 QSet<QString> Param::toStrings() const {
   if (valueType!="set")
     throw Exception("Param","Only sets can be represented as QSet<QString>");
-  QStringList ss = value.toString().split(" ");
-  return QSet<QString>::fromList(ss);
+  QString s = value.toString();
+  if (s.isEmpty())
+    return QSet<QString>();
+  else
+    return QSet<QString>::fromList(s.split(" "));
 }
 
 QString Param::toString() const {

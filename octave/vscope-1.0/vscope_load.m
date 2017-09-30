@@ -31,6 +31,21 @@ function dat=vscope_load(ifn,wht,frmno,camno)
 %      zero, but cameras are counted from one. The images are properly 
 %      flipped. That is, the data for camera 1 is upside downed.
 
+% This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
+
+% VScope is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% VScope is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with VScope.  If not, see <http://www.gnu.org/licenses/>.
+
 if iscell(ifn)
   ifn = sprintf('%s/%03i.xml',ifn{1}, ifn{2});
 elseif ~ischar(ifn)
@@ -386,6 +401,7 @@ ana.info.chanid = cell(nchans,1);
 ana.info.typebytes = ntypebyt;
 ana.info.chunk = struct('istart',1,'iend',inf,'scale',ones(nchans,1));
 ichunk = 1;
+
 while 1
   str = fgetl(ifd);
   if ~ischar(str)
@@ -403,7 +419,7 @@ while 1
       ana.info.channo(idx+1) = chn;
       ana.info.chanid{idx+1} = id;
     end
-    [scl,uni] = vsdl_getscale(vsdl_getval(kv, 'scale'));
+    [scl, uni] = vsdl_getscale(vsdl_getval(kv, 'scale'));
     ana.info.units{idx+1} = uni;
     ana.info.chunk(ichunk).scale(idx+1) = scl;
     of0 = vsdl_getval(kv, 'offset');
@@ -428,6 +444,15 @@ while 1
     ana.info.chunk(ichunk).iend = inf;
     ana.info.chunk(ichunk).scale = ones(nchans,1);
     ana.info.chunk(ichunk).offset = zeros(nchans,1);
+  end
+end
+
+for ich=1:ichunk
+  for ch=1:nchans
+    if isnan(ana.info.chunk(ichunk).scale(ch))
+      warning(sprintf('VSCOPE_LOAD: Assuming scale is 1 mV for channel %i\n', ch));
+      ana.info.chunk(ichunk).scale(ch) = 1;
+    end
   end
 end
 
@@ -736,9 +761,9 @@ else
   warning(sprintf('VSCOPE_LOAD: Scale is in odd units: %s',uni));
 end
 if scl==0
-  scl = 1;
+  scl = nan;
   uni = 'mV';
-  warning(sprintf('VSCOPE_LOAD: Assuming scale=1 mV.'));
+  % warning(sprintf('VSCOPE_LOAD: Assuming scale=1 mV.'));
 end
 
 function [off,uni] = vsdl_getoffset(off_u)

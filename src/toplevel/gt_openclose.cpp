@@ -1,3 +1,19 @@
+// toplevel/gt_openclose.cpp - This file is part of VScope.
+// (C) Daniel Wagenaar 2008-1017.
+/* VScope is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   VScope is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with VScope.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 // gt_openclose.cpp
 
 #include "gt_slots.h"
@@ -96,6 +112,9 @@ void gt_slots::pgopen(QString p, QWidget *w) {
       checkcam(w);
     else if (p=="maintenance/checkMEA")
       checkmea(w);
+    else if (p=="maintenance")
+      Globals::gui->findButton("maintenance/focus")
+        .setEnabled(!Connections::allCams().isEmpty());
     else if (p=="maintenance/focus") {
       hideTop();
       if (Globals::focus) {
@@ -124,6 +143,11 @@ void gt_slots::pgopen(QString p, QWidget *w) {
     } else if (p=="savedSettings") {
       Globals::savedSettings->show();
     } else if (p=="acquisition") {
+      Globals::gui->findButton("acquisition/singleframe")
+        .setEnabled(!Connections::allCams().isEmpty());
+      Globals::gui->findButton("acquisition/singletrial")
+        .setEnabled(!Globals::ptree->find("acqEphys/aiChannels")
+                    .toStrings().isEmpty());
       Globals::walltime->show();
       Globals::exptelapsed->show();
       Globals::trialelapsed->show();

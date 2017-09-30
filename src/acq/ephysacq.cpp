@@ -1,3 +1,19 @@
+// acq/ephysacq.cpp - This file is part of VScope.
+// (C) Daniel Wagenaar 2008-1017.
+/* VScope is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   VScope is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with VScope.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 // ephysacq.cpp
 
 #include "ephysacq.h"
@@ -92,6 +108,7 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
   bool contEphys = ptree->find("acquisition/contEphys").toBool();
 
   QSet<QString> aic = ptree->find("acqEphys/aiChannels").toStrings();
+  qDebug() << aic;
   QMap<AnalogIn::Channel, QString> chmap;
   foreach (QString s, aic) 
     chmap[AnalogIn::Channel(Connections::findAI(s).line)] = s;
@@ -155,7 +172,12 @@ bool EPhysAcq::prepare(ParamTree const *ptree) {
 
 bool EPhysAcq::createDAQ(ParamTree const *) {
   // perhaps we should use the ptree to figure out what device to use?
-  QString devid = "";
+  QString devid = Connections::deviceID();
+  if (devid=="") {
+    QString confser = Connections::deviceSerNo();
+    QString conftyp = Connections::deviceType();
+    devid = DAQDevice::search(conftyp, confser);
+  }
   if (!DAQDevice::find(devid).isValid())
     return false;
 
