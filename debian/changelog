@@ -1,3 +1,16 @@
+vscope (1.0.2-1) yakkety; urgency=medium
+
+  Various updates and bugfixes
+
+      The set of input channels can now be made empty. But trials cannot be acquired in that situation.
+      Focus now disabled if no cameras defined
+      Single Frame now grayed out if no cameras
+      Simplified default connections file
+      Added "schmitt.m" to octave code so vscope_load can actually work without wagenaarlab code
+      vscope_stacktrial creates a synthetic snapshot trial from a focus stack of real snapshot trials
+
+ -- Daniel A. Wagenaar <daw@caltech.edu>  Fri, 29 Sep 2017 21:40:12 -0700
+
 vscope (1.0.0~rc1-1) yakkety; urgency=medium
 
   Preparing VScope for first public release.
