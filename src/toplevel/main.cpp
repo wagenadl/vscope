@@ -447,7 +447,9 @@ void reportDAQSituation() {
 int realmain(int argc, char **argv) {
   GUIExc::setArgs(argc, argv);
   QApplication app(argc, argv);
+#if QT_VERSION >= 0x050601
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
   Warning::enableGUIWarnings();
   try {
     QObject guard;
