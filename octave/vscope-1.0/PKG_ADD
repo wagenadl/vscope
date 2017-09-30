@@ -17,5 +17,5 @@ else
   bindir = pkginfo{1}.archprefix;
 end
 
-addpath(genpath(pkgdir));
-addpath(genpath(bindir));
+addpath(pkgdir);
+addpath(bindir);

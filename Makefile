@@ -76,25 +76,27 @@ MTPSD:; mkdir -p build-mtpsd
 	cp tools/mtpsd/Makefile build-mtpsd/
 	+make SRC=../tools/mtpsd -C build-mtpsd oct bin/mkdpss
 
+OCTAVEVSN=$(shell grep Version octave/vscope-1.0/packinfo/DESCRIPTION|cut -f2 -d' ')
+
 install: release DOC MTPSD
 	install -d $(INSTALLPATH)/bin
 	install build/vscope $(INSTALLPATH)/bin/vscope
-	install -d $(SHAREPATH)/octave/packages/vscope-1.0/private 
-	install -m644 $(wildcard octave/vscope-1.0/*.m) $(SHAREPATH)/octave/packages/vscope-1.0
-	install -m644 octave/vscope-1.0/PKG_ADD $(SHAREPATH)/octave/packages/vscope-1.0
-	install -m644 octave/vscope-1.0/PKG_DEL $(SHAREPATH)/octave/packages/vscope-1.0
-	install -m644 $(wildcard octave/vscope-1.0/private/*.m) $(SHAREPATH)/octave/packages/vscope-1.0/private
-	install -d $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
-	install -m644 octave/vscope-1.0/packinfo/DESCRIPTION $(SHAREPATH)/octave/packages/vscope-1.0/packinfo
+	install -d $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)/private 
+	install -m644 $(wildcard octave/vscope-1.0/*.m) $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)
+	install -m644 octave/vscope-1.0/PKG_ADD $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)
+	install -m644 octave/vscope-1.0/PKG_DEL $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)
+	install -m644 $(wildcard octave/vscope-1.0/private/*.m) $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)/private
+	install -d $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)/packinfo
+	install -m644 octave/vscope-1.0/packinfo/DESCRIPTION $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)/packinfo
 	install -d $(SHAREPATH)/man/man1
 	install -m644 build-doc/vscope.1 $(SHAREPATH)/man/man1/vscope.1
 	install -d $(SHAREPATH)/applications
 	install tools/vscope.desktop $(SHAREPATH)/applications/vscope.desktop
 	install -d $(SHAREPATH)/pixmaps
 	install -m644 tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
-	install -d $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
-	install -m644 build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/packages/vscope-1.0
-	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/packages/vscope-1.0
+	install -d $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/packages/vscope-$(OCTAVEVSN)
+	install -m644 build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/packages/vscope-$(OCTAVEVSN)
+	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/packages/vscope-$(OCTAVEVSN)
 	install build-mtpsd/bin/mkdpss $(INSTALLPATH)/bin/mkdpss
 
 FORCE:
