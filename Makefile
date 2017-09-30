@@ -93,8 +93,8 @@ install: release DOC MTPSD
 	install -d $(SHAREPATH)/pixmaps
 	install -m644 tools/vscope.svg $(SHAREPATH)/pixmaps/vscope.svg
 	install -d $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
-	install -m644 build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
-	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/vscope-1.0
+	install -m644 build-mtpsd/bin/dpss.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/packages/vscope-1.0
+	install -m644 build-mtpsd/bin/mtpsd.oct  $(INSTALLPATH)/lib/$(DEB_HOST_MULTIARCH)/octave/packages/vscope-1.0
 	install build-mtpsd/bin/mkdpss $(INSTALLPATH)/bin/mkdpss
 
 FORCE:
