@@ -1,3 +1,14 @@
+vscope 1.0.3
+
+  Building for ubuntu 18.04
+
+  Trivial change to pbuild.sh
+  copied pbuild.sh from debian
+  Bugfix to makefile for debian/doc
+  HighDpiScaling disabled before 5.6.1
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Wed, 02 May 2018 20:28:40 -0700
+
 vscope 1.0.2
 
   Various updates and bugfixes
