@@ -8,7 +8,7 @@ BASETGZ=/data/dw/pbuilder/$DIST.tgz
 RESULT=../releases
 DSC=`ls $RESULT/*dsc | tail`
 
-mkdir $RESULT/$DIST
+mkdir -p $RESULT/$DIST
 
 echo Working with $DSC
 echo
