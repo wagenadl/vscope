@@ -72,13 +72,11 @@ else
         fn = sprintf('%s/%03i.xml', expt, tri);
         if exist(fn)
           fprintf(1, 'Scanning %i/%i %i/%i: %s\n', c,C,p,P,fn);
-          x = vscope_load(fn,'');% XML only
-          toc
+          x = vscope_load(fn,'');% XML only         
           if isfield(x, 'ccd') && ~isfield(x, 'analog')
             fns{c}{end+1} = fn;
           end
         end
-        toc
       end
     end
   else

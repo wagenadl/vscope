@@ -28,8 +28,8 @@ for f=1:length(tri)
   fprintf(1, 'vscope_imagestack: loading %s\n', fn);
   x = vscope_load(fn);
   if isfield(x, 'ccd') && isfield(x.ccd, 'dat')
-    XYCT = size(x.ccd.dat);
-    if prod(XYCT)>0 && length(XYCT)==3
+    XYCT = [size(x.ccd.dat) 1 1 1 1];
+    if prod(XYCT)>0 && XYCT(4)==1
       % snapshot!
       if isempty(imgs)
         imgs = cell(XYCT(3), 1);
