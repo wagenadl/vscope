@@ -190,7 +190,7 @@ guiButton *guiPage::addButton(PageBuildGeom &g, QDomElement doc) {
   Param *p = ptree ? ptree->findp(id) : 0;
   if (doc.tagName()=="immune" || (p && p->isImmune()))
     b->makeROImmune();
-  topgroup->add(b);
+  // topgroup->add(b);
   b->setup(doc);
   buttons[id] = b;
   g.go(doc);
