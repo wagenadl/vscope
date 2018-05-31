@@ -1,3 +1,12 @@
+vscope 1.0.4
+
+  guipage no longer adds toplevel objects to topgroup. I do not know what that mechanism was for, but it made "Dummy" and "Cont ephys" compete with each other and with "Auto run".
+  trivial fixes to imagestack and stacktrial
+  Version confusion about cohplotsignals and cohplotimage. Split off /xps/ version with "-x" suffix. I think that was not the version to use, but I am not sure.
+  HighDpiScaling disabled before 5.6.1
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Wed, 23 May 2018 12:39:59 -0700
+
 vscope 1.0.3
 
   Building for ubuntu 18.04
