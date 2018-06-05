@@ -56,7 +56,7 @@ end
 
 if ischar(opts)
   if ~isempty(opts)
-    opts = strtoks(opts);
+    opts = strsplit(opts);
   end
 end
 
