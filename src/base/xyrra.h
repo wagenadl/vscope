@@ -75,6 +75,10 @@ public:
   bool operator==(XYRRA const &other);
   XYRRA &transform(class Transform const &t);
   XYRRA transformed(class Transform const &t) const;
+  void translate(double dx, double dy);
+  /*:F translate
+   *:D Translates the ellipse (as a whole) by the given amount.
+   */
 public:
   double x0, y0;
   double R, r;

@@ -49,6 +49,8 @@ void gt_slots::selected(QString p) {
       Globals::ccdw->setMode(ROIImage::CM_DelROI);
     else if (p=="analysis/roiMove") 
       Globals::ccdw->setMode(ROIImage::CM_MoveROI);
+    else if (p=="analysis/roiMoveAll") 
+      Globals::ccdw->setMode(ROIImage::CM_MoveAllROIs);
     else if (p=="analysis/roiResize") 
       Globals::ccdw->setMode(ROIImage::CM_ResizeROI);
     else if (p=="analysis/roiRotate") 

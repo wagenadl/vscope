@@ -471,12 +471,13 @@
 
   <!-- %%%%%%%%%%%%%%%%%%%%% ANALYSIS PAGE %%%%%%%%%%%%%%%%%% -->
   <page id="analysis" subdxr="3.1">
-    <group id="clickmode">
-      <immune id="zoom" label="Zoom" x="4.1" y="0" bg="#88ffcc"/>
-      <immune id="roiMove" label="Move ROI" x="3.1" y="0" bg="#aaff00"/>
+    <group id="clickmode" x="2.11" spanrows="3" spancols="3" cols="4.48">
+      <immune id="zoom" label="Zoom" x="3" y="0" bg="#88ffcc"/>
+      <immune id="roiMove" label="Move ROI" x="1" y="0" bg="#aaff00"/>
       <immune id="roiRotSize" label="Resize ROI" bg="#88ff44"/>
       <immune id="roiRotate" label="Rotate ROI" bg="#11ff11"/>
-      <immune id="roiSelect" label="Select ROI" x="2.1" y="0" bg="#aaeeaa"/>
+      <immune id="roiMoveAll" label="Move All ROIs" z="2" y="2" bg="#00bb00"/>
+      <immune id="roiSelect" label="Select ROI" x="0" y="0" bg="#aaeeaa"/>
       <immune id="roiBlob" label="Blob ROI" bg="#ffff88"/>
       <immune id="roiAdd" label="Create Elliptic ROI" bg="#ffff00"/>
     </group>

@@ -40,7 +40,7 @@ if numel(y_sig) == length(y_sig)
 end
 t_sig = t_sig(:); % Force T_SIG to be Tx1
 
-[psd.f, psd.psd.estimates] = pds_mtm0(t_sig, y_sig, kv.df);
+[psd.f, psd.psd] = pds_mtm0(t_sig, y_sig, kv.df);
 
 if size(y_sig, 2)==1
   [~, idx] = max(psd.psd);

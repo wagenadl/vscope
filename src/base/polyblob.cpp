@@ -502,3 +502,18 @@ bool PolyBlob::inside(QPointF xy, double margin) const {
 double PolyBlob::weight(QPointF xy, double margin) const {
   return weight(xy.x(), xy.y(), margin);
 }
+
+inline void addclip(short &x, double dx) {
+  int y = x;
+  y += dx*50;
+  x = y<-32500 ? -32500 : y>32500 ? 32500 : y;
+}
+
+void PolyBlob::translate(double dx, double dy) {
+  for (int i=0; i<n; i++) {
+    addclip(x50[i], dx);
+    addclip(y50[i], dy);
+  }
+  recalc_center();
+}
+

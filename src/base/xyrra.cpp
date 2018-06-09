@@ -282,3 +282,8 @@ XYRRA XYRRA::transformed(Transform const &t) const {
   x.transform(t);
   return x;
 }
+
+void XYRRA::translate(double dx, double dy) {
+  x0 += dx;
+  y0 += dy;
+}

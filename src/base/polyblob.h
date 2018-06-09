@@ -128,6 +128,10 @@ public:
   /*:F recenter
    *:D Moves the polygon (as a whole) to a new center.
    */
+  void translate(double dx, double dy);
+  /*:F translate
+   *:D Translates the polygon (as a whole) by the given amount.
+   */
   double distToCenter(double x, double y) const;
   double distToCenter(QPointF xy) const;
   /*:F distToCenter
