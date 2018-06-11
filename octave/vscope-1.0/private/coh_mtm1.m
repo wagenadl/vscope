@@ -1,30 +1,27 @@
-function varargout = coh_mtm0(t,x,y,f_res,alpha_ci,f_star,N_fft,tapers)
+function [f,mag,phase,cohs] = coh_mtm1(t,x,y,f_res,f_star,N_fft,tapers)
 % COH_MTM0 - Multi-taper coherence estimate
 %    This is DW's adaptation of Adam Taylor's COH_MTM code
-%    [ff, mag, phase] = COH_MTM0(tt, xx, yy, fres)
+%    [ff, mag, phase, cohs] = COH_MTM0(tt, xx, yy, f_res)
 %    calculates the coherence of the signals XX (TxN) wrt the 
 %    signals YY (Tx1 or TxN), defined at times TT (Tx1) (evenly spaced
 %    and increasing).
-%    The coherence is calculated with frequency resolution FRES (which 
+%    The coherence is calculated with frequency resolution F_RES (which 
 %    must be in reciprocal units of those of TT). Results are:
 %
 %      FF (Fx1): frequency base (one-sided).
 %      MAG (FxN): magnitude of coherence (normalized)
 %      PHASE (FxN): phase of coherence (-pi..pi). Phase is positive
-%                   if YY lags XX. (e.g. if XX=sin(TT), and YY=sin(TT-0.1),
-%                   phase at the peak will be +0.1.)
+%                   if YY lags XX. (e.g. if XX=sin(TT), and
+%                   YY=sin(TT-0.1), phase at the peak will be +0.1.)
+%      COHS (FxNxK): individual complex coherence estimates for each of
+%                    the K tapers
 %
-%    [ff, mag, phase, mag0, ph0, mag1, ph1] 
-%       = COH_MTM0(tt, xx, yy, fres, A_ci) additionally calculates
-%    confidence intervals; set P_CI = 0.317 for one-sigma error bars.
-%    (In general, set P_CI = 2-2*normcdf(K) for K*sigma error bars, 
-%    or P_CI = p for an interval with confidence 1-p; e.g. P_CI=0.05 for
-%    95% confidence and 2.5% on either extreme.) 
+%    COH_MTM0(..., f_star, PadFFT, tapers) specifies additional
+%    parameters:
 %
-%    Extra results are:
-%
-%      MAG0, MAG1 (FxN): lower and upper confidence bounds for MAG.
-%      PH0, PH1 (FxN): confidence bounds for PHASE.
+%      F_STAR: calculate only at the frequency F_STAR.
+%      PADFFT: length to which data is padded before fourier transform
+%      TAPERS: supply pre-calculated tapers directly.
 
 % This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
 
@@ -41,23 +38,13 @@ function varargout = coh_mtm0(t,x,y,f_res,alpha_ci,f_star,N_fft,tapers)
 % You should have received a copy of the GNU General Public License
 % along with VScope.  If not, see <http://www.gnu.org/licenses/>.
 
-%    COH_MTM0(..., f_star, PadFFT, tapers) specifies additional
-%    parameters:
-%
-%      F_STAR: calculate only at the frequency F_STAR.
-%      PADFFT: length to which data is padded before fourier transform
-%      TAPERS: supply pre-calculated tapers directly.
-%
-%    If F_STAR is specified, output is [mag, phase, mag0, mag1, ph0, ph1],
-%    that is, FF is not returned.
-
 t=t(:);
-[T N]=size(x);
+[T, N]=size(x);
 if T==1 && N>1
-  if prod(size(y))==length(y)
+  if numel(y)==length(y)
     x=x(:);
     y=y(:);
-    [T N]=size(x);
+    [T, N]=size(x);
   end
 end
 if size(y,2)==1
@@ -78,24 +65,20 @@ end
 % the varargouts are the sigmas
 
 % process args
+
 if nargin<5
-  alpha_ci=1;
-elseif isempty(alpha_ci)
-  alpha_ci=1;
-end
-if nargin<6
   multiple_f=1;
 elseif isempty(f_star)
   multiple_f=1;
 else
   multiple_f=0;
 end
-if nargin<7
+if nargin<6
   N_fft=2^ceil(log2(length(t)));
 elseif isempty(N_fft)
   N_fft=2^ceil(log2(length(t)));
 end
-if nargin<8
+if nargin<7
   tapers=[];
 end
 
@@ -112,7 +95,9 @@ K=floor(2*nw-1);
 %fprintf(1,'coh_mtm0: dt=%g T=%g df=%g nw=%g K=%i\n',...
 %    mean(diff(t)),t(end)-t(1)+mean(diff(t)),f_res,nw,K);
 
-tapers=dpss(N,nw,K);
+if isempty(tapers)
+  tapers=dpss(N,nw,K);
+end
 
 tapers=reshape(tapers,[N 1 K]);
 
@@ -130,7 +115,7 @@ if multiple_f
 else
   phi_star=f_star/fs;
   k=(0:(N-1))';
-  w=repmat(exp(-i*2*pi*phi_star*k),[1 N_signals K]);
+  w=repmat(exp(-1i*2*pi*phi_star*k),[1 N_signals K]);
   X=sum(x_tapered.*w,1);
   Y=sum(y_tapered.*w,1);
 end
@@ -149,7 +134,6 @@ Pxxs=(abs(X).^2)/fs;
 Pyys=(abs(Y).^2)/fs;
 Pxys=(X.*conj(Y))/fs;
 
-
 % _sum_ across tapers (keep these around in case we need to calculate
 % the take-away-one spectra for error bars)
 PxxK=sum(Pxxs,3);
@@ -162,79 +146,24 @@ Pxx=PxxK/K;
 Pyy=PyyK/K;
 Pxy=PxyK/K;
 
-
 % calculate coherence
-Cxy=Pxy./sqrt(Pxx.*Pyy+1e-50);
-Cxy_mag=abs(Cxy);
-Cxy_phase=angle(Cxy);
+norm = sqrt(Pxx.*Pyy+1e-50);
+Cxy = Pxy ./ norm;
+mag = abs(Cxy);
+phase = angle(Cxy);
 
-% calc the sigmas
-if alpha_ci<1
-  % calculate the transformed coherence
-  Cxy_mag_xf=algcsqr(Cxy_mag);
-  
-  % calculate the take-away-one spectra
-  Pxxs_tao=(repmat(PxxK,[1 1 K])-Pxxs)/(K-1);
-  Pyys_tao=(repmat(PyyK,[1 1 K])-Pyys)/(K-1);
-  Pxys_tao=(repmat(PxyK,[1 1 K])-Pxys)/(K-1);
-
-  % calculate the take-away-one coherence
-  Cxy_tao=Pxys_tao./sqrt(Pxxs_tao.*Pyys_tao+1e-50);
-  Cxy_tao_mag=abs(Cxy_tao);
-  Cxy_tao_mag_xf=algcsqr(Cxy_tao_mag);
-  Cxy_tao_phase=angle(Cxy_tao);
-
-  % calculate the magnitude sigmas
-  Cxy_tao_mag_xf_mean=mean(Cxy_tao_mag_xf,3);
-  Cxy_mag_xf_sigma=sqrt((K-1)/K * ...
-      sum((Cxy_tao_mag_xf-repmat(Cxy_tao_mag_xf_mean,[1 1 K])).^2,3));  
-  
-  % calculate the phase sigma
-  Cxy_tao_hat=Cxy_tao./(Cxy_tao_mag+1e-50);
-  Cxy_tao_hat_mean=mean(Cxy_tao_hat,3);
-  Cxy_phase_sigma=sqrt(2*(K-1)*(1-abs(Cxy_tao_hat_mean)));
-
-  % calculate the confidence interval bounds
-  ci_factor=norminv(1-alpha_ci/2);
-  Cxy_mag_ci_lo=sqrtlgc(Cxy_mag_xf-ci_factor*Cxy_mag_xf_sigma);
-  Cxy_mag_ci_hi=sqrtlgc(Cxy_mag_xf+ci_factor*Cxy_mag_xf_sigma);
-  Cxy_phase_ci_lo=Cxy_phase-ci_factor*Cxy_phase_sigma;
-  Cxy_phase_ci_hi=Cxy_phase+ci_factor*Cxy_phase_sigma;
-
-  % assign the return values
-  if multiple_f
-    varargout={f Cxy_mag Cxy_phase ...
-                 Cxy_mag_ci_lo Cxy_phase_ci_lo ...
-                 Cxy_mag_ci_hi Cxy_phase_ci_hi};
-  else
-    varargout={Cxy_mag Cxy_phase ...
-               Cxy_mag_ci_lo Cxy_phase_ci_lo ...
-               Cxy_mag_ci_hi Cxy_phase_ci_hi};
-  end
-else
-  % assign the return values
-  if multiple_f
-    varargout={f Cxy_mag Cxy_phase};
-  else
-    varargout={Cxy_mag Cxy_phase};
-  end
-end
-
+cohs = Pxys ./ norm;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [Cxy_os] = drop_neg_freqs(Cxy_ts)
-
 % turns a two-sided coherence into a one-sided
 % (i.e. it drops the negative frequencies)
 % works on the the cols of Cxy_ts (i.e. along the first dimension)
 
-% huge rigamarole to do something MATLAB should have a way to do easily
-N_dims=ndims(Cxy_ts);
-rest_o_dims=cell(1,N_dims-1);
-for j=1:N_dims-1
-  rest_o_dims{j}=':';
-end
-% end of huge rigamarole
-
-N=size(Cxy_ts,1);
-Cxy_os=Cxy_ts(1:ceil(N/2),rest_o_dims{:});
+S = size(Cxy_ts);
+N = S(1);
+S = S(2:end);
+N1 = ceil(N/2);
+Cxy_os = reshape(Cxy_ts, [N prod(S)]);
+Cxy_os = Cxy_os(1:N1, :);
+Cxy_os = reshape(Cxy_os, [N1 S]);
