@@ -83,8 +83,8 @@ install: release DOC MTPSD
 	install build/vscope $(INSTALLPATH)/bin/vscope
 	install -d $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)/private 
 	install -m644 $(wildcard octave/vscope-1.0/*.m) $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)
-#	install -m644 octave/vscope-1.0/PKG_ADD $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)
-#	install -m644 octave/vscope-1.0/PKG_DEL $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)
+	install -m644 octave/vscope-1.0/PKG_ADD $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)
+	install -m644 octave/vscope-1.0/PKG_DEL $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)
 	install -m644 $(wildcard octave/vscope-1.0/private/*.m) $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)/private
 	install -d $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)/packinfo
 	install -m644 octave/vscope-1.0/packinfo/DESCRIPTION $(SHAREPATH)/octave/packages/vscope-$(OCTAVEVSN)/packinfo
