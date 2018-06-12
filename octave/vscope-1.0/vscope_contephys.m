@@ -4,6 +4,8 @@ function x=vscope_contephys(ifn, tri, wht)
 %    pertains to trial TRI.
 %    dat = VSCOPE_LOAD(ifn, tri, letter), where LETTER is 'a' or 'd'
 %    loads only analog or only digital data
+% 
+%    This function is obsolete. Use VSCOPE_LOAD_CONTINUOUS instead.
 
 % This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
 
