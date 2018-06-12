@@ -114,6 +114,7 @@ elseif endswith(ifn,'.xml')
     end
   end
   fclose(ifd);
+  dat.info.filename = ifn;
   
   roifn = strrep(ifn,'.xml','-rois.xml');
   if exist(roifn)
@@ -314,6 +315,7 @@ info.trial = atoi(vsdl_getval(kv,'trial'));
 info.type = vsdl_getval(kv,'type');
 info.starts = [vsdl_getval(kv,'date') '.' vsdl_getval(kv,'time')];
 info.ends = [vsdl_getval(kv,'enddate') '.' vsdl_getval(kv,'endtime')];
+info.contephystrial = atoi(vsdl_getval(kv, 'contephys'));
 if isempty(findstr(str,'/>'))
   % Multi line info element
   info.trials.id=[];
