@@ -181,6 +181,7 @@ void ExptLog::markTrial() {
   bool hasvsd =  Globals::ptree->find("acqCCD/enable").toBool();
   bool hasstim = Globals::ptree->find("stimEphys/enable").toBool();
   bool hasvid =  Globals::ptree->find("stimVideo/enable").toBool();
+  bool hascont = Globals::ptree->find("acquisition/contEphys").toBool();
 
   if (hasstim) {
     Enumerator const *e = Enumerator::find("STIMCHS");
@@ -197,7 +198,7 @@ void ExptLog::markTrial() {
 
   QString typ;
   if (hasvsd)
-    typ = "E'phys. + vsd";
+    typ = hascont ? "VSD" : "E'phys. + VSD";
   else
     typ = "E'phys.";
 
