@@ -107,6 +107,7 @@ private:
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;
+  void readContEphys(XML &myxml, QString base, class ProgressDialog *pd);
   void readAnalog(XML &myxml, QString base, class ProgressDialog *pd);
   void readDigital(XML &myxml, QString base, class ProgressDialog *pd);
   void readCCD(XML &myxml, QString base, class ProgressDialog *pd);
@@ -136,6 +137,7 @@ private:
   bool do_ccd; // true if ccd acquisition happens in this trial
   bool contEphys; // only valid if prepared, this means contephys is occurring
                   // concurrently with this trial.
+  int contEphysTrial; // only valid if contEphys is true
   // xml stuff
   class XML *xml;
   AllCCDTimingDetail timing_;
