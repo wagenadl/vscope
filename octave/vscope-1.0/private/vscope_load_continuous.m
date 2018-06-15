@@ -47,12 +47,16 @@ x.digital.info = contx.digital.info;
 
 [x.ccd.info.frame_s, x.ccd.info.framestart_s, ...
  x.ccd.info.frameend_s] = vsdl_frametimes(x);
+x.info.start_in_cont_s = digi0 / contx.digital.info.rate_hz;
+x.info.end_in_cont_s = x.info.start_in_cont_s ...
+    + length(x.digital.dat) / contx.digital.info.rate_hz;
+x.info.dur_ms = 1e3 * length(x.digital.dat) / contx.digital.info.rate_hz;
 
 if ana0>0
   N = contx.analog.info.rate_hz ...
       * (x.info.dur_ms/1e3 + pre_margin_s + post_margin_s);
   M0 = contx.analog.info.rate_hz*pre_margin_s;
-  digi0 = digi0 - M0;
+  ana0 = ana0 - M0;
   x.analog.dat = vscope_load_analog_subset(ifn, ...
                                             contx.analog.info, ...
                                             ana0, N);

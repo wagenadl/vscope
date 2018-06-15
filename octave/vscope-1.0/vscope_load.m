@@ -125,6 +125,18 @@ elseif endswith(ifn,'.xml')
   
   [dat.ccd.info.frame_s, dat.ccd.info.framestart_s, ...
 	dat.ccd.info.frameend_s] = vsdl_frametimes(dat);
+
+  if dat.info.contephystrial>0 && ...
+        ((any(wht=='a') && ~isfield(dat, 'analog')) ...
+         || (any(wht=='d') && ~isfield(dat, 'digital')))
+    % Get continuous ephys loaded as well
+    try
+      dat = vscope_load_continuous(dat);
+      disp('Loaded continuous ephys as well');
+    catch err
+      warning('Tried, and failed, to load continuous ephys');
+    end
+  end
 else
   fclose(ifd);
   error(['vscope_load: Unknown filetype "' ifn '"']);
