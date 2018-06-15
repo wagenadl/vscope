@@ -81,6 +81,12 @@ public:
    *:D Reads data from a file created by writeInt16(). Unlike read(), this
        requires that the channel map has already been set up.
   */
+  void readPartial(QString ifn, QDomElement elt,
+                   quint64 startscan, double dur_ms,
+                   class ProgressDialog *);
+  void readInt16Partial(QString ifn, ScaleMap const &steps,
+                 quint64 startscan, quint64 nscans,
+                 class ProgressDialog *);
   double const *channelData(QString channel) const;
   double *channelData(WriteKey *, QString channel);
   /*:F channelData(int channel)

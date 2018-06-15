@@ -137,7 +137,6 @@ private:
   bool do_ccd; // true if ccd acquisition happens in this trial
   bool contEphys; // only valid if prepared, this means contephys is occurring
                   // concurrently with this trial.
-  int contEphysTrial; // only valid if contEphys is true
   // xml stuff
   class XML *xml;
   AllCCDTimingDetail timing_;

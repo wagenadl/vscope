@@ -179,6 +179,12 @@ AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
 }
 
 void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
+  readPartial(ifn, elt, 0, 1e9, pd);
+}
+
+void AnalogData::readPartial(QString ifn, QDomElement elt,
+                             quint64 startscan, double dur_ms,
+                             ProgressDialog *pd) {
   KeyGuard guard(*this);
 
   if (elt.tagName()!="analog")
@@ -192,6 +198,10 @@ void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
   int scans = elt.attribute("scans").toInt(&ok);
   if (!ok)
     throw Exception("AnalogData","Cannot read number of scans from xml");
+  scans -= startscan;
+  if (scans > dur_ms*fs_hz/1e3)
+    scans = dur_ms*fs_hz/1e3;
+    
   int chans = elt.attribute("channels").toInt(&ok);
   if (!ok)
     throw Exception("Trial","Cannot read number of channels from xml",
@@ -227,7 +237,7 @@ void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
       index2offset[idx] = 0;
     }
   }
-  readInt16(ifn, scales, pd);
+  readInt16Partial(ifn, scales, startscan, scans, pd);
   if (nscans != scans)
     throw Exception("AnalogData", "Scan count mismatch between data and xml");
   Dbg() << "analogdata::read" << fs_hz;
@@ -235,6 +245,12 @@ void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
 
 void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
 			   ProgressDialog *pd) {
+  readInt16Partial(ifn, steps, 0, 1000*1000*1000, pd);
+}
+
+void AnalogData::readInt16Partial(QString ifn, AnalogData::ScaleMap const &steps,
+                                  quint64 startscan, quint64 scans,
+                                  ProgressDialog *pd) {
   KeyGuard guard(*this);
 
   for (int c=0; c<nchannels; c++)
@@ -252,6 +268,11 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
     throw Exception("AnalogData",
 		       "Unexpected file size: not a multiple of scan size",
 		       "readInt16");
+
+  newscans -= startscan;
+  if (newscans>scans)
+    newscans = scans;
+  
   reshape(newscans,nchannels);
 
   const int BUFSIZE = 1024;
@@ -259,6 +280,7 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
   int scansleft = newscans;
   double *dp = data.data();
   int k = 0;
+  ifd.seek(startscan*2*nchannels);
   while (scansleft) {
     int now = scansleft < BUFSIZE ? scansleft : BUFSIZE;
     int nbytes = nchannels*2*now;

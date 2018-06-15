@@ -245,6 +245,7 @@ Transform TrialData::camPlace(QString camid) const {
 }
 
 void TrialData::useThisPTree(ParamTree const *ptree) {
+  Dbg() << "useThisPTree" << ptree;
   if (mypartree)
     delete mypartree;
   partree = mypartree = 0;
@@ -254,6 +255,7 @@ void TrialData::useThisPTree(ParamTree const *ptree) {
 }
 
 void TrialData::cloneThisPTree(ParamTree const *ptree) {
+  Dbg() << "cloneThisPTree" << ptree;
   if (mypartree)
     delete mypartree;
   mypartree = 0;
@@ -330,7 +332,7 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   QDomElement info = myxml.find("info");
   QDomElement settings = myxml.find("settings");
 
-  Dbg() << "TrialData::read";
+  Dbg() << "TrialData::read" << mypartree;
   if (!mypartree)
     mypartree = new ParamTree(*partree);
   
@@ -340,8 +342,7 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   mypartree->find("acquisition/exptname").set(exptname);
   mypartree->find("acquisition/trialno").set(trialid);
 
-  contEphysTrial = info.attribute("contephys").toInt();
-  contEphys = contEphysTrial > 0;
+  contEphys = info.attribute("contephys").toInt() > 0;
   
   // the following ensures that we have stimulus data prepared
   // and that the xdataIn have the right sizes
@@ -439,13 +440,48 @@ void TrialData::clearDigital() {
   ddataIn->zero();
 }
 
-void TrialData::readContEphys(XML &myxml, QString base, ProgressDialog *pd) {
+void TrialData::readContEphys(XML &vsdxml, QString vsdbase, ProgressDialog *pd) {
+  // vsdxml and vsdbase refer to the vsd trial, not the cont trial
   clearAnalog();
   clearDigital();
-  QDir exptdir(QFileInfo(base).dir());
-  int mytrialid = mypartree->find("acquisition/trialno").toInt();
-  Dbg() << "I don't yet know how to read cont ephys for" << mytrialid
-        << " from " << contEphysTrial << " in " << exptdir.absolutePath();
+  QDir exptdir(QFileInfo(vsdbase).dir());
+  QString vsdtrialid = mypartree->find("acquisition/trialno").toString();
+  QDomElement vsdinfo = vsdxml.find("info");
+  QString conttrialid = vsdinfo.attribute("contephys");
+  Dbg() << "I don't yet know how to read cont ephys for" << vsdtrialid
+        << " from " << conttrialid << " in " << exptdir.absolutePath();
+
+  QString contbase = QString("%1/%3")
+    .arg(exptdir.absolutePath())
+    .arg(conttrialid);
+  // Get info from cont trial xml
+  XML contxml(contbase + ".xml");
+  QDomElement continfo = contxml.find("info");
+  // Where should we load from?
+  quint64 ascan = 0;
+  quint64 dscan = 0;
+  for (QDomElement trialxml = continfo.firstChildElement("trial");
+       !trialxml.isNull(); trialxml = trialxml.nextSiblingElement("trial")) {
+    if (trialxml.attribute("id").toInt()==vsdtrialid) {
+      ascan = trialxml.attribute("ascan").toULongLong();
+      dscan = trialxml.attribute("dscan").toULongLong();
+      break;
+    }
+  }
+  if (ascan<=0 || dscan!=ascan) {
+    Dbg() << "Failed to get meaningful ascan or dscan - cannot load contephys";
+    return; // should show message box!
+  }
+  Dbg() << "Got ascan" << ascan << "dscan" << dscan;
+  // how much should we read?
+  UnitQty dur(elt.attribute("duration"));
+  double dur_ms = dur.toDouble("ms");
+
+  // load partial data
+  ddataIn->readPartial(base + "-digital.dat", contxml.find("digital"),
+                       dscan, dur_ms, pd);
+  adataIn->readPartial(base + "-analog.dat", contxml.find("analog"),
+                       ascan, dur_ms, pd);
 }  
 
 void TrialData::readAnalog(XML &myxml, QString base, ProgressDialog *pd) {
