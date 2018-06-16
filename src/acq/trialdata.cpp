@@ -363,7 +363,10 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
     clearAnalog();
     clearDigital();
   } else if (contEphys) {
+    if (pd)
+      pd->push(do_ccd ? 25 : 100);
     readContEphys(myxml, base, pd);
+    pd->pop();
   } else {
     if (pd) {
       pd->push(do_ccd ? 25 : 100);
@@ -445,10 +448,10 @@ void TrialData::readContEphys(XML &vsdxml, QString vsdbase, ProgressDialog *pd) 
   clearAnalog();
   clearDigital();
   QDir exptdir(QFileInfo(vsdbase).dir());
-  QString vsdtrialid = mypartree->find("acquisition/trialno").toString();
+  int vsdtrialno = mypartree->find("acquisition/trialno").toInt();
   QDomElement vsdinfo = vsdxml.find("info");
   QString conttrialid = vsdinfo.attribute("contephys");
-  Dbg() << "I don't yet know how to read cont ephys for" << vsdtrialid
+  Dbg() << "I don't yet know how to read cont ephys for" << vsdtrialno
         << " from " << conttrialid << " in " << exptdir.absolutePath();
 
   QString contbase = QString("%1/%3")
@@ -462,7 +465,7 @@ void TrialData::readContEphys(XML &vsdxml, QString vsdbase, ProgressDialog *pd) 
   quint64 dscan = 0;
   for (QDomElement trialxml = continfo.firstChildElement("trial");
        !trialxml.isNull(); trialxml = trialxml.nextSiblingElement("trial")) {
-    if (trialxml.attribute("id").toInt()==vsdtrialid) {
+    if (trialxml.attribute("id").toInt()==vsdtrialno) {
       ascan = trialxml.attribute("ascan").toULongLong();
       dscan = trialxml.attribute("dscan").toULongLong();
       break;
@@ -474,14 +477,23 @@ void TrialData::readContEphys(XML &vsdxml, QString vsdbase, ProgressDialog *pd) 
   }
   Dbg() << "Got ascan" << ascan << "dscan" << dscan;
   // how much should we read?
-  UnitQty dur(elt.attribute("duration"));
+  UnitQty dur(vsdinfo.attribute("duration"));
   double dur_ms = dur.toDouble("ms");
+  dur_ms += 2000; // add some margin for trial start delays
 
   // load partial data
-  ddataIn->readPartial(base + "-digital.dat", contxml.find("digital"),
+  if (pd)
+    pd->push(75, "Loading analog cont. data");
+  ddataIn->readPartial(contbase + "-digital.dat", contxml.find("digital"),
                        dscan, dur_ms, pd);
-  adataIn->readPartial(base + "-analog.dat", contxml.find("analog"),
+  if (pd)
+    pd->pop();
+  if (pd)
+    pd->push(25, "Loading digital cont. data");
+  adataIn->readPartial(contbase + "-analog.dat", contxml.find("analog"),
                        ascan, dur_ms, pd);
+  if (pd)
+    pd->pop();
 }  
 
 void TrialData::readAnalog(XML &myxml, QString base, ProgressDialog *pd) {
@@ -494,7 +506,7 @@ void TrialData::readDigital(XML &myxml, QString base, ProgressDialog *pd) {
   ddataIn->read(base+"-digital.dat", digital, pd);
 }
 
- void TrialData::readCCD(XML &myxml, QString base, ProgressDialog *pd) {
+void TrialData::readCCD(XML &myxml, QString base, ProgressDialog *pd) {
   QDomElement ccd = myxml.find("ccd");
   /* We now have three versions of ccd data storage
      (1) The very oldest, with interleaved frames for precisely two cameras.

@@ -55,6 +55,12 @@ public:
   /*:F readUInt32
    *:D Reads data back from a file previously written by writeUInt32.
    */
+  void readPartial(QString ifn, QDomElement elt,
+                   quint64 startscan, double dur_ms,
+                   class ProgressDialog *);
+  void readUInt32Partial(QString ifn,
+                         quint64 startscan, quint64 nscans,
+                         class ProgressDialog *);
   DataType const *allData() const { return data.constData(); }
   DataType *allData(KeyAccess::WriteKey *) { return data.data(); }
   /*:F unsigned long *allData()

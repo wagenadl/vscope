@@ -357,6 +357,7 @@ Range TraceInfo::range99(int n0, int n1, double frc0, double frc1) const {
     break;
   case DataPtr::dataBinary:
     r = Range(0,1);
+    break;
   default:
     fprintf(stderr,"Warning: TraceInfo::range99: unknown data type\n");
     return r;

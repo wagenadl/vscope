@@ -76,21 +76,31 @@ void DigitalData::write(QString ofn, QDomElement elt) {
 }
 
 void DigitalData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
+  readPartial(ifn, elt, 0, 1e9, pd);
+}
+
+void DigitalData::readPartial(QString ifn, QDomElement elt,
+                              quint64 startscan, double dur_ms,
+                              ProgressDialog *pd) {
   if (elt.tagName()!="digital")
     elt = elt.firstChildElement("digital");
   if (elt.isNull())
     throw Exception("DigitalData", "Cannot find xml info");
 
   KeyGuard guard(*this);
-  readUInt32(ifn, pd);
 
-  /* Read aux. info from xml and use it! */
+  /* Read aux. info from xml */
   fs_hz = UnitQty(elt.attribute("rate")).toDouble("Hz");
   if (elt.attribute("type")!="uint32")
     throw Exception("DigitalData","Cannot read type '" + elt.attribute("type")
 		    + "'. (Only uint32.)");
-  if (elt.attribute("scans").toInt() != nscans)
-    throw Exception("DigitalData", "Scan count mismatch between data and xml");
+  quint64 scans = elt.attribute("scans").toInt();
+  scans -= startscan;
+  if (scans > dur_ms*fs_hz/1e3)
+    scans = dur_ms*fs_hz/1e3;
+  reshape(scans);
+
+  readUInt32Partial(ifn, startscan, scans, pd);
 
   clearMask();
   for (QDomElement e = elt.firstChildElement("line");
@@ -114,6 +124,12 @@ void DigitalData::writeUInt32(QString ofn) {
 }
 
 void DigitalData::readUInt32(QString ifn, ProgressDialog *pd) {
+  readUInt32Partial(ifn, 0, 1000*1000*1000, pd);
+}
+
+void DigitalData::readUInt32Partial(QString ifn,
+                                    quint64 startscan, quint64 scans,
+                                    ProgressDialog *pd) {
   KeyGuard guard(*this);
   QFile ifd(ifn);
   if (!ifd.open(QFile::ReadOnly))
@@ -124,6 +140,13 @@ void DigitalData::readUInt32(QString ifn, ProgressDialog *pd) {
     throw Exception("DigitalData",
 		       "Unexpected file size: not a multiple of scan size",
 		       "readUInt32");
+
+  ifd.seek(startscan*4);
+  newscans -= startscan;
+  if (newscans > scans)
+    newscans = scans;
+  filelength_bytes = 4*newscans;
+  
   reshape(newscans);
   int offset = 0;
   while (offset<filelength_bytes) {
