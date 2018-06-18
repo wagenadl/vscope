@@ -304,10 +304,12 @@ void AnalogData::readInt16Partial(QString ifn,
           throw Exception("AnalogData",
                           "Stepsize not specified for some channels",
                           "readInt16");
-      tnext = tscales.isEmpty() ? 1000*1000*1000 : tt0.takeFirst();
+      tnext = tt0.isEmpty() ? 1000*1000*1000 : tt0.takeFirst();
     }
     
-    int now = scansleft < BUFSIZE ? scansleft : BUFSIZE;
+    int now = BUFSIZE;
+    if (now > scansleft)
+      now = scansleft;
     if (startscan + now > tnext)
       now = tnext - startscan;
     int nbytes = nchannels*2*now;

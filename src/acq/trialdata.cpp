@@ -451,8 +451,6 @@ void TrialData::readContEphys(XML &vsdxml, QString vsdbase, ProgressDialog *pd) 
   int vsdtrialno = mypartree->find("acquisition/trialno").toInt();
   QDomElement vsdinfo = vsdxml.find("info");
   QString conttrialid = vsdinfo.attribute("contephys");
-  Dbg() << "I don't yet know how to read cont ephys for" << vsdtrialno
-        << " from " << conttrialid << " in " << exptdir.absolutePath();
 
   QString contbase = QString("%1/%3")
     .arg(exptdir.absolutePath())
