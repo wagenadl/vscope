@@ -1,3 +1,9 @@
+vscope 1.0.9
+
+  Silly bugfix to loading contephys data
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Mon, 18 Jun 2018 11:53:18 -0700
+
 vscope 1.0.8
 
   Now loads continuous ephys along with vsd trials.
