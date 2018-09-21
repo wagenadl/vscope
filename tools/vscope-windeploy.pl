@@ -13,7 +13,7 @@ my $msvc_redist_path = "$msvc_path/redist/x86/Microsoft.VC140.CRT";
 
 ######################################################################
 # INTERNAL PATHS
-my $vscope_buildpath = "build-vscope-x86/release";
+my $vscope_buildpath = "build-vscope-Desktop_Qt_5_10_1_MSVC2015_32bit-Release/release";
 my $dpss_buildpath = "build-mtpsd";
 my $release_path = "release-vscope-x86";
 

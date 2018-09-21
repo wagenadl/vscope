@@ -36,7 +36,11 @@ pvpCamera::pvpCamera(QString camname):
 
   serno = getHeadSerNumAlpha();
 
-  setPmode(Pmode::Ft);
+  try {
+    setPmode(Pmode::Ft);
+  } catch (pvpException const &) {
+    Dbg() << "Could not set Pmode on camera";
+  }
   setReadoutPort(ReadoutPort());
   setSpdtabIndex(0);
   setGainIndex(1);
@@ -44,7 +48,7 @@ pvpCamera::pvpCamera(QString camname):
   setBofEofEnable(BofEofEnable::EndFrameIrqs);
   setBofEofClr(true);
   abort();
-Dbg() << "pvpcamera" << camname << "opened";
+  Dbg() << "pvpcamera" << camname << "opened";
   QMap<int, QString> eomodes = getEnumeration(PARAM_EXPOSURE_MODE);
   foreach (int k, eomodes.keys()) {
     Dbg() << "mode" << k << "is" << eomodes[k];
