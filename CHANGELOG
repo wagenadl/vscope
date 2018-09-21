@@ -1,3 +1,27 @@
+vscope 1.0.9
+
+  Silly bugfix to loading contephys data
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Mon, 18 Jun 2018 11:53:18 -0700
+
+vscope 1.0.8
+
+  Now loads continuous ephys along with vsd trials.
+  FileList now faster, shows contephys trials better.
+  Added support for loading continuous ephys in vscope_load.
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Fri, 15 Jun 2018 21:46:08 -0700
+
+vscope 1.0.6
+
+  Can now move all ROIs on a given camera at once.
+  Created multitaper_psd and multitaper_coherence with saner confidence interval estimators. I never understood Adam Taylor’s estimates.
+  vscope_psd.m now returns uncertainties as well
+  getopt now uses strsplit
+  Added getopt
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Mon, 11 Jun 2018 14:04:56 -0700
+
 vscope 1.0.4
 
   guipage no longer adds toplevel objects to topgroup. I do not know what that mechanism was for, but it made "Dummy" and "Cont ephys" compete with each other and with "Auto run".
@@ -6,6 +30,17 @@ vscope 1.0.4
   HighDpiScaling disabled before 5.6.1
 
   -- Daniel A. Wagenaar <daw@caltech.edu>  Wed, 23 May 2018 12:39:59 -0700
+
+vscope 1.0.3
+
+  Building for ubuntu 18.04
+
+  Trivial change to pbuild.sh
+  copied pbuild.sh from debian
+  Bugfix to makefile for debian/doc
+  HighDpiScaling disabled before 5.6.1
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Wed, 02 May 2018 20:28:40 -0700
 
 vscope 1.0.2
 

@@ -20,6 +20,7 @@
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
+#include <QDateTime>
 #include <base/dbg.h>
 
 TrialFileList::TrialFileList(QWidget *parent): FileList(parent) {
@@ -30,19 +31,39 @@ bool TrialFileList::includeFileHook(QDir const &, QString fn) {
 }
 
 QString TrialFileList::infoHook(class QDir const &dir, QString fn) {
-  QFile logf(dir.absoluteFilePath("log.txt"));
-  if (logf.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    QTextStream txt(&logf);
-    QString ourtrial = "Trial " + fn.replace(QString(".xml"),QString("")) + ":";
-    while (!txt.atEnd()) {
-      QString line = txt.readLine();
+  static QMap<QString, QStringList> logfiles;
+  static QMap<QString, QDateTime> lastread;
+  QString logfn = dir.absoluteFilePath("log.txt");
+  QFile logf(logfn);
+  bool have = logfiles.contains(logfn);
+  if (have && lastread[logfn].secsTo(QDateTime::currentDateTime()) > 10) {
+    QDateTime mtime = QFileInfo(logf).lastModified();
+    if (mtime > lastread[logfn])
+      have = false;
+  }
+  if (!have) {
+    logfiles[logfn] = QStringList();
+    if (logf.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      QTextStream txt(&logf);
+      while (!txt.atEnd())
+        logfiles[logfn] << txt.readLine();
+      lastread[logfn] = QFileInfo(logf).lastModified();
+      have = true;
+    }
+  }
+
+  if (have) {
+    QString ourtrial = "Trial " + fn.replace(QString(".xml"),QString(""));
+    foreach (QString line, logfiles[logfn]) {
       if (line.contains(ourtrial)) {
 	if (line.contains("Snapshot"))
 	  return "snapshot";
 	QString typ="";
-	if (line.contains("E'phys"))
+        if (line.contains("continuous"))
+          typ = "cont";
+        else if (line.contains("E'phys"))
 	  typ="eph";
-	if (line.contains("vsd")) {
+	if (line.contains("vsd") || line.contains("VSD")) {
 	  if (typ!="")
 	    typ+="+";
 	  typ+="vsd";

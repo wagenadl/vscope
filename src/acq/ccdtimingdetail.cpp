@@ -55,6 +55,7 @@ void CCDTimingDetail::generalPrep(ParamTree const *ptree,
     ? pre_ms + frame_ms*dutyCycle_percent/100 + post_ms
     : ptree->find("acqEphys/acqTime").toDouble();
   if (!is_snap && delay_ms + sequence_ms + post_ms > trial_ms) {
+    Dbg() << trial_ms << post_ms << delay_ms << sequence_ms;
     sequence_ms = trial_ms - post_ms - delay_ms;
     fprintf(stderr,"Warning: CCD Sequence shortened to fit inside trial.\n");
   }

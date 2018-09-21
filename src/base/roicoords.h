@@ -49,6 +49,10 @@ public:
   QPointF center() const;
   bool inside(double x, double y, double marg) const;
   bool inside(QPointF xy, double marg) const;
+  void translate(double dx, double dy);
+  /*:F translate
+   *:D Translates (moves) the ROI (as a whole) by the given amount.
+   */
 private:
   XYRRA *dataXYRRA;
   PolyBlob *dataBlob;

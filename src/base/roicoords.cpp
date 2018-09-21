@@ -211,3 +211,10 @@ bool ROICoords::inside(double x, double y, double marg) const {
 bool ROICoords::inside(QPointF xy, double marg) const {
   return inside(xy.x(), xy.y(), marg);
 }
+
+void ROICoords::translate(double dx, double dy) {
+  if (dataXYRRA)
+    dataXYRRA->translate(dx, dy);
+  if (dataBlob)
+    dataBlob->translate(dx, dy);
+}

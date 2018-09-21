@@ -1,17 +1,19 @@
-function psd = vscope_psd(t_sig, y_sig, varargin)
-% VSCOPE_PSD - Multitaper power spectrum estimate for vscope
-%    psd = VSCOPE_PSD(t_sig, y_sig) calculates multitaper power
+function psd = multitaper_psd(t_sig, y_sig, varargin)
+% MULTITAPER_PSD - Multitaper power spectrum estimate for vscope
+%    psd = MULTITAPER_PSD(t_sig, y_sig) calculates multitaper power
 %    spectral density estimates for the signals in the columns of Y_SIG. 
-%    psd = VSCOPE_PSD(t_sig, y_sig, key, value, ...) specifies
+%    psd = MULTITAPER_PSD(t_sig, y_sig, key, value, ...) specifies
 %    additional parameters:
 %       df - frequency resolution (in Hz if t_sig is in seconds). Default
 %            is 0.333 Hz.
 %    Return value is a structure with fields:
 %       f - frequency vector (in Hz if t_sig is in seconds) (Fx1 vector)
 %       psd - power estimates for each of the signals (FxN matrix) 
+%       sd - uncertainty on those estimates (FxN matrix)
+%       estimates - raw estimates on which PSD and SD are based
 %       fstar - frequency at which P is maximal (only computed if N=1)
 
-% This file is part of VScope. (C) Daniel Wagenaar 2008-1018.
+% This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
 
 % VScope is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -40,7 +42,9 @@ if numel(y_sig) == length(y_sig)
 end
 t_sig = t_sig(:); % Force T_SIG to be Tx1
 
-[psd.f, psd.psd] = pds_mtm0(t_sig, y_sig, kv.df);
+[psd.f, psd.psd, psd.estimates] = pds_mtm0(t_sig, y_sig, kv.df);
+psd.sd = std(psd.estimates,[],3) ./ sqrt(size(psd.estimates,3));
+psd.estimates = squeeze(psd.estimates);
 
 if size(y_sig, 2)==1
   [~, idx] = max(psd.psd);

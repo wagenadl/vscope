@@ -69,6 +69,7 @@ public:
     :  scale, unit, offset: conversion from DAQ units to logical units.
   */
   typedef QMap<QString, double> ScaleMap;
+  typedef QMap<quint64, ScaleMap> TimedScaleMap;
   void write(QString ofn, QDomElement elt);
   ScaleMap writeInt16(QString ofn);
   /*:F writeInt16
@@ -76,8 +77,14 @@ public:
    *:R Value of digital steps for each channel (in DAQ input Volts).
    */
   void read(QString ifn, QDomElement elt, class ProgressDialog *);
-  void readInt16(QString ifn, ScaleMap const &steps, class ProgressDialog *);
-  /*:F readInt16
+  void readPartial(QString ifn, QDomElement elt,
+                   quint64 startscan, double dur_ms,
+                   class ProgressDialog *);
+  void readInt16Partial(QString ifn,
+                        TimedScaleMap steps,
+                 quint64 startscan, quint64 nscans,
+                 class ProgressDialog *);
+  /*:F readInt16Partial
    *:D Reads data from a file created by writeInt16(). Unlike read(), this
        requires that the channel map has already been set up.
   */

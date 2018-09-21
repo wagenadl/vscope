@@ -245,6 +245,7 @@ Transform TrialData::camPlace(QString camid) const {
 }
 
 void TrialData::useThisPTree(ParamTree const *ptree) {
+  Dbg() << "useThisPTree" << ptree;
   if (mypartree)
     delete mypartree;
   partree = mypartree = 0;
@@ -254,6 +255,7 @@ void TrialData::useThisPTree(ParamTree const *ptree) {
 }
 
 void TrialData::cloneThisPTree(ParamTree const *ptree) {
+  Dbg() << "cloneThisPTree" << ptree;
   if (mypartree)
     delete mypartree;
   mypartree = 0;
@@ -330,18 +332,17 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
   QDomElement info = myxml.find("info");
   QDomElement settings = myxml.find("settings");
 
-  Dbg() << "TrialData::read";
+  Dbg() << "TrialData::read" << mypartree;
   if (!mypartree)
     mypartree = new ParamTree(*partree);
   
   mypartree->read(settings);
-  Dbg() << "  read paramtree freq" << mypartree->find("acqEphys/acqFreq").toInt();
 
   mypartree->find("filePath").set(fpath);
   mypartree->find("acquisition/exptname").set(exptname);
   mypartree->find("acquisition/trialno").set(trialid);
-  
-  contEphys = info.attribute("contephys")=="1";
+
+  contEphys = info.attribute("contephys").toInt() > 0;
   
   // the following ensures that we have stimulus data prepared
   // and that the xdataIn have the right sizes
@@ -358,9 +359,14 @@ void TrialData::read(QString dir, QString exptname0, QString trialid0,
 
   if (pd)
     pd->push(95, "Loading trial data");
-  if (snap || contEphys) {
+  if (snap) {
     clearAnalog();
     clearDigital();
+  } else if (contEphys) {
+    if (pd)
+      pd->push(do_ccd ? 25 : 100);
+    readContEphys(myxml, base, pd);
+    pd->pop();
   } else {
     if (pd) {
       pd->push(do_ccd ? 25 : 100);
@@ -437,7 +443,58 @@ void TrialData::clearDigital() {
   ddataIn->zero();
 }
 
- void TrialData::readAnalog(XML &myxml, QString base, ProgressDialog *pd) {
+void TrialData::readContEphys(XML &vsdxml, QString vsdbase, ProgressDialog *pd) {
+  // vsdxml and vsdbase refer to the vsd trial, not the cont trial
+  clearAnalog();
+  clearDigital();
+  QDir exptdir(QFileInfo(vsdbase).dir());
+  int vsdtrialno = mypartree->find("acquisition/trialno").toInt();
+  QDomElement vsdinfo = vsdxml.find("info");
+  QString conttrialid = vsdinfo.attribute("contephys");
+
+  QString contbase = QString("%1/%3")
+    .arg(exptdir.absolutePath())
+    .arg(conttrialid);
+  // Get info from cont trial xml
+  XML contxml(contbase + ".xml");
+  QDomElement continfo = contxml.find("info");
+  // Where should we load from?
+  quint64 ascan = 0;
+  quint64 dscan = 0;
+  for (QDomElement trialxml = continfo.firstChildElement("trial");
+       !trialxml.isNull(); trialxml = trialxml.nextSiblingElement("trial")) {
+    if (trialxml.attribute("id").toInt()==vsdtrialno) {
+      ascan = trialxml.attribute("ascan").toULongLong();
+      dscan = trialxml.attribute("dscan").toULongLong();
+      break;
+    }
+  }
+  if (ascan<=0 || dscan!=ascan) {
+    Dbg() << "Failed to get meaningful ascan or dscan - cannot load contephys";
+    return; // should show message box!
+  }
+  Dbg() << "Got ascan" << ascan << "dscan" << dscan;
+  // how much should we read?
+  UnitQty dur(vsdinfo.attribute("duration"));
+  double dur_ms = dur.toDouble("ms");
+  dur_ms += 2000; // add some margin for trial start delays
+
+  // load partial data
+  if (pd)
+    pd->push(75, "Loading analog cont. data");
+  ddataIn->readPartial(contbase + "-digital.dat", contxml.find("digital"),
+                       dscan, dur_ms, pd);
+  if (pd)
+    pd->pop();
+  if (pd)
+    pd->push(25, "Loading digital cont. data");
+  adataIn->readPartial(contbase + "-analog.dat", contxml.find("analog"),
+                       ascan, dur_ms, pd);
+  if (pd)
+    pd->pop();
+}  
+
+void TrialData::readAnalog(XML &myxml, QString base, ProgressDialog *pd) {
   QDomElement analog = myxml.find("analog");
   adataIn->read(base+"-analog.dat", analog, pd);
 }
@@ -447,7 +504,7 @@ void TrialData::readDigital(XML &myxml, QString base, ProgressDialog *pd) {
   ddataIn->read(base+"-digital.dat", digital, pd);
 }
 
- void TrialData::readCCD(XML &myxml, QString base, ProgressDialog *pd) {
+void TrialData::readCCD(XML &myxml, QString base, ProgressDialog *pd) {
   QDomElement ccd = myxml.find("ccd");
   /* We now have three versions of ccd data storage
      (1) The very oldest, with interleaved frames for precisely two cameras.

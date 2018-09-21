@@ -1,6 +1,9 @@
-function x = algcsqr(y)
-
-% all elements of y must be in the interval (0,1)
+function dat = vscope_load_digital_subset(ifn, info, offset, count)
+% VSCOPE_LOAD_DIGITAL_SUBSET - Load a subset of digital data from VScope
+%   dat = VSCOPE_LOAD_DIGITAL_SUBSET(ifn, info, offset, len) read COUNT scans
+%   of digital data after skipping the first OFFSET scans.
+%   INFO must be the DIGITAL.INFO field from a prior VSCOPE_LOAD with
+%   'i' in the LETTERS.
 
 % This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
 
@@ -17,10 +20,14 @@ function x = algcsqr(y)
 % You should have received a copy of the GNU General Public License
 % along with VScope.  If not, see <http://www.gnu.org/licenses/>.
 
-z=y.^2;
-dims=size(z);
-lower_bound=repmat(1e-15,dims);
-upper_bound=repmat(1-1e-15,dims);
-z=max(z,lower_bound);
-z=min(z,upper_bound);
-x = -log(z.^(-1)-1);
+if nargin ~= 4
+  error('Bad argument count');
+end
+
+ifn = strrep(ifn,'.xml','-digital.dat'); % for ease of use.
+W = info.typebytes;
+typ = sprintf('uint%i', W*8);
+ifd = fopen(ifn,'rb');
+fseek(ifd, offset*W, 'bof');
+dat = fread(ifd,[count 1],['*' typ]);
+fclose(ifd);

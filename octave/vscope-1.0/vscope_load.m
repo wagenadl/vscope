@@ -114,6 +114,7 @@ elseif endswith(ifn,'.xml')
     end
   end
   fclose(ifd);
+  dat.info.filename = ifn;
   
   roifn = strrep(ifn,'.xml','-rois.xml');
   if exist(roifn)
@@ -124,6 +125,18 @@ elseif endswith(ifn,'.xml')
   
   [dat.ccd.info.frame_s, dat.ccd.info.framestart_s, ...
 	dat.ccd.info.frameend_s] = vsdl_frametimes(dat);
+
+  if dat.info.contephystrial>0 && ...
+        ((any(wht=='a') && ~isfield(dat, 'analog')) ...
+         || (any(wht=='d') && ~isfield(dat, 'digital')))
+    % Get continuous ephys loaded as well
+    try
+      dat = vscope_load_continuous(dat);
+      disp('Loaded continuous ephys as well');
+    catch err
+      warning('Tried, and failed, to load continuous ephys');
+    end
+  end
 else
   fclose(ifd);
   error(['vscope_load: Unknown filetype "' ifn '"']);
@@ -314,6 +327,7 @@ info.trial = atoi(vsdl_getval(kv,'trial'));
 info.type = vsdl_getval(kv,'type');
 info.starts = [vsdl_getval(kv,'date') '.' vsdl_getval(kv,'time')];
 info.ends = [vsdl_getval(kv,'enddate') '.' vsdl_getval(kv,'endtime')];
+info.contephystrial = atoi(vsdl_getval(kv, 'contephys'));
 if isempty(findstr(str,'/>'))
   % Multi line info element
   info.trials.id=[];

@@ -216,7 +216,7 @@ void ROIImage::mousePressEvent(QMouseEvent *e) {
     recalcEllipse();
     ellipse->startCreate(e);
   } break;
-  case CM_MoveROI: {
+  case CM_MoveROI: case CM_MoveAllROIs: {
     selectNearestROI(clickPoint,5);
     if (selectedroi) {
       editing = new ROICoords(roiset->get(selectedroi));
@@ -359,32 +359,32 @@ void ROIImage::mouseReleaseEvent(QMouseEvent *e) {
     if (toosmall) {
       if (selectedroi)
 	roiset->remove(selectedroi);
-      //Dbg() << "ROIImage:release: too small: roi " << selectedroi << " removed";
     } else {
-      //Dbg() << "ROIImage:release: finding roi; selected was " << selectedroi;
       int id = selectedroi ? selectedroi : roiset->newROI(campair);
-      //Dbg() << "ROIImage:release: roi = " << id;
-      roiset->access(IDKeyGuard(*roiset,id).key()) = *editing;
-      //Dbg() << "ROIImage: checked out";
-      //Dbg() << "ROIImage: checked in";
-      //Dbg() << "ROIImage: selected was " << selectedroi << ", will be " << id;
+      if (clickMode==CM_MoveAllROIs) {
+	double deltax = editing->centerX() - roiset->get(id).centerX();
+	double deltay = editing->centerY() - roiset->get(id).centerY();
+	Dbg() << "moving" << deltax << deltay << editing->centerX();
+	CamPair cam = roiset->cam(id);
+	for (int id: roiset->idsForCam(cam)) {
+	  IDKeyGuard guard(*roiset, id);
+	  roiset->access(guard.key()).translate(deltax, deltay);
+	}
+      } else {
+	IDKeyGuard guard(*roiset, id);
+	roiset->access(guard.key()) = *editing;
+      }
       if (id!=selectedroi)
 	select(id);
-      //Dbg() << "ROIImage: done selection";
     }
-    //Dbg() << "ROIImage: Deleting editing "<< editing;
     delete editing;
     editing = 0;
-    //Dbg() << "ROIImage: Recalc ellipse";
     recalcEllipse(); // i.e., remove it
-    //Dbg() << "ROIImage: Forcing update";
     update();
   }
-  //Dbg() << "ROIImage:release done";
 }
 
 void ROIImage::updateSelection(int id) {
-  //Dbg() << "Updateselection "<<id;
   selectedroi = roiset->contains(id) ? id : 0;
   update();
 }

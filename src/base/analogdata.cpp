@@ -179,6 +179,12 @@ AnalogData::ScaleMap AnalogData::writeInt16(QString ofn) {
 }
 
 void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
+  readPartial(ifn, elt, 0, 1e9, pd);
+}
+
+void AnalogData::readPartial(QString ifn, QDomElement elt,
+                             quint64 startscan, double dur_ms,
+                             ProgressDialog *pd) {
   KeyGuard guard(*this);
 
   if (elt.tagName()!="analog")
@@ -192,6 +198,10 @@ void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
   int scans = elt.attribute("scans").toInt(&ok);
   if (!ok)
     throw Exception("AnalogData","Cannot read number of scans from xml");
+  scans -= startscan;
+  if (scans > dur_ms*fs_hz/1e3)
+    scans = dur_ms*fs_hz/1e3;
+    
   int chans = elt.attribute("channels").toInt(&ok);
   if (!ok)
     throw Exception("Trial","Cannot read number of channels from xml",
@@ -207,6 +217,8 @@ void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
   index2offset.resize(chans);
   index2unit.resize(chans);
   id2index.clear();
+  
+  // read initial scale map
   ScaleMap scales;
   for (QDomElement e=elt.firstChildElement("channel");
        !e.isNull(); e=e.nextSiblingElement("channel")) {
@@ -227,22 +239,41 @@ void AnalogData::read(QString ifn, QDomElement elt, ProgressDialog *pd) {
       index2offset[idx] = 0;
     }
   }
-  readInt16(ifn, scales, pd);
+
+  TimedScaleMap tscales;
+  tscales[0] = scales;
+
+  for (QDomElement grp=elt.firstChildElement("scale");
+       !grp.isNull(); grp=grp.nextSiblingElement("scale")) {
+    ScaleMap scale1;
+    quint64 start = grp.attribute("startscan").toULongLong();
+    for (QDomElement e=grp.firstChildElement("channel");
+         !e.isNull(); e=e.nextSiblingElement("channel")) {
+      int idx = e.attribute("idx").toInt(&ok);
+      if (!ok)
+        throw Exception("Trial","Cannot read channel index from xml","read");
+      QString id = index2id[idx];
+      UnitQty scl(e.attribute("scale"));
+      scale1[id] = scl.toDouble(index2unit[idx]);
+    }
+    tscales[start] = scale1;
+  }
+
+  readInt16Partial(ifn, tscales, startscan, scans, pd);
   if (nscans != scans)
     throw Exception("AnalogData", "Scan count mismatch between data and xml");
   Dbg() << "analogdata::read" << fs_hz;
 }
 
-void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
-			   ProgressDialog *pd) {
+void AnalogData::readInt16Partial(QString ifn,
+                                  AnalogData::TimedScaleMap tscales,
+                                  quint64 startscan, quint64 scans,
+                                  ProgressDialog *pd) {
   KeyGuard guard(*this);
-
-  for (int c=0; c<nchannels; c++)
-    if (!steps.contains(index2id[c]))
-      throw Exception("AnalogData",
-		      "Stepsize not specified for some channels",
-		      "readInt16");
-
+  QList<quint64> tt0 = tscales.keys();
+  ScaleMap steps;
+  quint64 tnext = tt0.takeFirst();
+  
   QFile ifd(ifn);
   if (!ifd.open(QFile::ReadOnly)) 
     throw SysExc("AnalogData::readInt16: Cannot open '" + ifn + "'");
@@ -252,6 +283,11 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
     throw Exception("AnalogData",
 		       "Unexpected file size: not a multiple of scan size",
 		       "readInt16");
+
+  newscans -= startscan;
+  if (newscans>scans)
+    newscans = scans;
+  
   reshape(newscans,nchannels);
 
   const int BUFSIZE = 1024;
@@ -259,8 +295,23 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
   int scansleft = newscans;
   double *dp = data.data();
   int k = 0;
+  ifd.seek(startscan*2*nchannels);
   while (scansleft) {
-    int now = scansleft < BUFSIZE ? scansleft : BUFSIZE;
+    while (startscan >= tnext) {
+      steps = tscales[tnext];
+      for (int c=0; c<nchannels; c++)
+        if (!steps.contains(index2id[c]))
+          throw Exception("AnalogData",
+                          "Stepsize not specified for some channels",
+                          "readInt16");
+      tnext = tt0.isEmpty() ? 1000*1000*1000 : tt0.takeFirst();
+    }
+    
+    int now = BUFSIZE;
+    if (now > scansleft)
+      now = scansleft;
+    if (startscan + now > tnext)
+      now = tnext - startscan;
     int nbytes = nchannels*2*now;
     if (ifd.read((char *)buffer.data(), nbytes) != nbytes)
       throw SysExc("AnalogData::readInt16: Cannot read '" + ifn + "'");
@@ -269,10 +320,11 @@ void AnalogData::readInt16(QString ifn, AnalogData::ScaleMap const &steps,
     for (int s=0; s<now; s++)
       for (int c=0; c<nchannels; c++)
 	*dp++ = *bp++ * steps[index2id[c]];
-    scansleft-=now;
+    scansleft -= now;
+    startscan += now;
     if (pd)
       if (((++k)&15)==0)
-	pd->progress((newscans-scansleft)*100.0/newscans);
+	pd->progress(startscan*100.0/newscans);
   }
   emitUnlessCheckedOut();
 }

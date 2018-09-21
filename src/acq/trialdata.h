@@ -107,6 +107,7 @@ private:
   void writeAnalog(QString base) const;
   void writeDigital(QString base) const;
   void writeCCD(QString base) const;
+  void readContEphys(XML &myxml, QString base, class ProgressDialog *pd);
   void readAnalog(XML &myxml, QString base, class ProgressDialog *pd);
   void readDigital(XML &myxml, QString base, class ProgressDialog *pd);
   void readCCD(XML &myxml, QString base, class ProgressDialog *pd);

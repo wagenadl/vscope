@@ -44,6 +44,7 @@ public:
     CM_RotateROI,
     CM_RotSizeROI,
     CM_BlobROI,
+    CM_MoveAllROIs,
   };
 public:
   ROIImage(QWidget *parent);
