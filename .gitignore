@@ -21,3 +21,4 @@ debian/vscope
 debian/files
 debian/*.substvars
 
+__pycache__
