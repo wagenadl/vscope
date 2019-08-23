@@ -52,17 +52,19 @@ QString TrialFileList::infoHook(class QDir const &dir, QString fn) {
     }
   }
 
+  QString typ = "";
   if (have) {
     QString ourtrial = "Trial " + fn.replace(QString(".xml"),QString(""));
     foreach (QString line, logfiles[logfn]) {
       if (line.contains(ourtrial)) {
 	if (line.contains("Snapshot"))
-	  return "snapshot";
-	QString typ="";
-        if (line.contains("continuous"))
+	  typ = "snapshot";
+        else if (line.contains("continuous"))
           typ = "cont";
         else if (line.contains("E'phys"))
-	  typ="eph";
+	  typ = "eph";
+	else
+	  typ = "";
 	if (line.contains("vsd") || line.contains("VSD")) {
 	  if (typ!="")
 	    typ+="+";
@@ -71,9 +73,8 @@ QString TrialFileList::infoHook(class QDir const &dir, QString fn) {
 	if (line.contains("stim")) {
 	  typ+="+stim";
 	}
-	return typ;
       }
     }
   }
-  return "";
+  return typ;
 }
