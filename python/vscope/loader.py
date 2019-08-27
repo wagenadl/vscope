@@ -1,294 +1,18 @@
-# vscope/loader.py - attempt at loading vscope data into python
+# vscope/loader.py - loading vscope data into python
+
+# This module contains:
+
+# - load
+# - loadxml
+# - loadanalog
+# - loaddigital
+# - loadccd
+# - loadrois
 
 import xml.etree.ElementTree as ET
 import numpy as np
-
-def units(s, unit):
-    '''UNITS - Decode units
-    v = UNITS(s, unit), where S is a string like "1.87 uV" and UNIT is
-    a compatible unit like "mV", returns the value in the requested units.
-    (In this example, the result would be 0.00187.)
-    A ValueError is thrown if the unit is is not compatible.'''
-    bits = s.split(' ')
-    if len(bits)==1:
-        if unit=='':
-            return float(s)
-        else:
-            raise ValueError('Unit mismatch')
-    else:
-        if unit=='':
-            raise ValueError('Unit mismatch')
-        v = float(bits[0])
-        u0 = bits[1]
-        if u0.endswith('Hz'):
-            u0 = u0[:-1]
-        if unit.endswith('Hz'):
-            unit = unit[:-1]
-        if u0[-1]==unit[-1]:
-            # Compatible
-            try:
-                pw0 = units.dct[u0[:-1]]
-                pw1 = units.dct[unit[:-1]]
-            except:
-                raise ValueError('Illegal prefix')
-            return v * 10**(pw0-pw1)
-        else:
-            raise ValueError('Unit mismatch')
-units.dct = { '': 0, 'k': 3, 'M': 6, 'G': 9,
-              'd': -1, 'c': -2,
-              'm': -3, 'u': -6, 'n': -9, 'p': -12, 'f': -15 }
-
-class PVal:
-    def __init__(self, s=""):
-        # xml must be a <pval>
-        self.s = s
-    def fromXML(xml):
-        return PVal(xml.attrib['value'])
-    def value(self, unit):
-        return units(self.s, unit)
-    def __call__(self, unit):
-        return self.value(unit)
-    def __repr__(self):
-        return self.s
-
-class PArray:
-    def __init__(self, xml, gcreator=None):
-        # xml must be an <array>
-        self.ids = []
-        self.elts = {}
-        if len(xml)==0:
-            return
-        for p in xml[0]:
-            self.ids.append(p.attrib['id'])
-        for elt in xml:
-            id = elt.attrib['id']
-            if gcreator is None:
-                val = {}
-                for p in elt:
-                    val[p.attrib['id']] = PVal.fromXML(p)
-                    self.elts[id] = val
-            else:
-                self.elts[id] = gcreator(elt)
-    def __len__(self):
-        return len(self.elts)
-    def __getitem__(self, id):
-        return self.elts[id]
-    def keys(self):
-        return self.elts.keys()
-    def __contains__(self, id):
-        return id in self.elts
-    def __repr__(self):
-        s = 'Array with members:\n  ' + '\n  '.join(self.keys())
-        s += '\ncontaining parameters:\n  ' + '\n  '.join(self.ids)
-        return s
-
-class PGroup:
-    def __init__(self, xml):
-        # xml must be <category> or <settings>
-        self.pvals = {}
-        self.subgrp = {}
-        self.parrs = {}
-        def gcreator(xml):
-            return PGroup(xml)
-        for elt in xml:
-            if elt.tag=='pval':
-                self.pvals[elt.attrib['id']] = PVal.fromXML(elt)
-            elif elt.tag=='category':
-                self.subgrp[elt.attrib['id']] = PGroup(elt)
-            elif elt.tag=='array':
-                self.parrs[elt.attrib['id']] = PArray(elt, gcreator)
-            else:
-                raise ValueError('Bad tag in PGroup: %s' % elt.tag)
-    def __len__(self):
-        return len(self.pvals) + len(self.subgrp) + len(self.parrs)
-    def keys(self):
-        kk = []
-        for k in self.subgrp.keys():
-            kk.append(k)
-        for k in self.parrs.keys():
-            kk.append(k)
-        for k in self.pvals.keys():
-            kk.append(k)
-        return kk
-    def __getattr__(self, id):
-        return self[id]
-    def __getitem__(self, id):
-        if id in self.pvals:
-            return self.pvals[id]
-        elif id in self.subgrp:
-            return self.subgrp[id]
-        elif id in self.parrs:
-            return self.parrs[id]
-        else:
-            return KeyError('ID %s not in group' % id)
-    def __repr__(self):
-        ss = []
-        if len(self.subgrp):
-            ss.append('Subgroups:\n    ' + '\n    '.join(self.subgrp.keys()))
-        if len(self.parrs):
-            ss.append('Arrays:\n    ' + '\n    '.join(self.parrs.keys()))
-        if len(self.pvals):
-            ss.append('Params: ')
-            for k,v in self.pvals.items():
-                ss.append('  %s: %s' % (k,v))
-        return 'Group containing:\n  ' + '\n  '.join(ss) + '\n'
-
-class VSAnalog:
-    def __init__(self, xml):
-        self.scans = int(xml.attrib['scans'])
-        self.rate_Hz = units(xml.attrib['rate'], 'Hz')
-        self.channels = int(xml.attrib['channels'])
-        self.revmap = {}
-        self.cids = []
-        self.cinfo = []
-        self.data = []
-        for c in xml:
-            self.cinfo.append(c.attrib)
-            self.revmap[c.attrib['id']] = int(c.attrib['idx'])
-            self.cids.append(c.attrib['id'])
-            self.data.append(None)
-    def __len__(self):
-        return len(self.cc)
-    def __getitem__(self, k):
-        if type(k)==str:
-            k = self.revmap[k]
-        return self.data[:,k]
-    def __repr__(self):
-        ll = []
-        ll.append('Analog data:')
-        ll.append('Scans: %i' % self.scans)
-        ll.append('Rate:  %g kHz' % (self.rate_Hz/1e3))
-        ll.append('Channels:')
-        for c in range(self.channels):
-            ll.append('  %i: %s' % (c, self.cids[c]))
-        return '\n  '.join(ll) + '\n'
-
-class VSDigital:
-    def __init__(self, xml):
-        self.scans = int(xml.attrib['scans'])
-        self.rate_Hz = units(xml.attrib['rate'], 'Hz')
-        self.cc = {}
-        self.revmap = {}
-        self.data = {}
-        for c in xml:
-            self.cc[int(c.attrib['idx'])] = c.attrib
-            self.revmap[c.attrib['id']] = int(c.attrib['idx'])
-    def __len__(self):
-        return len(self.cc)
-    def __getitem__(self, k):
-        if type(k)==str:
-            k = self.revmap[k]
-        return self.data[k]
-    def keys(self):
-        return self.cc.keys()
-    def __repr__(self):
-        ll = []
-        ll.append('Digital data:')
-        ll.append('Scans: %i' % self.scans)
-        ll.append('Rate:  %g kHz' % (self.rate_Hz/1e3))
-        ll.append('Lines:')
-        for k in self.cc.keys():
-            ll.append('  %i: %s' % (k, self.cc[k]['id']))
-        return '\n  '.join(ll) + '\n'
-
-class VSCCD:
-    def __init__(self, xml):
-        self.caminfo = []
-        self.data = {}
-        for c in xml:
-            cc = c.attrib
-            for x in c:
-                if x.tag=='transform':
-                    cc['transform'] = x.attrib
-            self.caminfo.append(cc)
-            self.data[cc['name']] = None
-    def __len__(self):
-        return len(self.caminfo)
-    def __getitem__(self, k):
-        # key is a camera name
-        return self.data[k]
-    def keys(self):
-        return self.data.keys()
-    def __repr__(self):
-        ll = []
-        ll.append('CCD data:')
-        ll.append('Cameras:')
-        for x in self.caminfo:
-            ll.append('  %s: %sx%s x %s @ %s' % (x['name'],
-                                                 x['serpix'], x['parpix'],
-                                                 x['frames'], x['rate']))
-        return '\n  '.join(ll) + '\n'
-    
-class VScopeFile:
-    def __init__(self):
-        self.settings = None
-        self.info = None
-        self.analog = None
-        self.digital = None
-        self.ccd = None
-        self.rois = None
-    def parsesettings(self, xml):
-        self.settings = PGroup(xml)
-    def parseinfo(self, xml):
-        self.info = xml.attrib
-    def parseanalog(self, xml):
-        self.analog = VSAnalog(xml)
-    def parsedigital(self, xml):
-        self.digital = VSDigital(xml)
-    def parseccd(self, xml):
-        self.ccd = VSCCD(xml)
-    def parsexml(self, xml):
-        for c in xml:
-            if c.tag == 'settings':
-                self.parsesettings(c)
-            elif c.tag == 'info':
-                self.parseinfo(c)
-            elif c.tag == 'analog':
-                self.parseanalog(c)
-            elif c.tag == 'digital':
-                self.parsedigital(c)
-            elif c.tag == 'ccd':
-                self.parseccd(c)
-    def __repr__(self):
-        s = 'VScopeFile:\n'
-        if self.settings is not None:
-            s += '  settings\n'
-        if self.info is not None:
-            s += '  info\n'
-        if self.rois is not None:
-            s += '  rois (%i)\n' % (len(self.rois))
-        if self.analog is not None:
-            s += '  analog (%i x %i @ %g kHz)\n' % (self.analog.channels,
-                                                    self.analog.scans,
-                                                    self.analog.rate_Hz/1e3)
-        if self.digital is not None:
-            s += '  digital (%i x %i)\n' % (len(self.digital),
-                                            self.digital.scans)
-        if self.ccd is not None:
-            nn = set()
-            ww = set()
-            hh = set()
-            rr = set()
-            for x in self.ccd.caminfo:
-                ww.add(x['serpix'])
-                hh.add(x['parpix'])
-                nn.add(x['frames'])
-                rr.add(x['rate'])
-            nrep = '%s' % nn.pop()
-            if len(nn)>0:
-                nrep += '+'
-            wrep = '%s' % ww.pop()
-            if len(ww)>0:
-                wrep += '+'
-            hrep = '%s' % hh.pop()
-            if len(hh)>0:
-                hrep += '+'
-            rrep = '%s' % rr.pop()
-            if len(rr)>0:
-                rrep += '+'
-            s += '  ccd (%i: %sx%s x %s @ %s)\n' % (len(self.ccd.caminfo),
-                                                    wrep, hrep, nrep, rrep)
-        return s
+from .types import *
+from . import utils
     
 def loadxml(fn):
     '''LOADXML - Load a vscope xml file
@@ -377,7 +101,7 @@ def loaddigital(fn, dig):
     data = LOADDIGITAL(fn, dig), where FN is 'EXPT/TRIAL.xml' or 
     'EXPT/TRIAL-digital.dat' loads the digital data for the given trial.
     DIG must be the 'digital' section from LOADXML().
-    Result is a dict if line numbers to numpy array of bools.'''
+    Result is a dict of line numbers to numpy array of bools.'''
     if not fn.endswith('-digital.dat'):
         if fn.endswith('.xml'):
             fn = fn[:-4]
@@ -430,6 +154,23 @@ def loadccd(fn, ccd):
             dat[f,:,:] = np.reshape(frm, (1, frmh[k], frmw[k]))
         res[ccd.caminfo[k]['name']] = dat
     return res
+
+def _ccdframetimes(x):
+    '''_CCDFRAMETIMES - Find start and end times of CCD frames
+    (start_s, end_s) = _ccdframetimes(x), where X is a VScopeFile containing
+    both digital data and CCD information, returns a dict of camera names to
+    frame start times and frame end times.'''
+    start_s = {}
+    end_s = {}
+
+    for cam in x.ccd.keys():
+        frmid = 'Frame:' + cam
+        if frmid in x.digital:
+            start_s[cam] = utils.rising(x.digital[frmid]) / x.digital.rate_Hz
+            end_s[cam] = utils.falling(x.digital[frmid]) / x.digital.rate_Hz
+    
+    return (start_s, end_s)
+
     
 def load(fn):
     '''LOAD - Load all data for a VScope trial
@@ -448,13 +189,5 @@ def load(fn):
         res.digital.data = loaddigital(fn, res.digital)
     if res.ccd is not None:
         res.ccd.data = loadccd(fn, res.ccd)
+        (res.ccd.framestart_s, res.ccd.frameend_s) = _ccdframetimes(res)
     return res
-    
-if __name__== '__main__':
-    fn = '/home/wagenaar/tmp/170428/006.xml'
-    xml = loadxml(fn)
-    print(xml)
-
-    rois = loadrois(fn)
-    
-    

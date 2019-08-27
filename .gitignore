@@ -22,3 +22,5 @@ debian/files
 debian/*.substvars
 
 __pycache__
+*.os
+.sconsign.dblite
