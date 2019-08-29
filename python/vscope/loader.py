@@ -92,11 +92,11 @@ def loadanalog(fn, ana):
         uni = scl[-1]
         print(off, scl, uni)
         if uni=='V':
-            off = units(off, 'mV')
-            scl = units(scl, 'mV')
+            off = units.quantity(off)('mV')
+            scl = units.quantity(scl)('mV')
         elif uni=='A':
-            off = units(off, 'nA')
-            scl = units(scl, 'nA')
+            off = units.quantity(off)('nA')
+            scl = units.quantity(scl)('nA')
         else:
             raise ValueError('Bad unit for channel %i' % c)
         data[:,c] *= scl
@@ -173,8 +173,8 @@ def _ccdframetimes(x):
     for cam in x.ccd.keys():
         frmid = 'Frame:' + cam
         if frmid in x.digital:
-            start_s[cam] = utils.rising(x.digital[frmid]) / x.digital.rate_Hz
-            end_s[cam] = utils.falling(x.digital[frmid]) / x.digital.rate_Hz
+            start_s[cam] = utils.rising(x.digital[frmid]) / x.digital.rate('Hz')
+            end_s[cam] = utils.falling(x.digital[frmid]) / x.digital.rate('Hz')
     
     return (start_s, end_s)
 
