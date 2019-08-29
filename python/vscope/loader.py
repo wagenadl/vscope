@@ -43,19 +43,26 @@ def loadrois(fn):
     rois = {}
     for roi in top:
         id = int(roi.attrib['id'])
-        rois[id] = {'cam': roi.attrib['cam']}
-        n = int(roi.attrib['n'])
-        xx = np.zeros(n) + np.nan
-        yy = np.zeros(n) + np.nan
-        k = 0
-        for line in roi.text.split('\n'):
-            bits = line.split(' ')
-            if len(bits)==2:
-                xx[k] = float(bits[0])
-                yy[k] = float(bits[1])
-                k += 1
-        rois[id]['x'] = xx
-        rois[id]['y'] = yy
+        rois[id] = {'cams': roi.attrib['cam'].split(':')}
+        if 'n' in roi.attrib:
+            n = int(roi.attrib['n'])
+            xx = np.zeros(n) + np.nan
+            yy = np.zeros(n) + np.nan
+            k = 0
+            for line in roi.text.split('\n'):
+                bits = line.split(' ')
+                if len(bits)==2:
+                    xx[k] = float(bits[0])
+                    yy[k] = float(bits[1])
+                    k += 1
+            rois[id]['x'] = xx
+            rois[id]['y'] = yy
+        else:
+            rois[id]['x0'] = roi.attrib['x0']
+            rois[id]['y0'] = roi.attrib['y0']
+            rois[id]['R'] = roi.attrib['R']
+            rois[id]['r'] = roi.attrib['r']
+            rois[id]['a'] = roi.attrib['a']
     return rois
 
 def loadanalog(fn, ana):

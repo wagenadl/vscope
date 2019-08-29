@@ -11,6 +11,8 @@
 # - VSCCD
 # - VScopeFile
 
+import numpy as np
+
 def units(s, unit):
     '''UNITS - Decode units
     v = UNITS(s, unit), where S is a string like "1.87 uV" and UNIT is
@@ -207,6 +209,26 @@ class VSDigital:
         return '\n  '.join(ll) + '\n'
 
 class VSCCD:
+    class Transform:
+        def __init__(self):
+            self.ax = 1
+            self.bx = 0
+            self.ay = 1
+            self.by = 0
+        def fromXML(elt):
+            res = VSCCD.Transform()
+            res.ax = int(elt.attrib['ax'])
+            res.bx = int(elt.attrib['bx'])
+            res.ay = int(elt.attrib['ay'])
+            res.by = int(elt.attrib['by'])
+            return res
+        def asAffine(self):
+            return np.array(((self.ax, 0, self.bx),
+                            (0, self.ay, self.by),
+                            (0, 0, 1)))
+        def __repr__(self):
+            return 'ax=%g bx=%g ay=%g by=%g' % (self.ax, self.bx,
+                                                self.ay, self.by)
     def __init__(self, xml):
         self.caminfo = []
         self.data = {}
@@ -214,7 +236,7 @@ class VSCCD:
             cc = c.attrib
             for x in c:
                 if x.tag=='transform':
-                    cc['transform'] = x.attrib
+                    cc['transform'] = VSCCD.Transform.fromXML(x)
             self.caminfo.append(cc)
             self.data[cc['name']] = None
     def __len__(self):

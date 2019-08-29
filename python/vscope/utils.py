@@ -2,8 +2,10 @@
 
 # This module contains:
 
+# - rising
+# - falling
 # - ephystime
-# - units
+# - ccdtime
 
 import numpy as np
 from .types import *
