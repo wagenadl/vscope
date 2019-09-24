@@ -50,7 +50,13 @@ build-dbg/Makefile: $(GENERATED) $(COMMON) FORCE
 	mkdir -p build-dbg
 	( cd build-dbg; $(QMAKE) $(SELECTQT) ../src/vscope.pro )
 
-clean:; rm -rf build build-dbg build-doc build-mtpsd
+clean:
+	rm -rf build build-dbg build-doc build-mtpsd
+	rm -rf python/vscope/__pycache__
+	rm -rf python/vscope/salpa/__pycache__
+	rm -f python/vscope/salpa/*.os
+	rm -f python/vscope/salpa/*.so
+	rm -f python/vscope/salpa/.sconsign.dblite
 
 src/pvp/pvp_Class0.h src/pvp/pvp_Class2.h src/pvp/pvp_Class3.h \
 src/pvp/pvp_Class0.cpp src/pvp/pvp_Class2.cpp src/pvp/pvp_Class3.cpp: \
