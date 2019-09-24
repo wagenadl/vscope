@@ -26,6 +26,7 @@
 #include <QDesktopWidget>
 #include <QIcon>
 #include <QDateTime>
+#include <QProcessEnvironment>
 
 #include <base/dbg.h>
 #include <base/base26.h>
@@ -97,6 +98,10 @@ QWidget *makeBanner1(QWidget *parent) {
   QString txt = "<h2>VScope ";
   
   txt += versionBanner("</h2>");
+
+  txt+= "<p>VScope working dir: " + QDir::currentPath();
+  txt += "<p>System path: "
+    + QProcessEnvironment::systemEnvironment().value("PATH");
   
   txt += "<h2>DAQ status</h2>";
   QString daqst = checkdaq();
