@@ -11,52 +11,21 @@
 # - VSCCD
 # - VScopeFile
 
-def units(s, unit):
-    '''UNITS - Decode units
-    v = UNITS(s, unit), where S is a string like "1.87 uV" and UNIT is
-    a compatible unit like "mV", returns the value in the requested units.
-    (In this example, the result would be 0.00187.)
-    A ValueError is thrown if the unit is is not compatible.'''
-    if s.endswith('%'):
-        s = s[:-1] + ' %'
-    bits = s.split(' ')
-    if len(bits)==1:
-        if unit=='':
-            return float(s)
-        else:
-            raise ValueError('Unit mismatch')
-    else:
-        if unit=='':
-            raise ValueError('Unit mismatch')
-        v = float(bits[0])
-        u0 = bits[1]
-        if u0.endswith('Hz'):
-            u0 = u0[:-1]
-        if unit.endswith('Hz'):
-            unit = unit[:-1]
-        if u0[-1]==unit[-1]:
-            # Compatible
-            try:
-                pw0 = units.dct[u0[:-1]]
-                pw1 = units.dct[unit[:-1]]
-            except:
-                raise ValueError('Illegal prefix')
-            return v * 10**(pw0-pw1)
-        else:
-            raise ValueError('Unit mismatch')
-units.dct = { '': 0, 'k': 3, 'M': 6, 'G': 9,
-              'd': -1, 'c': -2,
-              'm': -3, 'u': -6, 'n': -9, 'p': -12, 'f': -15 }
-
+import numpy as np
+from . import units
 
 class PVal:
     def __init__(self, s=""):
-        # xml must be a <pval>
         self.s = s
     def fromXML(xml):
+        # xml must be a <pval>
         return PVal(xml.attrib['value'])
     def value(self, unit):
-        return units(self.s, unit)
+        # This slightly weird organization is done because not every pval
+        # is a quantity. Some are simply strings.
+        return units.quantity(self.s)(unit)
+    def text(self):
+        return self.s
     def __call__(self, unit):
         return self.value(unit)
     def __repr__(self):
@@ -149,7 +118,7 @@ class PGroup:
 class VSAnalog:
     def __init__(self, xml):
         self.scans = int(xml.attrib['scans'])
-        self.rate_Hz = units(xml.attrib['rate'], 'Hz')
+        self.rate = units.quantity(xml.attrib['rate'])
         self.channels = int(xml.attrib['channels'])
         self.revmap = {}
         self.cids = []
@@ -170,7 +139,7 @@ class VSAnalog:
         ll = []
         ll.append('Analog data:')
         ll.append('Scans: %i' % self.scans)
-        ll.append('Rate:  %g kHz' % (self.rate_Hz/1e3))
+        ll.append('Rate:  %g kHz' % (self.rate('kHz')))
         ll.append('Channels:')
         for c in range(self.channels):
             ll.append('  %i: %s' % (c, self.cids[c]))
@@ -179,7 +148,7 @@ class VSAnalog:
 class VSDigital:
     def __init__(self, xml):
         self.scans = int(xml.attrib['scans'])
-        self.rate_Hz = units(xml.attrib['rate'], 'Hz')
+        self.rate = units.quantity(xml.attrib['rate'])
         self.cc = {}
         self.revmap = {}
         self.data = {}
@@ -200,21 +169,76 @@ class VSDigital:
         ll = []
         ll.append('Digital data:')
         ll.append('Scans: %i' % self.scans)
-        ll.append('Rate:  %g kHz' % (self.rate_Hz/1e3))
+        ll.append('Rate:  %g kHz' % (self.rate('kHz')))
         ll.append('Lines:')
         for k in self.cc.keys():
             ll.append('  %i: %s' % (k, self.cc[k]['id']))
         return '\n  '.join(ll) + '\n'
-
+  
 class VSCCD:
+    class Transform:
+        def __init__(self):
+            self.ax = 1
+            self.bx = 0
+            self.ay = 1
+            self.by = 0
+        def fromXML(elt):
+            res = VSCCD.Transform()
+            res.ax = int(elt.attrib['ax'])
+            res.bx = int(elt.attrib['bx'])
+            res.ay = int(elt.attrib['ay'])
+            res.by = int(elt.attrib['by'])
+            return res
+        def asAffine(self):
+            return np.array(((self.ax, 0, self.bx),
+                            (0, self.ay, self.by),
+                            (0, 0, 1)))
+        def inverse(self):
+            t = Transform()
+            t.ax = 1./self.ax
+            t.ay = 1./self.ay
+            t.bx = -self.bx/self.ax
+            t.by = -self.by/self.ay
+            return t
+        def __repr__(self):
+            return 'ax=%g bx=%g ay=%g by=%g' % (self.ax, self.bx,
+                                                self.ay, self.by)
+    class Info:
+        def __init__(self, elt):
+            self.vals = {}
+            self.vals['typebytes'] = int(elt.attrib['typebytes'])
+            self.vals['rate'] = units.quantity(elt.attrib['rate'])
+            self.vals['frames'] = int(elt.attrib['frames'])
+            self.vals['type'] = elt.attrib['type']
+            self.vals['framedur'] = units.quantity(elt.attrib['framedur'])
+            self.vals['delay'] = units.quantity(elt.attrib['delay'])
+            self.vals['name'] = elt.attrib['name']
+            self.vals['serpix'] = int(elt.attrib['serpix'])
+            self.vals['parpix'] = int(elt.attrib['parpix'])
+        def __len__(self):
+            return len(self.vals)
+        def keys(self):
+            return self.vals.keys()
+        def __getattr__(self, id):
+            return self[id]
+        def __contains__(self, id):
+            return id in self.vals
+        def __getitem__(self, id):
+            return self.vals[id]
+        def __repr__(self):
+            ss = []
+            for k,v in self.vals.items():
+                ss.append('  %s: %s' % (k,v))
+            return 'CCD Info:\n  ' + '\n  '.join(ss) + '\n'
+        
     def __init__(self, xml):
         self.caminfo = []
         self.data = {}
         for c in xml:
-            cc = c.attrib
+            cc = VSCCD.Info(c)
             for x in c:
                 if x.tag=='transform':
-                    cc['transform'] = x.attrib
+                    cc.vals['transform'] = VSCCD.Transform.fromXML(x)
             self.caminfo.append(cc)
             self.data[cc['name']] = None
     def __len__(self):
@@ -282,7 +306,7 @@ class VScopeFile:
         if self.analog is not None:
             s += '  analog (%i x %i @ %g kHz)\n' % (self.analog.channels,
                                                     self.analog.scans,
-                                                    self.analog.rate_Hz/1e3)
+                                                    self.analog.rate('kHz'))
         if self.digital is not None:
             s += '  digital (%i x %i)\n' % (len(self.digital),
                                             self.digital.scans)

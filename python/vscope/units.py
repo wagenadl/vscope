@@ -137,6 +137,9 @@ class Quantity:
         else:
             return self.preferred
 
+    def __call__(self, unit):
+        return self.value(unit)
+
     def __repr__(self):
         u = self.units()
         return '%g %s' % (self.value(u), u)

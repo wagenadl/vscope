@@ -43,19 +43,26 @@ def loadrois(fn):
     rois = {}
     for roi in top:
         id = int(roi.attrib['id'])
-        rois[id] = {'cam': roi.attrib['cam']}
-        n = int(roi.attrib['n'])
-        xx = np.zeros(n) + np.nan
-        yy = np.zeros(n) + np.nan
-        k = 0
-        for line in roi.text.split('\n'):
-            bits = line.split(' ')
-            if len(bits)==2:
-                xx[k] = float(bits[0])
-                yy[k] = float(bits[1])
-                k += 1
-        rois[id]['x'] = xx
-        rois[id]['y'] = yy
+        rois[id] = {'cams': roi.attrib['cam'].split(':')}
+        if 'n' in roi.attrib:
+            n = int(roi.attrib['n'])
+            xx = np.zeros(n) + np.nan
+            yy = np.zeros(n) + np.nan
+            k = 0
+            for line in roi.text.split('\n'):
+                bits = line.split(' ')
+                if len(bits)==2:
+                    xx[k] = float(bits[0])
+                    yy[k] = float(bits[1])
+                    k += 1
+            rois[id]['x'] = xx
+            rois[id]['y'] = yy
+        else:
+            rois[id]['x0'] = roi.attrib['x0']
+            rois[id]['y0'] = roi.attrib['y0']
+            rois[id]['R'] = roi.attrib['R']
+            rois[id]['r'] = roi.attrib['r']
+            rois[id]['a'] = roi.attrib['a']
     return rois
 
 def loadanalog(fn, ana):
@@ -85,11 +92,11 @@ def loadanalog(fn, ana):
         uni = scl[-1]
         print(off, scl, uni)
         if uni=='V':
-            off = units(off, 'mV')
-            scl = units(scl, 'mV')
+            off = units.quantity(off)('mV')
+            scl = units.quantity(scl)('mV')
         elif uni=='A':
-            off = units(off, 'nA')
-            scl = units(scl, 'nA')
+            off = units.quantity(off)('nA')
+            scl = units.quantity(scl)('nA')
         else:
             raise ValueError('Bad unit for channel %i' % c)
         data[:,c] *= scl
@@ -166,8 +173,8 @@ def _ccdframetimes(x):
     for cam in x.ccd.keys():
         frmid = 'Frame:' + cam
         if frmid in x.digital:
-            start_s[cam] = utils.rising(x.digital[frmid]) / x.digital.rate_Hz
-            end_s[cam] = utils.falling(x.digital[frmid]) / x.digital.rate_Hz
+            start_s[cam] = utils.rising(x.digital[frmid]) / x.digital.rate('Hz')
+            end_s[cam] = utils.falling(x.digital[frmid]) / x.digital.rate('Hz')
     
     return (start_s, end_s)
 

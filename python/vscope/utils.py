@@ -2,8 +2,10 @@
 
 # This module contains:
 
+# - rising
+# - falling
 # - ephystime
-# - units
+# - ccdtime
 
 import numpy as np
 from .types import *
@@ -69,7 +71,7 @@ def ccdtime(x, id=None):
     if len(ts)==0:
         t0 = x.settings.acqCCD.camera[id].delay('s')
         dt = 1.0 / x.settings.acqCCD.camera[id].rate('Hz')
-        ds = x.settings.acqCCD.camera['Top'].dutyCycle('%')
+        ds = x.settings.acqCCD.camera[id].dutyCycle('%')
         n = x.ccd[id].shape[0]
         ts = t0 + dt * np.arange(n)
         te = ts + ds*dt/100.0
