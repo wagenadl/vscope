@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{715DDC95-B7DD-4D56-B564-F36527D2CCC7}
 AppName=VScope
-AppVersion=1.0.10
+AppVersion=1.0.11
 ;AppVerName=VScope 0.99.3
 AppPublisher=Daniel Wagenaar
 AppPublisherURL=http://www.danielwagenaar.net
@@ -17,7 +17,7 @@ DefaultDirName={pf}\VScope
 DisableProgramGroupPage=yes
 LicenseFile=C:\Users\Wagenaar\Progs\vscope\vscope\gpl-3.0.txt
 OutputDir=../releases
-OutputBaseFilename=vscope-1.0.10-x86-setup
+OutputBaseFilename=vscope-1.0.11-x86-setup
 SetupIconFile=C:\Users\Wagenaar\Progs\vscope\vscope\src\vscope.ico
 Compression=lzma
 SolidCompression=yes

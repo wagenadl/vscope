@@ -1,3 +1,11 @@
+vscope 1.0.11
+
+      vscope_ccdtime now extracts frame time info from alt. camera with same settings if frame times are missing for given camera. TrialData does the same, but does not check if camera settings are compatible. That is a bug, but irrelevant for Yusuke’s current data, so to be fixed later.
+      windows deployment now uses mingw and new path for qt5.10.1
+      leechprojector no longer called as bash script
+
+  -- Daniel Wagenaar <daw@caltech.edu>  Mon, 04 Nov 2019 10:00:10 -0800
+
 vscope 1.0.10
 
   * Added debug info to welcome screen
