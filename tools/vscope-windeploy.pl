@@ -7,13 +7,13 @@ use File::Path;
 
 ######################################################################
 # EXTERNAL PATHS
-my $qbin_path = "c:/Qt-180519/5.10.1/msvc2015/bin";
+my $qbin_path = "c:/Qt/Qt5.10.1/5.10.1/mingw53_32/bin";
 my $msvc_path = "c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC";
 my $msvc_redist_path = "$msvc_path/redist/x86/Microsoft.VC140.CRT";
 
 ######################################################################
 # INTERNAL PATHS
-my $vscope_buildpath = "build-vscope-Desktop_Qt_5_10_1_MSVC2015_32bit-Release/release";
+my $vscope_buildpath = "build-vscope-Desktop_Qt_5_10_1_MinGW_32bit-Release/release";
 my $dpss_buildpath = "build-mtpsd";
 my $release_path = "release-vscope-x86";
 
@@ -38,14 +38,16 @@ File::Copy::copy("$vscope_buildpath/vscope.exe", "$release_path/");
 
 ######################################################################
 # Copy VScope dependencies
+if (0) {
 File::Copy::copy("$msvc_redist_path/msvcp140.dll", "$release_path/");
 File::Copy::copy("$msvc_redist_path/concrt140.dll", "$release_path/");
 File::Copy::copy("$msvc_redist_path/vccorlib140.dll", "$release_path/");
 File::Copy::copy("$msvc_redist_path/vcruntime140.dll", "$release_path/");
-
+}
 
 #######################################################################
 # Copy mkdpss and dependencies
+if (0) {
 File::Copy::copy("$dpss_buildpath/bin/mkdpss.exe", "$release_path/");
 
 my @ldd = split(/\n/, `ldd $dpss_buildpath/bin/mkdpss.exe`);
@@ -56,7 +58,7 @@ for my $ld (@ldd) {
   print "Dependency: $1\n";
   File::Copy::copy("$1", "$release_path/");
 }
-
+}
 
 #######################################################################
 print "Now run 'tools/vscope-x86.iss' using Inno Setup.\n";

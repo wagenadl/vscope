@@ -15,10 +15,10 @@ AppSupportURL=http://www.danielwagenaar.net
 AppUpdatesURL=http://www.danielwagenaar.net
 DefaultDirName={pf}\VScope
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\Daniel Wagenaar\Documents\Progs\vscope\gpl-3.0.txt
+LicenseFile=C:\Users\Wagenaar\Progs\vscope\vscope\gpl-3.0.txt
 OutputDir=../releases
 OutputBaseFilename=vscope-1.0.10-x86-setup
-SetupIconFile=C:\Users\Daniel Wagenaar\Documents\Progs\vscope\src\vscope.ico
+SetupIconFile=C:\Users\Wagenaar\Progs\vscope\vscope\src\vscope.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -29,7 +29,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Daniel Wagenaar\Documents\Progs\vscope\release-vscope-x86\*"; DestDir: "{app}"; Flags: ignoreversion  recursesubdirs createallsubdirs
+Source: "C:\Users\Wagenaar\Progs\vscope\vscope\release-vscope-x86\*"; DestDir: "{app}"; Flags: ignoreversion  recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{commonprograms}\VScope"; Filename: "{app}\vscope.exe"
