@@ -19,6 +19,7 @@
 // LocalFit.cpp
 
 #include "LocalFit.h"
+#include <iostream>
 
 #define ASYM_NOT_CHI2 1
 #ifndef THIRDORDER
@@ -422,23 +423,29 @@ void LocalFit::calc_alpha0123() {
 #include <stdio.h>
 
 void LocalFit::report() {
-  fprintf(stderr,"state=%8s ",
-	  state==OK?"OK":
-	  state==PEGGING?"PEGGING":
-	  state==PEGGED?"PEGGED":
-	  state==TOOPOOR?"TOOPOOR":
-	  state==DEPEGGING?"DEPGGING":
-	  state==FORCEPEG?"FORCEPEG":
-          state==BLANKDEPEG?"BLANKDEP":
-	  "???");
-  int t_stream_copy = int(t_stream);
-  int t0_copy = int(t0);
-  fprintf(stderr,"t_strm=%5.2f t0=%5.2f y[t]=%5f alpha=%g %g %g %g X=%f %f %f %f\n",
-	  t_stream_copy/25.0, t0_copy/25.0, source[t_stream]+0,
-	  alpha0,alpha1,alpha2,alpha3,X0,X1,X2,X3);
+  std::cerr << "state="
+	    << (state==OK?"OK":
+		state==PEGGING?"PEGGING":
+		state==PEGGED?"PEGGED":
+		state==TOOPOOR?"TOOPOOR":
+		state==DEPEGGING?"DEPGGING":
+		state==FORCEPEG?"FORCEPEG":
+		state==BLANKDEPEG?"BLANKDEP":
+		"???")
+	    << " ";
+  std::cerr << "t_stream=" << t_stream/25.0
+	    << " t0=" << t0/25.0
+	    << " y[t]=" <<source[t_stream]
+	    << " alpha=" << alpha0 << " " << alpha1 << " " << alpha2
+	    << " " << alpha3
+	    << " X=" << X0 << " " << X1 << " " << X2 << " " << X3
+	    << "\n";
 }
 
 void LocalFit::inirep() {
-  fprintf(stderr,"tau=%i\nT0=%5f\nT2=%5f\nT4=%5f\nT6=%5f\n",
-	  tau,T0,T2,T4,T6);
+  std::cerr << "tau="<<tau<<"\n"; 
+  std::cerr << "T0="<<T0<<"\n"; 
+  std::cerr << "T2="<<T2<<"\n"; 
+  std::cerr << "T4="<<T4<<"\n"; 
+  std::cerr << "T6="<<T6<<"\n"; 
 }

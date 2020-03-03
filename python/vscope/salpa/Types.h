@@ -22,25 +22,24 @@
 
 #define TYPES_H
 
-// Magic incantation to get 64-bit integers on most platforms
-// Inspired by mathworks's "io64.h" file.
-#if defined(__alpha) || defined(__sparcv9) || defined(__ia64) \
-    || defined(__ia64__) || defined(__x86_64__) || defined(__LP64__)
-  #define UINT64_DW unsigned long
-#elif defined(_MSC_VER) || (defined(__BORLANDC__) && __BORLANDC__ >= 0x530) \
-      || (defined(__WATCOMC__)  && __WATCOMC__  >= 1100)
-  #define UINT64_DW unsigned __int64
-#elif defined(__GNUC__) || defined(__hpux) || defined(__sun)
-  #define UINT64_DW unsigned long long
-#else
-  #define UINT64_DW unsigned long long
-#endif
-
-typedef UINT64_DW timeref_t;
-
-// #include <stdint.h>
-
-// typedef uint64_t timeref_t;
+//// Magic incantation to get 64-bit integers on most platforms
+//// Inspired by mathworks's "io64.h" file.
+//#if defined(__alpha) || defined(__sparcv9) || defined(__ia64) \
+//    || defined(__ia64__) || defined(__x86_64__) || defined(__LP64__)
+//  #define UINT64_DW unsigned long
+//#elif defined(_MSC_VER) || (defined(__BORLANDC__) && __BORLANDC__ >= 0x530) \
+//      || (defined(__WATCOMC__)  && __WATCOMC__  >= 1100)
+//  #define UINT64_DW unsigned __int64
+//#elif defined(__GNUC__) || defined(__hpux) || defined(__sun)
+//  #define UINT64_DW unsigned long long
+//#else
+//  #define UINT64_DW unsigned long long
+//#endif
+//
+//typedef UINT64_DW timeref_t;
+//
+#include <stdint.h>
+typedef uint64_t timeref_t;
 
 
 const timeref_t INFTY = (timeref_t)(-1);

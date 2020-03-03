@@ -78,7 +78,7 @@ private:
   void calc_alpha0123(); // from X0123
   inline void calc_alpha0(); // from X02
   State statemachine(timeref_t t_limit, State s);
-  bool ispegged(raw_t value) { return value==rail1 || value==rail2; }
+  bool ispegged(raw_t value) { return value<=rail1 || value>=rail2; }
 private:
   // external world communication
   raw_t const *source;

@@ -19,22 +19,42 @@ bool _sanity() {
 
 
 extern "C" {
-  void salpapy(double const *data, double *out, int N,
-               double rail1,
-               double rail2,
-               double thresh,
-               int tau,
-               int t_blankdepeg,
-               int t_ahead,
-               int t_chi2) {
+  LocalFit *salpa_start(double const *data, double *out, uint64_t N,
+			double rail1,
+			  double rail2,
+			  double thresh,
+			  int tau,
+			  int t_blankdepeg,
+			  int t_ahead,
+			  int t_chi2) {
+    /* Prepare the filter.
+       You should call salpa_partial and/or salpa_forcepeg to process
+       the data piecewise, then call salpa_end to free resources.
+       Returns 0 if the filter could not be constructed.
+     */ 
     if (!_sanity())
-      return;
-    LocalFit lf(data, out,
-                0, N,
-                thresh, tau,
-                t_blankdepeg, t_ahead,
-                t_chi2);
-    lf.setrail(rail1, rail2);
-    lf.process(N);
+      return 0;
+    LocalFit *lf = new LocalFit(data, out,
+				0, N,
+				thresh, tau,
+				t_blankdepeg, t_ahead,
+				t_chi2);
+    lf->setrail(rail1, rail2);
+    return lf;
+  }
+
+  void salpa_partial(LocalFit *lf, uint64_t t_end) {
+    // process up to given time point
+    lf->process(t_end);
+  }
+
+  void salpa_forcepeg(LocalFit *lf, uint64_t t_from, uint64_t t_to) {
+    // processes up to t_to, forcing peg between t_from and t_to.
+    lf->forcepeg(t_from, t_to);
+  }
+
+  void salpa_end(LocalFit *lf) {
+    // free resources
+    delete lf;
   }
 }
