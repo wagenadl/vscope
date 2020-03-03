@@ -112,6 +112,10 @@ void VProjector::prepare(class ParamTree const *p) {
               .arg(p->find("stimVideo/xhome").toDouble()).toUtf8());
   proc->write(QString("set yhomemm %1\n")
               .arg(p->find("stimVideo/yhome").toDouble()).toUtf8());
+  proc->write(QString("set dark %1\n")
+              .arg(p->find("stimVideo/dark").toInt()).toUtf8());
+  proc->write(QString("set light %1\n")
+              .arg(p->find("stimVideo/light").toInt()).toUtf8());
   proc->waitForBytesWritten(); // hmmm
   Dbg() << "  vprojector prepared";
 }
