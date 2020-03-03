@@ -43,8 +43,8 @@ int   LocalFit::TOOPOORCNT = 5;
 // inline functions
 //
 inline void LocalFit::update_X012() {
-  raw_t y_new = source[t_stream+tau];
-  raw_t y_old = source[t_stream-tau-1];
+  real_t y_new = source[t_stream+tau];
+  real_t y_old = source[t_stream-tau-1];
   X0 += y_new - y_old;
   X1 += tau_plus_1*y_new - minus_tau*y_old - X0;
   X2 += tau_plus_1_squared*y_new - minus_tau_squared*y_old - X0 - 2*X1;
@@ -178,11 +178,11 @@ LocalFit::State LocalFit::statemachine(timeref_t t_limit, State s) {
 	goto l_FORCEPEG;
       }
       int dt = int(t_i - t0);
-      int dt2=dt*dt;
-      int dt3=dt*dt2;
+      int dt2 = dt*dt;
+      int dt3 = dt*dt2;
       real_t dy = alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3 - source[t_i];
-      asym+=dy;
-      sig+=dy*dy;
+      asym += dy;
+      sig += dy*dy;
     }
     //    fprintf(stderr,"TOOPOOR: t=%.2f t0=%.2f asym/sqrt(t)=%g [t_chi2=%i sqrt(sig/t)=%g]\n",
     //	    t_stream/25.,t0/25.,asym/sqrt(t_chi2+0.),t_chi2,sqrt(sig/t_chi2));
@@ -195,9 +195,10 @@ LocalFit::State LocalFit::statemachine(timeref_t t_limit, State s) {
     if (toopoorcnt<=0 && asym < my_thresh/3.92) {
 #if PREMATURE
       int dt = int(t_stream - t0);
-      int dt2=dt*dt;
-      int dt3=dt*dt2;
-      negv =  source[t_stream] < raw_t(alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3);
+      int dt2 = dt*dt;
+      int dt3 = dt*dt2;
+      negv =  source[t_stream]
+	< raw_t(alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3);
 #endif
 
 #ifdef TEST
@@ -221,8 +222,8 @@ LocalFit::State LocalFit::statemachine(timeref_t t_limit, State s) {
 	goto l_FORCEPEG;
       }
       int dt = int(t_i - t0);
-      int dt2=dt*dt;
-      int dt3=dt*dt2;
+      int dt2 = dt*dt;
+      int dt3 = dt*dt2;
       real_t dy = alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3 - source[t_i];
       chi2+=dy*dy;
     }
@@ -231,9 +232,10 @@ LocalFit::State LocalFit::statemachine(timeref_t t_limit, State s) {
     if (chi2 < my_thresh) {
 #if PREMATURE
       int dt = int(t_stream - t0);
-      int dt2= dt*dt;
-      int dt3= dt*dt2;
-      negv = source[t_stream] < raw_t(alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3);
+      int dt2 = dt*dt;
+      int dt3 = dt*dt2;
+      negv = source[t_stream]
+	< raw_t(alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3);
 #endif
       goto l_BLANKDEPEG;
     }
@@ -284,10 +286,11 @@ LocalFit::State LocalFit::statemachine(timeref_t t_limit, State s) {
     if (t_stream >= t0-tau+t_blankdepeg)
       goto l_DEPEGGING;
 #if PREMATURE
-    int dt=int(t_stream-t0);
-    int dt2=dt*dt;
-    int dt3=dt*dt2;
-    raw_t y = source[t_stream] - raw_t(alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3);
+    int dt = int(t_stream-t0);
+    int dt2 = dt*dt;
+    int dt3 = dt*dt2;
+    raw_t y = source[t_stream]
+      - raw_t(alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3);
     if ((y<0) != negv) {
       dest[t_stream] = y;
       t_stream++;
@@ -318,9 +321,9 @@ LocalFit::State LocalFit::statemachine(timeref_t t_limit, State s) {
     if (t_stream==t0) {
       goto l_OK;
     }
-    int dt=int(t_stream-t0);
-    int dt2=dt*dt;
-    int dt3=dt*dt2;
+    int dt = int(t_stream-t0);
+    int dt2 = dt*dt;
+    int dt3 = dt*dt2;
     dest[t_stream] = source[t_stream]
       - raw_t(alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3);
     t_stream++;
@@ -337,9 +340,9 @@ LocalFit::State LocalFit::statemachine(timeref_t t_limit, State s) {
       t_peg = t_stream;
       goto l_PEGGED;
     }
-    int dt=int(t_stream-t0);
-    int dt2=dt*dt;
-    int dt3=dt*dt2;
+    int dt = int(t_stream-t0);
+    int dt2 = dt*dt;
+    int dt3 = dt*dt2;
     dest[t_stream] = source[t_stream]
       - raw_t(alpha0 + alpha1*dt + alpha2*dt2 + alpha3*dt3);
     t_stream++;

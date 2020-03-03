@@ -7,14 +7,17 @@ import os
 _salpa = np.ctypeslib.load_library('libsalpa', os.path.dirname(__file__))
 
 class Salpa:
-    def __init__(self, data, tau, rail1=-np.inf, rail2=np.inf, thresh=3,
+    def __init__(self, data, tau, rail1=-np.inf, rail2=np.inf, thresh=np.inf,
                  t_blankdepeg=5, t_ahead=5, t_chi2=15):
-        self.data = data.astype('double')
-        self.out = 0*data
+        self.data = data.astype(np.float32)
         N = len(data)
+        self.out = np.zeros(N, np.float32)
+        #print(self.data.shape, self.out.shape, N)
+        #print(self.data.ctypes.data_as(ct.POINTER(ct.c_float)))
+        #print(self.out.ctypes.data_as(ct.POINTER(ct.c_float)))
         self.ptr = _salpa.salpa_start(
-            self.data.ctypes.data_as(ct.POINTER(ct.c_double)),
-            self.out.ctypes.data_as(ct.POINTER(ct.c_double)),
+            self.data.ctypes.data_as(ct.POINTER(ct.c_float)),
+            self.out.ctypes.data_as(ct.POINTER(ct.c_float)),
             ct.c_uint64(N),
             ct.c_double(rail1), ct.c_double(rail2),
             ct.c_double(thresh),
@@ -24,30 +27,38 @@ class Salpa:
             ct.c_int(t_chi2))
         if self.ptr==0:
             raise Exception('Could not construct salpa object')
+        #print('constructed')
     def __del__(self):
         self.close()
     def close(self):
         if self.ptr is not None:
+            #print('closing')
             _salpa.salpa_end(self.ptr)
+            #print('closed')
         self.ptr = None
     def complete(self):
+        #print('completing')
         if self.ptr is None:
             return
         self.partial(len(self.data))
+        #print('partialed')
         self.close()
+        #print('complete')
         return self.out
     def partial(self, t_to):
         if self.ptr is None:
             raise Exception('Salpa object not active')            
         _salpa.salpa_partial(self.ptr, ct.c_uint64(t_to))
     def forcepeg(self, t_from, t_to):
+        #print('forcepeg')
         if self.ptr is None:
             raise Exception('Salpa object not active')            
         _salpa.salpa_forcepeg(self.ptr, ct.c_uint64(t_from), ct.c_uint64(t_to))
+        #print('forcedpeg')
     def result(self):
         return self.out
 
-def salpa(data, tau, rail1=-np.inf, rail2=np.inf, thresh=3,
+def salpa(data, tau, rail1=-np.inf, rail2=np.inf, thresh=np.inf,
           t_blankdepeg=5, t_ahead=5, t_chi2=15, tt_stimuli=None, t_forcepeg=10):
     '''SALPA - Suppresion of Artifacts by Local Polynomial Approximation
     y = SALPA(x, tau) performs SALPA on the data X, which must be a 1D

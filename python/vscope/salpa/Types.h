@@ -44,7 +44,7 @@ typedef uint64_t timeref_t;
 
 const timeref_t INFTY = (timeref_t)(-1);
 
-typedef double raw_t; //:t raw_t
+typedef float raw_t; //:t raw_t
 /*:D Type of raw data, i.e. single channel samples. */
 
 typedef double real_t; //:t real_t

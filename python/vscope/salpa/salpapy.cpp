@@ -19,14 +19,14 @@ bool _sanity() {
 
 
 extern "C" {
-  LocalFit *salpa_start(double const *data, double *out, uint64_t N,
+  LocalFit *salpa_start(raw_t const *data, raw_t *out, uint64_t N,
 			double rail1,
-			  double rail2,
-			  double thresh,
-			  int tau,
-			  int t_blankdepeg,
-			  int t_ahead,
-			  int t_chi2) {
+			double rail2,
+			double thresh,
+			int tau,
+			int t_blankdepeg,
+			int t_ahead,
+			int t_chi2) {
     /* Prepare the filter.
        You should call salpa_partial and/or salpa_forcepeg to process
        the data piecewise, then call salpa_end to free resources.
