@@ -3,6 +3,11 @@
 #include "LocalFit.h"
 #include <stdio.h>
 
+#ifdef _WIN32
+#define EXPORTED   __declspec(dllexport) 
+#else
+#define EXPORTED
+#endif
 bool _sanity() {
   timeref_t TEST = INFTY;
   TEST++;
@@ -19,14 +24,14 @@ bool _sanity() {
 
 
 extern "C" {
-  LocalFit *salpa_start(raw_t const *data, raw_t *out, uint64_t N,
-			double rail1,
-			double rail2,
-			double thresh,
-			int tau,
-			int t_blankdepeg,
-			int t_ahead,
-			int t_chi2) {
+  EXPORTED LocalFit *salpa_start(raw_t const *data, raw_t *out, uint64_t N,
+				 double rail1,
+				 double rail2,
+				 double thresh,
+				 int tau,
+				 int t_blankdepeg,
+				 int t_ahead,
+				 int t_chi2) {
     /* Prepare the filter.
        You should call salpa_partial and/or salpa_forcepeg to process
        the data piecewise, then call salpa_end to free resources.
@@ -43,17 +48,17 @@ extern "C" {
     return lf;
   }
 
-  void salpa_partial(LocalFit *lf, uint64_t t_end) {
+  EXPORTED void salpa_partial(LocalFit *lf, uint64_t t_end) {
     // process up to given time point
     lf->process(t_end);
   }
 
-  void salpa_forcepeg(LocalFit *lf, uint64_t t_from, uint64_t t_to) {
+  EXPORTED void salpa_forcepeg(LocalFit *lf, uint64_t t_from, uint64_t t_to) {
     // processes up to t_to, forcing peg between t_from and t_to.
     lf->forcepeg(t_from, t_to);
   }
 
-  void salpa_end(LocalFit *lf) {
+  EXPORTED void salpa_end(LocalFit *lf) {
     // free resources
     delete lf;
   }

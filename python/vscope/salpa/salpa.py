@@ -4,7 +4,16 @@ import ctypes as ct
 import numpy as np
 import os
 
-_salpa = np.ctypeslib.load_library('libsalpa', os.path.dirname(__file__))
+_salpa = np.ctypeslib.load_library('salpa', os.path.dirname(__file__))
+_salpa.salpa_start.argtypes = [ct.c_void_p, ct.c_void_p, ct.c_uint64,
+    ct.c_double, ct.c_double, ct.c_double,
+    ct.c_int, 
+    ct.c_int, ct.c_int, ct.c_int]
+_salpa.salpa_start.restype = ct.c_void_p
+_salpa.salpa_partial.argtypes = [ct.c_void_p, ct.c_uint64]
+_salpa.salpa_forcepeg.argtypes = [ct.c_void_p, ct.c_uint64, ct.c_uint64]
+_salpa.salpa_end.argtypes = [ct.c_void_p]
+
 
 class Salpa:
     def __init__(self, data, tau, rail1=-np.inf, rail2=np.inf, thresh=np.inf,
@@ -29,7 +38,7 @@ class Salpa:
             raise Exception('Could not construct salpa object')
         #print('constructed')
     def __del__(self):
-        self.close()
+        pass # self.close()
     def close(self):
         if self.ptr is not None:
             #print('closing')
@@ -64,6 +73,11 @@ def salpa(data, tau, rail1=-np.inf, rail2=np.inf, thresh=np.inf,
     y = SALPA(x, tau) performs SALPA on the data X, which must be a 1D
     numpy array. Note that THRESH is absolute. You need to estimate the noise
     level with an external tool.
+      DATA must be a 1-d array of data
+      TAU, T_BLANKDEPEG, T_AHEAD, T_CHI2, T_FORCEPEG are in units of samples.
+      RAIL1, RAIL2, THRESH are in units of the data. (Importantly, THRESH is _not_
+      relative to estimated noise.)
+      TT_STIMULI are timestamps of known stimuli (in samples) to force pegging.
     See Wagenaar and Potter (2001).'''
     slp = Salpa(data, tau, rail1, rail2, thresh, t_blankdepeg, t_ahead, t_chi2)
     if tt_stimuli is not None:
