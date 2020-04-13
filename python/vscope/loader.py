@@ -30,7 +30,8 @@ def loadrois(fn):
     rois = LOADROIS(fn), where FN is 'EXPT/TRIAL.xml' or 'EXPT/TRIAL-rois.xml'
     loads the ROIs from the file.
     Result is a dict where keys are ROI numbers and values are dicts 
-    containing CAM, X, and Y. (The latter being numpy arrays.) '''
+    containing CAM, X, and Y. (The latter being numpy arrays.)
+    Note that ROI numbers count from 1, as in Octave.'''
     if not fn.endswith('-rois.xml'):
         if fn.endswith('.xml'):
             fn = fn[:-4]
@@ -90,7 +91,6 @@ def loadanalog(fn, ana):
         off = ana.cinfo[c]['offset']
         scl = ana.cinfo[c]['scale']
         uni = scl[-1]
-        print(off, scl, uni)
         if uni=='V':
             off = units.quantity(off)('mV')
             scl = units.quantity(scl)('mV')
@@ -189,7 +189,7 @@ def load(fn):
     try:
         res.rois = loadrois(fn)
     except:
-        pass
+        res.rois = None
     if res.analog is not None:
         res.analog.data = loadanalog(fn, res.analog)
     if res.digital is not None:
@@ -197,4 +197,16 @@ def load(fn):
     if res.ccd is not None:
         res.ccd.data = loadccd(fn, res.ccd)
         (res.ccd.framestart_s, res.ccd.frameend_s) = _ccdframetimes(res)
+    for camno in range(len(res.ccd.caminfo)):
+        info = res.ccd.caminfo[camno]
+        camid = info.name
+        xform = info.transform
+        if xform.ax<0:
+            res.ccd.data[camid] = np.flip(res.ccd.data[camid], 1)
+            res.ccd.caminfo[camno].transform.ax = -xform.ax
+            res.ccd.caminfo[camno].transform.bx -= xform.ax*info.serpix
+        if xform.ay<0:
+            res.ccd.data[camid] = np.flip(res.ccd.data[camid], 0)
+            res.ccd.caminfo[camno].transform.ay = -xform.ay
+            res.ccd.caminfo[camno].transform.by -= xform.ay*info.parpix
     return res

@@ -203,6 +203,10 @@ class VSCCD:
         def __repr__(self):
             return 'ax=%g bx=%g ay=%g by=%g' % (self.ax, self.bx,
                                                 self.ay, self.by)
+        def apply(self, pt):
+            x, y = pt
+            return (self.ax*x+bx, self.ay*y+by)
+            
     class Info:
         def __init__(self, elt):
             self.vals = {}
