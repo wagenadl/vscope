@@ -87,7 +87,7 @@ def _outlines_poly(roi, info):
     
 def _coords_poly(roi, info):
     xx, yy = _outlines_poly(roi, info)
-    if len(xx)==0):
+    if len(xx)==0:
         return xx, yy
     xmin = int(np.floor(np.min(xx))-1)
     ymin = int(np.floor(np.min(yy))-1)
@@ -109,10 +109,10 @@ def _coords_poly(roi, info):
     yy, xx = np.nonzero(img)
     return xx+xmin, yy+ymin
 
-def _outline_xyrra(roi, info):
+def _outline_xyrra(roi, info, nvert=64):
     '''UNTESTED'''
     el = xyrra.XYRRA(roi)
-    xx, yy = el.stroke()
+    xx, yy = el.stroke(nvert)
     return info.transform.inverse().apply(xx, yy)
 
 def _coords_xyrra(roi, info):
@@ -142,10 +142,25 @@ def _coords_xyrra(roi, info):
     eta = -np.sin(el.phi)*xx_ + np.cos(el.phi)*yy_;
     yy, xx = np.nonzero(xi**2/el.R**2 + eta**2/el.r**2 <= 1)
     return xx+x0, yy+y0
+
+def pixelcoords(x, roiid, cam=None, info=None):
+    '''PIXELCOORDS - Return coordinates for one ROI
+    (xx, yy) = PIXELCOORDS(x, roiid, cam), where X is a VScopeFile from 
+    LOAD, ROIID is the number of a ROI (counting from 1), and
+    CAM is a camera name, returns (xx, yy) coordinates of pixels that are 
+    inside the ROI. 
+    Instead of specifying CAM, you can also specify INFO. This is not meant
+    for external use.'''
+    if info is None:
+        info = x.ccd.info(cam)
+    if 'x' in x.rois[id]:
+        return _coords_poly(x.rois[id], info)
+    else:
+        return _coord_xyrra(x.rois[id], info)
     
-def roicoords(x, cam):
-    '''ROICOORDS - Return coordinates for all ROIs on a given camera
-    coords = ROICOORDS(x, cam), where X is a VScopeFile from LOAD and
+def allpixelcoords(x, cam):
+    '''ALLPIXELCOORDS - Return coordinates for all ROIs on a given camera
+    coords = ALLPIXELCOORDS(x, cam), where X is a VScopeFile from LOAD and
     CAM is a camera name, returns a dict mapping ROI numbers to (xx, yy) 
     tuples of pixel coordinates that are inside the ROI.
     Only ROIs that are defined on the given camera will appear in the dict.'''
@@ -156,28 +171,39 @@ def roicoords(x, cam):
         if len(cc)==0 or cam in cc:
             # Very old vscope files have no cam names stored in -rois.xml
             # More recent versions have a colon-separated list
-            if 'x' in x.rois[id]:
-                coords[id] = _coords_poly(x.rois[id], info)
-            else:
-                coords[id] = _coord_xyrra(x.rois[id], info)
+            coords[id] = pixelcoords(x, id, info=info)
     return coords
-        
-def roioutlines(x, cam):
-    '''ROIOUTLINES - Returns polygons specifying the edge of ROIs
-    polys = ROIOUTLINES(x, camid), where X is a VScopeFile from LOAD
+
+def outline(x, roiid, cam=None, info=None, nvert=64):
+    '''OUTLINE - Return a polygonal outline of a ROI
+    (xx, yy) = OUTLINE(x, roiid, cam), where X is a VScopeFile from LOAD,
+    ROIID is the number (counting from 1) of a ROI in the file, and CAM 
+    is a camera name, returns the polygonal outline of the given ROI in 
+    the coordinates of the given camera.
+    For elliptical ROIs ("xyrra" style), NVERT specifies how many points 
+    to return along the outline.
+    Optional argument INFO can be used to override x.ccd.info, but is not
+    really meant for external use.'''
+    if info is None:
+        info = x.ccd.info(cam)
+    if 'x' in x.rois[id]:
+        return _outlines_poly(x.rois[id], info)
+    else:
+        return _outlines_xyrra(x.rois[id], info)
+
+def alloutlines(x, cam):
+    '''ALLOUTLINES - Returns polygons specifying the outline of all ROIs.
+    polys = ALLOUTLINES(x, camid), where X is a VScopeFile from LOAD
     and CAM is a camera name, returns a dict mapping ROI numbers to (xx, yy)
     tuples defining the boundaries of each ROI.'''
-    info = x.ccd.info(cam)
     polys = {}
-    for id in x.rois.keys():
-        cc = x.rois[id]['cams']
+    info = x.ccd.info(cam)
+    for id, roi in x.rois.items():
+        cc = roi['cams']
+        # Very old vscope files have no cam names stored in -rois.xml
+        # More recent versions have a colon-separated list
         if len(cc)==0 or cam in cc:
-            # Very old vscope files have no cam names stored in -rois.xml
-            # More recent versions have a colon-separated list
-            if 'x' in x.rois[id]:
-                polys[id] = _outlines_poly(x.rois[id], info)
-            else:
-                polys[id] = _outlines_xyrra(x.rois[id], info)
+            polys[id] = outline(x, roiid, info=info)
     return polys
     
 def allroimask(x, cam, marg=None, margx=None, margy=None):
@@ -206,7 +232,37 @@ def allroimask(x, cam, marg=None, margx=None, margy=None):
     if margx is not None:
         krn = np.ones((1,int(np.ceil(margx)*2 + 1)))
         msk = scipy.signal.convolve2d(msk, krn, 'same')
-    if margy is not None
+    if margy is not None:
         krn = np.ones((int(np.ceil(margy)*2 + 1), 1))
         msk = scipy.signal.convolve2d(msk, krn, 'same')
     return msk>0
+
+def extract(x, roi, cam):
+    '''EXTRACT - Extract CCD data for a given ROI
+    ff = EXTRACT(x, roi, camera) extracts averaged pixel data for given
+    ROI on given CAMERA. X must be a VScopeFile.'''
+
+    xx, yy = pixelcoords(x, roi, cam)
+    ccd = x.ccd.data[cam]
+    T, Y, X = ccd.shape
+    res = np.zeros(T)
+    if len(xx)==0:
+        return res + np.nan
+    for t in range(T):
+        frm = ccd[t,:,:]
+        res[t] = np.mean(frm[(yy,xx)])
+    return res
+
+def extractall(x, cam):
+    '''EXTRACTALL - Extract CCD data for all ROIs
+    ff = EXTRACT(x, camera) extracts averaged pixel data for all ROIS 
+    on given CAMERA. X must be a VScopeFile. Result is a dict mapping
+    ROI numbers (counting from 1) to data vectors.'''
+    res = {}
+    for k, roi in x.rois.items():
+        cc = roi['cams']
+        # Very old vscope files have no cam names stored in -rois.xml
+        # More recent versions have a colon-separated list
+        if len(cc)==0 or cam in cc:
+            res[k] = extract(x, k, cam)
+    return res

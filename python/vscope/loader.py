@@ -71,8 +71,8 @@ def loadanalog(fn, ana):
     data = LOADANALOG(fn, ana), where FN is 'EXPT/TRIAL.xml' or 
     'EXPT/TRIAL-analog.dat' loads the analog data for the given trial.
     ANA must be the 'analog' section from LOADXML().
-    Result is a numpy array of TxC floats. Voltages are converted to mV, 
-    currents to nA.'''
+    Result is dict of channel names to vectors of T floats.
+    Voltages are converted to mV, currents to nA.'''
     if not fn.endswith('-analog.dat'):
         if fn.endswith('.xml'):
             fn = fn[:-4]
@@ -83,14 +83,21 @@ def loadanalog(fn, ana):
     with open(fn, 'rb') as f:
         data = f.read()
     data = np.frombuffer(data, dtype='int16')
-    T = int(ana.scans)
-    C = int(ana.channels)
+    T = int(ana.nscans)
+    C = int(ana.nchannels)
     data = np.reshape(data, (T, C))
-    data = data.astype(dtype='float32')
-    for c in range(C):
-        off = ana.cinfo[c]['offset']
-        scl = ana.cinfo[c]['scale']
+    res = {}
+    for cid in ana.channels:
+        if 'scale' in ana.info[cid]:
+            scl = ana.info[cid]['scale']
+        else:
+            scl = '1 mV'
+            print(f'Caution: assuming scale for channel {c} is {scl}')
         uni = scl[-1]
+        if 'offset' in ana.info[cid]:
+            off = ana.info[cid]['offset']
+        else:
+            off = '0 ' + uni
         if uni=='V':
             off = units.quantity(off)('mV')
             scl = units.quantity(scl)('mV')
@@ -99,16 +106,15 @@ def loadanalog(fn, ana):
             scl = units.quantity(scl)('nA')
         else:
             raise ValueError('Bad unit for channel %i' % c)
-        data[:,c] *= scl
-        data[:,c] += off
-    return data
+        res[cid] = data[:,ana.info[cid]['idx']].astype(np.float32)*scl + off
+    return res
 
 def loaddigital(fn, dig):
     '''LOADDIGITAL - Load digital data from VScope files
     data = LOADDIGITAL(fn, dig), where FN is 'EXPT/TRIAL.xml' or 
     'EXPT/TRIAL-digital.dat' loads the digital data for the given trial.
     DIG must be the 'digital' section from LOADXML().
-    Result is a dict of line numbers to numpy array of bools.'''
+    Result is a dict of line IDs to numpy array of bools.'''
     if not fn.endswith('-digital.dat'):
         if fn.endswith('.xml'):
             fn = fn[:-4]
@@ -120,8 +126,9 @@ def loaddigital(fn, dig):
         data = f.read()
     data = np.frombuffer(data, dtype='uint32')
     res = {}
-    for line in dig.keys():
-        res[line] = np.bitwise_and(data, 2**line) != 0
+    for cid in dig.keys():
+        line = dig.info[cid]['line']
+        res[cid] = np.bitwise_and(data, 2**line) != 0
     return res
 
 def loadccd(fn, ccd):
@@ -153,7 +160,7 @@ def loadccd(fn, ccd):
     offset = np.cumsum(frmw*frmh)
     offset = np.concatenate((np.zeros(1, dtype='int'), offset), 0)
     for k in range(ncam):
-        dat = np.zeros((nfrm[k], frmh[k], frmw[k]))
+        dat = np.zeros((nfrm[k], frmh[k], frmw[k]), dtype=np.uint16)
         for f in range(nfrm[k]):
             o0 = f*bytesperframe + offset[k]
             o1 = f*bytesperframe + offset[k+1]

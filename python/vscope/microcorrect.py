@@ -357,6 +357,13 @@ def microcorrect(vsd, opts='bxys', msk=None,
             img, er0 = onestep('y',
                                lambda(img, dy): microshift(img, 0, dx),
                                rfy1, rfy2, sy/0.5)
+        if 'b' in opts:
+            if msk is None:
+                pass # Let original normalization stand
+            else:
+                fac = np.mean(img[msk]) / refbri
+                img *= fac / fac0[t]
+        else:
         if 's' in opts:
             img, er0 = onestep('s',
                                microscale,
@@ -373,13 +380,7 @@ def microcorrect(vsd, opts='bxys', msk=None,
             img, er0 = onestep('r',
                                microrotate,
                                rfr1, rfr2, sr/0.5)
-        if 'b':
-            if msk is None:
-                pass # Let original normalization stand
-            else:
-                fac = np.mean(img[msk]) / refbri
-                img *= fac / fac0[t]
-        else:
+        if 'b' not in opts:
             img /= fac0[t]            
 
         vsd[t,:,:] = img
