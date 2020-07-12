@@ -26,7 +26,9 @@ if iscell(str)
 else
   if length(str)==1
     n = 1 + str - 'a';
-  else
+  elseif length(str)==2
     n = 27 + 26*(str(1) - 'a') + str(2) - 'a';
+  else
+    n = nan;
   end
 end

@@ -118,6 +118,8 @@
       <param id="frequency" type="freq" default="2 Hz"/>
       <param id="delay" type="time" default="100 ms" min="10 ms" max="1 h"/>
       <param id="dur" type="time" default="10 s" min="100 ms" max="1 h"/>
+      <param id="dark" type="int" default="0"/>
+      <param id="light" type="int" default="255"/>
       <param id="xscale" type="length" default="90 mm"/>
       <param id="yscale" type="length" default="52.5 mm"/>
       <param id="xhome" type="length" default="0 mm"/>
@@ -228,6 +230,8 @@
         <param id="yscale-1" type="length" default="52.5 mm"/>
         <param id="xhome-1" type="length" default="0 mm"/>
         <param id="yhome-1" type="length" default="0 mm"/>
+        <param id="dark-1" type="int" default="10"/>
+        <param id="light-1" type="int" default="250"/>
       </category>
       <category id="acquisition">
         <param id="trialPeriod-1" type="time" default="12 s"/>

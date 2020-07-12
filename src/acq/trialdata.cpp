@@ -604,6 +604,7 @@ void TrialData::refineCCDTiming() {
   if (!ddataIn)
     return;
 
+  QSet<QString> gotrefined;
   foreach (QString camid, ccddata.keys()) {
     QString lineid = "Frame:" + camid;
     if (ddataIn->hasLine(lineid)) {
@@ -632,14 +633,31 @@ void TrialData::refineCCDTiming() {
 	}
       }
       double f_hz = ddataIn->getSamplingFrequency();
-      if (n>=2) 
+      if (n>=2) {
 	ccddata[camid]->setTimeBase(1e3 * i0 / f_hz,
 				    1e3 * (i1-i0) / (n-1) / f_hz,
 				    1e3 * (ie-i0) / f_hz);
-      else
-	Dbg() << "Couldn't set timebase for " << camid << ": not enough frames";
+	gotrefined.insert(camid);
+      } else {
+	Dbg() << "Couldn't set timebase for " << camid
+	      << ": not enough frames:" << n;
+      }
     } else {
       Dbg() << "trialdata: could not refine timing for camera " << camid;
+    }
+  }
+  if (gotrefined.size()>0 && gotrefined.size()<ccddata.keys().size()) {
+    // refine other cameras by guessing
+    QString refid = *gotrefined.begin();
+    double t0 = ccddata[refid]->getT0ms();
+    double dt = ccddata[refid]->getDTms();
+    double dur = ccddata[refid]->getDurms();
+    for (QString camid: ccddata.keys()) { 
+      if (!gotrefined.contains(camid)) {
+	ccddata[camid]->setTimeBase(t0, dt, dur);
+	Dbg() << "trialdata: estimated timebase for " << camid
+	      << " from " << refid;
+      }
     }
   }
 }

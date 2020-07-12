@@ -41,8 +41,8 @@ bool VProjector::activate() {
   proc = new QProcess(this);
   connect(proc, SIGNAL(readyReadStandardOutput()), SLOT(readyReadStdout()));
   connect(proc, SIGNAL(readyReadStandardError()), SLOT(readyReadStderr()));
-  QStringList args; args << "leechprojector" << "-server";
-  proc->start("bash", args);
+  QStringList args; args  << "-server";
+  proc->start("leechprojector", args);
   if (proc->waitForStarted()) {
     if (proc->waitForFinished(100)) {
       // this is a problem
@@ -112,6 +112,10 @@ void VProjector::prepare(class ParamTree const *p) {
               .arg(p->find("stimVideo/xhome").toDouble()).toUtf8());
   proc->write(QString("set yhomemm %1\n")
               .arg(p->find("stimVideo/yhome").toDouble()).toUtf8());
+  proc->write(QString("set dark %1\n")
+              .arg(p->find("stimVideo/dark").toInt()).toUtf8());
+  proc->write(QString("set light %1\n")
+              .arg(p->find("stimVideo/light").toInt()).toUtf8());
   proc->waitForBytesWritten(); // hmmm
   Dbg() << "  vprojector prepared";
 }

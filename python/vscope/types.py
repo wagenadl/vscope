@@ -13,6 +13,7 @@
 
 import numpy as np
 from . import units
+import numbers
 
 class PVal:
     def __init__(self, s=""):
@@ -117,62 +118,68 @@ class PGroup:
 
 class VSAnalog:
     def __init__(self, xml):
-        self.scans = int(xml.attrib['scans'])
+        self.nscans = int(xml.attrib['scans'])
         self.rate = units.quantity(xml.attrib['rate'])
-        self.channels = int(xml.attrib['channels'])
-        self.revmap = {}
-        self.cids = []
-        self.cinfo = []
-        self.data = []
+        self.nchannels = int(xml.attrib['channels'])
+        self.info = {}
+        self.data = {}
         for c in xml:
-            self.cinfo.append(c.attrib)
-            self.revmap[c.attrib['id']] = int(c.attrib['idx'])
-            self.cids.append(c.attrib['id'])
-            self.data.append(None)
+            cno = int(c.attrib['idx'])
+            cid = c.attrib['id']
+            self.info[cid] = c.attrib
+            self.info[cid]['idx'] = cno
+        self.channels = [ None for k in self.info.keys()]
+        for cid, info in self.info.items():
+            self.channels[info['idx']] = cid
+    def keys(self):
+        return info.keys()
     def __len__(self):
-        return len(self.cc)
+        return self.nchannels
     def __getitem__(self, k):
-        if type(k)==str:
-            k = self.revmap[k]
-        return self.data[:,k]
+        if isinstance(k, numbers.Integral):
+            k = self.channels[k]
+        return self.data[k]
     def __repr__(self):
         ll = []
         ll.append('Analog data:')
-        ll.append('Scans: %i' % self.scans)
-        ll.append('Rate:  %g kHz' % (self.rate('kHz')))
-        ll.append('Channels:')
-        for c in range(self.channels):
-            ll.append('  %i: %s' % (c, self.cids[c]))
+        ll.append(f'Scans: {self.nscans}')
+        ll.append(f'Rate:  {self.rate("kHz")} kHz')
+        ll.append(f'Channels:')
+        for cid in self.channels:
+            ll.append(f'  {cid}')
         return '\n  '.join(ll) + '\n'
 
 class VSDigital:
     def __init__(self, xml):
-        self.scans = int(xml.attrib['scans'])
+        self.nscans = int(xml.attrib['scans'])
         self.rate = units.quantity(xml.attrib['rate'])
-        self.cc = {}
-        self.revmap = {}
+        self.info = {}
         self.data = {}
+        self.lines = {}
         for c in xml:
-            self.cc[int(c.attrib['idx'])] = c.attrib
-            self.revmap[c.attrib['id']] = int(c.attrib['idx'])
+            cno = int(c.attrib['idx'])
+            cid = c.attrib['id']
+            self.info[cid] = c.attrib
+            self.info[cid]['line'] = cno
+            self.lines[cno] = cid
     def __len__(self):
-        return len(self.cc)
+        return len(self.info)
     def __getitem__(self, k):
-        if type(k)==str:
-            k = self.revmap[k]
+        if isinstance(k, numbers.Integral):
+            k = self.lines[k]
         return self.data[k]
-    def __contains__(self, id):
-        return id in self.revmap or id in self.data
+    def __contains__(self, cid):
+        return cid in self.info or cid in self.lines
     def keys(self):
-        return self.cc.keys()
+        return self.info.keys()
     def __repr__(self):
         ll = []
         ll.append('Digital data:')
-        ll.append('Scans: %i' % self.scans)
+        ll.append('Scans: %i' % self.nscans)
         ll.append('Rate:  %g kHz' % (self.rate('kHz')))
         ll.append('Lines:')
-        for k in self.cc.keys():
-            ll.append('  %i: %s' % (k, self.cc[k]['id']))
+        for cid in self.info.keys():
+            ll.append(f'  {cid} ({self.info[cid]["line"]})')
         return '\n  '.join(ll) + '\n'
   
 class VSCCD:
@@ -194,7 +201,7 @@ class VSCCD:
                             (0, self.ay, self.by),
                             (0, 0, 1)))
         def inverse(self):
-            t = Transform()
+            t = VSCCD.Transform()
             t.ax = 1./self.ax
             t.ay = 1./self.ay
             t.bx = -self.bx/self.ax
@@ -203,6 +210,10 @@ class VSCCD:
         def __repr__(self):
             return 'ax=%g bx=%g ay=%g by=%g' % (self.ax, self.bx,
                                                 self.ay, self.by)
+        def apply(self, pt):
+            x, y = pt
+            return (self.ax*x + self.bx, self.ay*y + self.by)
+            
     class Info:
         def __init__(self, elt):
             self.vals = {}
@@ -210,7 +221,10 @@ class VSCCD:
             self.vals['rate'] = units.quantity(elt.attrib['rate'])
             self.vals['frames'] = int(elt.attrib['frames'])
             self.vals['type'] = elt.attrib['type']
-            self.vals['framedur'] = units.quantity(elt.attrib['framedur'])
+            if 'framedur' in elt.attrib:
+                self.vals['framedur'] = units.quantity(elt.attrib['framedur'])
+            else:
+                self.vals['framedur'] = None
             self.vals['delay'] = units.quantity(elt.attrib['delay'])
             self.vals['name'] = elt.attrib['name']
             self.vals['serpix'] = int(elt.attrib['serpix'])
