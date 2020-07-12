@@ -110,7 +110,7 @@ class Quantity:
         if np.all(u1._units==self._units):
             return self._scale / u1._scale
         else:
-            raise ValueError('Incompatible _units: ' + s)
+            raise ValueError('Incompatible units: ' + s)
 
     def units(self):
         '''UNITS - Return the units associated with the quantity
