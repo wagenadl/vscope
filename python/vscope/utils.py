@@ -41,7 +41,7 @@ def ephystime(x):
     if type(x)==VScopeFile:
         x = x.analog
     if type(x)==VSAnalog:
-        return np.arange(x.scans)/x.rate_Hz
+        return np.arange(x.scans)/x.rate('Hz')
     else:
         raise ValueError
     

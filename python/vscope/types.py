@@ -310,7 +310,7 @@ class VScopeFile:
         if self.digital is not None:
             s += '  digital (%i x %i)\n' % (len(self.digital),
                                             self.digital.scans)
-        if self.ccd is not None:
+        if self.ccd is not None and len(self.ccd.caminfo)>0:
             nn = set()
             ww = set()
             hh = set()
