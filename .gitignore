@@ -25,3 +25,4 @@ debian/*.substvars
 __pycache__
 *.os
 .sconsign.dblite
+releases
