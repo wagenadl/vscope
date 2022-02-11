@@ -59,6 +59,9 @@ function coh = vscope_cohanalysis(x, varargin)
 %       extra.rois - original rois
 %       extra.here - binary vector indicating whether a given ROI lives
 %                    on our camera
+%       extra.Pxx, extra.Pyy, extra.Pxy - individual taper estimates
+%                    off self and cross spectra; only given if optional
+%                    parameter INDIV is nonzero.
 %
 %    Since we usually do multiple comparisons, either pthresh should be 
 %    chosen conservatively, or, more clever, put in pthresh=-0.05 (or -p in
@@ -84,7 +87,8 @@ function coh = vscope_cohanalysis(x, varargin)
 kv = getopt([ 'camera=[] ' ...
       'sine=[] frequency=[] analog=[] direct=[] optical=[] ' ...
       'df_psd=1/3 df_coh=2/3 f_star=[] ci=1 pthresh=0.01 ' ...
-      't0=[] t1=[] sig=[] debleach=2 func=''mean'' trend=[]'], varargin);
+      't0=[] t1=[] sig=[] debleach=2 func=''mean'' trend=[] ' ...
+      'indiv=0'], varargin);
 
 % Determine camera ID and frame times
 if isempty(kv.camera)
@@ -233,6 +237,12 @@ if isfield(cohe, 'mag_lo')
   coh.mag_hi = cohe.mag_hi;
   coh.phase_lo = cohe.phase_lo;
   coh.phase_hi = cohe.phase_hi;
+end
+
+if kv.indiv
+  coh.Pxx = cohe.Pxx;
+  coh.Pyy = cohe.Pyy;
+  coh.Pxy = cohe.Pxy;
 end
 
 % Calculate threshold for significance
