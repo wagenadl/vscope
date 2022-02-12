@@ -109,6 +109,6 @@ if mod(N,2)==0  % if N_fft is even
   f_os=(0:hpfi)'/N;
 else
   Pxxs_os=Pxxs_ts(1:hpfi,:,:)+...
-          [zeros(1,N_signals,K) ; flipdim(Pxxs_ts(hpfi+1:N_fft,:,:),1)];
+          [zeros(1,N_signals,K) ; flipdim(Pxxs_ts(hpfi+1:N,:,:),1)];
   f_os=(0:(hpfi-1))'/N;
 end

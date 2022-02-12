@@ -156,15 +156,13 @@ def loadccd(fn, ccd):
         frmh[k] = int(ccd.caminfo[k]['parpix'])
         nfrm[k] = int(ccd.caminfo[k]['frames'])
     res = {}
-    bytesperframe = np.sum(frmw * frmh)
-    offset = np.cumsum(frmw*frmh)
-    offset = np.concatenate((np.zeros(1, dtype='int'), offset), 0)
+    offset = 0
     for k in range(ncam):
         dat = np.zeros((nfrm[k], frmh[k], frmw[k]), dtype=np.uint16)
         for f in range(nfrm[k]):
-            o0 = f*bytesperframe + offset[k]
-            o1 = f*bytesperframe + offset[k+1]
-            frm = data[o0:o1]
+            n = frmw[k]*frmh[k]
+            frm = data[offset:offset+n]
+            offset += n
             dat[f,:,:] = np.reshape(frm, (1, frmh[k], frmw[k]))
         res[ccd.caminfo[k]['name']] = dat
     return res

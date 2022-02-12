@@ -265,6 +265,18 @@ class VSCCD:
     def __getitem__(self, k):
         # key is a camera name
         return self.data[k]
+    class _iterator:
+        def __init__(self, ccd):
+            self.ccd = ccd
+            self.k = 0
+        def __next__(self):
+            self.k += 1
+            if self.k<=len(self.ccd):
+                return self.ccd.caminfo[self.k-1]['name']
+            else:
+                raise StopIteration()
+    def __iter__(self):
+        return VSCCD._iterator(self)
     def __contains__(self, k):
         return k in self.data
     def keys(self):
@@ -318,12 +330,12 @@ class VScopeFile:
         if self.rois is not None:
             s += '  rois (%i)\n' % (len(self.rois))
         if self.analog is not None:
-            s += '  analog (%i x %i @ %g kHz)\n' % (self.analog.channels,
-                                                    self.analog.scans,
+            s += '  analog (%i x %i @ %g kHz)\n' % (self.analog.nchannels,
+                                                    self.analog.nscans,
                                                     self.analog.rate('kHz'))
         if self.digital is not None:
             s += '  digital (%i x %i)\n' % (len(self.digital),
-                                            self.digital.scans)
+                                            self.digital.nscans)
         if self.ccd is not None and len(self.ccd.caminfo)>0:
             nn = set()
             ww = set()

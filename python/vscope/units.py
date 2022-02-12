@@ -175,3 +175,36 @@ def quantity(s):
     and aliases "Ohm" and "ohm" for "Ω" and "VA" for "W".
     '''
     return Quantity.fromString(s)
+
+def roinum(s):
+    '''ROINUM - Convert ROI string to number
+    n = VSCOPE_ROIID(str) returns the number for named ROI str (e.g., 2
+    for 'b', 27 for 'aa').
+    Note that numbers are counted from one, respecting the original matlab
+    convention for VScope.
+    Returns None if the ID is invalid.'''
+    if len(s)==1:
+        return 1 + ord(s) - ord('a')
+    elif len(s)==2:
+        return 27 + 26*(ord(s[0]) - ord('a')) + ord(s[1]) - ord('a')
+    else:
+        return None
+
+def roiid(n):
+    '''ROIID - Convert ROI number to string
+    s = ROIID(n) returns the ID for ROI n (e.g., 'b' for n=2; 
+   'aa' for n=27).
+    Note that numbers are counted from one, respecting the original matlab
+    convention for VScope.
+    Returns None if the number is invalid.'''
+    n = n - 1
+    if n<0:
+        return None
+    if n<26:
+        return chr(ord('a') + n)
+    k = n//26 - 1
+    m = n%26
+    if k>=26:
+        return None
+    return chr(ord('a') + k) + chr(ord('a') + m)
+

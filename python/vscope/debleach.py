@@ -2,6 +2,8 @@
 
 from . import salpa
 from . import physfit
+from . import utils
+import numpy as np
 
 class Debleach:
     def __init__(self):
@@ -43,10 +45,10 @@ class PolyDebleach(Debleach):
         self.degree = degree
     def _apply(self, data, skipstart, skipend):
         T = len(data)
-        tt = np.arange(T, int)
-        tidx = np.arange(skipstart, T-skipend, int)
-        tt -= np.mean(tt[idx])
-        p = np.polyfit(tt[idx], data[idx], self.degree)
+        tt = np.arange(T)
+        tidx = np.arange(skipstart, T-skipend, dtype=int)
+        tt = tt - np.mean(tt[tidx])
+        p = np.polyfit(tt[tidx], data[tidx], self.degree)
         res = data.copy()
         for k in np.arange(self.degree):
             res -= p[k] * tt**(self.degree-k)

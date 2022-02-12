@@ -83,7 +83,7 @@ def _outlines_poly(roi, info):
     yy = roi['y']
     if len(xx)==0:
         return xx, yy
-    return info.transform.inverse().apply(xx, yy)
+    return info.transform.inverse().apply((xx, yy))
     
 def _coords_poly(roi, info):
     xx, yy = _outlines_poly(roi, info)
@@ -153,10 +153,10 @@ def pixelcoords(x, roiid, cam=None, info=None):
     for external use.'''
     if info is None:
         info = x.ccd.info(cam)
-    if 'x' in x.rois[id]:
-        return _coords_poly(x.rois[id], info)
+    if 'x' in x.rois[roiid]:
+        return _coords_poly(x.rois[roiid], info)
     else:
-        return _coord_xyrra(x.rois[id], info)
+        return _coord_xyrra(x.rois[roiid], info)
     
 def allpixelcoords(x, cam):
     '''ALLPIXELCOORDS - Return coordinates for all ROIs on a given camera
