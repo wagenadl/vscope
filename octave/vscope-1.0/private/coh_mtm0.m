@@ -25,6 +25,20 @@ function varargout = coh_mtm0(t,x,y,f_res,alpha_ci,f_star,N_fft,tapers)
 %
 %      MAG0, MAG1 (FxN): lower and upper confidence bounds for MAG.
 %      PH0, PH1 (FxN): confidence bounds for PHASE.
+%
+%    COH_MTM0(..., f_star, PadFFT, tapers) specifies additional
+%    parameters:
+%
+%      F_STAR: calculate only at the frequency F_STAR.
+%      PADFFT: length to which data is padded before fourier transform
+%      TAPERS: supply pre-calculated tapers directly.
+%
+%    If F_STAR is specified, output is [mag, phase, mag0, mag1, ph0, ph1],
+%    that is, FF is not returned.
+%
+%    If nargout = 1, results are returned in a struct instead.
+%    This struct additionally contains the K individual taper estimates
+%    Pxx, Pyy, and Pxy for the self and cross spectra.
 
 % This file is part of VScope. (C) Daniel Wagenaar 2008-1017.
 
@@ -41,15 +55,6 @@ function varargout = coh_mtm0(t,x,y,f_res,alpha_ci,f_star,N_fft,tapers)
 % You should have received a copy of the GNU General Public License
 % along with VScope.  If not, see <http://www.gnu.org/licenses/>.
 
-%    COH_MTM0(..., f_star, PadFFT, tapers) specifies additional
-%    parameters:
-%
-%      F_STAR: calculate only at the frequency F_STAR.
-%      PADFFT: length to which data is padded before fourier transform
-%      TAPERS: supply pre-calculated tapers directly.
-%
-%    If F_STAR is specified, output is [mag, phase, mag0, mag1, ph0, ph1],
-%    that is, FF is not returned.
 
 t=t(:);
 [T N]=size(x);
@@ -109,8 +114,8 @@ fs=1/dt;
 nw=N*dt*f_res;
 K=floor(2*nw-1);
 
-%fprintf(1,'coh_mtm0: dt=%g T=%g df=%g nw=%g K=%i\n',...
-%    mean(diff(t)),t(end)-t(1)+mean(diff(t)),f_res,nw,K);
+fprintf(1,'coh_mtm0: dt=%g T=%g df=%g nw=%g K=%i\n',...
+    mean(diff(t)),t(end)-t(1)+mean(diff(t)),f_res,nw,K);
 
 tapers=dpss(N,nw,K);
 
@@ -168,6 +173,17 @@ Cxy=Pxy./sqrt(Pxx.*Pyy+1e-50);
 Cxy_mag=abs(Cxy);
 Cxy_phase=angle(Cxy);
 
+if nargout==1
+  res = struct();
+  res.f = f;
+  res.coh = Cxy;
+  res.mag = Cxy_mag;
+  res.phase = Cxy_phase;
+  res.Pxx = Pxxs;
+  res.Pyy = Pyys;
+  res.Pxy = Pxys;
+end
+
 % calc the sigmas
 if alpha_ci<1
   % calculate the transformed coherence
@@ -202,21 +218,33 @@ if alpha_ci<1
   Cxy_phase_ci_hi=Cxy_phase+ci_factor*Cxy_phase_sigma;
 
   % assign the return values
-  if multiple_f
-    varargout={f Cxy_mag Cxy_phase ...
-                 Cxy_mag_ci_lo Cxy_phase_ci_lo ...
-                 Cxy_mag_ci_hi Cxy_phase_ci_hi};
+  if nargout==1
+    res.mag_lo = Cxy_mag_ci_lo;
+    res.mag_hi = Cxy_mag_ci_hi;
+    res.phase_lo = Cxy_phase_ci_lo;
+    res.phase_hi = Cxy_phase_ci_hi;
+    varargout = { res };
   else
-    varargout={Cxy_mag Cxy_phase ...
-               Cxy_mag_ci_lo Cxy_phase_ci_lo ...
-               Cxy_mag_ci_hi Cxy_phase_ci_hi};
+    if multiple_f
+      varargout = { f Cxy_mag Cxy_phase ...
+	  Cxy_mag_ci_lo Cxy_phase_ci_lo ...
+	  Cxy_mag_ci_hi Cxy_phase_ci_hi };
+    else
+      varargout = { Cxy_mag Cxy_phase ...
+	  Cxy_mag_ci_lo Cxy_phase_ci_lo ...
+	  Cxy_mag_ci_hi Cxy_phase_ci_hi };
+    end
   end
 else
   % assign the return values
-  if multiple_f
-    varargout={f Cxy_mag Cxy_phase};
+  if nargout==1
+    varargout = { res };
   else
-    varargout={Cxy_mag Cxy_phase};
+    if multiple_f
+      varargout = {f Cxy_mag Cxy_phase };
+    else
+      varargout = {Cxy_mag Cxy_phase };
+    end
   end
 end
 

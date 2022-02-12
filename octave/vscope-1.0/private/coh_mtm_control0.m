@@ -36,7 +36,7 @@ for j=1:N_passes
   perm=randperm(N);
   shuffled_roi=roi(perm,:);
   %plot(t,shuffled_roi);
-  C_mag_samples(:,:,j)=...
+  C_mag_samples(:,:,j), pha = ...
     coh_mtm0(t,shuffled_roi,ref,f_res,[],f_star);
 end
 if mod(j,50)~=0 fprintf(1,'\n'); end

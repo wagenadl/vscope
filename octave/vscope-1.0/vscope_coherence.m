@@ -44,23 +44,16 @@ kv = getopt('df=2/3 ci=1 f=[]', varargin);
 
 if isempty(kv.f) 
   if isempty(kv.ci)
-    [coh.f, coh.mag, coh.phase] = coh_mtm0(tt, y_sig, y_ref, kv.df);
+    coh = coh_mtm0(tt, y_sig, y_ref, kv.df);
   else
     alpha_ci = 2*(1-normcdf(kv.ci));
-    [coh.f, coh.mag, coh.phase, ...
-      coh.mag_lo, coh.phase_lo, coh.mag_hi, coh.phase_hi] ...
-	= coh_mtm0(tt, y_sig, y_ref, kv.df, alpha_ci);
+    coh = coh_mtm0(tt, y_sig, y_ref, kv.df, alpha_ci);
   end
 else
-  coh.f = kv.f;
   if isempty(kv.ci)
-    [coh.mag, coh.phase] = coh_mtm0(tt, y_sig, y_ref, kv.df, 1, kv.f);
+    coh = coh_mtm0(tt, y_sig, y_ref, kv.df, 1, kv.f);
   else
     alpha_ci = 2*(1-normcdf(kv.ci));
-    [coh.mag, coh.phase, ...
-      coh.mag_lo, coh.phase_lo, coh.mag_hi, coh.phase_hi] ...
-	= coh_mtm0(tt, y_sig, y_ref, kv.df, alpha_ci, kv.f);
+    coh = coh_mtm0(tt, y_sig, y_ref, kv.df, alpha_ci, kv.f);
   end
 end
-
-coh.coh = coh.mag .* exp(i*coh.phase);
