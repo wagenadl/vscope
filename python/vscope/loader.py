@@ -207,11 +207,11 @@ def load(fn):
         camid = info.name
         xform = info.transform
         if xform.ax<0:
-            res.ccd.data[camid] = np.flip(res.ccd.data[camid], 1)
+            res.ccd.data[camid] = np.flip(res.ccd.data[camid], 2)
             res.ccd.caminfo[camno].transform.ax = -xform.ax
             res.ccd.caminfo[camno].transform.bx -= xform.ax*info.serpix
         if xform.ay<0:
-            res.ccd.data[camid] = np.flip(res.ccd.data[camid], 0)
+            res.ccd.data[camid] = np.flip(res.ccd.data[camid], 1)
             res.ccd.caminfo[camno].transform.ay = -xform.ay
             res.ccd.caminfo[camno].transform.by -= xform.ay*info.parpix
     return res

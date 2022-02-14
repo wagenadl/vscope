@@ -283,7 +283,7 @@ class LocalCorrector:
         else:
             return sig
         
-    def patchCorrectedSignal(self, roiid, normalize=True):
+    def patchCorrectedSignal(self, roiid, normalize=True, return_dxy=False):
         T = len(self.afms)
         xx, yy = vscope.rois.pixelcoords(self.x, roiid, self.cam)
         x0 = np.mean(xx)
@@ -317,7 +317,9 @@ class LocalCorrector:
         imgs = np.array(imgs)
         psig = imgs[:, yy-p0[1]+qy, xx-p0[0]+qx].mean(-1)
         if normalize:
-            return 100 * (psig/psig.mean() - 1)
+            psig = 100 * (psig/psig.mean() - 1)
+        if return_dxy:
+            return psig, dxy, dxy1
         else:
             return psig
 
