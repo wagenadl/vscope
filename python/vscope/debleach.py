@@ -34,7 +34,7 @@ class SalpaDebleach(Debleach):
         self.tau = tau
     def _apply(self, data, skipstart, skipend):
         m0 = np.mean(data)
-        return salpa.salpa(data - m, 'tau', self.tau) + m0
+        return salpa.salpa(data - m0, tau=self.tau) + m0
 
 class PolyDebleach(Debleach):
     def __init__(self, degree=2):
