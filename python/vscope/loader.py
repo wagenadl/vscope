@@ -184,10 +184,12 @@ def _ccdframetimes(x):
     return (start_s, end_s)
 
     
-def load(fn):
+def load(fn, loaddata=True, loadvsddata=True):
     '''LOAD - Load all data for a VScope trial
     x = LOAD(fn) where FN is 'EXPT/TRIAL.xml' loads the xml file and all
     associated data files.
+    x = LOAD(fn, loaddata=False) loads only the information (incl. rois).
+    x = LOAD(fn, loadvsddata=False) loads only info and ephys
     See also LOADXML, LOADROIS, LOADANALOG, LOADDIGITAL, LOADCCD to load
     individual files.'''
     res = loadxml(fn)
@@ -195,23 +197,26 @@ def load(fn):
         res.rois = loadrois(fn)
     except:
         res.rois = None
-    if res.analog is not None:
+    if loaddata and res.analog is not None:
         res.analog.data = loadanalog(fn, res.analog)
-    if res.digital is not None:
+    if loaddata and res.digital is not None:
         res.digital.data = loaddigital(fn, res.digital)
-    if res.ccd is not None:
-        res.ccd.data = loadccd(fn, res.ccd)
+    if loaddata and res.ccd is not None:
+        if loadvsddata:
+            res.ccd.data = loadccd(fn, res.ccd)
         (res.ccd.framestart_s, res.ccd.frameend_s) = _ccdframetimes(res)
     for camno in range(len(res.ccd.caminfo)):
         info = res.ccd.caminfo[camno]
         camid = info.name
         xform = info.transform
         if xform.ax<0:
-            res.ccd.data[camid] = np.flip(res.ccd.data[camid], 2)
+            if loadvsddata:
+                res.ccd.data[camid] = np.flip(res.ccd.data[camid], 2)
             res.ccd.caminfo[camno].transform.ax = -xform.ax
             res.ccd.caminfo[camno].transform.bx -= xform.ax*info.serpix
         if xform.ay<0:
-            res.ccd.data[camid] = np.flip(res.ccd.data[camid], 1)
+            if loadvsddata:
+                res.ccd.data[camid] = np.flip(res.ccd.data[camid], 1)
             res.ccd.caminfo[camno].transform.ay = -xform.ay
             res.ccd.caminfo[camno].transform.by -= xform.ay*info.parpix
     return res

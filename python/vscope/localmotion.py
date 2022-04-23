@@ -158,6 +158,34 @@ def correctLocal(clndfrms, dxy, p0, Q):
 
 
 def patchwork(stat, frms, width=128, step=32, SY=4, sigma=64):
+    '''Calculates local motion in a grid of patches. 
+
+    Parameters are:
+      STAT - Stationary image (YxX)
+      FRMS - TxYxX stack of moving images
+      WIDTH - Size of square patches in pixels
+      STEP - Step between adjacent patches in pixels, usually smaller
+             than WIDTH, so patches overlap
+      SY - Known expansion factor in the Y dimension of the images. (This is
+           used for LOCALSWIM to apply low-pass filtering in y-dimension.)
+      SIGMA - Sigma parameter for gaussian interpolation over patches with
+              poor definition.
+
+    Returns:
+      DELTAXY - A function (X, Y) -> (DXY) that takes (vectors of) x- and y-
+                coordinates and returns a Nx2 vector of shifts
+      DETAILS - A dictionary with additional information, containing:
+        xx0: x-coordinates of centers of patches
+        yy0: y-coordinates of centers of patches
+        dxy: raw shift at centers of patches (YxXxTx2)
+        snr: signal-to-noise for each patch (YxXxT)
+        weight: interpolation weights for each patch (YxX)
+        dxymax: max. shift in each path (YxX)
+        width: from function call
+        step: from function call
+        SY: from function call
+        sigma: from function call
+    '''
     T, Y, X = frms.shape
     xx0 = np.arange(width//2 + step//2, X - width//2, step)
     yy0 = np.arange(width//2 + step//2, Y - width//2, step)
@@ -211,6 +239,19 @@ def patchwork(stat, frms, width=128, step=32, SY=4, sigma=64):
 
 class LocalCorrector:
     def __init__(self, x, cam, global_lp=5, local_lp=5, twice=True):
+        '''LocalCorrector - Local motion correction for vscope
+        LocalCorrector(x, cam), where X is from LOADER.LOAD and CAM is 
+        a camera ID, constructs an object that can perform local motion
+        correction for the given recording.
+        Optional arguments are:
+          GLOBAL_LP: tau for a low-pass filter to be applied to global
+                     motion, in frames
+          LOCAL_LP: tau for a low-pass filter for local motion, ditto
+          TWICE: Perform global estimation twice to improve accuracy.
+        This uses SWIFTIR for global motion estimation, using four large
+        overlapping patches to estimate an affine transformation, then
+        PATCHWORK to further refine local motion.
+'''
         self.x = x
         self.cam = cam
         self.frms, self.SY = upsampledImages(x, cam)
@@ -246,9 +287,14 @@ class LocalCorrector:
         self.patchdxy, self.patchdetails = patchwork(self.stat, self.clnd)
 
     def timestamps(self):
+        '''TIMESTAMPS - Timestamps of each of the frames'''
         return self.tt
 
     def rawSignal(self, roiid, normalize=True):
+        '''RAWSIGNAL - Optionally normalized raw signal from given ROI
+        yy = RAWSIGNAL(roiid) returns the %dF/F signal for the given ROI.
+        yy = RAWSIGNAL(roiid, False) returns the raw signal (after subtracting
+        1000 for the QuantEM camera baseline.'''
         xx, yy = vscope.rois.pixelcoords(self.x, roiid, self.cam)
         sig = self.x.ccd[self.cam][:,yy,xx].mean(-1) - 1000
         if normalize:
@@ -257,6 +303,9 @@ class LocalCorrector:
             return sig
         
     def globallyCorrectedSignal(self, roiid, normalize=True):
+        '''GLOBALLYCORRECTEDSIGNAL - Signal after global motion correction.
+        yy = GLOBALLYCORRECTEDSIGNAL(roiid) returns the %dF/F signal for
+        the given ROI after global motion correction (only).'''
         xx, yy = vscope.rois.pixelcoords(self.x, roiid, self.cam)
         sig = self.c0[:,yy,xx].mean(-1)
         if normalize:
@@ -265,6 +314,12 @@ class LocalCorrector:
             return sig
 
     def localShift(self, roiid):
+        '''LOCALSHIFT - Calculate local shift at location of ROI
+        dxy, p0, Q = LOCALSHIFT(roiid) returns parameters for local
+        shift (to be applied on top of the global correction) at the
+        location of a given cell. 
+        This function is deprecated. Use the PATCHWORK-based approach
+        instead.'''
         dxy, sxy, snr, p0, Q = localShift(self.clnd, self.x, roiid,
                                     self.cam, self.stat,
                                           lp=self.local_lp,
@@ -272,6 +327,11 @@ class LocalCorrector:
         return dxy, p0, Q
     
     def locallyCorrectedSignal(self, roiid, normalize=True):
+        '''LOCALLYCORRECTEDSIGNAL - Signal after local motion correction.
+        yy = LOCALLYCORRECTEDSIGNAL(roiid) returns the %dF/F signal for
+        the given ROI after local motion correction.
+        This function is deprecated. Use the PATCHWORK-based approach
+        instead.'''
         dxy, p0, Q = self.localShift(roiid)
         img = correctLocal(self.clnd, dxy, p0, Q)
         xx, yy = vscope.rois.pixelcoords(self.x, roiid, self.cam)
@@ -283,7 +343,18 @@ class LocalCorrector:
         else:
             return sig
         
-    def patchCorrectedSignal(self, roiid, normalize=True, return_dxy=False):
+    def patchCorrectedSignal(self, roiid, normalize=True, return_dxy=False,
+                             data=None):
+        '''PATCHCORRECTEDSIGNAL - Signal after local motion correction.
+        yy = PATCHCORRECTEDSIGNAL(roiid) returns the %dF/F signal for
+        the given ROI after patchwork-based motion correction.
+        yy, dxy, dxy1 = PATCHCORRECTEDSIGNAL(roiid, return_dxy=True) also
+        returns:
+          DXY: the total shift at the center of the ROI as a Tx2 array
+          DXY1: only the local shift at the center of the ROI as a Tx2 array
+        Optional argument DATA overrides the data from the original vscope
+        structure. It must be TxXxY.
+        '''
         T = len(self.afms)
         xx, yy = vscope.rois.pixelcoords(self.x, roiid, self.cam)
         x0 = np.mean(xx)
@@ -310,8 +381,11 @@ class LocalCorrector:
         p0 = np.array([int((xmax+xmin)/2+.5), int((ymax+ymin)/2+.5)])
         qx = int((xmax - xmin) + 4)//2
         qy = int((ymax - ymin) + 4)//2
-        imgs = [swiftir.extractStraightWindow(self.x.ccd[self.cam][t]
-                                              .astype(np.float32)-1000,
+        if data is None:
+            datfoo = lambda t: self.x.ccd[self.cam][t].astype(np.float32)-1000
+        else:
+            datfoo = lambda t: data[t].astype(np.float32)
+        imgs = [swiftir.extractStraightWindow(datfoo(t),
                                               p0 + dxy[t], (qx*2,qy*2))
                 for t in range(T)]
         imgs = np.array(imgs)
@@ -323,4 +397,11 @@ class LocalCorrector:
         else:
             return psig
 
-        
+    def correctedFrames(self):
+        '''CORRECTEDFRAMES - Raw CCD frames after global motion correction
+        frms = CORRECTEDFRAMES() returns the raw CCD frames after global 
+        motion correction as a TxYxX array. Any 4x vertical scaling
+        used for parameter estimation is undone first, so Y=128 if 4x
+        binning was used in recording. This function does not subtract
+        1000 from the data.        '''
+        return self.c0

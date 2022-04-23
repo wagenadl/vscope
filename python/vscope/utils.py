@@ -78,7 +78,7 @@ def ephystime(x):
     if type(x)==VScopeFile:
         x = x.analog
     if type(x)==VSAnalog:
-        return np.arange(x.scans)/x.rate('Hz')
+        return np.arange(x.nscans)/x.rate('Hz')
     else:
         raise ValueError
     
@@ -125,7 +125,7 @@ def ephysatccd(x, cam, yy, func=np.mean, dim=0):
       - dim: dimension along which to apply the averaging (not relevant
              if YY is simply a vector)'''
     yy, S = semiflatten(yy, dim)
-    t_on, t_off = ccdtime(x, cam)
+    t_on, t_off, ok = ccdtime(x, cam)
     t_e = ephystime(x)
     T = len(t_on)
     N = yy.shape[0]

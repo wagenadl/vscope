@@ -12,7 +12,7 @@ class Debleach:
         if type(data)==dict:
             res = {}
             for k, dat in data.items():
-                res[k] = self._apply(data, skipstart, skipend)
+                res[k] = self._apply(dat, skipstart, skipend)
             return res
         elif type(data)==np.ndarray:
             data, S = utils.semiflatten(data, -1)
@@ -34,7 +34,8 @@ class SalpaDebleach(Debleach):
         self.tau = tau
     def _apply(self, data, skipstart, skipend):
         m0 = np.mean(data)
-        return salpa.salpa(data - m, 'tau', self.tau) + m0
+        return salpa.salpa(data - m0, tau=self.tau,
+                           t_ahead=0, t_blankdepeg=0) + m0
 
 class PolyDebleach(Debleach):
     def __init__(self, degree=2):
@@ -61,9 +62,9 @@ class ExpDebleach(Debleach):
         self.typ = 'exp'
     def _apply(self, data, skipstart, skipend):
         T = len(data)
-        tt = np.arange(T, int)
-        tidx = np.arange(skipstart, T-skipend, int)
-        tt -= np.mean(tt[idx])
-        p = physfit.physfit('expc', tt[idx], xx[tidx])
+        tt = np.arange(T)
+        tidx = np.arange(skipstart, T-skipend, dtype=int)
+        tt = tt - np.mean(tt[tidx])
+        p = physfit.physfit('expc', tt[tidx], data[tidx])[0]
         return data - p.apply(tt) + np.mean(data)
         

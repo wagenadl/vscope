@@ -45,7 +45,7 @@ for c=1:C
 end
 
 ccd.dat = reshape(ccd.dat,[X*Y C T]);
-
+1
 dat = zeros(T,N,C) + nan;
 got = logical(zeros(N,C));
 for n=1:N

@@ -2,8 +2,8 @@
 
 # This module contains:
 
-# - roicoords
-# - roioutlines
+# - roicoords (now pixelcoords and allpixelcoords)
+# - roioutlines (now outline and alloutlines)
 # - fillpoly
 # - allroimask
 
@@ -99,8 +99,8 @@ def _coords_poly(roi, info):
     ymax = min(ymax, info.parpix)
     xx0 = xx - xmin
     yy0 = yy - ymin
-    X = xmax - xmin + 5
-    Y = ymax - ymin + 5
+    X = xmax - xmin # there used to be a +5 here
+    Y = ymax - ymin # also here
     if not havecairo:
         if info.transform.ax*info.transform.ay < 0:
             xx0 = np.flip(xx0,0)
@@ -224,15 +224,17 @@ def allroimask(x, cam, marg=None, margx=None, margy=None):
     if margy is None:
         margy = marg
 
-    xyxy = roicoords(x, cam)
-    T, Y, X = x.ccd.data(cam).shape
+    xyxy = allpixelcoords(x, cam)
+    T, Y, X = x.ccd.data[cam].shape
     msk = np.zeros((Y, X))
     for id, roi in xyxy.items():
         msk[(roi[1],roi[0])] = 1
     if margx is not None:
+        import scipy.signal
         krn = np.ones((1,int(np.ceil(margx)*2 + 1)))
         msk = scipy.signal.convolve2d(msk, krn, 'same')
     if margy is not None:
+        import scipy.signal
         krn = np.ones((int(np.ceil(margy)*2 + 1), 1))
         msk = scipy.signal.convolve2d(msk, krn, 'same')
     return msk>0
