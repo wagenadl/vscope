@@ -7,7 +7,7 @@
 # - fillpoly
 # - allroimask
 
-import pyqplot as qp
+import qplot as qp
 import numpy as np
 from .types import *
 from . import xyrra
@@ -186,10 +186,10 @@ def outline(x, roiid, cam=None, info=None, nvert=64):
     really meant for external use.'''
     if info is None:
         info = x.ccd.info(cam)
-    if 'x' in x.rois[id]:
-        return _outlines_poly(x.rois[id], info)
+    if 'x' in x.rois[roiid]:
+        return _outlines_poly(x.rois[roiid], info)
     else:
-        return _outlines_xyrra(x.rois[id], info)
+        return _outlines_xyrra(x.rois[roiid], info)
 
 def alloutlines(x, cam):
     '''ALLOUTLINES - Returns polygons specifying the outline of all ROIs.
@@ -203,7 +203,7 @@ def alloutlines(x, cam):
         # Very old vscope files have no cam names stored in -rois.xml
         # More recent versions have a colon-separated list
         if len(cc)==0 or cam in cc:
-            polys[id] = outline(x, roiid, info=info)
+            polys[id] = outline(x, id, info=info)
     return polys
     
 def allroimask(x, cam, marg=None, margx=None, margy=None):
