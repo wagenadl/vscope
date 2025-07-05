@@ -1,1 +1,0 @@
-/home/wagenaar/python/daw/fitx/physfit.py
