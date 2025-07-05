@@ -7,7 +7,7 @@
 # - fillpoly
 # - allroimask
 
-import pyqplot as qp
+import qplot as qp
 import numpy as np
 from .types import *
 from . import xyrra
