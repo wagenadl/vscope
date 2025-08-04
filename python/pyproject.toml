@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vscope"
+authors = [
+    {name = "Daniel Wagenaar", email = "daw@caltech.edu"},
+]
+description = "Tools for reading VScope data"
+readme = "README.md"
+version = "1.0.10"
+dependencies = [
+    "numpy"
+]
+
