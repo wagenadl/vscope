@@ -177,7 +177,7 @@ def _ccdframetimes(x):
 
     for cam in x.ccd.keys():
         frmid = 'Frame:' + cam
-        if frmid in x.digital:
+        if x.digital and frmid in x.digital:
             start_s[cam] = utils.rising(x.digital[frmid]) / x.digital.rate('Hz')
             end_s[cam] = utils.falling(x.digital[frmid]) / x.digital.rate('Hz')
     

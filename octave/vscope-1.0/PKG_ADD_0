@@ -7,8 +7,8 @@ pkginfo = pkgs(cellfun(@(x) ismember(x.name, {"vscope"}), pkgs));
 if isempty(pkginfo)
   % The package is not installed yet
   % Where are we?
-  [here, n, e, v] = fileparts(canonicalize_file_name(mfilename("fullpath")));
-  pp = strsplit(here, filesep())
+  [here, n, e] = fileparts(canonicalize_file_name(mfilename("fullpath")));
+  pp = strsplit(here, filesep());
   [a, b] = pkg("prefix");
   pkgdir = [a filesep pp{end}];
   bindir = [b filesep pp{end}];

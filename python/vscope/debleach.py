@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from . import salpa
-from . import physfit
+import physfit
 from . import utils
 import numpy as np
 
