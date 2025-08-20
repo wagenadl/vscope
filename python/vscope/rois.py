@@ -7,10 +7,10 @@
 # - fillpoly
 # - allroimask
 
-import qplot as qp
 import numpy as np
 from .types import *
 from . import xyrra
+
 try:
     import cairo
     havecairo = True

@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-from . import salpa
-import physfit
 from . import utils
 import numpy as np
 
@@ -32,7 +30,9 @@ class SalpaDebleach(Debleach):
         TAU must be the TAU parameter for SALPA.'''
         self.typ = 'salpa'
         self.tau = tau
+        
     def _apply(self, data, skipstart, skipend):
+        import salpa
         m0 = np.mean(data)
         return salpa.salpa(data - m0, tau=self.tau,
                            t_ahead=0, t_blankdepeg=0) + m0
@@ -44,6 +44,7 @@ class PolyDebleach(Debleach):
         Optional argument DEGREE changes that.'''
         self.typ = 'poly'
         self.degree = degree
+        
     def _apply(self, data, skipstart, skipend):
         T = len(data)
         tt = np.arange(T)
@@ -60,11 +61,13 @@ class ExpDebleach(Debleach):
         '''Construct a debleacher that removes an exponential trend
         from the data.'''
         self.typ = 'exp'
+        
     def _apply(self, data, skipstart, skipend):
+        import physfit
         T = len(data)
         tt = np.arange(T)
         tidx = np.arange(skipstart, T-skipend, dtype=int)
         tt = tt - np.mean(tt[tidx])
-        p = physfit.physfit('expc', tt[tidx], data[tidx])[0]
+        p = physfit.fit('expc', tt[tidx], data[tidx])
         return data - p.apply(tt) + np.mean(data)
         
