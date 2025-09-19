@@ -23,7 +23,6 @@
 #include <QWidget>
 #include <QGuiApplication>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QIcon>
 #include <QDateTime>
 #include <QProcessEnvironment>
@@ -149,7 +148,7 @@ void setupAIChannels() {
   QStringList aich = Connections::analogInputs();
   while (aich.size()>2)
     aich.takeLast();
-  QSet<QString> ai = QSet<QString>::fromList(aich);
+  QSet<QString> ai(aich.begin(), aich.end());
   Globals::ptree->find("maintenance/liveEphys/aiChannels").setStrings(ai);
   Globals::ptree->find("acqEphys/aiChannels").setStrings(ai);
 }
@@ -452,9 +451,6 @@ void reportDAQSituation() {
 int realmain(int argc, char **argv) {
   GUIExc::setArgs(argc, argv);
   QApplication app(argc, argv);
-#if QT_VERSION >= 0x050601
-  QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
   Warning::enableGUIWarnings();
   try {
     QObject guard;

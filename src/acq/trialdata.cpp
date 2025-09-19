@@ -663,6 +663,7 @@ void TrialData::refineCCDTiming() {
 }
 
 void TrialData::updateEnums() {
-  Enumerator::find("CAMERAS")->replace(QSet<QString>::fromList(cameras()));
+  QList<QString> cams = cameras();
+  Enumerator::find("CAMERAS")->replace(QSet<QString>(cams.begin(), cams.end()));
   // It would be nice if we could do same with STIMCHS and AICHANNELS, perhaps
 }

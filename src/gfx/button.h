@@ -24,6 +24,7 @@
 #include <QTime>
 #include <QTimer>
 #include <base/enums.h>
+#include <QElapsedTimer>
 
 extern int BUTTON_FontSize;
 extern char const *BUTTON_FontFamily;
@@ -192,7 +193,7 @@ private:
   bool isEnabled_;
   bool isSelected;
   VISUALTYPE vtype;
-  QTime lastClick;
+  QElapsedTimer lastClick;
   QTimer clickTimer;
   bool readonly, immune;
 protected slots:

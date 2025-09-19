@@ -14,6 +14,7 @@
    along with VScope.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
 cplx AA = A*A;
 cplx AAA = AA*A;
 cplx BB = B*B;

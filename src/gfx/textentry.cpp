@@ -155,7 +155,8 @@ void TextEntry::enable_ok(bool b) {
 }
 
 void TextEntry::syntheticKeyPress(QChar asc) {
-  switch (asc.unicode()) {
+  int c = asc.unicode();
+  switch (c) {
   case 8: // backspace
     contents->backspace();
     break;
@@ -184,7 +185,7 @@ void TextEntry::syntheticKeyPress(QChar asc) {
     contents->end(false);
     break;
   default:
-    if (asc>=32 && asc<=126)
+    if (c >= 32 && c <= 126)
       contents->insert(asc);
     break;
   }

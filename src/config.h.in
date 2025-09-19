@@ -1,0 +1,4 @@
+// the configured options and settings for VScope
+
+#define VSCOPE_GITVERSION "@FOO_VERSION@"
+#define VSCOPE_GITDATE "@FOO_DATE@"

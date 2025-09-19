@@ -54,7 +54,7 @@ void guiChecklist::prepForOpening() {
   QSet<QString> ss = pp->toStrings();
 
   Dbg() << "prepforopening:" << path() << ":" << ptree << ":" << pp
-        << ": " << QStringList(ss.toList()).join(", ");
+        << ": " << QStringList(ss.begin(), ss.end()).join(", ");
   
   foreach (guiButton *b, buttons) 
     if (isType<guiItem>(b)) 

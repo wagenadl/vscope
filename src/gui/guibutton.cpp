@@ -25,6 +25,7 @@
 #include <base/dbg.h>
 #include <xml/aliases.h>
 #include <base/exception.h>
+#include <QRegularExpression>
 
 guiButton::guiButton(QWidget *parnt, QString id, guiRoot *mastr):
   Button(parnt) {
@@ -247,11 +248,11 @@ void guiButton::setSelected(bool s) {
   Button::setSelected(s);
   QString txt = text();
   if (s) {
-    txt.replace(QRegExp("\\bDisabled\\b"), "Enabled");
-    txt.replace(QRegExp("\\bOff\\b"), "On");
+    txt.replace(QRegularExpression("\\bDisabled\\b"), "Enabled");
+    txt.replace(QRegularExpression("\\bOff\\b"), "On");
   } else {
-    txt.replace(QRegExp("\\bEnabled\\b"), "Disabled");
-    txt.replace(QRegExp("\\bOn\\b"), "Off");
+    txt.replace(QRegularExpression("\\bEnabled\\b"), "Disabled");
+    txt.replace(QRegularExpression("\\bOn\\b"), "Off");
   }
   Button::setText(txt, true); // this is a trivial text change, so prevent signal
 }

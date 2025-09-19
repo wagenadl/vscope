@@ -36,12 +36,6 @@ void TimeButton::startCountUp(bool onlyifstopped) {
   relabel();
 }
 
-void TimeButton::startCountDown(double time_ms) {
-  time.start();
-  time.addMSecs(time_ms);
-  style = Down;
-  relabel();
-}
 
 void TimeButton::showWallTime() {
   style = Wall;

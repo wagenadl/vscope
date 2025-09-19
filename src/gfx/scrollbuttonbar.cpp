@@ -128,7 +128,7 @@ void ScrollButtonBar::recvTextChange(QString, QString) {
 }
 
 void ScrollButtonBar::setAsPath(QString path) {
-  QStringList lst = path.split("/",QString::SkipEmptyParts);
+  QStringList lst = path.split("/", Qt::SkipEmptyParts);
   for (QStringList::iterator i=lst.begin(); i!=lst.end(); ++i)
     *i += "/";
   lst.push_front("/");

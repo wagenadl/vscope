@@ -20,6 +20,7 @@
 
 #define SCROLLBUTTONBAR_H
 
+#include <QStringList>
 #include <QFrame>
 #include <QVector>
 #include <QColor>
@@ -36,7 +37,7 @@ class ScrollButtonBar: public QFrame {
 public:
   ScrollButtonBar(QWidget *parent);
   virtual ~ScrollButtonBar();
-  void setAllLabels(class QStringList const &labels);
+  void setAllLabels(QStringList const &labels);
   void setAsPath(QString path); // this currently assumes path start with "/"
   void clear();
   void addButton(QString label);

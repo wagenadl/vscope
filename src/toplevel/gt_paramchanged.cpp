@@ -47,13 +47,14 @@
 #include <acq/ccdmaster.h>
 #include <xml/definestimulus.h>
 #include <QMessageBox>
+#include <QRegularExpression>
 
 void gt_slots::ensureMasterOK(QString p) {
-  QRegExp re("camera:([^/]*)/");
-  int pos = re.indexIn(p);
-  if (pos<0)
+  QRegularExpression re("camera:([^/]*)/");
+  QRegularExpressionMatch m = re.match(p);
+  if (!m.hasMatch())
     throw Exception("gt_paramchanged", "ensureMasterOK confused by " + p);
-  QString myid = re.cap(1);
+  QString myid = m.captured(1);
   Dbg() << "Checking on master for " << myid;
   QString ultimate = ultimateCCDMaster(ptree(), myid);
   if (ultimate=="LOOP") {
@@ -174,7 +175,7 @@ void gt_slots::paramchanged(QString p, QString val) {
       }
     } else if (p.startsWith("stimVideo/")) {
       Globals::vprojector->prepare(Globals::ptree);
-    } else if (QRegExp("acqCCD/camera:.*/master").exactMatch(p)) {
+    } else if (QRegularExpression("^acqCCD/camera:.*/master$").match(p).hasMatch()) {
       ensureMasterOK(p);
     }
 
@@ -247,12 +248,13 @@ void gt_slots::paramchanged(QString p, QString val) {
       Globals::focus->setViewMode(FOCUSMODE(ptree()->find(p).toInt()));
     } else {
       // Create log entry
-      QRegExp re("/([^/:]+):([^/]+)/");
+      QRegularExpression re("/([^/:]+):([^/]+)/");
       QString arr="";
       QString chn="";
-      if (re.indexIn(p)>=0) {
-	arr=re.cap(1);
-	chn=re.cap(2);
+    QRegularExpressionMatch m = re.match(p);
+    if (m.hasMatch()) {
+	arr = m.captured(1);
+	chn = m.captured(2);
       }
       QString val = ptree()->find(p).toString();
       QString gp = Globals::gui->pathDeinstantiate(p);

@@ -22,6 +22,7 @@
 #include <base/dbg.h>
 #include <xml/attribute.h>
 #include "guiroot.h"
+#include <QRegularExpression>
 
 AutoItems::AutoItems(guiPage *parent):
   QObject(parent), initialGeom(parent) {
@@ -46,7 +47,7 @@ QStringList AutoItems::selectIDs(QStringList inlist) {
   QStringList outlist;
   foreach (QString id, inlist) {
     // filter based on our xml doc
-    QStringList exclude = doc.attribute("exclude").split(QRegExp("\\s+"));
+    QStringList exclude = doc.attribute("exclude").split(QRegularExpression("\\s+"));
     bool ok = true;
     foreach (QString s, exclude) {
       if (s == "*id") {

@@ -20,7 +20,7 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 #include <base/minmax.h>
-
+#include <QRegularExpression>
 #include <QPainter>
 #include <QEvent>
 
@@ -291,7 +291,7 @@ void Button::setID(QString id) {
 void Button::setText(QString txt, bool noemit) {
   QString t = txt;
   QString t1 = txt.mid(1);
-  t1.replace(QRegExp("_([^ _]+)_?"), "<sub>\\1</sub>");
+  t1.replace(QRegularExpression("_([^ _]+)_?"), "<sub>\\1</sub>");
   t = t.left(1) + t1;
   QLabel::setText(t);
   if (!noemit)

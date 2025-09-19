@@ -27,7 +27,7 @@ PathBar::PathBar(QWidget *parent): QScrollArea(parent) {
 
   area = new QWidget();
   layout = new QHBoxLayout(area);
-  layout->setMargin(2);
+  layout->setContentsMargins(QMargins(2, 2, 2, 2));
   layout->setSpacing(4);
   layout->addStretch(20);
   //  area->setSizePolicy(QSizePolicy(QSizePolicy::Preferred,QSizePolicy::Fixed));
@@ -62,7 +62,7 @@ void PathBar::resizeEvent(class QResizeEvent *e) {
 }
 
 void PathBar::setPath(QString path) {
-  QStringList elts = path.split("/", QString::SkipEmptyParts);
+  QStringList elts = path.split("/", Qt::SkipEmptyParts);
   elts.push_front("/");
   int N0 = elements.size();
   int N = elts.size();

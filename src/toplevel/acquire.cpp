@@ -565,6 +565,6 @@ void Acquire::overrideAuto(ParamTree *ptree) {
   Dbg() << "overrideauto: aic=" << aic << " -> " << aicm;
   if (aicm) {
     QSet<QString> cc = ptree->find("acqEphys/aiChannels").toStrings();
-    aicm->overrideAuto(QStringList(cc.toList()));
+    aicm->overrideAuto(QStringList(cc.begin(), cc.end()));
   }
 }

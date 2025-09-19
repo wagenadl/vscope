@@ -92,7 +92,7 @@ void ExptLog::openFile() {
 		    + outputFile->fileName());
   outputStream = new QTextStream(outputFile);
   if (preexist) {
-    (*outputStream) << endl;
+    (*outputStream) << "\n";
     //    addNote("Appending to existing log");
   }
 }
@@ -102,7 +102,7 @@ void ExptLog::writeBacklog() {
     return;
 
   for (QStringList::iterator i=backlog.begin(); i!=backlog.end(); ++i)
-    (*outputStream) << (*i) << endl;
+    (*outputStream) << (*i) << "\n";
   backlog.clear();
 }
 
@@ -145,7 +145,7 @@ void ExptLog::addNote(QString s, bool nodate) {
   oldtime = nowtime;
   QString note = nowrep + " " + s;
   if (outputStream) {
-    (*outputStream) << note << endl;
+    (*outputStream) << note << "\n";
     outputStream->flush();
   } else {
     backlog.push_back(note);

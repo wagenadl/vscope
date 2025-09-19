@@ -19,7 +19,7 @@
 #include <xml/xmlfind.h>
 #include <base/exception.h>
 #include <QStringList>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QDomNodeList>
 #include <stdio.h>
 
@@ -68,7 +68,7 @@ QDomElement xmlFindPval(QDomElement doc, QString path,
 			bool autoCreate, bool *exist) {
   QStringList p;
   QStringList typ;
-  QRegExp sep("[/:]");
+  QRegularExpression sep("[/:]");
   bool nextiselt=false;
   //fprintf(stderr,"xmlFindPval '%s' on <%s> '%s'\n",qPrintable(path),
   //        qPrintable(doc.tagName()),qPrintable(doc.attribute("id")));

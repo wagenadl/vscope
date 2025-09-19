@@ -218,52 +218,52 @@ void VirtKeyboard::clickedCapsLock() {
 }
 
 void VirtKeyboard::clickedTab() {
-  emit keyPress(9);
+  emit keyPress(QChar(9));
   unshift();
 }
 
 void VirtKeyboard::clickedEnter() {
-  emit keyPress(10);
+  emit keyPress(QChar(10));
   unshift();
 }
 
 void VirtKeyboard::clickedSpace() {
-  emit keyPress(32);
+  emit keyPress(QChar(32));
   unshift();
 }
 
 void VirtKeyboard::clickedBackspace() {
-  emit keyPress(8);
+  emit keyPress(QChar(8));
   unshift();
 }
 
 void VirtKeyboard::clickedDelete() {
-  emit keyPress(127);
+  emit keyPress(QChar(127));
   unshift();
 }
 
 void VirtKeyboard::clickedLeft() {
-  emit keyPress(21);
+  emit keyPress(QChar(21));
   unshift();
 }
 
 void VirtKeyboard::clickedRight() {
-  emit keyPress(22);
+  emit keyPress(QChar(22));
   unshift();
 }
 
 void VirtKeyboard::clickedHome() {
-  emit keyPress(25);
+  emit keyPress(QChar(25));
   unshift();
 }
 
 void VirtKeyboard::clickedEnd() {
-  emit keyPress(26);
+  emit keyPress(QChar(26));
   unshift();
 }
 
 void VirtKeyboard::clickedEscape() {
-  emit keyPress(27);
+  emit keyPress(QChar(27));
   unshift();
 }
 

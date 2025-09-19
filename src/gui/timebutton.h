@@ -21,7 +21,7 @@
 #define TIMEBUTTON_H
 
 #include <QString>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QBasicTimer>
 #include <QObject>
 
@@ -35,7 +35,6 @@ public:
 public slots:
   void reset();
   void startCountUp(bool onlyifstopped=false);
-  void startCountDown(double time_ms);
   void showWallTime();
   void show();
   void hide();
@@ -46,7 +45,7 @@ private:
   void relabel();
 private:
   Style style;
-  QTime time;
+  QElapsedTimer time;
   QBasicTimer timer;
   QString caption;
   class guiButton *button;

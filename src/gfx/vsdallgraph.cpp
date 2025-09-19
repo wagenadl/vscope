@@ -66,8 +66,10 @@ bool VSDAllGraph::haveData(int id) const {
 
 void VSDAllGraph::updateROIs() {
   // Dbg() << "VSDAllGraph("<<this<<"): updateROIs()";
-  QSet<int> ids = QSet<int>::fromList(data->allIDs());
-  ids += QSet<int>::fromList(traces.keys());
+  QList<int> ids1 = data->allIDs();
+  QSet<int> ids = QSet<int>(ids1.begin(), ids1.end());
+  QList<int> tkeys = traces.keys();
+  ids += QSet<int>(tkeys.begin(), tkeys.end());
   foreach (int id, ids) 
     updateROIcore(id);
   newOffsets();

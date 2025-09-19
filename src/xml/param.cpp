@@ -23,7 +23,7 @@
 #include <base/dbg.h>
 #include <base/exception.h>
 #include <math.h>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <stdio.h>
 #include <QSet>
 
@@ -125,16 +125,18 @@ void Param::set(QString s) {
     else
       ok = false;
   } else if (valueType=="percentage") {
-    QRegExp re("^([0-9-.]+) *%$");
-    if (re.indexIn(s)>-1) 
-      v = re.cap(1).toDouble(&ok);
+    QRegularExpression re("^([0-9-.]+) *%$");
+    QRegularExpressionMatch m = re.match(s);
+    if (m.hasMatch())
+      v = m.captured(1).toDouble(&ok);
     else
       ok = false;
   } else if (valueType=="time") {
-    QRegExp re("^([0-9-.]+)\\s*(|s|ms|min|h|us)$");
-    if (re.indexIn(s)>-1) {
-      double val = re.cap(1).toDouble(&ok);
-      QString unit = re.cap(2);
+    QRegularExpression re("^([0-9-.]+)\\s*(|s|ms|min|h|us)$");
+    QRegularExpressionMatch m = re.match(s);
+    if (m.hasMatch()) {
+      double val = m.captured(1).toDouble(&ok);
+      QString unit = m.captured(2);
       if (unit=="ms" || unit=="")
 	;
       else if (unit=="us")
@@ -150,10 +152,11 @@ void Param::set(QString s) {
       throw Exception("Param","Time must be expressed in us, ms, s, min, or h");
     }
   } else if (valueType=="freq") {
-    QRegExp re("^([0-9-.]+)\\s*(|fps|Hz|kHz)$");
-    if (re.indexIn(s)>-1) {
-      double val = re.cap(1).toDouble(&ok);
-      QString unit = re.cap(2);
+    QRegularExpression re("^([0-9-.]+)\\s*(|fps|Hz|kHz)$");
+    QRegularExpressionMatch m = re.match(s);
+    if (m.hasMatch()) {
+      double val = m.captured(1).toDouble(&ok);
+      QString unit = m.captured(2);
       if (unit=="Hz" || unit=="fps" || unit=="")
 	;
       else if (unit=="kHz")
@@ -163,10 +166,11 @@ void Param::set(QString s) {
       throw Exception("Param","Frequency must be expressed in Hz or kHz");
     }
   } else if (valueType=="voltage") {
-    QRegExp re("^([0-9-.]+)\\s*(|uV|mV|V)$");
-    if (re.indexIn(s)>-1) {
-      double val = re.cap(1).toDouble(&ok);
-      QString unit = re.cap(2);
+    QRegularExpression re("^([0-9-.]+)\\s*(|uV|mV|V)$");
+    QRegularExpressionMatch m = re.match(s);
+    if (m.hasMatch()) {
+      double val = m.captured(1).toDouble(&ok);
+      QString unit = m.captured(2);
       if (unit=="mV" || unit=="")
 	;
       else if (unit=="V")
@@ -180,10 +184,11 @@ void Param::set(QString s) {
 		      + dbgPath);
     }
   } else if (valueType=="current") {
-    QRegExp re("^([0-9-.]+)\\s*(|pA|nA|uA|mA)$");
-    if (re.indexIn(s)>-1) {
-      double val = re.cap(1).toDouble(&ok);
-      QString unit = re.cap(2);
+    QRegularExpression re("^([0-9-.]+)\\s*(|pA|nA|uA|mA)$");
+    QRegularExpressionMatch m = re.match(s);
+    if (m.hasMatch()) {
+      double val = m.captured(1).toDouble(&ok);
+      QString unit = m.captured(2);
       if (unit=="nA" || unit=="")
 	;
       else if (unit=="uA")
@@ -197,10 +202,11 @@ void Param::set(QString s) {
       throw Exception("Param","Current must be expressed in pA, nA, uA, or mA");
     }
   } else if (valueType=="length") {
-    QRegExp re("^([0-9-.]+)\\s*(|um|mm|cm|m)$");
-    if (re.indexIn(s)>-1) {
-      double val = re.cap(1).toDouble(&ok);
-      QString unit = re.cap(2);
+    QRegularExpression re("^([0-9-.]+)\\s*(|um|mm|cm|m)$");
+    QRegularExpressionMatch m = re.match(s);
+    if (m.hasMatch()) {
+      double val = m.captured(1).toDouble(&ok);
+      QString unit = m.captured(2);
       if (unit=="mm" || unit=="")
 	;
       else if (unit=="um")
@@ -214,12 +220,13 @@ void Param::set(QString s) {
       throw Exception("Param","Length must be expressed in um, mm, cm, or m");
     }
   } else if (valueType=="geometry") {
-    QRegExp re("^(\\d+)x(\\d+)\\+(\\d+)\\+(\\d+)$");
-    if (re.indexIn(s)>-1) {
-      int w = re.cap(1).toInt();
-      int h = re.cap(2).toInt();
-      int x0 = re.cap(3).toInt();
-      int y0 = re.cap(4).toInt();
+    QRegularExpression re("^(\\d+)x(\\d+)\\+(\\d+)\\+(\\d+)$");
+    QRegularExpressionMatch m = re.match(s);
+    if (m.hasMatch()) {
+      int w = m.captured(1).toInt();
+      int h = m.captured(2).toInt();
+      int x0 = m.captured(3).toInt();
+      int y0 = m.captured(4).toInt();
       v = QVariant(QRect(x0,y0,w,h));
     } else {
       throw Exception("Param","Geometry must be expressed as WxH+X0+Y0 (not '"+s+"')");
@@ -235,13 +242,14 @@ void Param::set(QString s) {
     if (s.left(1)=="+") {
       QSet<QString> vals = toStrings();
       vals.insert(s.mid(1));
-      v = QVariant(QStringList(vals.toList()).join(" "));
+      v = QVariant(QStringList(vals.begin(), vals.end()).join(" "));
     } else if (s.left(1)=="-") {
-      QSet<QString> vals = QSet<QString>::fromList(value.toString().split(" "));
+      QList<QString> vv0 = value.toString().split(" ");
+      QSet<QString> vals = QSet<QString>(vv0.begin(), vv0.end());
       vals.remove(s.mid(1));
-      v = QVariant(QStringList(vals.toList()).join(" "));
+      v = QVariant(QStringList(vals.begin(), vals.end()).join(" "));
     } else {
-      QStringList l = s.split(QRegExp("\\s+"),QString::SkipEmptyParts);
+      QStringList l = s.split(QRegularExpression("\\s+"),Qt::SkipEmptyParts);
       v=QVariant(l.join(" "));
     }
   } else {
@@ -257,7 +265,7 @@ void Param::set(QString s) {
 
 void Param::setStrings(QSet<QString> const &ss) {
   if (valueType=="set") {
-    QVariant v = QVariant(QStringList(ss.toList()).join(" "));
+    QVariant v = QVariant(QStringList(ss.begin(), ss.end()).join(" "));
     rangeCheck(v);
   } else {
     throw Exception("Param", "Only sets can be defined by sets of strings");
@@ -382,8 +390,8 @@ QSet<QString> Param::toStrings() const {
   QString s = value.toString();
   if (s.isEmpty())
     return QSet<QString>();
-  else
-    return QSet<QString>::fromList(s.split(" "));
+  QStringList res = s.split(" ");
+  return QSet<QString>(res.begin(), res.end());
 }
 
 QString Param::toString() const {

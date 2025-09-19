@@ -151,7 +151,8 @@ void ROIData3Set::changeROIcore(int id) {
 
 void ROIData3Set::updateROIs() {
   AllKeyGuard guard(*this);
-  QSet<int> ids = QSet<int>::fromList(d.data.keys());
+  QList<int> dkeys = d.data.keys();
+  QSet<int> ids = QSet<int>(dkeys.begin(), dkeys.end());
   if (d.roiset)
     ids += d.roiset->ids();
   foreach (int id, ids)

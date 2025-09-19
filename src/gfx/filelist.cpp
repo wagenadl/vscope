@@ -22,6 +22,7 @@
 #include <gfx/button.h>
 #include <base/minmax.h>
 #include <base/dbg.h>
+#include <QRegularExpression>
 
 FileList::FileList(QWidget *parent): QFrame(parent) {
   colwidth_pix = 128;
@@ -78,7 +79,7 @@ void FileList::populateFiles(QDir const &src, QString extn, bool hideext) {
     filters << ("*."+extn);
   QStringList fns = src.entryList(filters,QDir::Files,QDir::Name|QDir::IgnoreCase);
   if (hideext)
-    fns.replaceInStrings(QRegExp("\\."+extn+"$"), "");
+    fns.replaceInStrings(QRegularExpression("\\."+extn+"$"), "");
   for (QStringList::iterator i=fns.begin(); i!=fns.end(); ) {
     if (includeFileHook(src,*i))
       ++i;
@@ -135,7 +136,7 @@ void FileList::populate(QDir const &src, QStringList fns) {
 }
 
 void FileList::buttonClicked(QString, QString txt) {
-  emit clickedItem(txt.replace(QRegExp("\n.*"),""));
+  emit clickedItem(txt.replace(QRegularExpression("\n.*"),""));
 }
 
 int FileList::indexOf(QString partialfn) {

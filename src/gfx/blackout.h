@@ -22,6 +22,7 @@
 
 #include <QLabel>
 #include <QTime>
+#include <QElapsedTimer>
 
 class Blackout: public QLabel {
   /*:C Blackout
@@ -38,7 +39,7 @@ private slots:
   void timeout();
 private:
   QString txt;
-  QTime t0;
+  QElapsedTimer t0;
   class QTimer *timer;
 };
 

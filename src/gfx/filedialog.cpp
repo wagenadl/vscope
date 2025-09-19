@@ -22,7 +22,7 @@
 #include <gfx/filechooser.h>
 #include <gfx/button.h>
 #include <base/dbg.h>
-
+#include <QRegularExpression>
 #include <QLineEdit>
 
 FileDialog::FileDialog(QWidget *parent,
@@ -148,8 +148,9 @@ void FileDialog::requireConfirm(bool flg) {
 }
 
 void FileDialog::goDir(QString path0) {
-  QRegExp dosdr("/[A-Z]:/");
-  if (dosdr.indexIn(path0)==0) {
+  QRegularExpression dosdr("^/[A-Z]:/");
+  QRegularExpressionMatch m = dosdr.match(path0);
+  if (m.hasMatch()) {
     dbg("dos path detected starting with /");
     path0 = path0.mid(1);
   }
@@ -264,7 +265,8 @@ void FileDialog::selectedPath(int idx, QString) {
 }
 
 void FileDialog::synthKeyPress(QChar asc) {
-  switch (asc.unicode()) {
+  int c = asc.unicode();
+  switch (c) {
   case 8: // backspace
     editor->backspace();
     break;
@@ -293,7 +295,7 @@ void FileDialog::synthKeyPress(QChar asc) {
     editor->end(false);
     break;
   default:
-    if (asc>=32 && asc<=126)
+    if (c >= 32 && c <= 126)
       editor->insert(asc);
     break;
   }

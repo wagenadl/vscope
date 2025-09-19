@@ -174,7 +174,7 @@ void PolyBlob::build(int k, double const *xx, double const *yy) {
   QVector<polyblob_rphi> src(k+1);
   for (int j=0; j<k; j++)
     src[j].set(xx[j], yy[j], x0, y0);
-  qSort(src.begin(), src.end()-1, polyblob_rphi_less);
+  std::sort(src.begin(), src.end()-1, polyblob_rphi_less);
   src[k] = src[0];
   src[k].phi += 2*Numbers::pi();
   

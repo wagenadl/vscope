@@ -21,6 +21,7 @@
 #include <base/xml.h>
 #include <base/dbg.h>
 #include <math.h>
+#include <QRegularExpression>
 
 Script::Script() {
 }
@@ -32,10 +33,10 @@ bool Script::setText(QString const &doc) {
   int lasttrial=-1;
   foreach (QString s, ss) {
     lineno++;
-    s.replace(QRegExp("#.*"),"");
-    s.replace(QRegExp("\\s+")," ");
-    s.replace(QRegExp("^ "),"");
-    s.replace(QRegExp(" $"),"");
+    s.replace(QRegularExpression("#.*"),"");
+    s.replace(QRegularExpression("\\s+")," ");
+    s.replace(QRegularExpression("^ "),"");
+    s.replace(QRegularExpression(" $"),"");
     if (s.isEmpty())
       continue;
     QStringList bits = s.split(" ");

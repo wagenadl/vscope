@@ -19,7 +19,7 @@
 #include "exptdirlist.h"
 #include <QDir>
 #include <QTextStream>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <base/dbg.h>
 
 ExptDirList::ExptDirList(QWidget *parent): FileList(parent) {
@@ -39,13 +39,14 @@ QString ExptDirList::infoHook(QDir const &dir, QString fn) {
       int ntrials_ephys   = 0;
       int ntrials_stim    = 0;
       QTextStream txt(&logf);
-      QRegExp regexp(" Trial (\\d+): (.*)");
+      QRegularExpression regexp(" Trial (\\d+): (.*)");
       while (!txt.atEnd()) {
 	QString line = txt.readLine();
-	if (regexp.indexIn(line)>=0) {
+        QRegularExpressionMatch m = regexp.match(line);
+        if (m.hasMatch()) {
 	  // got a real trial
 	  ntrials_tot++;
-	  QString typ = regexp.cap(2);
+	  QString typ = m.captured(2);
 	  if (typ.contains("Snapshot")) {
 	    ntrials_snap++;
 	  } else {

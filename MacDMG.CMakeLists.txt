@@ -1,0 +1,11 @@
+find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+
+add_custom_target(dmg ALL DEPENDS vscope.dmg)
+add_custom_target(vscope.dmg)
+
+add_custom_command(TARGET vscope.dmg 
+    COMMAND "${MACDEPLOYQT_EXECUTABLE}" vscope.app -dmg
+       -executable=vscope.app/Contents/MacOS/vscope
+       -always-overwrite
+    COMMENT "Running macdeployqt to build vscope.dmg"
+    )

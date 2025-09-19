@@ -14,6 +14,7 @@
    along with VScope.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QRegularExpression>
 // paramtree.cpp
 
 #include <xml/paramtree.h>
@@ -160,7 +161,8 @@ void ParamTree::read(QDomElement doc) {
       }
     }
   } else if (doc.tagName()=="array") {
-    QSet<QString> oldChildren = QSet<QString>::fromList(children.keys());
+    QList<QString> ckeys = children.keys();
+    QSet<QString> oldChildren(ckeys.begin(), ckeys.end());
     QSet<QString> newChildren;
     for (QDomElement e=doc.firstChildElement();
          !e.isNull(); e=e.nextSiblingElement()) {
@@ -357,7 +359,7 @@ ParamTree &ParamTree::child(QString id) {
 ParamTree const *ParamTree::treep(QString path) const {
   if (path.isEmpty())
     return this;
-  QStringList p=path.split(QRegExp("[/:]"));
+  QStringList p=path.split(QRegularExpression("[/:]"));
   QString head = p.takeFirst();
   QString tail = p.join("/");
   ParamTree const *c = childp(head);
@@ -374,7 +376,7 @@ ParamTree const *ParamTree::treep(QString path) const {
 ParamTree *ParamTree::treep(QString path) {
   if (path.isEmpty())
     return this;
-  QStringList p=path.split(QRegExp("[/:]"));
+  QStringList p=path.split(QRegularExpression("[/:]"));
   QString head = p.takeFirst();
   QString tail = p.join("/");
   ParamTree *c = childp(head);
@@ -410,7 +412,7 @@ ParamTree &ParamTree::tree(QString path) {
 Param const *ParamTree::findp(QString path) const {
   if (path.isEmpty())
     return leafp();
-  QStringList p=path.split(QRegExp("[/:]"));
+  QStringList p=path.split(QRegularExpression("[/:]"));
   QString head = p.takeFirst();
   QString tail = p.join("/");
   ParamTree const *c = childp(head);
@@ -423,7 +425,7 @@ Param const *ParamTree::findp(QString path) const {
 Param *ParamTree::findp(QString path) {
   if (path.isEmpty())
     return leafp();
-  QStringList p=path.split(QRegExp("[/:]"));
+  QStringList p=path.split(QRegularExpression("[/:]"));
   QString head = p.takeFirst();
   QString tail = p.join("/");
   ParamTree *c = childp(head);
