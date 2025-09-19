@@ -5,10 +5,10 @@
 cmake_minimum_required(VERSION 3.16)
 
 ######################################################################
-# Set the project name and version
-project(VScope VERSION 1.5.5)
+# Set the project name
+project(VScope)
 
-set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net/eln")
+set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for clangd
 
 ######################################################################
@@ -26,6 +26,14 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt6
   REQUIRED COMPONENTS Widgets Xml)
+
+######################################################################
+# Figure out operating system
+if(WIN32 OR CYGWIN)
+  add_compile_definitions(vsdWIN32)
+elseif(UNIX)
+    add_compile_definitions(vsdLINUX)
+endif()
 
 ######################################################################
 # Add the executables
@@ -67,9 +75,9 @@ target_include_directories(vscope PUBLIC "${Qt6_INCLUDE_DIRS}")
 ######################################################################
 # General packaging / installation
 set(CPACK_PACKAGE_VENDOR "Daniel Wagenaar")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VScope - XXXX")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VScope - acquisition and analysis of VSD and electrophysiology")
 set(CPACK_PACKAGE_DESCRIPTION
-  "VScope is XXX.")
+  "VScope is a package for acquisition and analysis of voltage-sensitive dye recordings along with electrophysiology.")
 set(CPACK_PACKAGE_EXECUTABLES "vscope;VScope")
 
 if (WIN32)
