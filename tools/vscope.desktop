@@ -5,5 +5,5 @@ Comment=Data acquisition and analysis package
 Exec=vscope
 Type=Application
 Categories=Science
-Icon=/usr/share/pixmaps/vscope.svg
+Icon=vscope
 

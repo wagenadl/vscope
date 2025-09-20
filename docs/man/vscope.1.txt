@@ -1,0 +1,31 @@
+VSCOPE(1)
+=========
+:doctype: manpage
+
+NAME
+----
+vscope - VScope Data Acquisition Software
+
+SYNOPSIS
+--------
+*vscope*
+
+DESCRIPTION
+-----------
+The *vscope*(1) command starts the VScope Data Acquisition system.
+
+OPTIONS
+-------
+None.
+
+BUGS
+----
+VScope has been used daily in our lab for 15 years now. Some bugs remain.
+Please contact the author if one bites you.
+
+AUTHOR
+------
+Daniel Wagenaar <daw@caltech.edu>, Division of Biology and Biological
+Engineering, California Institute of
+Technology. https://www.danielwagenaar.net.
+

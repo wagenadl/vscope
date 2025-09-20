@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 
 ######################################################################
 # Set the project name
-project(VScope)
+project(VScope VERSION 1.0.11)
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for clangd
