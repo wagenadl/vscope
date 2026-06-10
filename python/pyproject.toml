@@ -4,12 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vscope"
+version = "1.1.1"
 authors = [
     {name = "Daniel Wagenaar", email = "daw@caltech.edu"},
 ]
 description = "Tools for reading VScope data"
 readme = "README.md"
-version = "1.1.0"
+
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
 dependencies = [
     "numpy",
     "scipy",
