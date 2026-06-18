@@ -135,7 +135,7 @@ namespace Connections {
    *:D Returns a pointer to a camera definition given an ID.
    *:R Returns null if not found.
    */
-  extern CamCon const &findCam(QString id);
+  extern CamCon const &findCam(QString const &id);
   /*:F findCam
    *:D Returns a reference to a camera definition given an ID.
    *:R Throws an exception if not found.

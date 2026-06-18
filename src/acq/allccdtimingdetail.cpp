@@ -32,8 +32,8 @@ AllCCDTimingDetail::~AllCCDTimingDetail() {
 }
 
 void AllCCDTimingDetail::updateCameras(ParamTree const *ptree) {
-  QList<QString> dkeys = details.keys();
-  QSet<QString> oldids(dkeys.begin(), dkeys.end());
+  auto keys{details.keys()};
+  QSet<QString> oldids(keys.begin(), keys.end());
   QSet<QString> newids;
   ParamTree const &p = ptree->tree("acqCCD/camera");
   foreach (QString s, p.childIDs())

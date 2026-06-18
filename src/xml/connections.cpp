@@ -365,7 +365,7 @@ namespace Connections {
       return 0;
   }
   
-  CamCon const &findCam(QString id) {
+  CamCon const &findCam(QString const &id) {
     CamCon const *cam = findpCam(id);
     if (cam)
       return *cam;

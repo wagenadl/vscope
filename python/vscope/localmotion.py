@@ -2,7 +2,7 @@
 
 import vscope.rois
 import numpy as np
-import swiftir
+import spectralign.funcs as swiftir
 import scipy.signal
 
 def upsampledImages(x, cam):
