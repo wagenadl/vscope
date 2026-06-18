@@ -354,7 +354,7 @@ void CCDImage::mousePressEvent(QMouseEvent *e) {
   clickPoint = e->pos();
   if (!rubberband)
     rubberband = new QRubberBand(QRubberBand::Rectangle, this);
-  rubberband->setGeometry(e->x(),e->y(),0,0);
+  rubberband->setGeometry(e->position().x(),e->position().y(),0,0);
   rubberband->show();
 }
 
@@ -379,8 +379,8 @@ void CCDImage::mouseMoveEvent(QMouseEvent *e) {
   if (!rubberband)
     return; // this shouldn't happen
 
-  int dx = e->x() - clickPoint.x();
-  int dy = e->y() - clickPoint.y();
+  int dx = e->position().x() - clickPoint.x();
+  int dy = e->position().y() - clickPoint.y();
   int sdx = dx>0 ? 1 : -1;
   int sdy = dy>0 ? 1 : -1;
 
