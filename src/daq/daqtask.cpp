@@ -74,6 +74,9 @@ void daqTask::postCommit() {
 }
 
 void daqTask::uncommit() {
+  qDebug() << "uncommit";
+  if (!committed)
+      return;
   daqTry(DAQmxClearTask(th),"daqTask","Cannot clear task");
   committed = false;
 }

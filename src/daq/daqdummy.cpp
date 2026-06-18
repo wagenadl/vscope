@@ -18,6 +18,7 @@
 // Created by daqmx2dummy.pl. Do not edit.
 
 #include <../nidaq/NIDAQmx.h>
+#if vsdLINUX
 
 int32 DAQmxCreateTask(const char[], TaskHandle*) {
   return -1;
@@ -183,3 +184,4 @@ int32 DAQmxGetWriteTotalSampPerChanGenerated(TaskHandle, uInt64*) {
   return -1;
 }
 
+#endif

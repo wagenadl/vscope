@@ -82,7 +82,7 @@ QString KeyAccess::myName() const {
   QString obj = objectName();
   if (obj.isEmpty())
     return metaObject()->className() + QString("@0x")
-      + QString::number((long int)(void*)this, 16);
+      + QString::number((long long)(void*)this, 16);
   else
     return obj;
 }

@@ -285,20 +285,22 @@ QString DAQDevice::nidaqVersion() {
     uInt32 maj, min, upd;
     int e = DAQmxGetSysNIDAQMajorVersion(&maj);
     // daqTry(DAQmxGetSysNIDAQMajorVersion())
-    if (e<0)
-        return "(no driver)";
-    else if (e>0)
+    if (e<0) {
+      char errBuf[2048];
+      DAQmxGetErrorString(e, errBuf, 2048);
+        return QString("(no driver1): %1. %2").arg(e).arg(errBuf);
+    } else if (e>0)
         return "(error)";
     e = DAQmxGetSysNIDAQMinorVersion(&min);
     // daqTry(DAQmxGetSysNIDAQMinorVersion())
     if (e<0)
-        return "(no driver)";
+        return "(no driver2)";
     else if (e>0)
         return "(error)";
     e = DAQmxGetSysNIDAQUpdateVersion(&upd);
     // daqTry(DAQmxGetSysNIDAQUpdateVersion())
     if (e<0)
-        return "(no driver)";
+        return "(no driver3)";
     else if (e>0)
         return "(error)";
     return QString("%1.%2.%3").arg(maj).arg(min).arg(upd);

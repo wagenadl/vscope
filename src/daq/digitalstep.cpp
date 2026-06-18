@@ -79,7 +79,7 @@ void DigitalStep::step(uint32_t value) {
   
   daqTry(DAQmxStopTask(th),
 	 "DigitalStep","Cannot stop task");
-
+qDebug() << "digistep clear";
   daqTry(DAQmxClearTask(th),
 	 "DigitalStep","Cannot clear task");
 }

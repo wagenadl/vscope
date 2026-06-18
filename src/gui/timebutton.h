@@ -23,6 +23,7 @@
 #include <QString>
 #include <QElapsedTimer>
 #include <QBasicTimer>
+#include <QTimerEvent>
 #include <QObject>
 
 class TimeButton: public QObject {

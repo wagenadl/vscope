@@ -7,8 +7,8 @@ cmake_minimum_required(VERSION 3.16)
 ######################################################################
 # Set the project name
 project(VScope VERSION 1.0.11)
-
-set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net")
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set(CMAKE_PROJECT_HOMEPAGE_URL "https://danielwagenaar.net")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1) # for clangd
 
 ######################################################################
@@ -24,9 +24,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt6
-  REQUIRED COMPONENTS Widgets Xml)
-
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Xml)
 ######################################################################
 # Figure out operating system
 if(WIN32 OR CYGWIN)
@@ -37,16 +35,20 @@ endif()
 
 ######################################################################
 # Add the executables
-add_executable(vscope WIN32 MACOSX_BUNDLE src/toplevel/main.cpp)
+add_executable(vscope  MACOSX_BUNDLE src/toplevel/main.cpp)
 
 include(src/CMakeLists.txt)
 
 # Libraries to link to - Qt must be mentioned
+target_link_libraries(vscope Qt6::Core)
 target_link_libraries(vscope Qt6::Widgets)
 target_link_libraries(vscope Qt6::Xml)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
 if (WIN32)
-  target_link_libraries(vscope secur32.lib)
+  #target_link_libraries(vscope secur32)
+  target_link_libraries(vscope ${CMAKE_CURRENT_SOURCE_DIR}/nidaq/nidaqmx.lib)
+  target_link_libraries(vscope ${CMAKE_CURRENT_SOURCE_DIR}/pvcam/amd64/pvcam64.lib)
 endif()
 if (APPLE)
   set(MACOSX_BUNDLE_ICON_FILE eln.icns)
@@ -65,12 +67,12 @@ add_custom_target(version
   )
 add_dependencies(vscope version)
 
-#configure_file(src/config.h.in config.h)
+configure_file(src/config.h.in config.h)
 
 # Include paths - Qt must be mentioned
 target_include_directories(vscope PUBLIC "${PROJECT_BINARY_DIR}")
-target_include_directories(vscope PUBLIC "${Qt6_INCLUDE_DIRS}")
-
+#target_include_directories(vscope PUBLIC "${Qt6_INCLUDE_DIRS}")
+ 
 
 ######################################################################
 # General packaging / installation

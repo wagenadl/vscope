@@ -21,6 +21,8 @@
 #define GUIPAGE_H
 
 #include <QFrame>
+#include <QPaintEvent>
+#include <QPalette>
 #include <QString>
 #include <QStringList>
 #include <QList>

@@ -30,3 +30,7 @@ __pycache__
 *.os
 .sconsign.dblite
 releases
+.vs
+.vscode
+out
+*.pdb

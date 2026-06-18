@@ -26,16 +26,24 @@
 static QLabel *lbl = 0;
 
 QString checkdaq() {
+  qDebug() << "Checking DAQ status...";
   QString vsn = DAQDevice::nidaqVersion();
+  qDebug() << "NI-DAQmx version: " << vsn;
   QString ltxt = "";
   QString confdev = Connections::deviceID();
+  qDebug() << "Configured device: " << confdev;
   if (confdev=="") {
     QString confser = Connections::deviceSerNo();
+    qDebug() << "Configured device serial number: " << confser;
     QString conftyp = Connections::deviceType();
+    qDebug() << "Configured device type: " << conftyp;
     confdev = DAQDevice::search(conftyp, confser);
+    qDebug() << "Found device: " << confdev;
   }
   DAQDevice *daqdev = &DAQDevice::find(confdev);
+  qDebug() << "Using DAQ device: " << daqdev->id();
   if (DAQDevice::ok(daqdev)) {
+    qDebug() << "DAQ device is OK";
     QString dev = daqdev->id();
     confdev = dev;
 
@@ -47,6 +55,7 @@ QString checkdaq() {
     ltxt += QString("  DIO line count: %1\n").arg(daqdev->nDIOLines());
     // Dbg() << ltxt;
   } else {
+    qDebug() << "DAQ device is not OK";
     ltxt = "Configured DAQ device not found\n";
   }
   ltxt += "\n";
