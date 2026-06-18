@@ -2,6 +2,7 @@ Makefile.Debug
 Makefile.Release
 build
 build-*
+venv
 release-*
 *pro.user*
 *~

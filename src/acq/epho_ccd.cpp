@@ -45,7 +45,7 @@ void EPhO_CCD::prepare(DigitalData *ddata) const {
     ddata->addLine(l);
     trigvals[id] = one<<l;
     if (cam.shtrid=="") {
-      shtrvals[id] = 0;
+      shtrvals[id] = 0; 
     } else {
       try {
         int l = lines->lookup("Shutter:" + cam.shtrid);
